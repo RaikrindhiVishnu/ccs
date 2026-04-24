@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ========== PRIMARY COLORS ========== */
+    /* Primary text colors for main content */
+    --text-primary: #000000;
+    --text-secondary: #0000007f;
+    --text-tertiary: #00000099;
+
+    /* ========== BACKGROUND COLORS ========== */
+    /* Main application backgrounds */
+    --bg-main: #f2f2f2;
+    --bg-card: #ffffff;
+    --bg-primary: #000000;
+
+    /* ========== BORDER COLORS ========== */
+    /* Border styles for components */
+    --border-primary: #000000;
+
+    /* ========== TYPOGRAPHY VARIABLES ========== */
+    /* Font size scale */
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-base: 16px;
+    --font-size-lg: 20px;
+    --font-size-xl: 36px;
+
+    /* Font weight variations */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+
+    /* Line height values */
+    --line-height-xs: 16px;
+    --line-height-sm: 17px;
+    --line-height-base: 18px;
+    --line-height-md: 21px;
+    --line-height-lg: 26px;
+    --line-height-xl: 28px;
+    --line-height-2xl: 44px;
+
+    /* Font families */
+    --font-inter: 'Inter', sans-serif;
+    --font-manrope: 'Manrope', sans-serif;
+    --font-plus: 'Plus Jakarta Sans', sans-serif;
+
+    /* ========== SPACING VARIABLES ========== */
+    /* Margin values */
+    --margin-xs: 4px;
+    --margin-sm: 6px;
+    --margin-md: 8px;
+    --margin-base: 16px;
+    --margin-lg: 18px;
+    --margin-xl: 20px;
+    --margin-2xl: 32px;
+    --margin-3xl: 84px;
+
+    /* Padding values */
+    --padding-xs: 6px;
+    --padding-sm: 10px;
+    --padding-md: 12px;
+    --padding-base: 14px;
+    --padding-lg: 16px;
+    --padding-xl: 20px;
+    --padding-2xl: 22px;
+    --padding-3xl: 24px;
+    --padding-4xl: 26px;
+    --padding-5xl: 32px;
+    --padding-6xl: 52px;
+
+    /* Gap values for flex/grid layouts */
+    --gap-xs: 2px;
+    --gap-sm: 4px;
+    --gap-md: 6px;
+    --gap-base: 8px;
+    --gap-lg: 12px;
+    --gap-xl: 16px;
+    --gap-2xl: 18px;
+    --gap-3xl: 22px;
+    --gap-4xl: 28px;
+    --gap-5xl: 52px;
+    --gap-6xl: 386px;
+
+    /* ========== BORDER RADIUS VARIABLES ========== */
+    /* Border radius scale */
+    --radius-xs: 4px;
+    --radius-sm: 5px;
+    --radius-base: 14px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 26px;
+    --radius-2xl: 32px;
+
+    /* ========== BORDER WIDTH VARIABLES ========== */
+    --border-width-thin: 1px;
+
+    /* ========== LAYOUT DIMENSIONS ========== */
+    /* Width values */
+    --width-xs: 16px;
+    --width-sm: 20px;
+    --width-md: 24px;
+    --width-lg: 40px;
+    --width-xl: 64px;
+    --width-5: 5%;
+    --width-10: 10%;
+    --width-12: 12%;
+    --width-14: 14%;
+    --width-30: 30%;
+    --width-44: 44%;
+    --width-52: 52%;
+    --width-90: 90%;
+    --width-96: 96%;
+    --width-auto: auto;
+    --width-full: 100%;
+
+    /* ========== COMPONENT-SPECIFIC COLORS ========== */
+    /* Header Component */
+    --header-margin: var(--margin-md);
+
+    /* Link Component */
+    --link-bg: var(--bg-card);
+    --link-padding: var(--padding-base);
+    --link-radius: var(--radius-xl);
+    --link-radius-alt: var(--radius-sm);
+
+    /* SearchView Component */
+    --search-text: var(--text-secondary);
+    --search-bg: var(--bg-card);
+    --search-font-size: var(--font-size-base);
+    --search-font-weight: var(--font-weight-normal);
+    --search-line-height: var(--line-height-md);
+    --search-padding-md: var(--padding-md);
+    --search-padding-base: var(--padding-base);
+    --search-padding-xl: var(--padding-6xl);
+    --search-gap: var(--gap-base);
+    --search-radius: var(--radius-xl);
+
+    /* Dropdown Component */
+    --dropdown-text: var(--text-primary);
+    --dropdown-border: var(--border-primary);
+    --dropdown-font-size: var(--font-size-xs);
+    --dropdown-font-weight: var(--font-weight-normal);
+    --dropdown-line-height: var(--line-height-xs);
+    --dropdown-padding-sm: var(--padding-sm);
+    --dropdown-padding-xs: var(--padding-xs);
+    --dropdown-padding-4xl: var(--padding-4xl);
+    --dropdown-gap: var(--gap-sm);
+    --dropdown-radius: var(--radius-base);
+    --dropdown-border-width: var(--border-width-thin);
+
+    /* Chart Component */
+    --chart-margin-xl: var(--margin-xl);
+    --chart-margin-xs: var(--margin-xs);
+    --chart-margin-sm: var(--margin-sm);
+  }
+}
+
+@layer components {
+  /* Custom component utilities */
+.metric-card  {
+    @apply rounded-xl shadow-sm border border-border-primary;
+  }
+
+  .chart-container {
+    @apply w-full h-auto;
+  }
+
+  .filter-toggle {
+    @apply inline-flex items-center justify-center rounded-lg transition-all duration-200;
+  }
+}
