@@ -37,12 +37,15 @@ export default function TargetVsActualCard({
     ">
 
       {/* HEADER */}
-      <div className="flex justify-between items-start mb-[clamp(12px,1.5vh,20px)]">
+      <div className="flex justify-between items-start mb-[clamp(12px,1.5vh,20px)] text-heading">
         <div>
           <h3 className="text-[clamp(16px,1.3vw,20px)] font-medium text-foreground">
             {title}
           </h3>
-          <p className="text-[clamp(12px,1vw,14px)] text-foreground/60 mt-1">
+          <p className="text-[clamp(12px,1vw,14px)] text-foreground/60 mt-1"
+            style={{
+              color: "var(--muted)"
+            }}>
             {subtitle}
           </p>
         </div>
@@ -60,7 +63,7 @@ export default function TargetVsActualCard({
           <BarChart
             data={data}
             barCategoryGap="22%"
-            barGap={-36}
+            barGap={-40}
           >
 
             <CartesianGrid
@@ -87,14 +90,14 @@ export default function TargetVsActualCard({
 
             <Bar
               dataKey="target"
-              barSize={36}
+              barSize={40}
               radius={[14, 14, 0, 0]}
               fill="var(--outerbar)"
             />
 
             <Bar
               dataKey="actual"
-              barSize={36}
+              barSize={40}
               radius={[14, 14, 0, 0]}
               label={false}
               shape={(props: any) => {

@@ -16,7 +16,7 @@ interface SuccessCardProps {
   redirectDelay?: number;
 }
 
-/* 🔥 Animated Dots */
+/* ── Animated Dots ── */
 function AnimatedDots() {
   const [active, setActive] = useState(0);
 
@@ -26,18 +26,15 @@ function AnimatedDots() {
   }, []);
 
   return (
-    <div className="flex gap-[6px] items-center">
+    <div className="flex items-center" style={{ gap: "clamp(4px, 0.5vw, 8px)" }}>
       {[0, 1, 2].map((i) => (
         <span
           key={i}
           className="inline-block rounded-full transition-colors duration-300"
           style={{
-            width: "clamp(8px, 0.9vw, 12px)",
-            height: "clamp(8px, 0.9vw, 12px)",
-            backgroundColor:
-              i === active
-                ? "var(--primary)"
-                : "var(--primary-faded)",
+            width: "clamp(7px, 0.8vw, 11px)",
+            height: "clamp(7px, 0.8vw, 11px)",
+            backgroundColor: i === active ? "var(--primary)" : "var(--primary-faded)",
           }}
         />
       ))}
@@ -45,7 +42,7 @@ function AnimatedDots() {
   );
 }
 
-/* 🔥 Map Placeholder */
+/* ── Map Placeholder ── */
 function MapPlaceholder({ regionName }: { regionName: string }) {
   return (
     <svg viewBox="0 0 200 249" width="100%" height="100%">
@@ -57,8 +54,7 @@ function MapPlaceholder({ regionName }: { regionName: string }) {
         strokeWidth="1.5"
       />
       <text
-        x="100"
-        y="145"
+        x="100" y="145"
         fontSize="12"
         fill="var(--primary)"
         textAnchor="middle"
@@ -66,23 +62,6 @@ function MapPlaceholder({ regionName }: { regionName: string }) {
       >
         {regionName}
       </text>
-    </svg>
-  );
-}
-
-/* 🔥 Icon */
-function CheckBadgeIcon() {
-  return (
-    <svg viewBox="0 0 140 140" width="100%" height="100%">
-      <rect width="140" height="140" rx="8" fill="var(--primary-soft)" />
-      <circle cx="70" cy="70" r="36" fill="var(--primary-light)" />
-      <path
-        d="M52 70L65 83L90 57"
-        stroke="var(--primary)"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
     </svg>
   );
 }
@@ -109,23 +88,23 @@ export default function Successcard({
 
   return (
     <>
-      {/* ANIMATION */}
       <style>{`
         @keyframes fadeSlideUp {
           from { opacity: 0; transform: translateY(24px); }
-          to { opacity: 1; transform: translateY(0); }
+          to   { opacity: 1; transform: translateY(0); }
         }
         .success-card {
           animation: fadeSlideUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
         }
       `}</style>
-
-      {/* PAGE */}
       <div
-        className="min-h-screen w-full flex items-center justify-center p-6"
+        className="w-full flex items-center justify-center"
         style={{
+          minHeight: "100dvh",
+          padding: "clamp(12px, 2vw, 24px)",
           backgroundColor: "var(--background)",
           fontFamily: "var(--font-sans)",
+          overflow: "hidden",
         }}
       >
 
@@ -134,23 +113,24 @@ export default function Successcard({
           className="success-card w-full flex"
           style={{
             maxWidth: "clamp(700px, 90vw, 1301px)",
-            minHeight: "clamp(400px, 71.5vh, 687px)",
+            minHeight: "clamp(380px, 68vh, 640px)",
             backgroundColor: "var(--card)",
             borderRadius: "clamp(24px, 3.3vw, 48px)",
-            padding: "clamp(24px, 3vw, 48px) clamp(24px, 4vw, 91px)",
-            gap: "clamp(24px, 4vw, 60px)",
+            padding: "clamp(20px, 2.5vw, 40px) clamp(20px, 3vw, 70px)",
+            gap: "clamp(20px, 3vw, 48px)",
+            overflow: "hidden",
           }}
         >
 
-          {/* LEFT */}
+          {/* ── LEFT ── */}
           <div className="flex flex-col justify-between flex-1 min-w-0">
 
             {/* ICON + LABEL */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col" style={{ gap: "clamp(6px, 0.6vw, 10px)" }}>
               <div
                 style={{
-                  width: "clamp(60px, 13.8vw, 200px)",
-                  height: "clamp(80px, 13.8vw, 200px)",
+                  width: "clamp(60px, 13vw, 180px)",
+                  height: "clamp(60px, 13vw, 180px)",
                 }}
               >
                 <img
@@ -158,35 +138,34 @@ export default function Successcard({
                   alt="success"
                   className="w-full h-full object-contain"
                 />
-                <span className="ml-[clamp(12px,1.2vw,20px)]"
-                  style={{
-                    fontSize: "clamp(11px, 1.1vw, 16px)",
-                    fontWeight: 600,
-                    color: "var(--muted)",
-                   marginLeft: "clamp(12px, 1.2vw, 20px)",
-                  }}
-                >
-                  {badgeLabel}
-                </span>
               </div>
 
+              <span
+                style={{
+                  fontSize: "clamp(11px, 1.1vw, 16px)",
+                  fontWeight: 600,
+                  color: "var(--muted)",
+                  marginLeft: "clamp(8px, 2vw, 20px)",
+                }}
+              >
+                {badgeLabel}
+              </span>
             </div>
 
             {/* TITLE */}
             <div style={{ lineHeight: 1.05 }}>
               <div
                 style={{
-                  fontSize: "clamp(28px, 4.1vw, 60px)",
+                  fontSize: "clamp(26px, 4vw, 56px)",
                   fontWeight: 600,
                   color: "var(--primary)",
                 }}
               >
                 {titleLine1}
               </div>
-
               <div
                 style={{
-                  fontSize: "clamp(28px, 4.1vw, 60px)",
+                  fontSize: "clamp(26px, 4vw, 56px)",
                   fontWeight: 700,
                   color: "var(--foreground)",
                 }}
@@ -196,11 +175,12 @@ export default function Successcard({
             </div>
 
             {/* REDIRECT */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center mt-0" style={{ gap: "clamp(6px, 0.7vw, 10px)" }}>
               <AnimatedDots />
               <span
                 style={{
-                  fontSize: "clamp(13px, 1.25vw, 18px)",
+
+                  fontSize: "clamp(13px, 1.2vw, 18px)",
                   fontWeight: 600,
                   color: "var(--primary)",
                 }}
@@ -211,25 +191,40 @@ export default function Successcard({
 
           </div>
 
-          {/* RIGHT */}
+          {/* ── RIGHT ── */}
           <div
-            className="flex flex-col items-center justify-center"
+            className="flex flex-col items-center justify-center flex-shrink-0"
             style={{
-              width: "clamp(260px, 27vw, 390px)",
-              gap: "clamp(16px, 2vh, 31px)",
+              width: "100%",
+              maxWidth: "360px",
+              minWidth: "240px",
+              gap: "clamp(14px, 1.6vh, 24px)",
+              padding: "clamp(14px, 1.8vw, 24px)",
+              borderRadius: "clamp(20px, 2vw, 32px)",
+              boxShadow: "0 10px 25px rgba(0, 0, 0, 0.06)",
+              background: "#fff",
+              overflow: "hidden",
             }}
           >
 
             {/* MAP */}
             <div
-              className="w-full max-w-[clamp(180px,22vw,202px)] mx-auto overflow-hidden"
+              className="w-full overflow-hidden"
               style={{
-                aspectRatio: "202.65 / 249",
-                borderRadius: "clamp(8px, 0.8vw, 11px)",
+                width: "100%",
+                maxWidth: "202.65px",
+                minWidth: "150px",
+                aspectRatio: "242.65 / 249",
+                borderRadius: "11px",
+                margin: "0 auto",
               }}
             >
               {mapImage ? (
-                <img src={mapImage} className="w-full h-full object-cover" />
+                <img
+                  src={mapImage}
+                  alt={regionName}
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <MapPlaceholder regionName={regionName} />
               )}
@@ -240,15 +235,20 @@ export default function Successcard({
               className="w-full"
               style={{
                 backgroundColor: "var(--background)",
-                padding: "clamp(16px, 1.9vw, 28px)",
-                borderRadius: "clamp(16px,2.2vw,32px)",
+                padding: "clamp(12px, 1.5vw, 20px)",
+                paddingLeft: "clamp(16px, 2vw, 28px)", // 🔥 push content right
+                borderRadius: "clamp(18px, 2vw, 28px)",
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "clamp(12px, 1.5vh, 20px)",
+                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                columnGap: "clamp(16px, 2vw, 24px)",
+                rowGap: "clamp(10px, 1.2vh, 18px)",
               }}
             >
               {[
-                { label: "REGION NAME", value: regionName },
+                {
+                  label: titleLine1 === "Area" ? "AREA NAME" : "REGION NAME",
+                  value: regionName
+                },
                 { label: "ASSIGNED ID", value: assignedId },
                 { label: "CREATED DATE", value: createdDate },
                 { label: "CREATED TIME", value: createdTime },
@@ -256,8 +256,13 @@ export default function Successcard({
                 <div key={item.label} className="flex flex-col gap-1">
                   <span
                     style={{
-                      fontSize: "clamp(9px, 0.83vw, 12px)",
+                      fontSize: "clamp(10px, 0.75vw, 12px)",
                       color: "var(--muted)",
+                      fontWeight: 500,
+                      letterSpacing: "0.03em",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     }}
                   >
                     {item.label}
@@ -265,9 +270,12 @@ export default function Successcard({
 
                   <span
                     style={{
-                      fontSize: "clamp(11px, 0.97vw, 14px)",
+                      fontSize: "clamp(11px, 0.9vw, 14px)",
                       fontWeight: 600,
                       color: "var(--foreground)",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     }}
                   >
                     {item.value}

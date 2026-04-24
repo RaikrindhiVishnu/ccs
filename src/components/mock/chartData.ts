@@ -1,9 +1,9 @@
 export const regionVelocityData = [
-  { day: "Mon", value: 280 },
-  { day: "Tue", value: 300 },
-  { day: "Wed", value: 180 },
-  { day: "Thu", value: 499 },
-  { day: "Fri", value: 280 },
+  { day: "Mon", value: 400 },
+  { day: "Tue", value: 200 },
+  { day: "Wed", value: 480 },
+  { day: "Thu", value: 200 },
+  { day: "Fri", value: 880 },
   { day: "Sat", value: 380 },
   { day: "Sun", value: 320 },
 ];

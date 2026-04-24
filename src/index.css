@@ -4,14 +4,15 @@
 
 :root {
   /* FONTS */
-  --font-sans: 'Plus Jakarta Sans', sans-serif;
-  --font-heading: 'Manrope', sans-serif;
+  --font-sans: 'Plus Jakarta Sans';
+  --font-heading: 'Manrope';
 
   /* BASE */
   --background: #F2F2F2;
   --foreground: #000000;
   --card: #FFFFFF;
-
+  --input:#F2F2F2;
+  
   /* TEXT */
   --muted: rgba(0, 0, 0, 0.6);
 
@@ -80,7 +81,7 @@ body {
   color: var(--foreground);
 }
 
-h1, h2, h3 {
+h1 {
   font-family: var(--font-heading);
 }
 
