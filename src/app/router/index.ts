@@ -1,3 +1,4 @@
 export * from './AppRouter';
-export { default as ProtectedRoute } from './ProtectedRoute';
-export { default as PublicRoute } from './PublicRoute';
+export { default as AuthGuard } from './AuthGuard';
+export { default as GuestGuard } from './GuestGuard';
+export * from './routes.config';

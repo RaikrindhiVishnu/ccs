@@ -1,14 +1,10 @@
 import { Suspense } from 'react';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import type { RouteObject } from 'react-router-dom';
-import ProtectedRoute from './ProtectedRoute';
-import PublicRoute from './PublicRoute';
-import { publicRoutes } from './publicRoutes';
-import { protectedRoutes } from './protectedRoutes';
+import AuthGuard from './AuthGuard';
+import GuestGuard from './GuestGuard';
+import { guestRoutes, authRoutes, publicRoutes } from './routes.config';
 
-/**
- * Global Page Loader
- */
 const PageLoader = () => (
   <div className="flex min-h-screen items-center justify-center bg-gray-50/50 backdrop-blur-sm">
     <div className="flex flex-col items-center gap-4">
@@ -18,9 +14,6 @@ const PageLoader = () => (
   </div>
 );
 
-/**
- * Recursively wraps route elements with Suspense to support nested routes
- */
 const wrapWithSuspense = (routes: RouteObject[]): RouteObject[] => {
   return routes.map((route) => {
     const wrappedElement = <Suspense fallback={<PageLoader />}>{route.element}</Suspense>;
@@ -40,19 +33,16 @@ const wrapWithSuspense = (routes: RouteObject[]): RouteObject[] => {
   });
 };
 
-/**
- * Application router configuration
- * Routes are modularized into publicRoutes.tsx and protectedRoutes.tsx
- */
 const router = createBrowserRouter([
   {
-    element: <PublicRoute />,
-    children: wrapWithSuspense(publicRoutes),
+    element: <GuestGuard />,
+    children: wrapWithSuspense(guestRoutes),
   },
   {
-    element: <ProtectedRoute />,
-    children: wrapWithSuspense(protectedRoutes),
+    element: <AuthGuard />,
+    children: wrapWithSuspense(authRoutes),
   },
+  ...wrapWithSuspense(publicRoutes),
   {
     path: '*',
     element: <Navigate to="/" replace />,
