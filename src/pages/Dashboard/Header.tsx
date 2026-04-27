@@ -5,9 +5,9 @@ const Header: React.FC = () => {
     <div
       style={{
         width: "100%",
-        height: "18.55vh",           // 190/1024
+        height: "18.55vh",          
         background: "linear-gradient(94.23deg, rgba(66,143,223,0.07) -8.84%, #D3DDE2 51.66%, #D7EBF7 108.77%)",
-        borderRadius: "clamp(12px, 1.67vw, 24px)",   // 24/1440
+        borderRadius: "clamp(12px, 1.67vw, 24px)",  
         position: "relative",
         overflow: "hidden",
         boxSizing: "border-box",
@@ -18,10 +18,10 @@ const Header: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          width: "clamp(60px, 8.75vw, 126px)",       // 126/1440
+          width: "clamp(60px, 8.75vw, 126px)",     
           height: "clamp(60px, 8.75vw, 126px)",
-          left: "clamp(-20px, -2.57vw, -37px)",      // -37/1440
-          top: "clamp(150px, 30.76vh, 315px)",        // 315/1024
+          left: "clamp(-20px, -2.57vw, -37px)",     
+          top: "clamp(150px, 30.76vh, 315px)",        
           background: "#F2FFDB",
           filter: "blur(80px)",
           borderRadius: "50%",
@@ -35,9 +35,9 @@ const Header: React.FC = () => {
         style={{
           position: "absolute",
           width: "100%",
-          height: "clamp(10px, 2.25vh, 23px)",       // 23/1024
+          height: "clamp(10px, 2.25vh, 23px)",       
           left: 0,
-          top: "clamp(140px, 27.73vh, 284px)",        // 284/1024
+          top: "clamp(140px, 27.73vh, 284px)",
           background: "#F2FFDA",
           filter: "blur(40px)",
           pointerEvents: "none",
@@ -50,9 +50,9 @@ const Header: React.FC = () => {
         style={{
           position: "absolute",
           width: "100%",
-          height: "clamp(8px, 1.56vh, 16px)",        // 16/1024
+          height: "clamp(8px, 1.56vh, 16px)",       
           left: 0,
-          top: "clamp(145px, 28.42vh, 291px)",        // 291/1024
+          top: "clamp(145px, 28.42vh, 291px)",      
           background: "#F2FFDA",
           filter: "blur(80px)",
           pointerEvents: "none",
@@ -66,7 +66,7 @@ const Header: React.FC = () => {
         style={{
           position: "absolute",
           top: "clamp(8px, 1.95vh, 20px)",
-          left: "clamp(12px, 1.81vw, 26px)",          // 26/1440
+          left: "clamp(12px, 1.81vw, 26px)",        
           right: "clamp(12px, 1.81vw, 26px)",
           display: "flex",
           flexDirection: "row",
@@ -174,12 +174,12 @@ const Header: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          left: "clamp(12px, 1.81vw, 26px)",          // 26/1440
-          top: "clamp(40px, 7.71vh, 79px)",            // 79/1024
+          left: "clamp(12px, 1.81vw, 26px)",          
+          top: "clamp(40px, 7.71vh, 79px)",            
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
-          gap: "clamp(4px, 0.78vh, 8px)",              // 8/1024
+          gap: "clamp(4px, 0.78vh, 8px)",             
           zIndex: 1,
         }}
       >
@@ -188,7 +188,7 @@ const Header: React.FC = () => {
           style={{
             fontFamily: "'Inter', sans-serif",
             fontWeight: 500,
-            fontSize: "clamp(14px, 3.52vh, 36px)",    // 36/1024
+            fontSize: "clamp(14px, 3.52vh, 36px)",   
             lineHeight: "120%",
             textTransform: "uppercase",
             color: "#000000",
@@ -204,7 +204,7 @@ const Header: React.FC = () => {
           style={{
             fontFamily: "'Inter', sans-serif",
             fontWeight: 400,
-            fontSize: "clamp(7px, 1.37vh, 14px)",     // 14/1024
+            fontSize: "clamp(7px, 1.37vh, 14px)",     
             lineHeight: "18px",
             color: "#000000",
             opacity: 0.6,

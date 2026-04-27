@@ -16,7 +16,7 @@ const Sidebar: React.FC = () => {
   return (
    <div
   style={{
-    width: "clamp(44px, 4vw, 60px)",        // ← reduced from clamp(56px, 5.56vw, 80px)
+    width: "clamp(44px, 4vw, 60px)",       
     background: "#2C2C2C",
     borderRadius: "clamp(12px, 1.39vw, 20px)",
     display: "flex",
@@ -25,10 +25,10 @@ const Sidebar: React.FC = () => {
     padding: "clamp(6px, 0.69vw, 10px)",
     boxSizing: "border-box",
     flexShrink: 0,
-    marginLeft: "clamp(6px, 0.83vw, 12px)",  // ← pushes sidebar away from left edge
-     marginTop: "clamp(6px, 0.83vw, 12px)",      // ← space from top edge
-    marginBottom: "clamp(6px, 0.83vw, 12px)",   // ← space from bottom edge
-    height: "calc(100% - clamp(12px, 1.67vw, 24px))", // ← compensate for top+bottom margin
+    marginLeft: "clamp(6px, 0.83vw, 12px)",  
+     marginTop: "clamp(6px, 0.83vw, 12px)",     
+    marginBottom: "clamp(6px, 0.83vw, 12px)",   
+    height: "calc(100% - clamp(12px, 1.67vw, 24px))", 
   }}
 >
       {/* TOP */}
@@ -45,16 +45,16 @@ const Sidebar: React.FC = () => {
     justifyContent: "center",
     alignItems: "center",
     flexShrink: 0,
-    overflow: "hidden", // ✅ important
+    overflow: "hidden",
   }}
 >
   <img
-    src="./logo.svg" // 🔁 replace with your logo path
+    src="./logo.svg"
     alt="logo"
     style={{
-      width: "70%",        // controls size inside box
+      width: "70%",       
       height: "70%",
-      objectFit: "contain", // ✅ keeps aspect ratio
+      objectFit: "contain", 
     }}
   />
 </div>

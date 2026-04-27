@@ -196,6 +196,8 @@ const AgentOnboardingVelocity: React.FC = () => (
                     alignItems: "center",
                     flexShrink: 0,
                     zIndex: 2,
+                    overflow: "hidden",                        
+                    borderRadius: "0px 0px 71.77px 71.77px",  
                   }}>
                     {/* Exact Figma gradient: rgba(223,232,200,0) → rgba(124,171,218,0.77) */}
                     <div style={{
@@ -210,7 +212,7 @@ const AgentOnboardingVelocity: React.FC = () => (
                       position: "absolute",
                       left: "50%",
                       top: 0,
-                      bottom: 0,
+                      bottom: 40,
                       width: 1.26,
                       background: "#2780C4",
                       transform: "translateX(-50%)",
@@ -226,7 +228,7 @@ const AgentOnboardingVelocity: React.FC = () => (
                       justifyContent: "center",
                       alignItems: "center",
                       flexShrink: 0,
-                      zIndex: 2,
+                      zIndex: 3,
                       position: "relative",
                       marginBottom: "clamp(4px,0.5vw,7px)",
                     }}>
