@@ -1,9 +1,31 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import logo from "@/assets/glc-logo.svg";
 import { User, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { setCredentials } from "../features/auth/store/authSlice";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loginId, setLoginId] = useState("hello@mail.com");
+  const [password, setPassword] = useState("123456");
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      dispatch(
+        setCredentials({
+          user: { id: "1", email: loginId, name: "John Doe", role: "admin" },
+          accessToken: "fake-access-token",
+          refreshToken: "fake-refresh-token",
+        })
+      );
+      setLoading(false);
+    }, 1000);
+  };
 
   return (
     <div
@@ -68,7 +90,7 @@ export default function Login() {
           </p>
 
           {/* Form */}
-          <div className="flex flex-col flex-1">
+          <form className="flex flex-col flex-1" onSubmit={handleLogin}>
 
             {/* ── Login ID Field ── */}
             <div className="flex flex-col" style={{ gap: "clamp(6px, 0.78vh, 10px)" }}>
@@ -106,6 +128,8 @@ export default function Login() {
                   type="text"
                   placeholder="Enter your assigned ID"
                   autoComplete="username"
+                  value={loginId}
+                  onChange={(e) => setLoginId(e.target.value)}
                   className="login-input w-full h-full border-none outline-none rounded-full box-border"
                   style={{
                     background: "var(--input)",
@@ -171,6 +195,8 @@ export default function Login() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter Password"
                   autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="login-input w-full h-full border-none outline-none rounded-full box-border"
                   style={{
                     background: "var(--input)",
@@ -200,7 +226,8 @@ export default function Login() {
             <div className="flex-shrink-0" style={{ marginTop: "clamp(36px, 4.69vh, 63px)" }}>
               <button
                 type="submit"
-                className="login-btn w-full border-none rounded-full cursor-pointer font-semibold uppercase tracking-[0.7px] transition-all duration-200 flex items-center justify-center active:scale-[0.985]"
+                disabled={loading}
+                className="login-btn w-full border-none rounded-full cursor-pointer font-semibold uppercase tracking-[0.7px] transition-all duration-200 flex items-center justify-center active:scale-[0.985] disabled:opacity-50"
                 style={{
                   height: "clamp(45px, 5.86vh, 78px)",
                   fontSize: "clamp(10px, 0.97vw, 18px)",
@@ -231,7 +258,7 @@ export default function Login() {
               </span>
             </div>
 
-          </div>
+          </form>
         </div>
       </div>
 
