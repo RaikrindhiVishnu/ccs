@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import logo from "@/assets/glc-logo.svg";
 import { User, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { setCredentials } from "../features/auth/store/authSlice";
+import { Card } from "@/components/ui/card";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -52,14 +53,11 @@ export default function Login() {
         </div>
 
         {/* ── Card ── */}
-        <div
-          className="flex flex-col flex-shrink-0 box-border"
+        <Card
+          className="flex flex-col flex-shrink-0 box-border rounded-[var(--radius-xl)]"
           style={{
             flex: "0 0 clamp(388px, 38.13vw, 725px)",
             height: "clamp(460px, 59.86vh, 800px)",
-            background: "var(--card)",
-            boxShadow: "var(--shadow-card)",
-            borderRadius: "clamp(22px, 2.22vw, 42px)",
             padding: "clamp(39px, 5.08vh, 68px) clamp(34px, 3.33vw, 63px)",
           }}
         >
@@ -259,7 +257,7 @@ export default function Login() {
             </div>
 
           </form>
-        </div>
+        </Card>
       </div>
 
       {/* Minimal scoped styles for things Tailwind can't do with CSS vars */}
