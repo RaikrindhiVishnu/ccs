@@ -4,6 +4,7 @@ import logo from "@/assets/glc-logo.svg";
 import { User, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { setCredentials } from "../features/auth/store/authSlice";
 import { Card } from "@/components/ui/card";
+import { Typography } from "@/components/ui/typography";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -62,7 +63,8 @@ export default function Login() {
           }}
         >
           {/* Heading */}
-          <h1
+          <Typography
+            variant="h1"
             className="font-bold leading-[1.11] tracking-[-0.9px] m-0 flex-shrink-0 text-left"
             style={{
               fontFamily: "var(--font-heading)",
@@ -72,10 +74,11 @@ export default function Login() {
             }}
           >
             Role Manager Login
-          </h1>
+          </Typography>
 
           {/* Subtext */}
-          <p
+          <Typography
+            variant="p"
             className="font-normal leading-[1.625] m-0 flex-shrink-0 text-left"
             style={{
               fontSize: "clamp(11px, 1.11vw, 21px)",
@@ -85,7 +88,7 @@ export default function Login() {
           >
             Secure access for authorised role managers.
             <br /> Please authenticate to continue.
-          </p>
+          </Typography>
 
           {/* Form */}
           <form className="flex flex-col flex-1" onSubmit={handleLogin}>
@@ -248,12 +251,13 @@ export default function Login() {
               }}
             >
               <ShieldCheck size={16} strokeWidth={1.8} className="flex-shrink-0 opacity-50" />
-              <span
+              <Typography
+                variant="span"
                 className="leading-[1.33]"
                 style={{ fontSize: "clamp(9px, 0.83vw, 16px)" }}
               >
                 Secured by TechGy Innovations. End-to-end encrypted connection.
-              </span>
+              </Typography>
             </div>
 
           </form>
