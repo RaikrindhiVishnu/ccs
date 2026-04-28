@@ -7,6 +7,8 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
+import { Input } from "@/components/ui/input";
+import { Mail, Lock, Search } from "lucide-react";
 
 /**
  * DesignSystem Page
@@ -79,6 +81,38 @@ const DesignSystem = () => {
                 </Typography>
               </div>
             </Card>
+          </div>
+        </div>
+
+        {/* Input Component Section */}
+        <div className="rounded-lg border bg-card p-6 shadow-sm">
+          <Typography variant="h2" className="text-2xl font-semibold mb-4">Input Fields</Typography>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-4 rounded-xl border p-6 bg-white overflow-hidden">
+              <Typography variant="p" className="font-semibold text-sm mb-4">Default Variant (Light Gray)</Typography>
+              <Input
+                label="Email Address"
+                placeholder="Enter your email"
+                icon={<Mail size={16} strokeWidth={1.8} />}
+              />
+              <div className="h-4" />
+              <Input
+                label="Password"
+                type="password"
+                placeholder="Enter your password"
+                icon={<Lock size={16} strokeWidth={1.8} />}
+              />
+            </div>
+            
+            <div className="space-y-4 rounded-xl border p-6" style={{ background: "var(--background)" }}>
+              <Typography variant="p" className="font-semibold text-sm mb-4">White Variant</Typography>
+              <Input
+                variant="white"
+                label="Search anything"
+                placeholder="Search..."
+                icon={<Search size={16} strokeWidth={1.8} />}
+              />
+            </div>
           </div>
         </div>
       </section>
