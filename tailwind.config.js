@@ -17,6 +17,9 @@ export default {
     grid: "var(--grid)",
     tooltip: "var(--tooltip-bg)",
     sidebar: "var(--sidebar)",
+  },
+  borderRadius: {
+    "4xl": "32px",
   }
 }
   },

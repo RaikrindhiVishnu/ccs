@@ -1,9 +1,34 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import logo from "@/assets/glc-logo.svg";
 import { User, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { setCredentials } from "../features/auth/store/authSlice";
+import { Card } from "@/components/ui/card";
+import { Typography } from "@/components/ui/typography";
+import { Input } from "@/components/ui/input";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loginId, setLoginId] = useState("hello@mail.com");
+  const [password, setPassword] = useState("123456");
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      dispatch(
+        setCredentials({
+          user: { id: "1", email: loginId, name: "John Doe", role: "admin" },
+          accessToken: "fake-access-token",
+          refreshToken: "fake-refresh-token",
+        })
+      );
+      setLoading(false);
+    }, 1000);
+  };
 
   return (
     <div
@@ -30,19 +55,17 @@ export default function Login() {
         </div>
 
         {/* ── Card ── */}
-        <div
-          className="flex flex-col flex-shrink-0 box-border"
+        <Card
+          className="flex flex-col flex-shrink-0 box-border rounded-[var(--radius-xl)]"
           style={{
             flex: "0 0 clamp(388px, 38.13vw, 725px)",
             height: "clamp(460px, 59.86vh, 800px)",
-            background: "var(--card)",
-            boxShadow: "var(--shadow-card)",
-            borderRadius: "clamp(22px, 2.22vw, 42px)",
             padding: "clamp(39px, 5.08vh, 68px) clamp(34px, 3.33vw, 63px)",
           }}
         >
           {/* Heading */}
-          <h1
+          <Typography
+            variant="h1"
             className="font-bold leading-[1.11] tracking-[-0.9px] m-0 flex-shrink-0 text-left"
             style={{
               fontFamily: "var(--font-heading)",
@@ -52,10 +75,11 @@ export default function Login() {
             }}
           >
             Role Manager Login
-          </h1>
+          </Typography>
 
           {/* Subtext */}
-          <p
+          <Typography
+            variant="p"
             className="font-normal leading-[1.625] m-0 flex-shrink-0 text-left"
             style={{
               fontSize: "clamp(11px, 1.11vw, 21px)",
@@ -65,127 +89,53 @@ export default function Login() {
           >
             Secure access for authorised role managers.
             <br /> Please authenticate to continue.
-          </p>
+          </Typography>
 
           {/* Form */}
-          <div className="flex flex-col flex-1">
+          <form className="flex flex-col flex-1" onSubmit={handleLogin}>
 
             {/* ── Login ID Field ── */}
-            <div className="flex flex-col" style={{ gap: "clamp(6px, 0.78vh, 10px)" }}>
-              <div
-                className="flex justify-between items-center"
-                style={{ height: "clamp(16px, 1.95vh, 26px)" }}
-              >
-                <label
-                  htmlFor="login-id"
-                  className="font-medium leading-none"
-                  style={{
-                    fontSize: "clamp(10px, 0.97vw, 18px)",
-                    color: "var(--muted)",
-                  }}
-                >
-                  Login ID
-                </label>
-              </div>
-
-              <div
-                className="relative flex items-center flex-shrink-0 rounded-full"
-                style={{
-                  height: "clamp(42px, 5.47vh, 73px)",
-                  background: "var(--input)",
-                }}
-              >
-                <span
-                  className="absolute top-1/2 -translate-y-1/2 pointer-events-none flex items-center opacity-40"
-                  style={{ left: "clamp(13px, 1.11vw, 21px)" }}
-                >
-                  <User size={16} strokeWidth={1.8} />
-                </span>
-                <input
-                  id="login-id"
-                  type="text"
-                  placeholder="Enter your assigned ID"
-                  autoComplete="username"
-                  className="login-input w-full h-full border-none outline-none rounded-full box-border"
-                  style={{
-                    background: "var(--input)",
-                    color: "var(--foreground)",
-                    fontFamily: "var(--font-sans)",
-                    fontSize: "clamp(11px, 1.11vw, 21px)",
-                    padding: "0 clamp(34px, 3.33vw, 63px)",
-                  }}
-                />
-              </div>
-            </div>
+            <Input
+              id="login-id"
+              type="text"
+              label="Login ID"
+              placeholder="Enter your assigned ID"
+              autoComplete="username"
+              icon={<User size={16} strokeWidth={1.8} />}
+              value={loginId}
+              onChange={(e) => setLoginId(e.target.value)}
+            />
 
             {/* ── Password Field ── */}
-            <div
-              className="flex flex-col"
-              style={{
-                gap: "clamp(6px, 0.78vh, 10px)",
-                marginTop: "clamp(17px, 2.34vh, 31px)",
-              }}
-            >
-              <div
-                className="flex justify-between items-center"
-                style={{ height: "clamp(16px, 1.95vh, 26px)" }}
-              >
-                <label
-                  htmlFor="login-password"
-                  className="font-medium leading-none"
-                  style={{
-                    fontSize: "clamp(10px, 0.97vw, 18px)",
-                    color: "var(--muted)",
-                  }}
-                >
-                  Password
-                </label>
+            <Input
+              id="login-password"
+              type={showPassword ? "text" : "password"}
+              label="Password"
+              placeholder="Enter Password"
+              autoComplete="current-password"
+              icon={<Lock size={16} strokeWidth={1.8} />}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              containerClassName="mt-[clamp(17px,2.34vh,31px)]"
+              labelRightElement={
                 <button
                   type="button"
                   className="login-forgot font-medium bg-transparent border-none cursor-pointer p-0 transition-opacity duration-150"
                   style={{
                     fontFamily: "var(--font-sans)",
                     fontSize: "clamp(10px, 0.97vw, 18px)",
-                    color:  "var(--muted)",
+                    color: "var(--muted)",
                   }}
                 >
                   Forgot Password?
                 </button>
-              </div>
-
-              <div
-                className="relative flex items-center flex-shrink-0 rounded-full"
-                style={{
-                  height: "clamp(42px, 5.47vh, 73px)",
-                  background: "var(--input)",
-                }}
-              >
-                <span
-                  className="absolute top-1/2 -translate-y-1/2 pointer-events-none flex items-center opacity-40"
-                  style={{ left: "clamp(13px, 1.11vw, 21px)" }}
-                >
-                  <Lock size={16} strokeWidth={1.8} />
-                </span>
-                <input
-                  id="login-password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter Password"
-                  autoComplete="current-password"
-                  className="login-input w-full h-full border-none outline-none rounded-full box-border"
-                  style={{
-                    background: "var(--input)",
-                    color: "var(--foreground)",
-                    fontFamily: "var(--font-sans)",
-                    fontSize: "clamp(11px, 1.11vw, 21px)",
-                    padding: "0 clamp(34px, 3.33vw, 63px)",
-                  }}
-                />
+              }
+              rightElement={
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-0 flex items-center transition-opacity duration-150 opacity-40 hover:opacity-70"
-                  style={{ right: "clamp(13px, 1.11vw, 21px)" }}
+                  className="bg-transparent border-none cursor-pointer p-0 flex items-center transition-opacity duration-150 opacity-40 hover:opacity-70"
                 >
                   {showPassword ? (
                     <Eye size={18} strokeWidth={1.8} />
@@ -193,14 +143,15 @@ export default function Login() {
                     <EyeOff size={18} strokeWidth={1.8} />
                   )}
                 </button>
-              </div>
-            </div>
+              }
+            />
 
             {/* ── Submit Button ── */}
             <div className="flex-shrink-0" style={{ marginTop: "clamp(36px, 4.69vh, 63px)" }}>
               <button
                 type="submit"
-                className="login-btn w-full border-none rounded-full cursor-pointer font-semibold uppercase tracking-[0.7px] transition-all duration-200 flex items-center justify-center active:scale-[0.985]"
+                disabled={loading}
+                className="login-btn w-full border-none rounded-full cursor-pointer font-semibold uppercase tracking-[0.7px] transition-all duration-200 flex items-center justify-center active:scale-[0.985] disabled:opacity-50"
                 style={{
                   height: "clamp(45px, 5.86vh, 78px)",
                   fontSize: "clamp(10px, 0.97vw, 18px)",
@@ -223,16 +174,17 @@ export default function Login() {
               }}
             >
               <ShieldCheck size={16} strokeWidth={1.8} className="flex-shrink-0 opacity-50" />
-              <span
+              <Typography
+                variant="span"
                 className="leading-[1.33]"
                 style={{ fontSize: "clamp(9px, 0.83vw, 16px)" }}
               >
                 Secured by TechGy Innovations. End-to-end encrypted connection.
-              </span>
+              </Typography>
             </div>
 
-          </div>
-        </div>
+          </form>
+        </Card>
       </div>
 
       {/* Minimal scoped styles for things Tailwind can't do with CSS vars */}
