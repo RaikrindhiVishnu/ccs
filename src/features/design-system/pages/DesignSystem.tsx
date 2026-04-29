@@ -6,6 +6,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import AgentForm from "@/features/agents/AgentForm";
 import { Typography } from "@/components/ui/typography";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -291,6 +292,19 @@ const DesignSystem = () => {
 
   </div>
 </div>
+{/* ── Agent Creation UI ── */}
+
+<div className="rounded-lg border bg-card p-6 shadow-sm">
+  <Typography
+    variant="h2"
+    className="text-2xl font-semibold mb-6"
+  >
+    Agent Creation UI
+  </Typography>
+
+  <AgentForm />
+</div>
+
       </section>
     </div>
   );
