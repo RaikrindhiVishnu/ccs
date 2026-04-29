@@ -1,6 +1,6 @@
 import RegionVelocityCard from "@/components/cards/RegionVelocityCard";
 import TargetVsActualCard from "@/components/cards/TargetVsActualCard";
-import Successcard from "@/components/ui/SuccessCard";
+import Successcard from "@/components/ui/Successcard";
 import areaMap from "@/assets/areamap.svg";
 import profileImg from "@/assets/profile.svg";
 import {
