@@ -8,7 +8,7 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
-import WeekDropdown from "@/components/ui/WeekDropdown";
+import { WeekDropdown } from "@/components/ui/Dropdown";
 
 type ChartData = {
   day: string;

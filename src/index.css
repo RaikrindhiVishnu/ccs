@@ -11,26 +11,36 @@
   --background: #F2F2F2;
   --foreground: #000000;
   --card: #FFFFFF;
-  --input:#F2F2F2;
-  
+  --input: #F2F2F2;
+
   /* TEXT */
   --muted: rgba(0, 0, 0, 0.6);
+  --muted-strong: rgba(0, 0, 0, 0.4);
+  --text-dark: #091426;
+  --text-neutral: #3D4949;
+  --text-subtle: #5A5C5E;
 
   /* PRIMARY */
   --primary: #2780C4;
   --primary-light: #AED6EF;
 
-  /* 🔥 NEW (SUCCESS CARD + FIGMA) */
-  --primary-soft: rgba(39,128,196,0.08);   /* icon bg */
-  --primary-faded: rgba(39,128,196,0.4);   /* dots */
+  /* SUCCESS CARD + FIGMA */
+  --primary-soft: rgba(39, 128, 196, 0.08);
+  --primary-faded: rgba(39, 128, 196, 0.4);
   --success-bg: #FFFFFF;
 
+  /* CHIP / TAG */
+  --chip-bg: #3D93D1;
+  --chip-text: #FFFFFF;
+
   /* BARS */
-  --outerbar: rgba(39,128,196,0.12);
+  --outerbar: rgba(39, 128, 196, 0.12);
 
   /* BORDERS */
   --border: rgba(0, 0, 0, 0.1);
   --border-strong: #000000;
+  --border-medium: rgba(0, 0, 0, 0.4);
+  --border-soft: rgba(197, 198, 205, 0.3);
 
   /* GRID */
   --grid: rgba(0, 0, 0, 0.05);
@@ -40,11 +50,13 @@
 
   /* SHADOW */
   --shadow-card: 0px 1px 5px rgba(0, 0, 0, 0.08);
+  --shadow-dropdown: 0px 4px 16px rgba(0, 0, 0, 0.08);
 
   /* RADIUS */
   --radius: 0.625rem;
   --radius-lg: 24px;
   --radius-xl: 32px;
+  --radius-dropdown: 12px;
 
   /* HEADER GRADIENT */
   --header-gradient: linear-gradient(
@@ -71,9 +83,57 @@
   --sidebar: #2C2C2C;
   --sidebar-accent: #5C5C5C;
   --sidebar-text: #FFFFFF;
+
+  /* ─── BUTTON TOKENS ─────────────────────────────── */
+
+  /* Solid backgrounds */
+  --btn-primary: #2780C4;
+  --btn-primary-text: #FFFFFF;
+  --btn-secondary: #96C9ED;
+  --btn-secondary-text: #000000;
+  --btn-navy: #1C5F9D;
+  --btn-purple: #8280FF;
+  --btn-dark: #2B2D2F;
+  --btn-lime: #BDD327;
+  --btn-lime-text: #000000;
+
+  /* Gradients — split into from/to so Tailwind arbitrary syntax works */
+  --btn-gradient-blue-from: #0095FF;
+  --btn-gradient-blue-to: #1F8AFF;
+  --btn-gradient-dark-from: #3D4A0D;
+  --btn-gradient-dark-to: #2A3008;
+
+  /* Outline variants */
+  --btn-outline-primary-border: rgba(39, 128, 196, 0.8);
+  --btn-outline-primary-text: rgba(39, 128, 196, 0.8);
+  --btn-outline-dark-border: rgba(0, 0, 0, 0.27);
+  --btn-outline-dark-text: rgba(0, 0, 0, 0.8);
+  --btn-outline-danger-border: rgba(205, 0, 0, 0.27);
+  --btn-outline-danger-text: rgba(208, 20, 20, 0.8);
+  --btn-outline-square-border: rgba(39, 128, 196, 0.5);
+  --btn-outline-square-text: #2780C4;
+  --btn-export-border: #3D93D1;
+  --btn-export-text: #3D93D1;
+
+  /* Badge dot colors (dark variant) */
+  --btn-dot-fill: #3D93D1;
+  --btn-dot-border: #85BFE5;
+
+  /* Button fonts — reuse project fonts */
+  --btn-font-primary: var(--font-sans);
+  --btn-font-secondary: 'Inter', sans-serif;
+  --btn-font-poppins: 'Poppins', sans-serif;
+
+  /* Button border radii */
+  --btn-radius-pill: 48px;
+  --btn-radius-pill-sm: 33px;
+  --btn-radius-circle: 9999px;
+  --btn-radius-square: 12px;
+  --btn-radius-rounded: 8px;
 }
 
-/* BASE STYLES */
+/* ─── BASE STYLES ───────────────────────────────────── */
+
 body {
   margin: 0;
   font-family: var(--font-sans);
@@ -85,7 +145,8 @@ h1 {
   font-family: var(--font-heading);
 }
 
-/* 🔥 OPTIONAL UTILITIES (VERY USEFUL) */
+/* ─── UTILITIES ─────────────────────────────────────── */
+
 .card {
   background: var(--card);
   border-radius: var(--radius-lg);
