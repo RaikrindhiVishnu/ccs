@@ -1,4 +1,14 @@
 import React from "react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  ReferenceDot,
+  Tooltip,
+} from "recharts";
 
 const data = [
   { label: "Mon", value: 280 },
@@ -10,90 +20,152 @@ const data = [
   { label: "Sun", value: 310 },
 ];
 const MAX = 500;
-const Y_TICKS = [500, 400, 300, 200, 100, 0];
-const PEAK_IDX = 2;
+const PEAK_VAL = 499;
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-[var(--card)] border border-[var(--border)] p-3 rounded-lg shadow-xl">
+        <p className="font-sans font-bold text-[12px] mb-1 text-[var(--foreground)]">{label}</p>
+        <p className="font-sans text-[11px] text-[var(--primary)] font-semibold">
+          Velocity: {payload[0].value}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
 
 const RegionCreationVelocity: React.FC = () => {
-  const svgRef = React.useRef<SVGSVGElement>(null);
-  const [dims, setDims] = React.useState({ w: 400, h: 120 });
-
-  React.useLayoutEffect(() => {
-    const observe = () => {
-      if (svgRef.current) {
-        const r = svgRef.current.getBoundingClientRect();
-        if (r.width > 0 && r.height > 0) setDims({ w: r.width, h: r.height });
-      }
-    };
-    observe();
-    const ro = new ResizeObserver(observe);
-    if (svgRef.current) ro.observe(svgRef.current);
-    return () => ro.disconnect();
-  }, []);
-
-  const { w, h } = dims;
-  const getX = (i: number) => (i / (data.length - 1)) * w;
-  const getY = (v: number) => h - (v / MAX) * h;
-  const pts = data.map((d, i) => ({ x: getX(i), y: getY(d.value), ...d }));
-  const line = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.y}`).join(" ");
-  const area = `${line} L${pts[pts.length - 1].x},${h} L${pts[0].x},${h} Z`;
-  const peak = pts[PEAK_IDX];
-
   return (
-    <div style={{ background: "#FFFFFF", borderRadius: "clamp(12px,1.67vw,24px)", padding: "clamp(10px,1.39vw,20px) clamp(12px,1.67vw,24px)", width: "100%", flex: 1, minHeight: "clamp(160px,20vh,280px)", boxSizing: "border-box", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div className="bg-[var(--card)] rounded-[clamp(12px,1.67vw,24px)] p-[clamp(10px,1.39vw,20px)_clamp(12px,1.67vw,24px)] w-full flex-1 min-h-[clamp(160px,20vh,280px)] box-border flex flex-col overflow-hidden">
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "clamp(6px,0.83vw,12px)", flexShrink: 0 }}>
+      <div className="flex justify-between items-start mb-[clamp(6px,0.83vw,12px)] shrink-0">
         <div>
-          <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 500, fontSize: "clamp(11px,1.25vw,18px)", color: "#000" }}>Region Creation Velocity</div>
-          <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 400, fontSize: "clamp(9px,0.83vw,12px)", color: "#000", opacity: 0.6, marginTop: 2 }}>Weekly overview of Region Creation Velocity</div>
+          <div className="font-sans font-medium text-[clamp(11px,1.25vw,18px)] text-[var(--foreground)]">
+            Region Creation Velocity
+          </div>
+          <div className="font-sans font-normal text-[clamp(9px,0.83vw,12px)] text-[var(--foreground)] opacity-60 mt-[2px]">
+            Weekly overview of Region Creation Velocity
+          </div>
         </div>
-        <button style={{ border: "1px solid #000", borderRadius: 30, padding: "clamp(3px,0.35vw,5px) clamp(4px,0.42vw,6px)", background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", gap: 3, fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: "clamp(8px,0.76vw,11px)", color: "#000", flexShrink: 0 }}>
+        <button className="border border-[var(--foreground)] rounded-[30px] p-[clamp(3px,0.35vw,5px)_clamp(4px,0.42vw,6px)] bg-transparent cursor-pointer flex items-center gap-[3px] font-sans text-[clamp(8px,0.76vw,11px)] text-[var(--foreground)] shrink-0 transition-colors hover:bg-[var(--foreground)] hover:text-[var(--card)]">
           Week
-          <svg width="clamp(9px,0.97vw,14px)" height="clamp(9px,0.97vw,14px)" viewBox="0 0 16 16" fill="none" style={{ transform: "rotate(90deg)" }}>
-            <path d="M6 4L10 8L6 12" stroke="#000" strokeWidth="1.125" strokeLinecap="round" />
+          <svg
+            width="clamp(9px,0.97vw,14px)"
+            height="clamp(9px,0.97vw,14px)"
+            viewBox="0 0 16 16"
+            fill="none"
+            className="rotate-90"
+          >
+            <path
+              d="M6 4L10 8L6 12"
+              stroke="currentColor"
+              strokeWidth="1.125"
+              strokeLinecap="round"
+            />
           </svg>
         </button>
       </div>
 
-      {/* Chart row */}
-      <div style={{ display: "flex", gap: "clamp(4px,0.56vw,8px)", flex: 1, minHeight: 0 }}>
-        {/* Y labels */}
-        <div style={{ width: "clamp(16px,1.67vw,24px)", position: "relative", flexShrink: 0 }}>
-          {Y_TICKS.map((v, i) => (
-            <span key={v} style={{ position: "absolute", right: 0, top: `${(i / (Y_TICKS.length - 1)) * 100}%`, transform: "translateY(-50%)", fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: "clamp(6px,0.63vw,9px)", color: "#000", opacity: 0.5 }}>{v}</span>
-          ))}
-        </div>
-
-        <div style={{ flex: 1, position: "relative", display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0 }}>
-          {/* Peak pill */}
-          {w > 0 && (
-            <div style={{ position: "absolute", left: `${(peak.x / w) * 100}%`, top: 0, transform: "translateX(-50%)", background: "rgba(0,0,0,0.08)", border: "1px solid rgba(44,44,44,0.6)", borderRadius: 24, padding: "clamp(2px,0.28vw,4px) clamp(6px,0.69vw,10px)", fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 600, fontSize: "clamp(8px,0.83vw,12px)", color: "#2C2C2C", zIndex: 10, whiteSpace: "nowrap" }}>499</div>
-          )}
-
-          <svg ref={svgRef} viewBox={`0 0 ${w} ${h}`} width="100%" height="100%" style={{ display: "block", flex: 1, overflow: "visible", marginTop: "clamp(16px,1.67vw,24px)" }} preserveAspectRatio="none">
+      {/* Chart */}
+      <div className="flex-1 min-h-0 w-full relative">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={data}
+            margin={{ top: 30, right: 10, left: -25, bottom: 0 }}
+          >
             <defs>
-              <linearGradient id="rcvGrad2" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#2780C4" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+              <linearGradient id="rcvGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.25} />
+                <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
               </linearGradient>
             </defs>
-            {Y_TICKS.map((_, i) => (
-              <line key={i} x1={0} y1={(i / (Y_TICKS.length - 1)) * h} x2={w} y2={(i / (Y_TICKS.length - 1)) * h} stroke="#2C2C2C" strokeOpacity="0.1" strokeWidth="1" />
-            ))}
-            <path d={area} fill="url(#rcvGrad2)" />
-            <path d={line} fill="none" stroke="#2780C4" strokeWidth="2" strokeOpacity="0.5" />
-            {w > 0 && <ellipse cx={peak.x} cy={peak.y} rx={10} ry={10} fill="rgba(174,214,239,0.3)" stroke="#AED6EF" strokeWidth="3" />}
-            {pts.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r={3} fill="#2780C4" />)}
-          </svg>
-
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "clamp(2px,0.28vw,4px)", flexShrink: 0 }}>
-            {data.map((d, i) => (
-              <span key={i} style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: "clamp(7px,0.69vw,10px)", color: "#000", opacity: i === 3 ? 1 : 0.5, fontWeight: i === 3 ? 600 : 400, textAlign: "center", flex: 1 }}>{d.label}</span>
-            ))}
-          </div>
-        </div>
+            <CartesianGrid
+              vertical={false}
+              strokeDasharray="3 3"
+              stroke="var(--text-dark)"
+              strokeOpacity={0.1}
+            />
+            <XAxis
+              dataKey="label"
+              axisLine={false}
+              tickLine={false}
+              tick={(props: any) => {
+                const { x, y, payload, index } = props;
+                return (
+                  <text
+                    x={x}
+                    y={y + 10}
+                    textAnchor="middle"
+                    className={`font-sans text-[clamp(7px,0.69vw,10px)] fill-[var(--foreground)] ${
+                      index === 3 ? "opacity-100 font-semibold" : "opacity-50"
+                    }`}
+                  >
+                    {payload.value}
+                  </text>
+                );
+              }}
+            />
+            <YAxis
+              domain={[0, MAX]}
+              tickCount={6}
+              axisLine={false}
+              tickLine={false}
+              tick={{
+                fill: "var(--foreground)",
+                fontSize: "clamp(6px, 0.63vw, 9px)",
+                opacity: 0.5,
+                fontFamily: "var(--font-sans)",
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke="var(--primary)"
+              strokeWidth={2}
+              fillOpacity={1}
+              fill="url(#rcvGrad)"
+              isAnimationActive={false}
+              dot={{
+                r: 3,
+                fill: "var(--primary)",
+                strokeWidth: 0,
+              }}
+              activeDot={{
+                r: 5,
+                fill: "var(--primary)",
+                stroke: "var(--card)",
+                strokeWidth: 2,
+              }}
+            />
+            {/* Peak Reference Dot & Tooltip */}
+            <ReferenceDot
+              x="Wed"
+              y={PEAK_VAL}
+              r={10}
+              fill="var(--primary-soft)"
+              stroke="var(--primary-light)"
+              strokeWidth={3}
+              isFront={true}
+              label={(props: any) => {
+                const { cx, cy } = props;
+                return (
+                  <foreignObject x={cx - 20} y={cy - 40} width={40} height={25}>
+                    <div className="bg-[var(--tooltip-bg)] border border-[var(--border-medium)] rounded-[24px] p-[2px_6px] font-sans font-semibold text-[10px] text-[var(--text-dark)] text-center shadow-sm">
+                      {PEAK_VAL}
+                    </div>
+                  </foreignObject>
+                );
+              }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
 };
+
 
 export default RegionCreationVelocity;

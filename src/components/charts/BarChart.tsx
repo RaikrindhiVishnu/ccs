@@ -1,4 +1,13 @@
 import React from "react";
+import {
+  BarChart as RechartsBar,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 
 export interface BarDataItem {
   label: string;
@@ -11,262 +20,147 @@ interface Props {
   yMax?: number;
 }
 
-function ceilTo100(n: number): number {
-  return Math.ceil(n / 100) * 100;
-}
+const CustomBar = (props: any) => {
+  const { x, y, width, height, value, label, activeLabel, yMax } = props;
+  const isActive = label === activeLabel;
 
-function buildYLabels(yMax: number): { value: string; pct: number }[] {
-  const steps = yMax / 100;
-  return Array.from({ length: steps + 1 }, (_, i) => ({
-    value: String(yMax - i * 100),
-    pct: (i / steps) * 100,
-  }));
-}
+  // Thin line width for inactive bars
+  const thinWidth = 1.4;
+  const centerX = x + width / 2;
+
+  if (isActive) {
+    // Active capsule width (clamp equivalent logic)
+    const capsuleWidth = Math.max(44, Math.min(width * 0.8, 54));
+    const capsuleX = centerX - capsuleWidth / 2;
+
+    return (
+      <g>
+        {/* Value Badge (Tooltip on top) */}
+        <foreignObject x={centerX - 23} y={y - 45} width={46} height={28}>
+          <div className="flex justify-center items-center w-[46px] h-[28px] bg-[var(--tooltip-bg)] border border-[var(--border-medium)] rounded-[var(--radius-lg)] shadow-sm">
+            <span className="font-sans font-semibold text-[14px] text-[var(--foreground)] leading-none">
+              {value}
+            </span>
+          </div>
+        </foreignObject>
+
+        {/* Top Dot */}
+        <circle cx={centerX} cy={y - 5} r={5.5} fill="var(--primary)" />
+
+        {/* Capsule Bar */}
+        <defs>
+          <linearGradient id="activeGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="100%" stopColor="rgba(124, 171, 218, 0.77)" />
+          </linearGradient>
+        </defs>
+        <rect
+          x={capsuleX}
+          y={y}
+          width={capsuleWidth}
+          height={height}
+          rx={capsuleWidth / 2}
+          fill="url(#activeGradient)"
+        />
+
+        {/* Center vertical line */}
+        <line
+          x1={centerX}
+          y1={y}
+          x2={centerX}
+          y2={y + height - 40}
+          stroke="var(--primary)"
+          strokeWidth={1.26}
+        />
+
+        {/* Day label circle */}
+        <foreignObject x={centerX - 18} y={y + height - 42.88} width={36} height={36}>
+          <div className="w-[35.88px] h-[35.88px] bg-[var(--primary)] rounded-full flex justify-center items-center">
+            <span className="font-sans font-medium text-[10.77px] text-white">
+              {label}
+            </span>
+          </div>
+        </foreignObject>
+      </g>
+    );
+  }
+
+  return (
+    <g>
+      {/* Top Dot */}
+      <circle cx={centerX} cy={y - 4} r={5.5} fill="var(--primary)" />
+
+      {/* Thin line */}
+      <rect
+        x={centerX - thinWidth / 2}
+        y={y}
+        width={thinWidth}
+        height={height - 40}
+        fill="var(--border)"
+      />
+
+      {/* Day label circle placeholder area */}
+      <foreignObject x={centerX - 20} y={y + height - 40} width={40} height={40}>
+        <div className="w-[40px] h-[40px] bg-[var(--background)] rounded-full flex justify-center items-center">
+          <span className="font-sans font-medium text-[12px] text-[var(--foreground)]">
+            {label}
+          </span>
+        </div>
+      </foreignObject>
+    </g>
+  );
+};
 
 const BarChart: React.FC<Props> = ({ data, activeLabel, yMax: yMaxProp }) => {
   const maxValue = Math.max(...data.map((d) => d.value));
-  const yMax = yMaxProp ?? ceilTo100(maxValue);
-  const yLabels = buildYLabels(yMax);
+  const domainMax = yMaxProp ?? Math.ceil(maxValue / 100) * 100;
+
+  // Determine active label if not provided
   const activeLbl = activeLabel ?? data.find((d) => d.value === maxValue)?.label;
 
   return (
-    <div style={{ display: "flex", gap: 24, flex: 1, minHeight: 0 }}>
-
-      {/* Y-axis */}
-      <div style={{ width: 27, position: "relative", flexShrink: 0 }}>
-        {yLabels.map(({ value, pct }) => (
-          <span
-            key={value}
-            style={{
-              position: "absolute",
-              right: 0,
-              top: `${pct}%`,
-              transform: "translateY(-50%)",
-              fontFamily: "var(--font-sans)",
-              fontWeight: 400,
+    <div className="w-full h-full min-h-[300px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <RechartsBar
+          data={data}
+          margin={{ top: 50, right: 20, left: -20, bottom: 0 }}
+          barGap={0}
+        >
+          <CartesianGrid
+            vertical={false}
+            strokeDasharray="3 3"
+            stroke="var(--border)"
+          />
+          <XAxis
+            dataKey="label"
+            hide
+            axisLine={false}
+            tickLine={false}
+          />
+          <YAxis
+            domain={[0, domainMax]}
+            tickCount={domainMax / 100 + 1}
+            axisLine={false}
+            tickLine={false}
+            tick={{
+              fill: "var(--muted-strong)",
               fontSize: 12,
-              lineHeight: "110%",
-              color: "var(--muted-strong)",
-              whiteSpace: "nowrap",
-              textAlign: "right",
-            }}
-          >
-            {value}
-          </span>
-        ))}
-      </div>
-
-      {/* Bars + grid */}
-      <div style={{ flex: 1, position: "relative", minHeight: 0, minWidth: 0 }}>
-
-        {/* Grid lines */}
-        {yLabels.map(({ pct }, i) => (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              left: 0,
-              right: 0,
-              top: `${pct}%`,
-              borderTop: "1px dashed var(--border)",
+              fontFamily: "var(--font-sans)",
             }}
           />
-        ))}
-
-        {/* Columns */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "flex-end",
-            justifyContent: "space-around",
-            paddingTop: "clamp(20px, 3vh, 40px)",
-            boxSizing: "border-box",
-          }}
-        >
-          {data.map((col, i) => {
-            const hPct = (col.value / yMax) * 100;
-            const isActive = col.label === activeLbl;
-
-            return (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  height: "100%",
-                  justifyContent: "flex-end",
-                  gap: "clamp(2px, 0.25vh, 3px)",
-                  flex: 1,
-                }}
-              >
-                {isActive ? (
-                  <>
-                    {/* Value badge */}
-                    <div
-                      style={{
-                        boxSizing: "border-box",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: 46,
-                        height: 28,
-                        background: "var(--tooltip-bg)",
-                        border: "1px solid var(--border-medium)",
-                        borderRadius: "var(--radius-lg)",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontFamily: "var(--font-sans)",
-                          fontWeight: 600,
-                          fontSize: 14,
-                          lineHeight: "18px",
-                          color: "var(--foreground)",
-                        }}
-                      >
-                        {col.value}
-                      </span>
-                    </div>
-
-                    {/* Top dot */}
-                    <div
-                      style={{
-                        width: 11,
-                        height: 11,
-                        background: "var(--primary)",
-                        borderRadius: "50%",
-                        flexShrink: 0,
-                        zIndex: 3,
-                        position: "relative",
-                        marginBottom: "-5px",
-                      }}
-                    />
-
-                    {/* Active capsule bar — gradient inline, no wrapper div */}
-                    <div
-                      style={{
-                        width: "clamp(44px, 5vw, 54px)",
-                        height: `${hPct}%`,
-                        position: "relative",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "flex-end",
-                        alignItems: "center",
-                        flexShrink: 0,
-                        zIndex: 2,
-                        overflow: "hidden",
-                         borderRadius: "71.77px",
-                      background: "linear-gradient(180deg, #ffffff 0%, rgba(124, 171, 218, 0.77) 100%)",
-                      }}
-                    >
-                      {/* Center vertical line */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          left: "50%",
-                          top: 0,
-                          bottom: 40,
-                          width: 1.26,
-                          background: "var(--primary)",
-                          transform: "translateX(-50%)",
-                          zIndex: 1,
-                        }}
-                      />
-
-                      {/* Day label circle */}
-                      <div
-                        style={{
-                          width: 35.88,
-                          height: 35.88,
-                          background: "var(--primary)",
-                          borderRadius: 23.33,
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          flexShrink: 0,
-                          zIndex: 3,
-                          position: "relative",
-                          marginBottom: "clamp(4px, 0.5vw, 7px)",
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontFamily: "var(--font-sans)",
-                            fontWeight: 500,
-                            fontSize: 10.77,
-                            lineHeight: "18px",
-                            color: "var(--sidebar-text)",
-                            textAlign: "center",
-                          }}
-                        >
-                          {col.label}
-                        </span>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {/* Top dot */}
-                    <div
-                      style={{
-                        width: 11,
-                        height: 11,
-                        background: "var(--primary)",
-                        borderRadius: "50%",
-                        flexShrink: 0,
-                        zIndex: 2,
-                        position: "relative",
-                        marginBottom: "-4px",
-                      }}
-                    />
-
-                    {/* Thin line */}
-                    <div
-                      style={{
-                        height: `${hPct}%`,
-                        width: 1.4,
-                        background: "var(--border)",
-                        flexShrink: 0,
-                      }}
-                    />
-
-                    {/* Day label circle */}
-                    <div
-                      style={{
-                        width: 40,
-                        height: 40,
-                        background: "var(--background)",
-                        borderRadius: 26,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontFamily: "var(--font-sans)",
-                          fontWeight: 500,
-                          fontSize: 12,
-                          lineHeight: "20px",
-                          color: "var(--foreground)",
-                          textAlign: "center",
-                        }}
-                      >
-                        {col.label}
-                      </span>
-                    </div>
-                  </>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
+          <Bar
+            dataKey="value"
+            shape={(props: any) => (
+              <CustomBar
+                {...props}
+                activeLabel={activeLbl}
+                label={data[props.index].label}
+              />
+            )}
+            isAnimationActive={false}
+          />
+        </RechartsBar>
+      </ResponsiveContainer>
     </div>
   );
 };

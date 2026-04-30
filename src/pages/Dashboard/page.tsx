@@ -8,79 +8,30 @@ import Header from "./Header";
 
 const DashboardPage: React.FC = () => {
   return (
-    <div
-      style={{
-        height: "100vh",
-        width: "100vw",
-        background: "#F2F2F2",
-        display: "flex",
-        flexDirection: "row",
-        boxSizing: "border-box",
-        overflow: "hidden",
-      }}
-    >
+    <div className="h-screen w-screen bg-[var(--background)] flex flex-row box-border overflow-hidden">
       <Sidebar />
 
       {/* Main content area */}
-      <div
-        style={{
-          flex: 1,
-          minWidth: 0,
-          display: "flex",
-          flexDirection: "column",
-          padding: "clamp(6px, 0.83vw, 12px)",
-          gap: "clamp(6px, 0.83vw, 12px)",
-          boxSizing: "border-box",
-          overflow: "hidden",
-          height: "100%",
-        }}
-      >
+      <div className="flex-1 min-w-0 flex flex-col p-[clamp(6px,0.83vw,12px)] gap-[clamp(6px,0.83vw,12px)] box-border overflow-hidden h-full">
         {/* Header */}
-        <div style={{ flexShrink: 0 }}>
+        <div className="shrink-0">
           <Header />
         </div>
 
         {/* Card grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "clamp(6px, 0.83vw, 12px)",
-            flex: 1,
-            minHeight: 0,
-            boxSizing: "border-box",
-          }}
-        >
+        <div className="grid grid-cols-2 gap-[clamp(6px,0.83vw,12px)] flex-1 min-h-0 box-border">
           {/* Left column */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "clamp(6px, 0.83vw, 12px)",
-              minWidth: 0,
-              minHeight: 0,
-              overflow: "hidden",
-            }}
-          >
+          <div className="flex flex-col gap-[clamp(6px,0.83vw,12px)] min-w-0 min-h-0 overflow-hidden">
             <AgentOnboardingVelocity />
             <RegionCreationVelocity />
           </div>
 
           {/* Right column */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "clamp(6px, 0.83vw, 12px)",
-              minWidth: 0,
-              minHeight: 0,
-              overflow: "hidden",
-            }}
-          >
-            <div style={{ flex: 40, minHeight: 0, display: "flex" }}>
+          <div className="flex flex-col gap-[clamp(6px,0.83vw,12px)] min-w-0 min-h-0 overflow-hidden">
+            <div className="flex-[40] min-h-0 flex">
               <WorkforceStructure />
             </div>
-            <div style={{ flex: 60, minHeight: 0, display: "flex" }}>
+            <div className="flex-[60] min-h-0 flex">
               <RegionalCreationTargetVsActual />
             </div>
           </div>

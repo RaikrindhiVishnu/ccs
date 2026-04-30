@@ -35,57 +35,24 @@ const AgentOnboardingVelocity: React.FC<Props> = ({
   }, [data]);
 
   return (
-    <div
-      className="card"
-      style={{
-        padding: "24px 32px",
-        width: "100%",
-        flex: 1,
-        minHeight: 0,
-        boxSizing: "border-box",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-      }}
-    >
+    <div className="card p-[24px_32px] w-full flex-1 min-h-0 box-border flex flex-col overflow-hidden">
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          marginBottom: 32,
-          flexShrink: 0,
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ fontFamily: "var(--font-sans)", fontWeight: 500, fontSize: 20, lineHeight: "24px", color: "var(--foreground)" }}>
+      <div className="flex justify-between items-start mb-[32px] shrink-0">
+        <div className="flex flex-col gap-[8px]">
+          <div className="font-sans font-medium text-[20px] leading-[24px] text-[var(--foreground)]">
             {title}
           </div>
-          <div style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: 14, lineHeight: "18px", color: "var(--muted)" }}>
+          <div className="font-sans font-normal text-[14px] leading-[18px] text-[var(--muted)]">
             {subtitle}
           </div>
         </div>
 
         {/* Week pill */}
-        <div
-          style={{
-            boxSizing: "border-box",
-            display: "flex",
-            alignItems: "center",
-            padding: "6px 4px 6px 8px",
-            width: 70,
-            height: 28,
-            border: "1px solid var(--border-strong)",
-            borderRadius: "var(--btn-radius-pill)",
-            cursor: "pointer",
-            flexShrink: 0,
-          }}
-        >
-          <span style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: 12, color: "var(--foreground)" }}>
+        <div className="box-border flex items-center p-[6px_4px_6px_8px] w-[70px] h-[28px] border border-[var(--border-strong)] rounded-[var(--btn-radius-pill)] cursor-pointer shrink-0">
+          <span className="font-sans font-normal text-[12px] text-[var(--foreground)]">
             Week
           </span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ transform: "rotate(90deg)", flexShrink: 0 }}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="rotate-90 shrink-0">
             <path d="M6 4L10 8L6 12" stroke="var(--sidebar)" strokeWidth="1.125" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>

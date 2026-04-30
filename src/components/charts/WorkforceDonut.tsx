@@ -14,38 +14,12 @@ export default function WorkforceDonut({ data }: Props) {
   const total = data.reduce((sum, d) => sum + d.value, 0);
 
   return (
-    <div
-      style={{
-        width: "100%",
-        aspectRatio: "1/1",
-        position: "relative",
-        // The container needs to be the context for the CQ units
-        containerType: "inline-size",
-        boxSizing: "border-box",
-        overflow: "hidden", // Prevents content bleeding
-      }}
-    >
+    <div className="w-full aspect-square relative @container box-border overflow-hidden">
       {/* OUTER BORDER CIRCLE */}
-      <div
-        style={{
-          position: "absolute",
-          inset: "0%",
-          borderRadius: "50%",
-          border: "1px solid rgba(0, 0, 0, 0.2)",
-          boxSizing: "border-box",
-        }}
-      />
+      <div className="absolute inset-0 rounded-full border border-[rgba(0,0,0,0.2)] box-border" />
 
       {/* PIE CHART SEGMENTS */}
-      <div
-        style={{
-          position: "absolute",
-          top: "3.37%",
-          left: "3.37%",
-          width: "93.26%",
-          height: "93.26%",
-        }}
-      >
+      <div className="absolute top-[3.37%] left-[3.37%] width-[93.26%] height-[93.26%] w-[93.26%] h-[93.26%]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -69,44 +43,11 @@ export default function WorkforceDonut({ data }: Props) {
       </div>
 
       {/* CENTER CIRCLE */}
-      <div
-        style={{
-          position: "absolute",
-          top: "25%",
-          left: "25%",
-          width: "50%",
-          height: "50%",
-          borderRadius: "50%",
-          background: "rgba(61, 74, 13, 0.08)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 3,
-        }}
-      >
-        {/* Use container units (cqi) for perfectly proportional text */}
-        <div
-          style={{
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 500,
-            fontSize: "4.8cqi", 
-            lineHeight: "6.25cqi",
-            color: "#000000",
-            opacity: 0.6,
-          }}
-        >
+      <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 rounded-full bg-[rgba(61,74,13,0.08)] flex flex-col items-center justify-center z-[3]">
+        <div className="font-sans font-medium text-[4.8cqi] leading-[6.25cqi] text-[var(--foreground)] opacity-60">
           Total
         </div>
-        <div
-          style={{
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 600,
-            fontSize: "8.65cqi", 
-            lineHeight: "11cqi",
-            color: "#000000",
-          }}
-        >
+        <div className="font-sans font-semibold text-[8.65cqi] leading-[11cqi] text-[var(--foreground)]">
           {total.toLocaleString()}
         </div>
       </div>

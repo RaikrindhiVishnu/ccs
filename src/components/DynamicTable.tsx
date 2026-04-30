@@ -60,23 +60,12 @@ const PagBtn: React.FC<{ n: number; current: number; onClick: (n: number) => voi
   return (
     <button
       onClick={() => onClick(n)}
-      style={{
-        width: 30,
-        height: 30,
-        borderRadius: "50%",
-        border: active ? "none" : "1px solid var(--border)",
-        background: active ? "var(--primary)" : "var(--card)",
-        color: active ? "var(--sidebar-text)" : "var(--foreground)",
-        fontFamily: "var(--font-sans)",
-        fontWeight: active ? 600 : 400,
-        fontSize: 12,
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 0,
-        flexShrink: 0,
-      }}
+      className={`
+        w-[30px] h-[30px] rounded-full flex items-center justify-center p-0 shrink-0 cursor-pointer text-[12px] font-sans
+        ${active 
+          ? "bg-[var(--primary)] text-[var(--sidebar-text)] font-semibold border-none" 
+          : "bg-[var(--card)] text-[var(--foreground)] font-normal border border-[var(--border)]"}
+      `}
     >
       {n}
     </button>
@@ -162,30 +151,18 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
   return (
     <div
       ref={wrapRef}
-      style={{
-        background:   "var(--card)",
-        border:       "1px solid var(--border)",
-        borderRadius: "var(--radius-lg)",
-        width:        "100%",
-        height:       height ?? "100%",
-        minHeight:    180,
-        boxSizing:    "border-box",
-        overflow:     "hidden",
-        fontFamily:   "var(--font-sans)",
-        display:      "flex",
-        flexDirection: "column",
-      }}
+      className="w-full overflow-hidden font-sans flex flex-col bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-lg)]"
+      style={{ 
+        height: height ?? "100%", 
+        minHeight: 180,
+        // @ts-ignore
+        "--row-padding": `${rowPadding}px`,
+        "--header-fs": `${headerFontSize}px`,
+        "--body-fs": `${bodyFontSize}px`,
+      } as React.CSSProperties}
     >
-      <div style={{ flex: 1, width: "100%", overflowX: "auto", display: "flex", flexDirection: "column" }}>
-        <table
-          style={{
-            width: "100%",
-            height: "100%",
-            borderCollapse: "collapse",
-            tableLayout: "fixed",
-            minWidth: 280,
-          }}
-        >
+      <div className="flex-1 w-full overflow-x-auto flex flex-col">
+        <table className="w-full h-full border-collapse table-fixed min-w-[280px]">
           <colgroup>
             {columns.map((col) => (
               <col key={col.key} style={{ width: colWidth }} />
@@ -198,21 +175,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  style={{
-                    background:      "var(--primary)",
-                    padding:         "15px 0",
-                    textAlign:       "center",
-                    fontFamily:      "var(--font-sans)",
-                    fontWeight:      600,
-                    fontSize:        headerFontSize,
-                    lineHeight:      "20px",
-                    letterSpacing:   "0.23px",
-                    textTransform:   "uppercase",
-                    color:           "var(--sidebar-text)",
-                    border:          "none",
-                    whiteSpace:      "nowrap",
-                    verticalAlign:   "middle",
-                  }}
+                  className="bg-[var(--primary)] py-[15px] px-0 text-center font-sans font-semibold text-[var(--header-fs)] leading-[20px] tracking-[0.23px] uppercase text-[var(--sidebar-text)] border-none whitespace-nowrap align-middle"
                 >
                   {col.label}
                 </th>
@@ -227,22 +190,11 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
                 {columns.map((col, colIdx) => (
                   <td
                     key={col.key}
-                    style={{
-                      padding:             `${rowPadding}px 0`,
-                      textAlign:           "center",
-                      fontFamily:          "var(--font-sans)",
-                      fontWeight:          500,
-                      fontSize:            bodyFontSize,
-                      lineHeight:          "18px",
-                      color:               "var(--muted)",
-                      textDecorationLine:  colIdx === 0 ? "underline" : "none",
-                      background:          "var(--card)",
-                      border:              "none",
-                      overflow:            "hidden",
-                      textOverflow:        "ellipsis",
-                      whiteSpace:          "nowrap",
-                      verticalAlign:       "middle",
-                    }}
+                    className={`
+                      py-[var(--row-padding)] px-0 text-center font-sans font-medium text-[var(--body-fs)] leading-[18px] text-[var(--muted)]
+                      bg-[var(--card)] border-none overflow-hidden text-ellipsis whitespace-nowrap align-middle
+                      ${colIdx === 0 ? "underline" : "no-underline"}
+                    `}
                   >
                     {row[col.key] ?? "—"}
                   </td>
@@ -257,11 +209,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
                   {columns.map((col) => (
                     <td
                       key={col.key}
-                      style={{
-                        padding:    `${rowPadding}px 0`,
-                        background: "var(--card)",
-                        border:     "none",
-                      }}
+                      className="py-[var(--row-padding)] px-0 bg-[var(--card)] border-none"
                     />
                   ))}
                 </tr>
@@ -274,47 +222,21 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
       {showPagination && (
         <div
           ref={pagRef}
-          style={{
-            display:        "flex",
-            justifyContent: "space-between",
-            alignItems:     "center",
-            padding:        "12px 24px",
-            borderTop:      "1px solid var(--border)",
-            flexWrap:       "wrap",
-            gap:            8,
-            flexShrink:     0,
-          }}
+          className="flex justify-between items-center px-[24px] py-[12px] border-t border-[var(--border)] flex-wrap gap-[8px] shrink-0"
         >
-          <span
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontWeight: 400,
-              fontSize:   12,
-              color:      "var(--muted-strong)",
-              whiteSpace: "nowrap",
-            }}
-          >
+          <span className="font-sans font-normal text-[12px] text-[var(--muted-strong)] whitespace-nowrap">
             {(page - 1) * rowsPerPage + 1}–{Math.min(page * rowsPerPage, data.length)} of {data.length}
           </span>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <div className="flex items-center gap-[4px]">
             {/* Prev */}
             <button
               onClick={() => goTo(page - 1)}
               disabled={!canPrev}
-              style={{
-                width:        30,
-                height:       30,
-                borderRadius: "50%",
-                border:       "1px solid var(--border)",
-                background:   canPrev ? "var(--card)"       : "var(--input)",
-                color:        canPrev ? "var(--foreground)"  : "var(--muted-strong)",
-                cursor:       canPrev ? "pointer"            : "not-allowed",
-                display:      "flex",
-                alignItems:   "center",
-                justifyContent: "center",
-                padding:      0,
-              }}
+              className={`
+                w-[30px] h-[30px] rounded-full border border-[var(--border)] flex items-center justify-center p-0
+                ${canPrev ? "bg-[var(--card)] text-[var(--foreground)] cursor-pointer" : "bg-[var(--input)] text-[var(--muted-strong)] cursor-not-allowed"}
+              `}
             >
               <ChevronLeft size={14} />
             </button>
@@ -323,7 +245,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
               <>
                 <PagBtn n={1} current={page} onClick={goTo} />
                 {pageNumbers[0] > 2 && (
-                  <span style={{ fontSize: 12, color: "var(--muted-strong)", padding: "0 2px" }}>…</span>
+                  <span className="text-[12px] text-[var(--muted-strong)] px-[2px]">…</span>
                 )}
               </>
             )}
@@ -335,7 +257,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
             {pageNumbers[pageNumbers.length - 1] < totalPages && (
               <>
                 {pageNumbers[pageNumbers.length - 1] < totalPages - 1 && (
-                  <span style={{ fontSize: 12, color: "var(--muted-strong)", padding: "0 2px" }}>…</span>
+                  <span className="text-[12px] text-[var(--muted-strong)] px-[2px]">…</span>
                 )}
                 <PagBtn n={totalPages} current={page} onClick={goTo} />
               </>
@@ -345,19 +267,10 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
             <button
               onClick={() => goTo(page + 1)}
               disabled={!canNext}
-              style={{
-                width:        30,
-                height:       30,
-                borderRadius: "50%",
-                border:       "1px solid var(--border)",
-                background:   canNext ? "var(--card)"       : "var(--input)",
-                color:        canNext ? "var(--foreground)"  : "var(--muted-strong)",
-                cursor:       canNext ? "pointer"            : "not-allowed",
-                display:      "flex",
-                alignItems:   "center",
-                justifyContent: "center",
-                padding:      0,
-              }}
+              className={`
+                w-[30px] h-[30px] rounded-full border border-[var(--border)] flex items-center justify-center p-0
+                ${canNext ? "bg-[var(--card)] text-[var(--foreground)] cursor-pointer" : "bg-[var(--input)] text-[var(--muted-strong)] cursor-not-allowed"}
+              `}
             >
               <ChevronRight size={14} />
             </button>
