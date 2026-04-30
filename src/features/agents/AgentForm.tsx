@@ -1,5 +1,3 @@
-// src/features/agents/AgentForm.tsx
-
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,14 +5,7 @@ import { FormDropdown } from "@/components/ui/Dropdown";
 import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
 import SuccessIcon from "@/assets/sucess.svg";
-import {
-    Upload,
-    FileText,
-    ArrowLeft,
-    BadgeCheck,
-    User,
-    Camera,
-} from "lucide-react";
+import { Upload, FileText, ArrowLeft, User, Camera } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -73,26 +64,38 @@ const emptyForm: AgentFormData = {
 };
 
 // ─── Dropdown option lists ────────────────────────────────────────────────────
-// Replace with your RTK Query fetched lists as needed
 
 const STATE_OPTIONS = [
-    "Andhra Pradesh", "Telangana", "Maharashtra",
-    "Karnataka", "Tamil Nadu", "Kerala",
+    "Andhra Pradesh",
+    "Telangana",
+    "Maharashtra",
+    "Karnataka",
+    "Tamil Nadu",
+    "Kerala",
 ];
 
 const REGION_OPTIONS = [
-    "Godavari Region", "Krishna Region", "Rayalaseema Region",
+    "Godavari Region",
+    "Krishna Region",
+    "Rayalaseema Region",
     "North Coastal Region",
 ];
 
 const AREA_OPTIONS = [
-    "Tanuku Area", "Eluru Area", "Rajahmundry Area",
-    "Kakinada Area", "Vijayawada Area",
+    "Tanuku Area",
+    "Eluru Area",
+    "Rajahmundry Area",
+    "Kakinada Area",
+    "Vijayawada Area",
 ];
 
 const BANK_OPTIONS = [
-    "HDFC Bank", "SBI", "ICICI Bank",
-    "Axis Bank", "Bank of Baroda", "Canara Bank",
+    "HDFC Bank",
+    "SBI",
+    "ICICI Bank",
+    "Axis Bank",
+    "Bank of Baroda",
+    "Canara Bank",
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -106,14 +109,12 @@ export default function AgentForm({
 }: AgentFormProps) {
     const [formData, setFormData] = useState<AgentFormData>(emptyForm);
 
-    // Sync initialData when editing
     useEffect(() => {
         if (initialData) {
             setFormData((prev) => ({ ...prev, ...initialData }));
         }
     }, [initialData]);
 
-    // ── Field helpers ─────────────────────────────────────────────────────────
     const handleChange = (key: keyof AgentFormData, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
     };
@@ -122,53 +123,55 @@ export default function AgentForm({
         if (onSave) {
             await onSave(formData);
         } else {
-            // Fallback: persist locally (dev/demo only)
             localStorage.setItem("agent-data", JSON.stringify(formData));
-            alert(isEdit ? "Profile Updated Successfully" : "Profile Saved Successfully");
+            alert(
+                isEdit ? "Profile Updated Successfully" : "Profile Saved Successfully",
+            );
         }
     };
 
     const isVerified = isEdit && !!initialData?.firstName;
 
     return (
-        <div
-            className="min-h-screen"
-            style={{ background: "var(--background)", padding: "clamp(16px,2vw,32px)" }}
-        >
-
+        <div className="min-h-screen bg-[color:var(--background)] p-[clamp(16px,2vw,32px)]">
+            {/* ── Go Back ── */}
             <button
                 onClick={onCancel}
                 className="
-            flex items-center gap-2 px-5 py-3 mb-10
-            bg-white rounded-full
-            shadow-[0px_0px_4px_rgba(0,0,0,0.12)]
-            text-[#353535] hover:opacity-80 transition-opacity cursor-pointer
-          "
-                style={{ fontSize: "clamp(12px,0.9vw,16px)", fontFamily: "Inter, var(--font-sans)" }}
+                    flex items-center gap-2 px-5 py-3 mb-10
+                    bg-[color:var(--card)] rounded-full
+                    shadow-[0px_0px_4px_rgba(0,0,0,0.12)]
+                    text-[color:var(--text-neutral)]
+                    text-[length:clamp(12px,0.9vw,16px)]
+                    font-[family-name:var(--btn-font-secondary)]
+                    hover:opacity-80 transition-opacity cursor-pointer
+                "
             >
                 <ArrowLeft size={16} strokeWidth={1.4} />
                 Go back to dashboard
             </button>
-            <div
-                className="max-w-[1600px] mx-auto space-y-[clamp(16px,1.5vw,24px)]"
-                style={{
-                    background: "#FFFFFF",
-                    borderRadius: "clamp(24px,2.5vw,46px)",
-                    padding: "clamp(20px,2vw,36px)",
-                }}
-            >
 
+            {/* ── Outer card ── */}
+            <div
+                className="
+                    max-w-[1600px] mx-auto
+                    space-y-[clamp(16px,1.5vw,24px)]
+                    bg-[color:var(--card)]
+                    rounded-[clamp(24px,2.5vw,46px)]
+                    p-[clamp(20px,2vw,36px)]
+                "
+            >
                 {/* ── PROFILE BANNER CARD ──────────────────────────────────────── */}
                 <div
-                    className="relative overflow-hidden"
-                    style={{
-                        background: "#FFFFFF",
-                        borderRadius: "clamp(16px,1.5vw,24px)",
-                        boxShadow: "0px 0px 6px rgba(0,0,0,0.12)",
-                    }}
+                    className="
+                        relative overflow-hidden
+                        bg-[color:var(--card)]
+                        rounded-[clamp(16px,1.5vw,24px)]
+                        shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
+                    "
                 >
                     {/* Banner image */}
-                    <div style={{ height: "clamp(120px,13vw,180px)", overflow: "hidden" }}>
+                    <div className="h-[clamp(120px,13vw,180px)] overflow-hidden">
                         <img
                             src={Bannar}
                             alt="Banner"
@@ -178,30 +181,24 @@ export default function AgentForm({
 
                     {/* Profile row */}
                     <div
-                        className="flex items-end justify-between px-[clamp(20px,2vw,30px)] pb-[clamp(16px,1.5vw,24px)]"
-                        style={{ marginTop: "clamp(-50px,-5vw,-70px)" }}
+                        className="
+                            flex items-end justify-between
+                            px-[clamp(20px,2vw,30px)] pb-[clamp(16px,1.5vw,24px)]
+                            -mt-[clamp(50px,5vw,70px)]
+                        "
                     >
                         {/* Avatar + name */}
                         <div className="flex items-end gap-4">
                             <div className="relative shrink-0">
-
-                                {/* PROFILE IMAGE */}
-
+                                {/* Profile image */}
                                 <div
                                     className="
-                                    rounded-full
-                                    bg-white
-      border-4
-      border-white
-      overflow-hidden
-      flex
-      items-center
-      justify-center
-    "
-                                    style={{
-                                        width: "clamp(80px,8vw,160px)",
-                                        height: "clamp(80px,8vw,160px)",
-                                    }}
+                                        rounded-full bg-[color:var(--card)]
+                                        border-4 border-[color:var(--card)]
+                                        overflow-hidden
+                                        flex items-center justify-center
+                                        w-[clamp(80px,8vw,160px)] h-[clamp(80px,8vw,160px)]
+                                    "
                                 >
                                     {formData.profileImage ? (
                                         <img
@@ -212,59 +209,35 @@ export default function AgentForm({
                                     ) : (
                                         <User
                                             strokeWidth={1.5}
-                                            className="
-          w-[40%]
-          h-[40%]
-          text-[#9CA3AF]
-        "
+                                            className="w-[40%] h-[40%] text-[color:var(--muted)]"
                                         />
                                     )}
                                 </div>
 
-                                {/* EDIT BUTTON */}
-
+                                {/* Edit button */}
                                 <label
                                     className="
-                                    absolute
-                                    bottom-1
-                                    right-1
-
-                                    w-[32px]
-                                    h-[32px]
-
-                                    rounded-full
-                                    bg-white
-
-                                    border
-                                    border-[var(--border)]
-
-                                    flex
-                                    items-center
-                                    justify-center
-
-                                    shadow-sm
-                                    cursor-pointer
-                                    hover:opacity-80
+                                        absolute bottom-1 right-1
+                                        w-[32px] h-[32px]
+                                        rounded-full bg-[color:var(--card)]
+                                        border border-[color:var(--border)]
+                                        flex items-center justify-center
+                                        shadow-sm cursor-pointer hover:opacity-80
                                     "
                                 >
                                     <Camera
                                         size={16}
                                         strokeWidth={1.8}
-                                        className="text-[#3E4A3D]"
+                                        className="text-[color:var(--label-color)]"
                                     />
-
                                     <input
                                         type="file"
                                         accept="image/*"
                                         className="hidden"
                                         onChange={(e) => {
                                             const file = e.target.files?.[0];
-
                                             if (!file) return;
-
-                                            const imageUrl =
-                                                URL.createObjectURL(file);
-
+                                            const imageUrl = URL.createObjectURL(file);
                                             setFormData((prev) => ({
                                                 ...prev,
                                                 profileImage: imageUrl,
@@ -272,25 +245,19 @@ export default function AgentForm({
                                         }}
                                     />
                                 </label>
-
                             </div>
+
+                            {/* Name + role */}
                             <div className="pt-0">
                                 <Typography
                                     variant="h2"
-                                    className="font-bold text-[#191B1C] "
-                                    style={{ fontSize: "clamp(16px,1.5vw,24px)" }}
+                                    className="font-bold text-[color:var(--profile-text)] text-[length:clamp(16px,1.5vw,24px)]"
                                 >
                                     {formData.firstName
                                         ? `${formData.firstName} ${formData.lastName}`.trim()
                                         : "Agent Name"}
                                 </Typography>
-                                <p
-                                    className="font-medium"
-                                    style={{
-                                        fontSize: "clamp(12px,1vw,16px)",
-                                        color: "#626C70",
-                                    }}
-                                >
+                                <p className="font-medium text-[length:clamp(12px,1vw,16px)] text-[color:var(--profile-subtext)]">
                                     Agent
                                 </p>
                             </div>
@@ -298,10 +265,7 @@ export default function AgentForm({
 
                         {/* Verified badge */}
                         {isVerified && (
-                            <div
-                                className="flex items-center justify-center rounded-[4px] shrink-0"
-
-                            >
+                            <div className="flex items-center justify-center rounded-[4px] shrink-0">
                                 <img
                                     src={SuccessIcon}
                                     alt="success"
@@ -341,7 +305,6 @@ export default function AgentForm({
 
                 {/* ── ADDRESS + PERSONAL ───────────────────────────────────────── */}
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-[clamp(14px,1.5vw,20px)]">
-                    {/* Address */}
                     <FormSection title="Address Details">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(14px,1.5vw,20px)]">
                             <Input
@@ -375,7 +338,6 @@ export default function AgentForm({
                         </div>
                     </FormSection>
 
-                    {/* Personal */}
                     <FormSection title="Personal Details">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(14px,1.5vw,20px)]">
                             <Input
@@ -441,14 +403,7 @@ export default function AgentForm({
 
                 {/* ── DOCUMENTS ────────────────────────────────────────────────── */}
                 <FormSection title="Documents">
-                    <div
-                        className="
-      grid
-      grid-cols-1
-      md:grid-cols-2
-      gap-[0px]
-    "
-                    >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
                         <div className="w-full max-w-[346px]">
                             <UploadBox
                                 title="Aadhar Card"
@@ -462,7 +417,6 @@ export default function AgentForm({
                                 }
                             />
                         </div>
-
                         <div className="w-full max-w-[346px]">
                             <UploadBox
                                 title="Pan Card"
@@ -481,66 +435,38 @@ export default function AgentForm({
 
                 {/* ── ACTION BUTTONS ───────────────────────────────────────────── */}
                 <div className="flex justify-end items-center gap-[clamp(12px,1vw,16px)]">
-
-                    {/* CANCEL */}
-
                     <Button
                         variant="outline-dark"
                         onClick={onCancel}
                         disabled={isLoading}
                         className="
-      !h-[40px]
-      !min-w-[101px]
-      !px-[24px]
-      !py-[8px]
-      !font-[Inter]
-      !font-medium
-      !text-[clamp(13px,0.9vw,16px)]
-      !leading-[24px]
-
-      !normal-case
-      !tracking-normal
-
-      !shadow-none
-    "
+                            !h-[40px] !min-w-[101px] !px-[24px] !py-[8px]
+                            !font-[family-name:var(--btn-font-secondary)] !font-medium
+                            !text-[length:clamp(13px,0.9vw,16px)] !leading-[24px]
+                            !normal-case !tracking-normal !shadow-none
+                        "
                     >
                         Cancel
                     </Button>
-
-                    {/* SAVE PROFILE */}
 
                     <Button
                         variant="primary"
                         onClick={handleSave}
                         loading={isLoading}
                         className="
-      !h-[40px]
-      !min-w-[155px]
-
-      !rounded-[100px]
-
-      !px-[32px]
-      !py-[8px]
-
-      !font-[Inter]
-      !font-medium
-
-      !text-[clamp(13px,0.9vw,16px)]
-      !leading-[24px]
-
-      !normal-case
-      !tracking-normal
-
-      !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
-
-      !shadow-none
-    "
+                            !h-[40px] !min-w-[155px]
+                            !rounded-[100px]
+                            !px-[32px] !py-[8px]
+                            !font-[family-name:var(--btn-font-secondary)] !font-medium
+                            !text-[length:clamp(13px,0.9vw,16px)] !leading-[24px]
+                            !normal-case !tracking-normal
+                            !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
+                            !shadow-none
+                        "
                     >
                         {isEdit ? "Update Profile" : "Save Profile"}
                     </Button>
-
                 </div>
-
             </div>
         </div>
     );
@@ -557,22 +483,18 @@ function FormSection({
 }) {
     return (
         <div
-            className="space-y-[clamp(14px,1.5vw,20px)]"
-            style={{
-                background: "#FFFFFF",
-                border: "1px solid var(--border)",
-                borderRadius: "clamp(16px,1.5vw,24px)",
-                boxShadow: "0px 0px 6px rgba(0,0,0,0.12)",
-                padding: "clamp(18px,1.8vw,30px)",
-            }}
+            className="
+                space-y-[clamp(14px,1.5vw,20px)]
+                bg-[color:var(--card)]
+                border border-[color:var(--border)]
+                rounded-[clamp(16px,1.5vw,24px)]
+                shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
+                p-[clamp(18px,1.8vw,30px)]
+            "
         >
             <Typography
                 variant="h3"
-                className="font-semibold"
-                style={{
-                    fontSize: "clamp(16px,1.4vw,24px)",
-                    color: "#5A5C5E",
-                }}
+                className="font-semibold text-[length:clamp(16px,1.4vw,24px)] text-[color:var(--text-subtle)]"
             >
                 {title}
             </Typography>
@@ -597,11 +519,12 @@ function UploadBox({
     return (
         <div className="space-y-[clamp(8px,0.8vw,14px)]">
             <p
-                className="font-medium"
-                style={{
-                    fontSize: "clamp(12px,0.97vw,16px)",
-                    color: "#3E4A3D",
-                }}
+                className="
+                    font-medium
+                    text-[length:clamp(12px,0.97vw,16px)]
+                    text-[color:var(--label-color)]
+                    font-[family-name:var(--font-sans)]
+                "
             >
                 {title}
             </p>
@@ -609,31 +532,32 @@ function UploadBox({
             <div
                 onClick={() => inputRef.current?.click()}
                 className="
-          flex flex-col items-center justify-center gap-2
-          border-2 border-dashed border-[rgba(225,229,239,0.6)]
-          rounded-[12px] cursor-pointer
-          bg-[rgba(242,244,246,0.5)]
-          hover:bg-[rgba(242,244,246,0.9)]
-          transition-colors
-        "
-                style={{ height: "clamp(100px,9vw,128px)" }}
+                    flex flex-col items-center justify-center gap-2
+                    h-[clamp(100px,9vw,128px)]
+                    border-2 border-dashed border-[color:var(--input-border)]
+                    rounded-[var(--btn-radius-square)]
+                    cursor-pointer
+                    bg-[color:var(--input)]
+                    hover:brightness-95
+                    transition-colors
+                "
             >
                 {fileName ? (
                     <>
                         <FileText
                             strokeWidth={1.5}
-                            style={{
-                                width: "clamp(20px,1.8vw,28px)",
-                                height: "clamp(20px,1.8vw,28px)",
-                                color: "#3E4A3D",
-                            }}
+                            className="
+                                w-[clamp(20px,1.8vw,28px)] h-[clamp(20px,1.8vw,28px)]
+                                text-[color:var(--label-color)]
+                            "
                         />
                         <span
-                            className="font-medium text-center px-3 truncate max-w-full"
-                            style={{
-                                fontSize: "clamp(11px,0.85vw,14px)",
-                                color: "#191C1E",
-                            }}
+                            className="
+                                font-medium text-center px-3 truncate max-w-full
+                                text-[length:clamp(11px,0.85vw,14px)]
+                                text-[color:var(--profile-text)]
+                                font-[family-name:var(--font-sans)]
+                            "
                         >
                             {fileName}
                         </span>
@@ -642,18 +566,18 @@ function UploadBox({
                     <>
                         <Upload
                             strokeWidth={1.5}
-                            style={{
-                                width: "clamp(18px,1.6vw,24px)",
-                                height: "clamp(18px,1.6vw,24px)",
-                                color: "#3E4A3D",
-                            }}
+                            className="
+                                w-[clamp(18px,1.6vw,24px)] h-[clamp(18px,1.6vw,24px)]
+                                text-[color:var(--label-color)]
+                            "
                         />
                         <span
-                            className="font-medium"
-                            style={{
-                                fontSize: "clamp(12px,0.9vw,16px)",
-                                color: "#191C1E",
-                            }}
+                            className="
+                                font-medium
+                                text-[length:clamp(12px,0.9vw,16px)]
+                                text-[color:var(--profile-text)]
+                                font-[family-name:var(--font-sans)]
+                            "
                         >
                             Upload File
                         </span>
