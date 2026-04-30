@@ -1,12 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
+
+// ─── Shared: ChevronDown ──────────────────────────────────────────────────────
+
 function ChevronDown({ className = "" }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 12 12"
       fill="none"
-      className={cn("shrink-0 text-[color:var(--text-subtle)]", className)}
-      style={{ width: "clamp(10px,0.7vw,14px)", height: "clamp(10px,0.7vw,14px)" }}
+      className={cn(
+        "shrink-0 text-[color:var(--text-subtle)] w-[clamp(10px,0.7vw,14px)] h-[clamp(10px,0.7vw,14px)]",
+        className,
+      )}
     >
       <path
         d="M2 4L6 8L10 4"
@@ -19,6 +24,7 @@ function ChevronDown({ className = "" }: { className?: string }) {
   );
 }
 
+// ─── Shared: DropdownMenu ─────────────────────────────────────────────────────
 
 function DropdownMenu({
   children,
@@ -34,9 +40,9 @@ function DropdownMenu({
         "bg-[color:var(--card)]",
         "border border-[color:var(--border)]",
         "rounded-[var(--radius-dropdown)]",
-        "shadow-[var(--shadow-dropdown)]",
+        "shadow-[var(--shadow-card)]",
         "min-w-full",
-        align === "right" ? "right-0" : "left-0"
+        align === "right" ? "right-0" : "left-0",
       )}
     >
       {children}
@@ -44,16 +50,18 @@ function DropdownMenu({
   );
 }
 
+// ─── Shared: MenuItem ─────────────────────────────────────────────────────────
+
 function MenuItem({
   active,
   onClick,
   children,
-  fontVar = "var(--font-sans)",
+  fontClass = "font-sans",
 }: {
   active?: boolean;
   onClick: () => void;
   children: React.ReactNode;
-  fontVar?: string;
+  fontClass?: string;
 }) {
   return (
     <button
@@ -64,18 +72,18 @@ function MenuItem({
         "text-[length:clamp(11px,0.75vw,14px)]",
         "transition-colors duration-150",
         "hover:bg-[color:var(--primary-soft)]",
+        fontClass,
         active
-          ? "text-[color:var(--chip-bg)] font-medium"
-          : "text-[color:var(--text-dark)] font-normal"
+          ? "text-[color:var(--primary)] font-medium"
+          : "text-[color:var(--foreground)] font-normal",
       )}
-      style={{ fontFamily: fontVar }}
     >
       {children}
     </button>
   );
 }
 
-// ─── Shared: Checkbox Tick ────────────────────────────────────────────────────
+// ─── Shared: CheckboxTick ─────────────────────────────────────────────────────
 
 function CheckboxTick({ checked }: { checked: boolean }) {
   return (
@@ -86,7 +94,7 @@ function CheckboxTick({ checked }: { checked: boolean }) {
         "border transition-colors duration-150",
         checked
           ? "bg-[color:var(--chip-bg)] border-[color:var(--chip-bg)]"
-          : "bg-[color:var(--card)] border-[color:var(--border-medium)]"
+          : "bg-[color:var(--card)] border-[color:var(--border)]",
       )}
     >
       {checked && (
@@ -104,7 +112,7 @@ function CheckboxTick({ checked }: { checked: boolean }) {
   );
 }
 
-// ─── Hook: outside click close ────────────────────────────────────────────────
+// ─── Shared: useOutsideClick ──────────────────────────────────────────────────
 
 function useOutsideClick(cb: () => void) {
   const ref = useRef<HTMLDivElement>(null);
@@ -138,7 +146,11 @@ export function PillDropdown({
   const ref = useOutsideClick(() => setOpen(false));
   const selected = value ?? internal;
 
-  const pick = (val: string) => { setInternal(val); setOpen(false); onChange?.(val); };
+  const pick = (val: string) => {
+    setInternal(val);
+    setOpen(false);
+    onChange?.(val);
+  };
 
   return (
     <div ref={ref} className={cn("relative inline-block", className)}>
@@ -150,13 +162,13 @@ export function PillDropdown({
           "px-[clamp(10px,1vw,18px)]",
           "bg-[color:var(--card)]",
           "border border-[color:var(--border)]",
-          "rounded-[var(--btn-radius-circle)]",
+          "rounded-full",
           "text-[length:clamp(11px,0.8vw,15px)] font-medium",
-          "text-[color:var(--text-neutral)]",
+          "font-[family-name:var(--btn-font-secondary)]",
+          "text-[color:var(--foreground)]",
           "transition-colors duration-150 cursor-pointer",
-          "hover:bg-[color:var(--primary-soft)]"
+          "hover:bg-[color:var(--primary-soft)]",
         )}
-        style={{ fontFamily: "var(--btn-font-secondary)" }}
       >
         <span className="flex-1 text-left whitespace-nowrap">{selected}</span>
         <ChevronDown
@@ -167,7 +179,12 @@ export function PillDropdown({
       {open && (
         <DropdownMenu>
           {options.map((opt) => (
-            <MenuItem key={opt} active={selected === opt} onClick={() => pick(opt)} fontVar="var(--btn-font-secondary)">
+            <MenuItem
+              key={opt}
+              active={selected === opt}
+              onClick={() => pick(opt)}
+              fontClass="font-[family-name:var(--btn-font-secondary)]"
+            >
               {opt}
             </MenuItem>
           ))}
@@ -197,7 +214,11 @@ export function WeekDropdown({
   const ref = useOutsideClick(() => setOpen(false));
   const selected = value ?? internal;
 
-  const pick = (val: string) => { setInternal(val); setOpen(false); onChange?.(val); };
+  const pick = (val: string) => {
+    setInternal(val);
+    setOpen(false);
+    onChange?.(val);
+  };
 
   return (
     <div ref={ref} className={cn("relative inline-block", className)}>
@@ -209,19 +230,18 @@ export function WeekDropdown({
           "px-[clamp(6px,0.6vw,10px)]",
           "bg-transparent",
           "border border-[color:var(--border-strong)]",
-          "rounded-[var(--btn-radius-circle)]",
-          "text-[length:clamp(10px,0.7vw,13px)] font-normal",
+          "rounded-full",
+          "text-[length:clamp(10px,0.7vw,13px)] font-normal font-[family-name:var(--font-sans)]",
           "text-[color:var(--foreground)]",
           "transition-colors duration-150 cursor-pointer",
-          "hover:bg-[color:var(--primary-soft)]"
+          "hover:bg-[color:var(--primary-soft)]",
         )}
-        style={{ fontFamily: "var(--font-sans)" }}
       >
         {selected}
         <ChevronDown
           className={cn(
             "text-[color:var(--foreground)] transition-transform duration-200",
-            open ? "rotate-180" : ""
+            open ? "rotate-180" : "",
           )}
         />
       </button>
@@ -229,7 +249,11 @@ export function WeekDropdown({
       {open && (
         <DropdownMenu>
           {options.map((opt) => (
-            <MenuItem key={opt} active={selected === opt} onClick={() => pick(opt)}>
+            <MenuItem
+              key={opt}
+              active={selected === opt}
+              onClick={() => pick(opt)}
+            >
               {opt}
             </MenuItem>
           ))}
@@ -263,7 +287,11 @@ export function TagPillDropdown({
   const ref = useOutsideClick(() => setOpen(false));
   const selected = value ?? internal;
 
-  const pick = (val: string) => { setInternal(val); setOpen(false); onChange?.(val); };
+  const pick = (val: string) => {
+    setInternal(val);
+    setOpen(false);
+    onChange?.(val);
+  };
 
   return (
     <div ref={ref} className={cn("relative inline-block", className)}>
@@ -273,45 +301,62 @@ export function TagPillDropdown({
           "flex items-center gap-[clamp(4px,0.4vw,8px)]",
           "h-[clamp(28px,2.2vw,38px)] w-[clamp(110px,8.5vw,150px)]",
           "px-[clamp(8px,0.8vw,14px)]",
-          "bg-[color:var(--input)]",
+          "bg-[color:var(--tag-pill-bg)]", // ← NEW token (see note above)
           "border border-[color:var(--border-soft)]",
-          "rounded-[var(--btn-radius-pill)]",
+          "rounded-full",
           "transition-all duration-150 cursor-pointer",
-          "hover:brightness-95"
+          "hover:brightness-95",
         )}
       >
         {/* Icon */}
-        <span
-          className="shrink-0 flex items-center justify-center text-[color:var(--text-subtle)]"
-          style={{ width: "clamp(14px,1.1vw,20px)", height: "clamp(14px,1.1vw,20px)" }}
-        >
+        <span className="shrink-0 flex items-center justify-center text-[color:var(--muted)] w-[clamp(14px,1.1vw,20px)] h-[clamp(14px,1.1vw,20px)]">
           {icon ?? (
             <svg viewBox="0 0 21 21" fill="none" className="w-full h-full">
-              <path d="M3.5 6.5H17.5" stroke="currentColor" strokeWidth="1.575" strokeLinecap="round" />
-              <path d="M6.5 10.5H14.5" stroke="currentColor" strokeWidth="1.575" strokeLinecap="round" />
-              <path d="M9.5 14.5H11.5" stroke="currentColor" strokeWidth="1.575" strokeLinecap="round" />
+              <path
+                d="M3.5 6.5H17.5"
+                stroke="currentColor"
+                strokeWidth="1.575"
+                strokeLinecap="round"
+              />
+              <path
+                d="M6.5 10.5H14.5"
+                stroke="currentColor"
+                strokeWidth="1.575"
+                strokeLinecap="round"
+              />
+              <path
+                d="M9.5 14.5H11.5"
+                stroke="currentColor"
+                strokeWidth="1.575"
+                strokeLinecap="round"
+              />
             </svg>
           )}
         </span>
 
         <span
           className={cn(
-            "flex-1 text-left truncate font-medium",
+            "flex-1 text-left truncate font-medium font-[family-name:var(--font-sans)]",
             "text-[color:var(--text-dark)]",
-            "text-[length:clamp(11px,0.8vw,14px)]"
+            "text-[length:clamp(11px,0.8vw,14px)]",
           )}
-          style={{ fontFamily: "var(--font-sans)" }}
         >
           {selected}
         </span>
 
-        <ChevronDown className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
       </button>
 
       {open && (
         <DropdownMenu align="left">
           {options.map((opt) => (
-            <MenuItem key={opt} active={selected === opt} onClick={() => pick(opt)}>
+            <MenuItem
+              key={opt}
+              active={selected === opt}
+              onClick={() => pick(opt)}
+            >
               {opt}
             </MenuItem>
           ))}
@@ -346,8 +391,12 @@ export function SquareDropdown({
 
   const toggle = (val: string) => {
     const next = multiSelect
-      ? selected.includes(val) ? selected.filter((s) => s !== val) : [...selected, val]
-      : selected.includes(val) ? [] : [val];
+      ? selected.includes(val)
+        ? selected.filter((s) => s !== val)
+        : [...selected, val]
+      : selected.includes(val)
+        ? []
+        : [val];
     setSelected(next);
     onChange?.(next);
     if (!multiSelect) setOpen(false);
@@ -370,16 +419,13 @@ export function SquareDropdown({
           "px-[clamp(14px,1.5vw,26px)]",
           "bg-[color:var(--card)]",
           "border border-[color:var(--border-medium)]",
-          "rounded-[var(--btn-radius-rounded)]",
-          "hover:border-[color:var(--border-strong)]"
+          "rounded-[8px]",
+          "hover:border-[color:var(--primary)]",
         )}
       >
         <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
           {selected.length === 0 ? (
-            <span
-              className="text-[color:var(--muted-strong)] text-[length:clamp(13px,1.1vw,20px)] font-normal"
-              style={{ fontFamily: "var(--btn-font-secondary)" }}
-            >
+            <span className="text-[color:var(--muted)] text-[length:clamp(13px,1.1vw,20px)] font-normal font-[family-name:var(--font-sans)]">
               {placeholder}
             </span>
           ) : (
@@ -388,29 +434,39 @@ export function SquareDropdown({
                 key={val}
                 className={cn(
                   "shrink-0 flex items-center gap-1",
-                  "bg-[color:var(--chip-bg)] text-[color:var(--chip-text)]",
-                  "rounded-[6px] font-medium",
+                  "bg-[color:var(--primary)] text-[color:var(--btn-primary-text)]",
+                  "rounded-[6px] font-medium font-[family-name:var(--btn-font-poppins)]",
                   "px-[clamp(8px,0.8vw,14px)]",
                   "h-[clamp(20px,1.6vw,28px)]",
                   "text-[length:clamp(10px,0.75vw,14px)]",
-                  "whitespace-nowrap"
+                  "whitespace-nowrap",
                 )}
-                style={{ fontFamily: "var(--btn-font-poppins)" }}
               >
                 {val}
                 <span
                   onClick={(e) => removeChip(val, e)}
                   className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity flex items-center"
                 >
-                  <svg viewBox="0 0 8 8" fill="none" className="w-[8px] h-[8px]">
-                    <path d="M1 1L7 7M7 1L1 7" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+                  <svg
+                    viewBox="0 0 8 8"
+                    fill="none"
+                    className="w-[8px] h-[8px]"
+                  >
+                    <path
+                      d="M1 1L7 7M7 1L1 7"
+                      stroke="white"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
                   </svg>
                 </span>
               </span>
             ))
           )}
         </div>
-        <ChevronDown className={`ml-2 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`ml-2 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
       </button>
 
       {open && (
@@ -423,13 +479,13 @@ export function SquareDropdown({
                 "w-full text-left flex items-center gap-[clamp(8px,0.6vw,12px)]",
                 "px-[clamp(12px,1vw,18px)] py-[clamp(8px,0.6vw,12px)]",
                 "text-[length:clamp(11px,0.75vw,14px)]",
+                "font-[family-name:var(--font-sans)]",
                 "transition-colors duration-150",
                 "hover:bg-[color:var(--primary-soft)]",
                 selected.includes(opt)
-                  ? "text-[color:var(--chip-bg)]"
-                  : "text-[color:var(--text-dark)]"
+                  ? "text-[color:var(--primary)]"
+                  : "text-[color:var(--foreground)]",
               )}
-              style={{ fontFamily: "var(--font-sans)" }}
             >
               {multiSelect && <CheckboxTick checked={selected.includes(opt)} />}
               {opt}
@@ -440,6 +496,7 @@ export function SquareDropdown({
     </div>
   );
 }
+
 export interface CheckboxDropdownProps {
   options?: string[];
   defaultValues?: string[];
@@ -462,9 +519,14 @@ export function CheckboxDropdown({
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>(defaultValues);
   const [search, setSearch] = useState("");
-  const ref = useOutsideClick(() => { setOpen(false); setSearch(""); });
+  const ref = useOutsideClick(() => {
+    setOpen(false);
+    setSearch("");
+  });
 
-  const filtered = options.filter((o) => o.toLowerCase().includes(search.toLowerCase()));
+  const filtered = options.filter((o) =>
+    o.toLowerCase().includes(search.toLowerCase()),
+  );
 
   const toggle = (val: string) => {
     const next = selected.includes(val)
@@ -475,9 +537,11 @@ export function CheckboxDropdown({
   };
 
   const label =
-    selected.length === 0 ? placeholder
-    : selected.length === 1 ? selected[0]
-    : `${selected.length} selected`;
+    selected.length === 0
+      ? placeholder
+      : selected.length === 1
+        ? selected[0]
+        : `${selected.length} selected`;
 
   return (
     <div ref={ref} className={cn("relative", className)} style={{ width }}>
@@ -489,27 +553,28 @@ export function CheckboxDropdown({
           "px-[clamp(14px,1.5vw,26px)]",
           "bg-[color:var(--card)]",
           "border border-[color:var(--border-medium)]",
-          "rounded-[var(--btn-radius-rounded)]",
-          "hover:border-[color:var(--border-strong)]"
+          "rounded-[8px]",
+          "hover:border-[color:var(--primary)]",
         )}
       >
         <span
           className={cn(
-            "flex-1 text-left text-[length:clamp(13px,1.1vw,20px)] font-normal",
+            "flex-1 text-left text-[length:clamp(13px,1.1vw,20px)] font-normal font-[family-name:var(--font-sans)]",
             selected.length === 0
-              ? "text-[color:var(--muted-strong)]"
-              : "text-[color:var(--foreground)]"
+              ? "text-[color:var(--muted)]"
+              : "text-[color:var(--foreground)]",
           )}
-          style={{ fontFamily: "var(--btn-font-secondary)" }}
         >
           {label}
         </span>
-        <ChevronDown className={`ml-2 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`ml-2 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+        />
       </button>
 
       {open && (
         <DropdownMenu align="left">
-          {/* Search input */}
+          {/* Search */}
           <div className="px-[clamp(8px,0.8vw,14px)] pt-[clamp(8px,0.8vw,14px)] pb-[clamp(4px,0.4vw,8px)]">
             <input
               type="text"
@@ -521,24 +586,21 @@ export function CheckboxDropdown({
                 "w-full outline-none transition-colors duration-150",
                 "bg-[color:var(--input)]",
                 "border border-[color:var(--border)]",
-                "rounded-[var(--btn-radius-rounded)]",
-                "text-[color:var(--text-dark)]",
+                "rounded-[8px]",
+                "text-[color:var(--foreground)]",
                 "text-[length:clamp(11px,0.75vw,14px)]",
+                "font-[family-name:var(--font-sans)]",
                 "px-[clamp(8px,0.7vw,12px)] py-[clamp(6px,0.5vw,10px)]",
                 "focus:border-[color:var(--primary)]",
-                "placeholder:text-[color:var(--muted)]"
+                "placeholder:text-[color:var(--muted)]",
               )}
-              style={{ fontFamily: "var(--font-sans)" }}
             />
           </div>
 
-          {/* Options list */}
+          {/* Options */}
           <div className="max-h-[clamp(160px,12vw,240px)] overflow-y-auto">
             {filtered.length === 0 ? (
-              <p
-                className="px-4 py-3 text-[length:clamp(11px,0.75vw,14px)] text-[color:var(--muted)]"
-                style={{ fontFamily: "var(--font-sans)" }}
-              >
+              <p className="px-4 py-3 text-[length:clamp(11px,0.75vw,14px)] text-[color:var(--muted)] font-[family-name:var(--font-sans)]">
                 No results
               </p>
             ) : (
@@ -550,11 +612,11 @@ export function CheckboxDropdown({
                     "w-full text-left flex items-center gap-[clamp(8px,0.6vw,12px)]",
                     "px-[clamp(12px,1vw,18px)] py-[clamp(8px,0.6vw,12px)]",
                     "text-[length:clamp(11px,0.75vw,14px)]",
-                    "text-[color:var(--text-dark)]",
+                    "text-[color:var(--foreground)]",
+                    "font-[family-name:var(--font-sans)]",
                     "transition-colors duration-150",
-                    "hover:bg-[color:var(--primary-soft)]"
+                    "hover:bg-[color:var(--primary-soft)]",
                   )}
-                  style={{ fontFamily: "var(--font-sans)" }}
                 >
                   <CheckboxTick checked={selected.includes(opt)} />
                   {opt}
@@ -562,6 +624,145 @@ export function CheckboxDropdown({
               ))
             )}
           </div>
+        </DropdownMenu>
+      )}
+    </div>
+  );
+}
+
+export interface FormDropdownProps {
+  options: string[] | { label: string; value: string }[];
+  value?: string;
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+  label?: string;
+  placeholder?: string;
+  disabled?: boolean;
+  containerClassName?: string;
+  className?: string;
+}
+
+export function FormDropdown({
+  options,
+  value,
+  defaultValue = "",
+  onChange,
+  label,
+  placeholder = "Select",
+  disabled = false,
+  containerClassName,
+  className,
+}: FormDropdownProps) {
+  // Normalize options to { label, value }
+  const normalized = options.map((o) =>
+    typeof o === "string" ? { label: o, value: o } : o,
+  );
+
+  const [open, setOpen] = useState(false);
+  const [internal, setInternal] = useState(defaultValue);
+  const ref = useOutsideClick(() => setOpen(false));
+
+  // Sync controlled value
+  const selected = value !== undefined ? value : internal;
+  useEffect(() => {
+    if (value !== undefined) setInternal(value);
+  }, [value]);
+
+  const selectedLabel =
+    normalized.find((o) => o.value === selected)?.label ?? placeholder;
+
+  const pick = (val: string) => {
+    setInternal(val);
+    setOpen(false);
+    onChange?.(val);
+  };
+
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "relative flex flex-col gap-[clamp(6px,0.5vh,10px)]",
+        containerClassName,
+      )}
+    >
+      {/* Label */}
+      {label && (
+        <label className="font-medium leading-none text-[length:clamp(12px,0.97vw,16px)] text-[color:var(--label-color)] font-[family-name:var(--font-sans)]">
+          {label}
+        </label>
+      )}
+
+      {/* Trigger */}
+      <button
+        onClick={() => !disabled && setOpen(!open)}
+        disabled={disabled}
+        className={cn(
+          "flex items-center w-full bg-[color:var(--card)] cursor-pointer",
+          "h-[clamp(36px,2.9vw,40px)]",
+          "border border-[color:var(--input-border)]",
+          "rounded-[var(--btn-radius-square)]",
+          "px-[clamp(10px,0.9vw,14px)]",
+          "transition-colors duration-150",
+          "hover:border-[color:var(--primary)]",
+          "disabled:opacity-45 disabled:cursor-not-allowed",
+          open && "border-[color:var(--primary)]",
+          className,
+        )}
+      >
+        <span
+          className={cn(
+            "flex-1 text-left truncate",
+            "text-[length:clamp(12px,0.9vw,14px)] font-[family-name:var(--btn-font-secondary)]",
+            selected
+              ? "text-[color:var(--profile-text)]"
+              : "text-[color:var(--muted-strong)]",
+          )}
+        >
+          {selectedLabel}
+        </span>
+
+        {/* Chevron */}
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          className={cn(
+            "shrink-0 ml-1 transition-transform duration-200",
+            open && "rotate-180",
+          )}
+        >
+          <path
+            d="M6 9L12 15L18 9"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-[color:var(--profile-subtext)]"
+          />
+        </svg>
+      </button>
+
+      {/* Menu */}
+      {open && (
+        <DropdownMenu align="left">
+          {normalized.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => pick(opt.value)}
+              className={cn(
+                "w-full text-left px-4 py-[clamp(8px,0.6vw,10px)]",
+                "text-[length:clamp(11px,0.85vw,14px)] font-[family-name:var(--btn-font-secondary)]",
+                "transition-colors duration-150",
+                "hover:bg-[color:var(--primary-soft)]",
+                selected === opt.value
+                  ? "text-[color:var(--primary)] font-medium"
+                  : "text-[color:var(--profile-text)] font-normal",
+              )}
+            >
+              {opt.label}
+            </button>
+          ))}
         </DropdownMenu>
       )}
     </div>
