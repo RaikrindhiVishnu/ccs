@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
+import { RootLayout } from '@/components/common/layouts/RootLayout';
 
-const LoginPage = lazy(() => import('../../features/auth/pages/LoginPage'));
 const DashboardHome = lazy(() => import('../../features/dashboard/pages/DashboardHome'));
 const DesignSystem = lazy(() => import('../../features/design-system/pages/DesignSystem'));
 const Login = lazy(() => import("../../pages/Login"));
@@ -16,12 +16,11 @@ export const guestRoutes: RouteObject[] = [
 
 export const authRoutes: RouteObject[] = [
   {
-    path: '/',
-    element: <DashboardHome />,
-  },
-  {
-    path: "/home",
-    element: <Home />,
+    element: <RootLayout />,
+    children: [
+      { path: '/',     element: <DashboardHome /> },
+      { path: '/home', element: <Home /> },
+    ]
   }
 ];
 

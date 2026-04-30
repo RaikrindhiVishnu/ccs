@@ -1,29 +1,39 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-const logo = "/glc-logo.svg";
+import logo from "@/assets/glc-logo.svg"
 import { User, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { setCredentials } from "../features/auth/store/authSlice";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { Input } from "@/components/ui/input";
+import { MOCK_USERS } from "@/core/config/layoutConfig";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [loginId, setLoginId] = useState("hello@mail.com");
-  const [password, setPassword] = useState("123456");
+  const [loginId, setLoginId] = useState("manager@glc.com");
+  const [password, setPassword] = useState("manager@123");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate API call
+    
+    const matchedUser = Object.values(MOCK_USERS).find(
+      (u) => u.email === loginId
+    );
+
     setTimeout(() => {
       dispatch(
         setCredentials({
-          user: { id: "1", email: loginId, name: "John Doe", role: "admin" },
-          accessToken: "fake-access-token",
-          refreshToken: "fake-refresh-token",
+          user: {
+            id: matchedUser?.role ?? "unknown",
+            email: loginId,
+            name: matchedUser?.name ?? "User",
+            role: matchedUser?.role ?? "ROLE_MANAGER",
+          },
+          accessToken: `mock-token-${matchedUser?.role ?? "default"}`,
+          refreshToken: `mock-refresh-${matchedUser?.role ?? "default"}`,
         })
       );
       setLoading(false);
@@ -47,7 +57,13 @@ export default function Login() {
           {/* Heading */}
           <Typography
             variant="h1"
-            className="font-bold leading-[1.11] tracking-[-0.9px] m-0 shrink-0 text-left font-heading text-[clamp(24px,2.5vw,47px)] text-[var(--foreground)] mb-[clamp(10px,1.37vh,18px)]"
+            className="font-bold leading-[1.11] tracking-[-0.9px] m-0 flex-shrink-0 text-left"
+            style={{
+              fontFamily: "var(--font-heading)",
+              fontSize: "clamp(24px, 2.5vw, 47px)",
+              color: "var(--foreground)",
+              marginBottom: "clamp(10px, 1.37vh, 18px)",
+            }}
           >
             Role Manager Login
           </Typography>
