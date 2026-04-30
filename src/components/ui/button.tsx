@@ -48,14 +48,14 @@ const variantClasses: Record<ButtonVariant, string> = {
   primary:
     "bg-[var(--btn-primary)] text-[var(--btn-primary-text)] border-none " +
     "rounded-[var(--btn-radius-pill)] " +
-    "font-[var(--btn-font-primary)] font-semibold uppercase tracking-[0.7px] " +
+    "font-[family-name:var(--btn-font-primary)] font-semibold uppercase tracking-[0.7px] " +
     "px-6 lg:px-7 xl:px-8 2xl:px-10 " +
     "h-[44px] lg:h-[48px] xl:h-[52px] 2xl:h-[56px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
 
   "primary-sm":
     "bg-[var(--btn-primary)] text-[var(--btn-primary-text)] border-none " +
-    "rounded-[24px] font-[var(--btn-font-secondary)] font-bold " +
+    "rounded-[24px] font-[family-name:var(--btn-font-secondary)] font-bold " +
     "px-3 lg:px-4 " +
     "h-[26px] lg:h-[28px] xl:h-[30px] 2xl:h-[31px] " +
     "text-[9px] lg:text-[10px] xl:text-[10px] 2xl:text-[11px]",
@@ -63,7 +63,7 @@ const variantClasses: Record<ButtonVariant, string> = {
   secondary:
     "bg-[var(--btn-secondary)] text-[var(--btn-secondary-text)] border-none " +
     "rounded-[var(--btn-radius-pill)] " +
-    "font-[var(--btn-font-primary)] font-semibold uppercase tracking-[0.7px] " +
+    "font-[family-name:var(--btn-font-primary)] font-semibold uppercase tracking-[0.7px] " +
     "px-6 lg:px-7 xl:px-8 2xl:px-10 " +
     "h-[36px] lg:h-[38px] xl:h-[40px] 2xl:h-[44px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
@@ -71,14 +71,14 @@ const variantClasses: Record<ButtonVariant, string> = {
   navy:
     "bg-[var(--btn-navy)] text-white border-none " +
     "rounded-[73px] gap-2 " +
-    "font-[var(--btn-font-primary)] font-medium " +
+    "font-[family-name:var(--btn-font-primary)] font-medium " +
     "px-3 lg:px-3.5 " +
     "h-[44px] lg:h-[48px] xl:h-[50px] 2xl:h-[56px] " +
     "text-[13px] lg:text-[14px] xl:text-[16px] 2xl:text-[18px]",
 
   purple:
     "bg-[var(--btn-purple)] text-white border-none " +
-    "rounded-[30px] font-[var(--btn-font-poppins)] font-normal " +
+    "rounded-[30px] font-[family-name:var(--btn-font-poppins)] font-normal " +
     "px-4 " +
     "h-[24px] lg:h-[26px] xl:h-[27px] 2xl:h-[29px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
@@ -86,14 +86,14 @@ const variantClasses: Record<ButtonVariant, string> = {
   dark:
     "bg-[var(--btn-dark)] text-white border border-black " +
     "rounded-[var(--btn-radius-pill-sm)] gap-2.5 " +
-    "font-[var(--btn-font-primary)] font-semibold " +
+    "font-[family-name:var(--btn-font-primary)] font-semibold " +
     "px-4 lg:px-[18px] " +
     "h-[32px] lg:h-[34px] xl:h-[36px] 2xl:h-[38px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
 
   lime:
     "bg-[var(--btn-lime)] text-[var(--btn-lime-text)] border-none " +
-    "rounded-[20px] font-[var(--btn-font-primary)] font-medium " +
+    "rounded-[20px] font-[family-name:var(--btn-font-primary)] font-medium " +
     "px-4 lg:px-5 " +
     "h-[34px] lg:h-[36px] xl:h-[38px] 2xl:h-[40px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
@@ -103,7 +103,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     "bg-transparent text-[var(--btn-outline-primary-text)] " +
     "border border-[var(--btn-outline-primary-border)] " +
     "rounded-[var(--btn-radius-pill-sm)] " +
-    "font-[var(--btn-font-primary)] font-medium " +
+    "font-[family-name:var(--btn-font-primary)] font-medium " +
     "px-4 lg:px-5 " +
     "h-[32px] lg:h-[34px] xl:h-[36px] 2xl:h-[38px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
@@ -112,7 +112,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     "bg-transparent text-[var(--btn-outline-dark-text)] " +
     "border border-[var(--btn-outline-dark-border)] " +
     "rounded-[var(--btn-radius-pill-sm)] " +
-    "font-[var(--btn-font-primary)] font-medium " +
+    "font-[family-name:var(--btn-font-primary)] font-medium " +
     "px-4 lg:px-5 " +
     "h-[32px] lg:h-[34px] xl:h-[36px] 2xl:h-[38px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
@@ -121,7 +121,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     "bg-transparent text-[var(--btn-outline-danger-text)] " +
     "border border-[var(--btn-outline-danger-border)] " +
     "rounded-[var(--btn-radius-pill-sm)] " +
-    "font-[var(--btn-font-primary)] font-medium " +
+    "font-[family-name:var(--btn-font-primary)] font-medium " +
     "px-4 lg:px-5 " +
     "h-[32px] lg:h-[34px] xl:h-[36px] 2xl:h-[38px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
@@ -130,7 +130,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     "bg-transparent text-[var(--btn-outline-square-text)] " +
     "border border-[var(--btn-outline-square-border)] " +
     "rounded-[var(--btn-radius-square)] " +
-    "font-[var(--btn-font-secondary)] font-semibold " +
+    "font-[family-name:var(--btn-font-secondary)] font-semibold " +
     "px-4 lg:px-5 " +
     "h-[36px] lg:h-[38px] xl:h-[40px] 2xl:h-[42px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
@@ -139,7 +139,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     "bg-transparent text-[var(--btn-export-text)] " +
     "border border-[var(--btn-export-border)] " +
     "rounded-[var(--btn-radius-rounded)] gap-1.5 " +
-    "font-[var(--btn-font-primary)] font-medium " +
+    "font-[family-name:var(--btn-font-primary)] font-medium " +
     "px-4 lg:px-5 " +
     "h-[32px] lg:h-[34px] xl:h-[36px] 2xl:h-[38px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
@@ -148,7 +148,7 @@ const variantClasses: Record<ButtonVariant, string> = {
   "gradient-blue":
     "bg-[linear-gradient(135deg,var(--btn-gradient-blue-from)_0%,var(--btn-gradient-blue-to)_100%)] " +
     "text-white border-none rounded-[var(--btn-radius-circle)] " +
-    "font-[var(--btn-font-secondary)] font-medium " +
+    "font-[family-name:var(--btn-font-secondary)] font-medium " +
     "shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.10),0px_2px_4px_-2px_rgba(0,0,0,0.10)] " +
     "px-4 lg:px-5 " +
     "h-[30px] lg:h-[32px] xl:h-[34px] 2xl:h-[36px] " +
@@ -157,7 +157,7 @@ const variantClasses: Record<ButtonVariant, string> = {
   "gradient-dark":
     "bg-[radial-gradient(50%_50%_at_50%_50%,var(--btn-gradient-dark-from)_0%,var(--btn-gradient-dark-to)_100%)] " +
     "text-white border-none rounded-[69px] uppercase tracking-[0.4px] " +
-    "font-[var(--btn-font-secondary)] font-normal " +
+    "font-[family-name:var(--btn-font-secondary)] font-normal " +
     "px-8 lg:px-9 xl:px-10 " +
     "h-[40px] lg:h-[42px] xl:h-[44px] 2xl:h-[48px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
@@ -165,7 +165,7 @@ const variantClasses: Record<ButtonVariant, string> = {
   "gradient-dark-sm":
     "bg-[radial-gradient(50%_50%_at_50%_50%,var(--btn-gradient-dark-from)_0%,var(--btn-gradient-dark-to)_100%)] " +
     "text-white border-none rounded-[var(--btn-radius-rounded)] gap-1.5 " +
-    "font-[var(--btn-font-primary)] font-normal " +
+    "font-[family-name:var(--btn-font-primary)] font-normal " +
     "px-3 lg:px-4 " +
     "h-[28px] lg:h-[29px] xl:h-[30px] 2xl:h-[32px] " +
     "text-[10px] lg:text-[11px] xl:text-[12px] 2xl:text-[13px]",
@@ -239,13 +239,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
         {/* Dark: dot indicator */}
         {variant === "dark" && showDot && (
-          <span
-            className="shrink-0 rounded-full w-3 h-3"
-            style={{
-              background: "var(--btn-dot-fill)",
-              border: "2px solid var(--btn-dot-border)",
-            }}
-          />
+          <span className="shrink-0 rounded-full w-[12px] h-[12px] bg-[var(--btn-dot-fill)] border-[2px] border-[var(--btn-dot-border)]" />
         )}
 
         {/* Left icon (non-navy) */}

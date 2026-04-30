@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import logo from "@/assets/glc-logo.svg";
+const logo = "/glc-logo.svg";
 import { User, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { setCredentials } from "../features/auth/store/authSlice";
 import { Card } from "@/components/ui/card";
@@ -31,22 +31,10 @@ export default function Login() {
   };
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center overflow-hidden"
-      style={{ background: "var(--background)", fontFamily: "var(--font-sans)" }}
-    >
-      <div
-        className="flex flex-row items-center"
-        style={{
-          width: "clamp(831px, 81.18vw, 1542px)",
-          gap: "clamp(67px, 6.74vw, 128px)",
-        }}
-      >
+    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-[var(--background)] font-sans">
+      <div className="flex flex-row items-center w-[clamp(831px,81.18vw,1542px)] gap-[clamp(67px,6.74vw,128px)]">
         {/* ── Logo Side ── */}
-        <div
-          className="flex items-center justify-center flex-shrink-0"
-          style={{ flex: "0 0 clamp(372px, 36.32vw, 690px)" }}
-        >
+        <div className="flex items-center justify-center shrink-0 flex-[0_0_clamp(372px,36.32vw,690px)]">
           <img
             src={logo}
             alt="Green Land Capital"
@@ -55,24 +43,11 @@ export default function Login() {
         </div>
 
         {/* ── Card ── */}
-        <Card
-          className="flex flex-col flex-shrink-0 box-border rounded-[var(--radius-xl)]"
-          style={{
-            flex: "0 0 clamp(388px, 38.13vw, 725px)",
-            height: "clamp(460px, 59.86vh, 800px)",
-            padding: "clamp(39px, 5.08vh, 68px) clamp(34px, 3.33vw, 63px)",
-          }}
-        >
+        <Card className="flex flex-col shrink-0 box-border rounded-[var(--radius-xl)] flex-[0_0_clamp(388px,38.13vw,725px)] h-[clamp(460px,59.86vh,800px)] p-[clamp(39px,5.08vh,68px)_clamp(34px,3.33vw,63px)]">
           {/* Heading */}
           <Typography
             variant="h1"
-            className="font-bold leading-[1.11] tracking-[-0.9px] m-0 flex-shrink-0 text-left"
-            style={{
-              fontFamily: "var(--font-heading)",
-              fontSize: "clamp(24px, 2.5vw, 47px)",
-              color: "var(--foreground)",
-              marginBottom: "clamp(10px, 1.37vh, 18px)",
-            }}
+            className="font-bold leading-[1.11] tracking-[-0.9px] m-0 shrink-0 text-left font-heading text-[clamp(24px,2.5vw,47px)] text-[var(--foreground)] mb-[clamp(10px,1.37vh,18px)]"
           >
             Role Manager Login
           </Typography>
@@ -80,12 +55,7 @@ export default function Login() {
           {/* Subtext */}
           <Typography
             variant="p"
-            className="font-normal leading-[1.625] m-0 flex-shrink-0 text-left"
-            style={{
-              fontSize: "clamp(11px, 1.11vw, 21px)",
-              color: "var(--muted)",
-              marginBottom: "clamp(28px, 3.71vh, 50px)",
-            }}
+            className="font-normal leading-[1.625] m-0 shrink-0 text-left text-[clamp(11px,1.11vw,21px)] text-[var(--muted)] mb-[clamp(28px,3.71vh,50px)]"
           >
             Secure access for authorised role managers.
             <br /> Please authenticate to continue.
@@ -120,12 +90,7 @@ export default function Login() {
               labelRightElement={
                 <button
                   type="button"
-                  className="login-forgot font-medium bg-transparent border-none cursor-pointer p-0 transition-opacity duration-150"
-                  style={{
-                    fontFamily: "var(--font-sans)",
-                    fontSize: "clamp(10px, 0.97vw, 18px)",
-                    color: "var(--muted)",
-                  }}
+                  className="login-forgot font-sans font-medium bg-transparent border-none cursor-pointer p-0 transition-opacity duration-150 text-[clamp(10px,0.97vw,18px)] text-[var(--muted)] hover:opacity-70"
                 >
                   Forgot Password?
                 </button>
@@ -147,37 +112,22 @@ export default function Login() {
             />
 
             {/* ── Submit Button ── */}
-            <div className="flex-shrink-0" style={{ marginTop: "clamp(36px, 4.69vh, 63px)" }}>
+            <div className="shrink-0 mt-[clamp(36px,4.69vh,63px)]">
               <button
                 type="submit"
                 disabled={loading}
-                className="login-btn w-full border-none rounded-full cursor-pointer font-semibold uppercase tracking-[0.7px] transition-all duration-200 flex items-center justify-center active:scale-[0.985] disabled:opacity-50"
-                style={{
-                  height: "clamp(45px, 5.86vh, 78px)",
-                  fontSize: "clamp(10px, 0.97vw, 18px)",
-                  fontFamily: "var(--font-sans)",
-                  background: "var(--primary)",
-                  color: "var(--card)",
-                }}
+                className="login-btn w-full h-[clamp(45px,5.86vh,78px)] text-[clamp(10px,0.97vw,18px)] font-sans border-none rounded-full cursor-pointer font-semibold uppercase tracking-[0.7px] transition-all duration-200 flex items-center justify-center active:scale-[0.985] disabled:opacity-50 bg-[var(--primary)] text-[var(--card)] hover:bg-[#1e6aaa] hover:shadow-[0_4px_20px_rgba(39,128,196,0.28)]"
               >
                 Login
               </button>
             </div>
 
             {/* ── Footer ── */}
-            <div
-              className="flex items-center mt-auto flex-shrink-0 pl-[10px]"
-              style={{
-                gap: "clamp(6px, 1.11vw, 21px)",
-                paddingTop: "clamp(12px, 1.95vh, 26px)",
-                color: "var(--muted)",
-              }}
-            >
-              <ShieldCheck size={16} strokeWidth={1.8} className="flex-shrink-0 opacity-50" />
+            <div className="flex items-center mt-auto shrink-0 pl-[10px] gap-[clamp(6px,1.11vw,21px)] pt-[clamp(12px,1.95vh,26px)] text-[var(--muted)]">
+              <ShieldCheck size={16} strokeWidth={1.8} className="shrink-0 opacity-50" />
               <Typography
                 variant="span"
-                className="leading-[1.33]"
-                style={{ fontSize: "clamp(9px, 0.83vw, 16px)" }}
+                className="leading-[1.33] text-[clamp(9px,0.83vw,16px)]"
               >
                 Secured by TechGy Innovations. End-to-end encrypted connection.
               </Typography>
@@ -186,20 +136,6 @@ export default function Login() {
           </form>
         </Card>
       </div>
-
-      {/* Minimal scoped styles for things Tailwind can't do with CSS vars */}
-      <style>{`
-        .login-input::placeholder {
-          color: rgba(0, 0, 0, 0.4);
-        }
-        .login-btn:hover {
-          background: #1e6aaa !important;
-          box-shadow: 0 4px 20px rgba(39, 128, 196, 0.28);
-        }
-        .login-forgot:hover {
-          opacity: 0.7;
-        }
-      `}</style>
     </div>
   );
 }
