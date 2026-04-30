@@ -1,22 +1,13 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import DashboardPage from "./pages/Dashboard/page";
-import TestPage from "./pages/test/page";
+import { Provider } from "react-redux"
+import { store } from "./app/store/store"
+import { AppRouter } from "./app/router/AppRouter"
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Default Route → Dashboard */}
-        <Route path="/" element={<DashboardPage />} />
-
-        {/* Test Page */}
-        <Route path="/test" element={<TestPage />} />
-
-        {/* Redirect unknown routes to dashboard */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
-  );
+    <Provider store={store}>
+      <AppRouter />
+    </Provider>
+  )
 }
 
-export default App;
+export default App

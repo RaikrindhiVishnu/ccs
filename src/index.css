@@ -13,6 +13,9 @@
   --foreground: #000000;
   --card: #FFFFFF;
   --input: #F2F2F2;
+  --input-border: #e1e5ef;
+  --label-color: #3e4a3d;
+  --success-green: #0ca00c;
 
   /* TEXT */
   --muted: rgba(0, 0, 0, 0.6);
@@ -20,6 +23,8 @@
   --text-dark: #091426;
   --text-neutral: #3D4949;
   --text-subtle: #5A5C5E;
+  --profile-text: #191b1c;
+  --profile-subtext: #626c70;
 
   /* PRIMARY */
   --primary: #2780C4;
@@ -33,6 +38,7 @@
   /* CHIP / TAG */
   --chip-bg: #3D93D1;
   --chip-text: #FFFFFF;
+  --tag-pill-bg: #f3f4f5;
 
   /* BARS */
   --outerbar: rgba(39, 128, 196, 0.12);
@@ -81,9 +87,7 @@
   --sidebar-accent: #5C5C5C;
   --sidebar-text: #FFFFFF;
 
-  /* ─── BUTTON TOKENS ─────────────────────────────── */
-
-  /* Solid backgrounds */
+  /* BUTTON TOKENS */
   --btn-primary: #2780C4;
   --btn-primary-text: #FFFFFF;
   --btn-secondary: #96C9ED;
@@ -94,7 +98,7 @@
   --btn-lime: #BDD327;
   --btn-lime-text: #000000;
 
-  /* Gradients — split into from/to so Tailwind arbitrary syntax works */
+  /* Gradients */
   --btn-gradient-blue-from: #0095FF;
   --btn-gradient-blue-to: #1F8AFF;
   --btn-gradient-dark-from: #3D4A0D;
@@ -112,11 +116,11 @@
   --btn-export-border: #3D93D1;
   --btn-export-text: #3D93D1;
 
-  /* Badge dot colors (dark variant) */
+  /* Badge dot colors */
   --btn-dot-fill: #3D93D1;
   --btn-dot-border: #85BFE5;
 
-  /* Button fonts — reuse project fonts */
+  /* Button fonts */
   --btn-font-primary: var(--font-sans);
   --btn-font-secondary: 'Inter', sans-serif;
   --btn-font-poppins: 'Poppins', sans-serif;
@@ -128,28 +132,26 @@
   --btn-radius-square: 12px;
   --btn-radius-rounded: 8px;
 
-  --radius-xl: 32px; /* already exists — use for this card */
---shadow-card-sm: 0px 1px 2px rgba(0, 0, 0, 0.05);
---grid-faint: rgba(0, 0, 0, 0.08);
+  --shadow-card-sm: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  --grid-faint: rgba(0, 0, 0, 0.08);
 
-/* ─── Chart tokens ─────────────────────────────── */
---chart-grid:                var(--grid);
---chart-bar-inactive:        var(--outerbar);
---chart-gradient-from:       rgba(223, 232, 200, 0);
---chart-gradient-to:         rgba(124, 171, 218, 0.77);
---chart-dot:                 var(--primary);
---chart-axis-text:           var(--muted-strong);
---chart-tick-active-bg:      var(--primary);
---chart-tick-inactive-bg:    var(--background);
---chart-tick-active-text:    var(--sidebar-text);
---chart-tick-inactive-text:  var(--foreground);
---chart-badge-bg:            var(--tooltip-bg);
---chart-badge-border:        var(--border-medium);
---chart-badge-text:          var(--foreground);
+  /* Chart tokens */
+  --chart-grid:                var(--grid);
+  --chart-bar-inactive:        var(--outerbar);
+  --chart-gradient-from:       rgba(223, 232, 200, 0);
+  --chart-gradient-to:         rgba(124, 171, 218, 0.77);
+  --chart-dot:                 var(--primary);
+  --chart-axis-text:           var(--muted-strong);
+  --chart-tick-active-bg:      var(--primary);
+  --chart-tick-inactive-bg:    var(--background);
+  --chart-tick-active-text:    var(--sidebar-text);
+  --chart-tick-inactive-text:  var(--foreground);
+  --chart-badge-bg:            var(--tooltip-bg);
+  --chart-badge-border:        var(--border-medium);
+  --chart-badge-text:          var(--foreground);
 }
 
-
-/* ─── BASE STYLES ───────────────────────────────────── */
+/* BASE STYLES */
 
 body {
   margin: 0;
@@ -166,7 +168,7 @@ h1 {
   font-family: var(--font-heading);
 }
 
-/* ─── UTILITIES ─────────────────────────────────────── */
+/* UTILITIES */
 
 .card {
   background: var(--card);
