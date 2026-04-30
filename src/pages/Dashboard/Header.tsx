@@ -1,13 +1,13 @@
 import React from "react";
-
+import "../../index.css";
 const Header: React.FC = () => {
   return (
     <div
       style={{
         width: "100%",
-        height: "18.55vh",          
-        background: "linear-gradient(94.23deg, rgba(66,143,223,0.07) -8.84%, #D3DDE2 51.66%, #D7EBF7 108.77%)",
-        borderRadius: "clamp(12px, 1.67vw, 24px)",  
+        height: "18.55vh",
+        background: "var(--header-gradient)",
+        borderRadius: "clamp(12px, 1.67vw, 24px)",
         position: "relative",
         overflow: "hidden",
         boxSizing: "border-box",
@@ -18,10 +18,10 @@ const Header: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          width: "clamp(60px, 8.75vw, 126px)",     
+          width: "clamp(60px, 8.75vw, 126px)",
           height: "clamp(60px, 8.75vw, 126px)",
-          left: "clamp(-20px, -2.57vw, -37px)",     
-          top: "clamp(150px, 30.76vh, 315px)",        
+          left: "clamp(-20px, -2.57vw, -37px)",
+          top: "clamp(150px, 30.76vh, 315px)",
           background: "#F2FFDB",
           filter: "blur(80px)",
           borderRadius: "50%",
@@ -35,7 +35,7 @@ const Header: React.FC = () => {
         style={{
           position: "absolute",
           width: "100%",
-          height: "clamp(10px, 2.25vh, 23px)",       
+          height: "clamp(10px, 2.25vh, 23px)",
           left: 0,
           top: "clamp(140px, 27.73vh, 284px)",
           background: "#F2FFDA",
@@ -50,9 +50,9 @@ const Header: React.FC = () => {
         style={{
           position: "absolute",
           width: "100%",
-          height: "clamp(8px, 1.56vh, 16px)",       
+          height: "clamp(8px, 1.56vh, 16px)",
           left: 0,
-          top: "clamp(145px, 28.42vh, 291px)",      
+          top: "clamp(145px, 28.42vh, 291px)",
           background: "#F2FFDA",
           filter: "blur(80px)",
           pointerEvents: "none",
@@ -61,12 +61,11 @@ const Header: React.FC = () => {
       />
 
       {/* ── ROW 1: Dashboard label + Search + Bell ── */}
-      {/* top ~26px from card top, right-aligned */}
       <div
         style={{
           position: "absolute",
           top: "clamp(8px, 1.95vh, 20px)",
-          left: "clamp(12px, 1.81vw, 26px)",        
+          left: "clamp(12px, 1.81vw, 26px)",
           right: "clamp(12px, 1.81vw, 26px)",
           display: "flex",
           flexDirection: "row",
@@ -83,17 +82,17 @@ const Header: React.FC = () => {
             viewBox="0 0 16 16"
             fill="none"
           >
-            <rect x="1" y="1" width="6" height="6" rx="1" fill="#000" />
-            <rect x="9" y="1" width="6" height="6" rx="1" fill="#000" />
-            <rect x="1" y="9" width="6" height="6" rx="1" fill="#000" />
-            <rect x="9" y="9" width="6" height="6" rx="1" fill="#000" />
+            <rect x="1" y="1" width="6" height="6" rx="1" fill="var(--foreground)" />
+            <rect x="9" y="1" width="6" height="6" rx="1" fill="var(--foreground)" />
+            <rect x="1" y="9" width="6" height="6" rx="1" fill="var(--foreground)" />
+            <rect x="9" y="9" width="6" height="6" rx="1" fill="var(--foreground)" />
           </svg>
           <span
             style={{
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "var(--font-inter)",
               fontWeight: 400,
               fontSize: "clamp(8px, 1.17vh, 12px)",
-              color: "#000",
+              color: "var(--foreground)",
             }}
           >
             Dashboard
@@ -116,7 +115,7 @@ const Header: React.FC = () => {
               alignItems: "center",
               gap: "clamp(3px, 0.4vw, 6px)",
               padding: "0 clamp(8px, 1.11vw, 16px)",
-              background: "#FFFFFF",
+              background: "var(--card)",
               borderRadius: "clamp(20px, 4vw, 60px)",
               width: "clamp(80px, 13.89vw, 200px)",
               height: "clamp(18px, 3.32vh, 34px)",
@@ -129,15 +128,14 @@ const Header: React.FC = () => {
               viewBox="0 0 24 24"
               fill="none"
             >
-              <circle cx="11" cy="11" r="7" stroke="#000" strokeOpacity="0.5" strokeWidth="1.5" />
-              <path d="M16.5 16.5L21 21" stroke="#000" strokeOpacity="0.5" strokeWidth="1.5" strokeLinecap="round" />
+              <circle cx="11" cy="11" r="7" stroke="var(--foreground)" strokeOpacity="0.5" strokeWidth="1.5" />
+              <path d="M16.5 16.5L21 21" stroke="var(--foreground)" strokeOpacity="0.5" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
             <span
               style={{
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "var(--font-inter)",
                 fontSize: "clamp(8px, 1.17vh, 12px)",
-                color: "#000",
-                opacity: 0.5,
+                color: "var(--muted)",
                 whiteSpace: "nowrap",
               }}
             >
@@ -150,7 +148,7 @@ const Header: React.FC = () => {
             style={{
               width: "clamp(18px, 3.32vh, 34px)",
               height: "clamp(18px, 3.32vh, 34px)",
-              background: "#FFFFFF",
+              background: "var(--card)",
               borderRadius: "50%",
               display: "flex",
               justifyContent: "center",
@@ -169,29 +167,28 @@ const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Frame 1171277179 — Title + Subtitle ── */}
-      {/* left: 26px, top: 79px from card */}
+      {/* ── Title + Subtitle ── */}
       <div
         style={{
           position: "absolute",
-          left: "clamp(12px, 1.81vw, 26px)",          
-          top: "clamp(40px, 7.71vh, 79px)",            
+          left: "clamp(12px, 1.81vw, 26px)",
+          top: "clamp(40px, 7.71vh, 79px)",
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
-          gap: "clamp(4px, 0.78vh, 8px)",             
+          gap: "clamp(4px, 0.78vh, 8px)",
           zIndex: 1,
         }}
       >
-        {/* Role Manager title */}
+        {/* Title — Figma: Inter 500 36px uppercase */}
         <h1
           style={{
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "var(--font-inter)",
             fontWeight: 500,
-            fontSize: "clamp(14px, 3.52vh, 36px)",   
+            fontSize: "clamp(14px, 3.52vh, 36px)",
             lineHeight: "120%",
             textTransform: "uppercase",
-            color: "#000000",
+            color: "var(--foreground)",
             margin: 0,
             whiteSpace: "nowrap",
           }}
@@ -199,15 +196,14 @@ const Header: React.FC = () => {
           Role Manager
         </h1>
 
-        {/* Subtitle */}
+        {/* Subtitle — Figma: Inter 400 14px opacity 0.6 */}
         <p
           style={{
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "var(--font-inter)",
             fontWeight: 400,
-            fontSize: "clamp(7px, 1.37vh, 14px)",     
+            fontSize: "clamp(7px, 1.37vh, 14px)",
             lineHeight: "18px",
-            color: "#000000",
-            opacity: 0.6,
+            color: "var(--muted)",
             margin: 0,
             whiteSpace: "nowrap",
           }}

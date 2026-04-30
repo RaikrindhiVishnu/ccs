@@ -13,30 +13,21 @@ type Props = {
 };
 
 const fallbackData: DataItem[] = [
-  { label: "R.O.", value: 202, color: "#1D5E9C" },
-  { label: "I.O.", value: 202, color: "#3D93D1" },
-  { label: "F.O.", value: 366, color: "#D7EBF7", border: "1px solid #b0c8da" },
-  { label: "Agents", value: 482, color: "#85BFE5" },
+  { label: "R.O.", value: 202, color: "var(--pie-3)" },
+  { label: "I.O.", value: 202, color: "var(--pie-2)" },
+  { label: "F.O.", value: 366, color: "var(--pie-4)", border: "1px solid var(--primary-light)" },
+  { label: "Agents", value: 482, color: "var(--pie-1)" },
 ];
 
 const WorkforceStructure: React.FC<Props> = ({ data = fallbackData }) => {
-  // const total = data.reduce((sum, item) => sum + item.value, 0);
-
-  // const getItem = (label: string) =>
-  //   data.find((item) => item.label === label) ??
-  //   fallbackData.find((item) => item.label === label);
-
-  // const ro = getItem("R.O.");
-  // const io = getItem("I.O.");
-  // const fo = getItem("F.O.");
-  // const agents = getItem("Agents");
-
   return (
     <div
+      className="card"
       style={{
-        background: "#FFFFFF",
-        borderRadius: "clamp(12px,1.67vw,24px)",
-        padding: "clamp(10px,1.11vw,16px) clamp(12px,1.67vw,24px)",
+        containerType: "inline-size",
+        borderRadius: "var(--radius-xl)",
+        boxShadow: "var(--shadow-card-sm)",
+        padding: "clamp(12px, 4cqi, 24px) clamp(14px, 5cqi, 28px)",
         width: "100%",
         flex: 1,
         minHeight: 0,
@@ -46,34 +37,36 @@ const WorkforceStructure: React.FC<Props> = ({ data = fallbackData }) => {
         overflow: "hidden",
       }}
     >
-      {/* Header */}
+      {/* ── Header ── */}
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "flex-start",
-          marginBottom: "clamp(6px,0.83vw,12px)",
+          marginBottom: "clamp(8px, 3cqi, 16px)",
           flexShrink: 0,
+          gap: 8,
         }}
       >
-        <div>
+        <div style={{ minWidth: 0 }}>
           <div
             style={{
-              fontFamily: "'Plus Jakarta Sans',sans-serif",
+              fontFamily: "var(--font-sans)",
               fontWeight: 500,
-              fontSize: "clamp(11px,1.25vw,18px)",
-              color: "#000",
+              fontSize: "clamp(14px, 4cqi, 20px)",
+              lineHeight: 1.4,
+              color: "var(--foreground)",
             }}
           >
             Workforce Structure
           </div>
           <div
             style={{
-              fontFamily: "'Plus Jakarta Sans',sans-serif",
+              fontFamily: "var(--font-sans)",
               fontWeight: 400,
-              fontSize: "clamp(9px,0.83vw,12px)",
-              color: "#000",
-              opacity: 0.6,
+              fontSize: "clamp(11px, 2.8cqi, 14px)",
+              lineHeight: 1.4,
+              color: "var(--muted)",
               marginTop: 2,
             }}
           >
@@ -81,37 +74,40 @@ const WorkforceStructure: React.FC<Props> = ({ data = fallbackData }) => {
           </div>
         </div>
 
+        {/* Year pill */}
         <div
           style={{
-            border: "1px solid #000",
-            borderRadius: 30,
-            padding: "clamp(3px,0.35vw,5px) clamp(4px,0.42vw,6px)",
+            border: "1px solid var(--border-strong)",
+            borderRadius: "var(--btn-radius-pill)",
+            padding: "5px 4px 5px 8px",
             display: "flex",
             alignItems: "center",
-            gap: 3,
+            gap: 2,
             cursor: "pointer",
             flexShrink: 0,
           }}
         >
           <span
             style={{
-              fontFamily: "'Plus Jakarta Sans',sans-serif",
-              fontSize: "clamp(8px,0.76vw,11px)",
-              color: "#000",
+              fontFamily: "var(--font-sans)",
+              fontWeight: 400,
+              fontSize: "clamp(10px, 2.5cqi, 12px)",
+              lineHeight: "16px",
+              color: "var(--foreground)",
             }}
           >
             2026
           </span>
           <svg
-            width="clamp(9px,0.97vw,14px)"
-            height="clamp(9px,0.97vw,14px)"
+            width="14"
+            height="14"
             viewBox="0 0 16 16"
             fill="none"
-            style={{ transform: "rotate(90deg)" }}
+            style={{ transform: "rotate(90deg)", flexShrink: 0 }}
           >
             <path
               d="M6 4L10 8L6 12"
-              stroke="#000"
+              stroke="var(--foreground)"
               strokeWidth="1.125"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -120,7 +116,7 @@ const WorkforceStructure: React.FC<Props> = ({ data = fallbackData }) => {
         </div>
       </div>
 
-      {/* Body */}
+      {/* ── Body ── */}
       <div
         style={{
           display: "flex",
@@ -128,19 +124,19 @@ const WorkforceStructure: React.FC<Props> = ({ data = fallbackData }) => {
           alignItems: "center",
           flex: 1,
           minHeight: 0,
-          gap: "clamp(8px,1.11vw,16px)",
+          gap: "clamp(10px, 4cqi, 20px)",
         }}
       >
-        {/* Pie */}
-<div
-  style={{
-    flexShrink: 0,
-    width: "min(clamp(80px,14vh,150px), 40%)",
-    aspectRatio: "1",
-  }}
->
-  <WorkforceDonut data={data} />
-</div>
+        {/* Donut */}
+        <div
+          style={{
+            flexShrink: 0,
+            width: "clamp(64px, 28cqi, 140px)",
+            aspectRatio: "1 / 1",
+          }}
+        >
+          <WorkforceDonut data={data} />
+        </div>
 
         {/* Legend */}
         <div
@@ -150,49 +146,62 @@ const WorkforceStructure: React.FC<Props> = ({ data = fallbackData }) => {
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
-            gap: "clamp(6px,0.83vw,12px)",
+            gap: "clamp(5px, 2cqi, 12px)",
           }}
         >
           {data.map((item) => (
             <div
               key={item.label}
-              style={{ display: "flex", alignItems: "center", gap: 6 }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "clamp(4px, 1.5cqi, 8px)",
+              }}
             >
+              {/* Color dot */}
               <div
                 style={{
-                  width: "clamp(6px,0.56vw,8px)",
-                  height: "clamp(6px,0.56vw,8px)",
+                  width: "clamp(6px, 1.5cqi, 9px)",
+                  height: "clamp(6px, 1.5cqi, 9px)",
                   borderRadius: "50%",
                   background: item.color,
                   border: item.border ?? "none",
                   flexShrink: 0,
                 }}
               />
+
+              {/* Label */}
               <span
                 style={{
-                  fontFamily: "'Plus Jakarta Sans',sans-serif",
+                  fontFamily: "var(--font-sans)",
                   fontWeight: 500,
-                  fontSize: "clamp(8px,0.69vw,10px)",
-                  color: "#000",
+                  fontSize: "clamp(9px, 2.2cqi, 11px)",
+                  lineHeight: 1.3,
+                  color: "var(--foreground)",
                   whiteSpace: "nowrap",
+                  flexShrink: 0,
                 }}
               >
                 {item.label}
               </span>
+
+              {/* Dotted line */}
               <div
                 style={{
                   flex: 1,
-                  borderTop: "1px dashed rgba(44,44,44,0.08)",
-                  margin: "0 4px",
+                  borderTop: "1px dashed var(--grid)",
                   minWidth: 4,
                 }}
               />
+
+              {/* Value */}
               <span
                 style={{
-                  fontFamily: "'Plus Jakarta Sans',sans-serif",
+                  fontFamily: "var(--font-sans)",
                   fontWeight: 500,
-                  fontSize: "clamp(10px,0.97vw,14px)",
-                  color: "#000",
+                  fontSize: "clamp(11px, 3cqi, 15px)",
+                  lineHeight: 1.3,
+                  color: "var(--foreground)",
                   flexShrink: 0,
                 }}
               >

@@ -13,15 +13,11 @@ export interface DynamicTableProps {
   data?: Record<string, string | number>[];
   rowsPerPage?: number;
   pagination?: boolean;
-  /**
-   * Optional explicit height — any valid CSS value e.g. "444px", "60vh", "100%".
-   * Defaults to "100%" (fills parent).
-   */
   height?: string;
 }
 
 // ─────────────────────────────────────────────
-//  DATA LAYER — separated, pass via props
+//  Data layer
 // ─────────────────────────────────────────────
 export const TABLE_COLUMNS: Column[] = [
   { key: "state",  label: "State"  },
@@ -65,17 +61,21 @@ const PagBtn: React.FC<{ n: number; current: number; onClick: (n: number) => voi
     <button
       onClick={() => onClick(n)}
       style={{
-        width: 30, height: 30,
+        width: 30,
+        height: 30,
         borderRadius: "50%",
-        border: active ? "none" : "0.983px solid rgba(5,3,3,0.15)",
-        background: active ? "#2780C4" : "#FFFFFF",
-        color: active ? "#FFFFFF" : "#000000",
-        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        border: active ? "none" : "1px solid var(--border)",
+        background: active ? "var(--primary)" : "var(--card)",
+        color: active ? "var(--sidebar-text)" : "var(--foreground)",
+        fontFamily: "var(--font-sans)",
         fontWeight: active ? 600 : 400,
         fontSize: 12,
         cursor: "pointer",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        padding: 0, flexShrink: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 0,
+        flexShrink: 0,
       }}
     >
       {n}
@@ -95,13 +95,12 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
 }) => {
   const [page, setPage] = useState(1);
 
-  // When pagination=false, show ALL data; when true, slice by page
   const totalPages     = pagination ? Math.ceil(data.length / rowsPerPage) : 1;
   const showPagination = pagination && totalPages > 1;
 
   const pageData = useMemo(() => {
-    if (!pagination) return data;                                           // show all rows
-    return data.slice((page - 1) * rowsPerPage, page * rowsPerPage);       // paginated slice
+    if (!pagination) return data;
+    return data.slice((page - 1) * rowsPerPage, page * rowsPerPage);
   }, [data, page, rowsPerPage, pagination]);
 
   const goTo    = (p: number) => setPage(Math.max(1, Math.min(totalPages, p)));
@@ -116,24 +115,16 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
     return range;
   }, [page, totalPages]);
 
-  // ── Equal column width ──
   const colWidth = `${100 / columns.length}%`;
 
-  // ── Refs ──
   const wrapRef  = useRef<HTMLDivElement>(null);
   const theadRef = useRef<HTMLTableSectionElement>(null);
   const pagRef   = useRef<HTMLDivElement>(null);
 
-  // ── Responsive row padding (height) ──
-  // When pagination=false, rows fill the full container; no fixed rowsPerPage limit
-  const [rowPadding, setRowPadding] = useState(20);
-
-  // ── Responsive font sizes (width) ──
+  const [rowPadding,    setRowPadding]    = useState(20);
   const [headerFontSize, setHeaderFontSize] = useState(16);
   const [bodyFontSize,   setBodyFontSize]   = useState(14);
 
-  // Effective row count for recalc:
-  // paginated → always rowsPerPage slots; non-paginated → actual data length
   const effectiveRowCount = pagination ? rowsPerPage : pageData.length;
 
   const recalc = useCallback(() => {
@@ -143,16 +134,14 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
     const W = wrap.clientWidth;
     const H = wrap.clientHeight;
 
-    // Font scales with width (Figma base: 852px)
     const scaleW = W / 852;
     setHeaderFontSize(Math.max(10, Math.min(16, Math.round(16 * scaleW))));
     setBodyFontSize  (Math.max(9,  Math.min(14, Math.round(14 * scaleW))));
 
-    // Row padding: fill available body height evenly
     const headerH = theadRef.current?.offsetHeight ?? 50;
     const pagH    = showPagination && pagRef.current ? pagRef.current.offsetHeight : 0;
     const bodyH   = H - headerH - pagH;
-    const LINE_H  = 18; // Figma line-height
+    const LINE_H  = 18;
     const rows    = effectiveRowCount || 1;
     const pad     = Math.max(6, (bodyH / rows - LINE_H) / 2);
     setRowPadding(Math.floor(pad));
@@ -174,20 +163,19 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
     <div
       ref={wrapRef}
       style={{
-        background: "#FCFCFC",
-        border: "0.983129px solid rgba(5,3,3,0.15)",
-        borderRadius: 22.1204,
-        width: "100%",
-        height: height ?? "100%",
-        minHeight: 180,
-        boxSizing: "border-box",
-        overflow: "hidden",
-        fontFamily: "'Plus Jakarta Sans', sans-serif",
-        display: "flex",
+        background:   "var(--card)",
+        border:       "1px solid var(--border)",
+        borderRadius: "var(--radius-lg)",
+        width:        "100%",
+        height:       height ?? "100%",
+        minHeight:    180,
+        boxSizing:    "border-box",
+        overflow:     "hidden",
+        fontFamily:   "var(--font-sans)",
+        display:      "flex",
         flexDirection: "column",
       }}
     >
-      {/* ── ONE single table — header + body share identical colgroup ── */}
       <div style={{ flex: 1, width: "100%", overflowX: "auto", display: "flex", flexDirection: "column" }}>
         <table
           style={{
@@ -198,33 +186,32 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
             minWidth: 280,
           }}
         >
-          {/* Shared colgroup — guarantees header & body columns are pixel-perfect */}
           <colgroup>
             {columns.map((col) => (
               <col key={col.key} style={{ width: colWidth }} />
             ))}
           </colgroup>
 
-          {/* ── HEADER ── */}
+          {/* ── Header ── */}
           <thead ref={theadRef}>
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.key}
                   style={{
-                    background: "#2780C4",
-                    padding: "15px 0",
-                    textAlign: "center",
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontWeight: 600,
-                    fontSize: headerFontSize,
-                    lineHeight: "20px",
-                    letterSpacing: "0.228067px",
-                    textTransform: "uppercase",
-                    color: "#FFFFFF",
-                    border: "none",
-                    whiteSpace: "nowrap",
-                    verticalAlign: "middle",
+                    background:      "var(--primary)",
+                    padding:         "15px 0",
+                    textAlign:       "center",
+                    fontFamily:      "var(--font-sans)",
+                    fontWeight:      600,
+                    fontSize:        headerFontSize,
+                    lineHeight:      "20px",
+                    letterSpacing:   "0.23px",
+                    textTransform:   "uppercase",
+                    color:           "var(--sidebar-text)",
+                    border:          "none",
+                    whiteSpace:      "nowrap",
+                    verticalAlign:   "middle",
                   }}
                 >
                   {col.label}
@@ -233,7 +220,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
             </tr>
           </thead>
 
-          {/* ── BODY ── */}
+          {/* ── Body ── */}
           <tbody>
             {pageData.map((row, rowIdx) => (
               <tr key={rowIdx}>
@@ -241,21 +228,20 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
                   <td
                     key={col.key}
                     style={{
-                      padding: `${rowPadding}px 0`,
-                      textAlign: "center",
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      fontWeight: 500,
-                      fontSize: bodyFontSize,
-                      lineHeight: "18px",
-                      color: "#000000",
-                      opacity: 0.6,
-                      textDecorationLine: colIdx === 0 ? "underline" : "none",
-                      background: "#FCFCFC",
-                      border: "none",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                      verticalAlign: "middle",
+                      padding:             `${rowPadding}px 0`,
+                      textAlign:           "center",
+                      fontFamily:          "var(--font-sans)",
+                      fontWeight:          500,
+                      fontSize:            bodyFontSize,
+                      lineHeight:          "18px",
+                      color:               "var(--muted)",
+                      textDecorationLine:  colIdx === 0 ? "underline" : "none",
+                      background:          "var(--card)",
+                      border:              "none",
+                      overflow:            "hidden",
+                      textOverflow:        "ellipsis",
+                      whiteSpace:          "nowrap",
+                      verticalAlign:       "middle",
                     }}
                   >
                     {row[col.key] ?? "—"}
@@ -264,7 +250,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
               </tr>
             ))}
 
-            {/* Filler rows — only shown when pagination=true, to keep fixed row slots */}
+            {/* Filler rows for pagination */}
             {pagination && pageData.length < rowsPerPage &&
               Array.from({ length: rowsPerPage - pageData.length }).map((_, i) => (
                 <tr key={`empty-${i}`}>
@@ -272,9 +258,9 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
                     <td
                       key={col.key}
                       style={{
-                        padding: `${rowPadding}px 0`,
-                        background: "#FCFCFC",
-                        border: "none",
+                        padding:    `${rowPadding}px 0`,
+                        background: "var(--card)",
+                        border:     "none",
                       }}
                     />
                   ))}
@@ -284,28 +270,27 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
         </table>
       </div>
 
-      {/* ── Pagination — only shown when pagination=true AND data > rowsPerPage ── */}
+      {/* ── Pagination ── */}
       {showPagination && (
         <div
           ref={pagRef}
           style={{
-            display: "flex",
+            display:        "flex",
             justifyContent: "space-between",
-            alignItems: "center",
-            padding: "12px 24px",
-            borderTop: "1px solid rgba(5,3,3,0.08)",
-            flexWrap: "wrap",
-            gap: 8,
-            flexShrink: 0,
+            alignItems:     "center",
+            padding:        "12px 24px",
+            borderTop:      "1px solid var(--border)",
+            flexWrap:       "wrap",
+            gap:            8,
+            flexShrink:     0,
           }}
         >
           <span
             style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              fontFamily: "var(--font-sans)",
               fontWeight: 400,
-              fontSize: 12,
-              color: "#000000",
-              opacity: 0.5,
+              fontSize:   12,
+              color:      "var(--muted-strong)",
               whiteSpace: "nowrap",
             }}
           >
@@ -318,12 +303,17 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
               onClick={() => goTo(page - 1)}
               disabled={!canPrev}
               style={{
-                width: 30, height: 30, borderRadius: "50%",
-                border: "0.983px solid rgba(5,3,3,0.15)",
-                background: canPrev ? "#FFFFFF" : "rgba(5,3,3,0.04)",
-                color: canPrev ? "#000" : "rgba(0,0,0,0.3)",
-                cursor: canPrev ? "pointer" : "not-allowed",
-                display: "flex", alignItems: "center", justifyContent: "center", padding: 0,
+                width:        30,
+                height:       30,
+                borderRadius: "50%",
+                border:       "1px solid var(--border)",
+                background:   canPrev ? "var(--card)"       : "var(--input)",
+                color:        canPrev ? "var(--foreground)"  : "var(--muted-strong)",
+                cursor:       canPrev ? "pointer"            : "not-allowed",
+                display:      "flex",
+                alignItems:   "center",
+                justifyContent: "center",
+                padding:      0,
               }}
             >
               <ChevronLeft size={14} />
@@ -332,7 +322,9 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
             {pageNumbers[0] > 1 && (
               <>
                 <PagBtn n={1} current={page} onClick={goTo} />
-                {pageNumbers[0] > 2 && <span style={{ fontSize: 12, opacity: 0.4, padding: "0 2px" }}>…</span>}
+                {pageNumbers[0] > 2 && (
+                  <span style={{ fontSize: 12, color: "var(--muted-strong)", padding: "0 2px" }}>…</span>
+                )}
               </>
             )}
 
@@ -343,7 +335,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
             {pageNumbers[pageNumbers.length - 1] < totalPages && (
               <>
                 {pageNumbers[pageNumbers.length - 1] < totalPages - 1 && (
-                  <span style={{ fontSize: 12, opacity: 0.4, padding: "0 2px" }}>…</span>
+                  <span style={{ fontSize: 12, color: "var(--muted-strong)", padding: "0 2px" }}>…</span>
                 )}
                 <PagBtn n={totalPages} current={page} onClick={goTo} />
               </>
@@ -354,12 +346,17 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
               onClick={() => goTo(page + 1)}
               disabled={!canNext}
               style={{
-                width: 30, height: 30, borderRadius: "50%",
-                border: "0.983px solid rgba(5,3,3,0.15)",
-                background: canNext ? "#FFFFFF" : "rgba(5,3,3,0.04)",
-                color: canNext ? "#000" : "rgba(0,0,0,0.3)",
-                cursor: canNext ? "pointer" : "not-allowed",
-                display: "flex", alignItems: "center", justifyContent: "center", padding: 0,
+                width:        30,
+                height:       30,
+                borderRadius: "50%",
+                border:       "1px solid var(--border)",
+                background:   canNext ? "var(--card)"       : "var(--input)",
+                color:        canNext ? "var(--foreground)"  : "var(--muted-strong)",
+                cursor:       canNext ? "pointer"            : "not-allowed",
+                display:      "flex",
+                alignItems:   "center",
+                justifyContent: "center",
+                padding:      0,
               }}
             >
               <ChevronRight size={14} />
@@ -372,51 +369,3 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
 };
 
 export default DynamicTable;
-
-// ─────────────────────────────────────────────
-//  USAGE EXAMPLES
-// ─────────────────────────────────────────────
-//
-//  Import the data layer and component separately:
-//    import DynamicTable, { TABLE_COLUMNS, TABLE_DATA } from "./DynamicTable";
-//
-//  1. Figma default — 7 rows, no pagination, fills parent height:
-//       <DynamicTable
-//         columns={TABLE_COLUMNS}
-//         data={TABLE_DATA}
-//       />
-//
-//  2. Show ALL rows (no pagination) — height grows to fit:
-//       <DynamicTable
-//         columns={TABLE_COLUMNS}
-//         data={apiData}
-//         pagination={false}   // default — shows every row
-//       />
-//
-//  3. Enable pagination — 7 rows per page, footer appears automatically:
-//       <DynamicTable
-//         columns={TABLE_COLUMNS}
-//         data={apiData}
-//         rowsPerPage={7}
-//         pagination={true}
-//       />
-//
-//  4. Fixed height container (Figma exact size):
-//       <DynamicTable
-//         columns={TABLE_COLUMNS}
-//         data={TABLE_DATA}
-//         height="444px"
-//       />
-//
-//  5. Custom columns + API data + pagination:
-//       const cols = [
-//         { key: "name",  label: "Name"   },
-//         { key: "score", label: "Score"  },
-//         { key: "rank",  label: "Rank"   },
-//       ];
-//       <DynamicTable
-//         columns={cols}
-//         data={myApiData}
-//         rowsPerPage={10}
-//         pagination={true}
-//       />
