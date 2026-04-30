@@ -34,46 +34,31 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     // ── Wrapper classes ───────────────────────────────────────────────────
     const wrapperClass = isForm
       ? cn(
-          "relative flex items-center flex-shrink-0",
+          "relative flex items-center shrink-0",
           "h-[clamp(36px,2.9vw,40px)]",
-          "bg-[color:var(--card)]",
-          "border border-[color:var(--input-border)]",
+          "bg-[var(--card)]",
+          "border border-[var(--input-border)]",
           "rounded-[var(--btn-radius-square)]",
         )
       : cn(
-          "relative flex items-center flex-shrink-0 rounded-full",
+          "relative flex items-center shrink-0 rounded-full",
           "h-[clamp(42px,5.47vh,73px)]",
           variant === "white"
-            ? "bg-[color:var(--card)]"
-            : "bg-[color:var(--input)]",
+            ? "bg-[var(--card)]"
+            : "bg-[var(--input)]",
         );
 
-    // ── Input style (keeping inline — contains dynamic padding based on icon) ──
-    const inputStyle: React.CSSProperties = isForm
-      ? {
-          color: "var(--profile-text)",
-          fontFamily: "var(--btn-font-secondary)",
-          fontSize: "clamp(12px, 0.9vw, 14px)",
-          padding: icon
-            ? "0 clamp(12px,1vw,16px) 0 clamp(34px,2.5vw,42px)"
-            : "0 clamp(12px,1vw,16px)",
-        }
-      : {
-          color: "var(--foreground)",
-          fontFamily: "var(--font-sans)",
-          fontSize: "clamp(11px, 1.11vw, 21px)",
-          padding: "0 clamp(34px, 3.33vw, 63px)",
-        };
-
-    const inputClass = isForm
-      ? cn(
-          "w-full h-full border-none outline-none box-border bg-transparent",
-          className,
-        )
-      : cn(
-          "login-input w-full h-full border-none outline-none rounded-full box-border bg-transparent",
-          className,
-        );
+    const inputClass = cn(
+      "w-full h-full border-none outline-none box-border bg-transparent shrink-0",
+      isForm
+        ? "text-[var(--profile-text)] font-sans text-[clamp(12px,0.9vw,14px)]"
+        : "text-[var(--foreground)] font-sans text-[clamp(11px,1.11vw,21px)]",
+      isForm 
+        ? (icon ? "pl-[clamp(34px,2.5vw,42px)] pr-[clamp(12px,1vw,16px)]" : "px-[clamp(12px,1vw,16px)]")
+        : "px-[clamp(34px,3.33vw,63px)]",
+      !isForm && "login-input rounded-full",
+      className,
+    );
 
     return (
       <div
@@ -94,8 +79,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 className={cn(
                   "font-medium leading-none",
                   isForm
-                    ? "text-[length:clamp(12px,0.97vw,16px)] text-[color:var(--label-color)] font-[family-name:var(--font-sans)]"
-                    : "text-[length:clamp(10px,0.97vw,18px)] text-[color:var(--muted)] font-[family-name:var(--font-sans)]",
+                    ? "text-[clamp(12px,0.97vw,16px)] text-[var(--label-color)] font-sans"
+                    : "text-[clamp(10px,0.97vw,18px)] text-[var(--muted)] font-sans",
                 )}
               >
                 {label}
@@ -112,12 +97,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {/* Left Icon */}
           {icon && (
             <span
-              className="absolute top-1/2 -translate-y-1/2 pointer-events-none flex items-center opacity-40"
-              style={{
-                left: isForm
-                  ? "clamp(10px,0.9vw,14px)"
-                  : "clamp(13px, 1.11vw, 21px)",
-              }}
+              className={cn(
+                "absolute top-1/2 -translate-y-1/2 pointer-events-none flex items-center opacity-40",
+                isForm ? "left-[clamp(10px,0.9vw,14px)]" : "left-[clamp(13px,1.11vw,21px)]"
+              )}
             >
               {icon}
             </span>
@@ -128,7 +111,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             type={type}
             className={inputClass}
-            style={inputStyle}
             ref={ref}
             {...props}
           />
@@ -136,12 +118,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {/* Right Element */}
           {rightElement && (
             <div
-              className="absolute top-1/2 -translate-y-1/2 flex items-center justify-center"
-              style={{
-                right: isForm
-                  ? "clamp(10px,0.9vw,14px)"
-                  : "clamp(13px, 1.11vw, 21px)",
-              }}
+              className={cn(
+                "absolute top-1/2 -translate-y-1/2 flex items-center justify-center",
+                isForm ? "right-[clamp(10px,0.9vw,14px)]" : "right-[clamp(13px,1.11vw,21px)]"
+              )}
             >
               {rightElement}
             </div>
