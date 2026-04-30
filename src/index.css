@@ -6,13 +6,31 @@
   /* FONTS */
   --font-sans: "Plus Jakarta Sans";
   --font-heading: "Manrope";
+ /* PROFILE / DETAIL PAGE */
+--banner-from: #2a5c3f;
+--banner-via: #3a7d5a;
+--banner-to: #2c6b4a;
+/* APPROVE BUTTON */
+--approve-gradient-from: #2680c4;
+--approve-gradient-to: #4a7bbb;
 
+/* SUCCESS */
+--success-soft: rgba(12, 160, 12, 0.08);
+--status-pending-bg: #f3f3f5;
+
+--text-button: #353535;
+
+--document-placeholder-from: #e8edf5;
+--document-placeholder-to: #d4dce8;
+
+--document-icon: #3d4949;
   /* BASE */
   --background: #f2f2f2;
   --foreground: #000000;
   --card: #ffffff;
   --input: #f2f2f2;
-
+--danger: #ef4444;
+--danger-soft: rgba(239, 68, 68, 0.08);
   /* TEXT */
   --muted: rgba(0, 0, 0, 0.6);
   --muted-strong: rgba(0, 0, 0, 0.4);
@@ -118,14 +136,15 @@
   /* Badge dot colors (dark variant) */
   --btn-dot-fill: #3d93d1;
   --btn-dot-border: #85bfe5;
-
+ --toggle-active: #4caf50;
   /* Button fonts — reuse project fonts */
   --btn-font-primary: var(--font-sans);
   --btn-font-secondary: "Inter", sans-serif;
   --btn-font-poppins: "Poppins", sans-serif;
-
+--primary-soft: rgba(39, 128, 196, 0.08);
   /* Button border radii */
   --btn-radius-pill: 48px;
+  --avatar-fallback: #c0c0c0;
   --btn-radius-pill-sm: 33px;
   --btn-radius-circle: 9999px;
   --btn-radius-square: 12px;
