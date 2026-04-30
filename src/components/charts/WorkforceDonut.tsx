@@ -43,7 +43,7 @@ export default function WorkforceDonut({ data }: Props) {
       </div>
 
       {/* CENTER CIRCLE */}
-      <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 rounded-full bg-[rgba(61,74,13,0.08)] flex flex-col items-center justify-center z-[3]">
+      <div className="absolute top-1/4 left-1/4 w-1/2 h-1/2 rounded-full bg-[rgba(61,74,13,0.08)] flex flex-col items-center justify-center z-3">
         <div className="font-sans font-medium text-[4.8cqi] leading-[6.25cqi] text-[var(--foreground)] opacity-60">
           Total
         </div>

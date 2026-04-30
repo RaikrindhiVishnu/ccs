@@ -61,10 +61,10 @@ const PagBtn: React.FC<{ n: number; current: number; onClick: (n: number) => voi
     <button
       onClick={() => onClick(n)}
       className={`
-        w-[30px] h-[30px] rounded-full flex items-center justify-center p-0 shrink-0 cursor-pointer text-[12px] font-sans
+        w-7.5 h-7.5 rounded-full flex items-center justify-center p-0 shrink-0 cursor-pointer text-[12px] font-sans
         ${active 
-          ? "bg-[var(--primary)] text-[var(--sidebar-text)] font-semibold border-none" 
-          : "bg-[var(--card)] text-[var(--foreground)] font-normal border border-[var(--border)]"}
+          ? "bg-(--primary) text-(--sidebar-text) font-semibold border-none" 
+          : "bg-(--card) text-(--foreground) font-normal border border-(--border)"}
       `}
     >
       {n}
@@ -151,7 +151,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
   return (
     <div
       ref={wrapRef}
-      className="w-full overflow-hidden font-sans flex flex-col bg-[var(--card)] border border-[var(--border)] rounded-[var(--radius-lg)]"
+      className="w-full overflow-hidden font-sans flex flex-col bg-(--card) border border-(--border) rounded-lg"
       style={{ 
         height: height ?? "100%", 
         minHeight: 180,
@@ -162,7 +162,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
       } as React.CSSProperties}
     >
       <div className="flex-1 w-full overflow-x-auto flex flex-col">
-        <table className="w-full h-full border-collapse table-fixed min-w-[280px]">
+        <table className="w-full h-full border-collapse table-fixed min-w-70">
           <colgroup>
             {columns.map((col) => (
               <col key={col.key} style={{ width: colWidth }} />
@@ -175,7 +175,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className="bg-[var(--primary)] py-[15px] px-0 text-center font-sans font-semibold text-[var(--header-fs)] leading-[20px] tracking-[0.23px] uppercase text-[var(--sidebar-text)] border-none whitespace-nowrap align-middle"
+                  className="bg-(--primary) py-3.75 px-0 text-center font-sans font-semibold text-(length:--header-fs) leading-5 tracking-[0.23px] uppercase text-(--sidebar-text) border-none whitespace-nowrap align-middle"
                 >
                   {col.label}
                 </th>
@@ -191,8 +191,8 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
                   <td
                     key={col.key}
                     className={`
-                      py-[var(--row-padding)] px-0 text-center font-sans font-medium text-[var(--body-fs)] leading-[18px] text-[var(--muted)]
-                      bg-[var(--card)] border-none overflow-hidden text-ellipsis whitespace-nowrap align-middle
+                      py-(--row-padding) px-0 text-center font-sans font-medium text-(length:--body-fs) leading-4.5 text-(--muted)
+                      bg-(--card) border-none overflow-hidden text-ellipsis whitespace-nowrap align-middle
                       ${colIdx === 0 ? "underline" : "no-underline"}
                     `}
                   >
@@ -209,7 +209,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
                   {columns.map((col) => (
                     <td
                       key={col.key}
-                      className="py-[var(--row-padding)] px-0 bg-[var(--card)] border-none"
+                      className="py-(--row-padding) px-0 bg-(--card) border-none"
                     />
                   ))}
                 </tr>
@@ -222,20 +222,20 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
       {showPagination && (
         <div
           ref={pagRef}
-          className="flex justify-between items-center px-[24px] py-[12px] border-t border-[var(--border)] flex-wrap gap-[8px] shrink-0"
+          className="flex justify-between items-center px-6 py-3 border-t border-(--border) flex-wrap gap-2 shrink-0"
         >
-          <span className="font-sans font-normal text-[12px] text-[var(--muted-strong)] whitespace-nowrap">
+          <span className="font-sans font-normal text-[12px] text-(--muted-strong) whitespace-nowrap">
             {(page - 1) * rowsPerPage + 1}–{Math.min(page * rowsPerPage, data.length)} of {data.length}
           </span>
 
-          <div className="flex items-center gap-[4px]">
+          <div className="flex items-center gap-1">
             {/* Prev */}
             <button
               onClick={() => goTo(page - 1)}
               disabled={!canPrev}
               className={`
-                w-[30px] h-[30px] rounded-full border border-[var(--border)] flex items-center justify-center p-0
-                ${canPrev ? "bg-[var(--card)] text-[var(--foreground)] cursor-pointer" : "bg-[var(--input)] text-[var(--muted-strong)] cursor-not-allowed"}
+                w-7.5 h-7.5 rounded-full border border-(--border) flex items-center justify-center p-0
+                ${canPrev ? "bg-(--card) text-(--foreground) cursor-pointer" : "bg-(--input) text-(--muted-strong) cursor-not-allowed"}
               `}
             >
               <ChevronLeft size={14} />
@@ -245,7 +245,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
               <>
                 <PagBtn n={1} current={page} onClick={goTo} />
                 {pageNumbers[0] > 2 && (
-                  <span className="text-[12px] text-[var(--muted-strong)] px-[2px]">…</span>
+                  <span className="text-[12px] text-(--muted-strong) px-0.5">…</span>
                 )}
               </>
             )}
@@ -257,7 +257,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
             {pageNumbers[pageNumbers.length - 1] < totalPages && (
               <>
                 {pageNumbers[pageNumbers.length - 1] < totalPages - 1 && (
-                  <span className="text-[12px] text-[var(--muted-strong)] px-[2px]">…</span>
+                  <span className="text-[12px] text-(--muted-strong) px-0.5">…</span>
                 )}
                 <PagBtn n={totalPages} current={page} onClick={goTo} />
               </>
@@ -268,8 +268,8 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
               onClick={() => goTo(page + 1)}
               disabled={!canNext}
               className={`
-                w-[30px] h-[30px] rounded-full border border-[var(--border)] flex items-center justify-center p-0
-                ${canNext ? "bg-[var(--card)] text-[var(--foreground)] cursor-pointer" : "bg-[var(--input)] text-[var(--muted-strong)] cursor-not-allowed"}
+                w-7.5 h-7.5 rounded-full border border-(--border) flex items-center justify-center p-0
+                ${canNext ? "bg-(--card) text-(--foreground) cursor-pointer" : "bg-(--input) text-(--muted-strong) cursor-not-allowed"}
               `}
             >
               <ChevronRight size={14} />

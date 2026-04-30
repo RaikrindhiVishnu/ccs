@@ -22,16 +22,20 @@ const DashboardPage: React.FC = () => {
         <div className="grid grid-cols-2 gap-[clamp(6px,0.83vw,12px)] flex-1 min-h-0 box-border">
           {/* Left column */}
           <div className="flex flex-col gap-[clamp(6px,0.83vw,12px)] min-w-0 min-h-0 overflow-hidden">
-            <AgentOnboardingVelocity />
-            <RegionCreationVelocity />
+            <div className="flex-1 min-h-0 flex">
+              <AgentOnboardingVelocity />
+            </div>
+            <div className="flex-1 min-h-0 flex">
+              <RegionCreationVelocity />
+            </div>
           </div>
 
           {/* Right column */}
           <div className="flex flex-col gap-[clamp(6px,0.83vw,12px)] min-w-0 min-h-0 overflow-hidden">
-            <div className="flex-[40] min-h-0 flex">
+            <div className="flex-[42] min-h-0 flex">
               <WorkforceStructure />
             </div>
-            <div className="flex-[60] min-h-0 flex">
+            <div className="flex-[58] min-h-0 flex">
               <RegionalCreationTargetVsActual />
             </div>
           </div>
