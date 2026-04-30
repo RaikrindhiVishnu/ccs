@@ -4,24 +4,23 @@ import { cn } from "@/lib/utils";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type ButtonVariant =
-  | "primary"          // [--btn-primary] pill, white text, uppercase — Login, Submit
-  | "primary-sm"       // [--btn-primary] small pill — table/badge row actions
-  | "secondary"        // [--btn-secondary] pill, black text, uppercase — View, Delete
-  | "navy"             // [--btn-navy] pill, white text — nav/dashboard with icon badge
-  | "outline-primary"  // transparent, blue border pill — Cancel
-  | "outline-dark"     // transparent, dark border pill — View Reason
-  | "outline-danger"   // transparent, red border pill — Reject
-  | "outline-square"   // transparent, blue border, rounded-xl — panel actions
-  | "gradient-blue"    // blue linear gradient pill — file/upload
-  | "gradient-dark"    // dark radial gradient pill — Enter Audit Room
+  | "primary" // [--btn-primary] pill, white text, uppercase — Login, Submit
+  | "primary-sm" // [--btn-primary] small pill — table/badge row actions
+  | "secondary" // [--btn-secondary] pill, black text, uppercase — View, Delete
+  | "navy" // [--btn-navy] pill, white text — nav/dashboard with icon badge
+  | "outline-primary" // transparent, blue border pill — Cancel
+  | "outline-dark" // transparent, dark border pill — View Reason
+  | "outline-danger" // transparent, red border pill — Reject
+  | "outline-square" // transparent, blue border, rounded-xl — panel actions
+  | "gradient-blue" // blue linear gradient pill — file/upload
+  | "gradient-dark" // dark radial gradient pill — Enter Audit Room
   | "gradient-dark-sm" // dark radial gradient, rounded-lg — View Profile
-  | "purple"           // [--btn-purple] pill — Edit/tag
-  | "dark"             // [--btn-dark] pill, with optional dot — filter/selection
-  | "export"           // transparent, blue border rounded-lg — Export CSV
-  | "lime";            // [--btn-lime] pill — Amount/highlight
+  | "purple" // [--btn-purple] pill — Edit/tag
+  | "dark" // [--btn-dark] pill, with optional dot — filter/selection
+  | "export" // transparent, blue border rounded-lg — Export CSV
+  | "lime"; // [--btn-lime] pill — Amount/highlight
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   /** Icon rendered before the label */
   leftIcon?: React.ReactNode;
@@ -46,7 +45,7 @@ const base =
 
 const variantClasses: Record<ButtonVariant, string> = {
   // ── Solid filled pills ───────────────────────────────────────────────────
-  "primary":
+  primary:
     "bg-[var(--btn-primary)] text-[var(--btn-primary-text)] border-none " +
     "rounded-[var(--btn-radius-pill)] " +
     "font-[var(--btn-font-primary)] font-semibold uppercase tracking-[0.7px] " +
@@ -61,7 +60,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     "h-[26px] lg:h-[28px] xl:h-[30px] 2xl:h-[31px] " +
     "text-[9px] lg:text-[10px] xl:text-[10px] 2xl:text-[11px]",
 
-  "secondary":
+  secondary:
     "bg-[var(--btn-secondary)] text-[var(--btn-secondary-text)] border-none " +
     "rounded-[var(--btn-radius-pill)] " +
     "font-[var(--btn-font-primary)] font-semibold uppercase tracking-[0.7px] " +
@@ -69,7 +68,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     "h-[36px] lg:h-[38px] xl:h-[40px] 2xl:h-[44px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
 
-  "navy":
+  navy:
     "bg-[var(--btn-navy)] text-white border-none " +
     "rounded-[73px] gap-2 " +
     "font-[var(--btn-font-primary)] font-medium " +
@@ -77,14 +76,14 @@ const variantClasses: Record<ButtonVariant, string> = {
     "h-[44px] lg:h-[48px] xl:h-[50px] 2xl:h-[56px] " +
     "text-[13px] lg:text-[14px] xl:text-[16px] 2xl:text-[18px]",
 
-  "purple":
+  purple:
     "bg-[var(--btn-purple)] text-white border-none " +
     "rounded-[30px] font-[var(--btn-font-poppins)] font-normal " +
     "px-4 " +
     "h-[24px] lg:h-[26px] xl:h-[27px] 2xl:h-[29px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
 
-  "dark":
+  dark:
     "bg-[var(--btn-dark)] text-white border border-black " +
     "rounded-[var(--btn-radius-pill-sm)] gap-2.5 " +
     "font-[var(--btn-font-primary)] font-semibold " +
@@ -92,7 +91,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     "h-[32px] lg:h-[34px] xl:h-[36px] 2xl:h-[38px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
 
-  "lime":
+  lime:
     "bg-[var(--btn-lime)] text-[var(--btn-lime-text)] border-none " +
     "rounded-[20px] font-[var(--btn-font-primary)] font-medium " +
     "px-4 lg:px-5 " +
@@ -136,7 +135,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     "h-[36px] lg:h-[38px] xl:h-[40px] 2xl:h-[42px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
 
-  "export":
+  export:
     "bg-transparent text-[var(--btn-export-text)] " +
     "border border-[var(--btn-export-border)] " +
     "rounded-[var(--btn-radius-rounded)] gap-1.5 " +
@@ -183,8 +182,20 @@ const Spinner = () => (
     className="shrink-0 animate-spin"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <circle cx="8" cy="8" r="6" stroke="currentColor" strokeOpacity="0.3" strokeWidth="2" />
-    <path d="M14 8a6 6 0 0 0-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <circle
+      cx="8"
+      cy="8"
+      r="6"
+      stroke="currentColor"
+      strokeOpacity="0.3"
+      strokeWidth="2"
+    />
+    <path
+      d="M14 8a6 6 0 0 0-6-6"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
@@ -205,7 +216,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       children,
       ...props
     },
-    ref
+    ref,
   ) => {
     return (
       <button
@@ -215,7 +226,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           base,
           variantClasses[variant],
           fullWidth && "w-full",
-          className
+          className,
         )}
         {...props}
       >
@@ -254,10 +265,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
       </button>
     );
-  }
+  },
 );
 
 Button.displayName = "Button";
 
 export { Button };
-
