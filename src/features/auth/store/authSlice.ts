@@ -15,8 +15,10 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
+const storedUser = localStorage.getItem('user');
+
 const initialState: AuthState = {
-  user: null,
+  user: storedUser ? (JSON.parse(storedUser) as User) : null,
   accessToken: localStorage.getItem('accessToken'),
   refreshToken: localStorage.getItem('refreshToken'),
   isAuthenticated: !!localStorage.getItem('accessToken'),
@@ -35,7 +37,9 @@ const authSlice = createSlice({
       state.accessToken = accessToken;
       state.refreshToken = refreshToken;
       state.isAuthenticated = true;
-      
+
+      // Persist all three so role + tokens survive a page refresh
+      localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
     },
@@ -44,7 +48,8 @@ const authSlice = createSlice({
       state.accessToken = null;
       state.refreshToken = null;
       state.isAuthenticated = false;
-      
+
+      localStorage.removeItem('user');
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
     },
