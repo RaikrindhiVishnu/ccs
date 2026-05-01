@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { Plus } from "lucide-react";
+import location from "@/assets/location.svg";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -57,28 +58,28 @@ const fallbackAgents: Agent[] = [
     status: "Rejected",
     initials: "SB",
   },
-   {
+  {
     id: "6",
     name: "Sandeep Bhukya",
     location: "Bengaluru, Karnataka",
     status: "Rejected",
     initials: "SB",
   },
-   {
+  {
     id: "7",
     name: "Sandeep Bhukya",
     location: "Bengaluru, Karnataka",
     status: "Rejected",
     initials: "SB",
   },
-   {
+  {
     id: "8",
     name: "Sandeep Bhukya",
     location: "Bengaluru, Karnataka",
     status: "Rejected",
     initials: "SB",
   },
-   {
+  {
     id: "9",
     name: "Sandeep Bhukya",
     location: "Bengaluru, Karnataka",
@@ -98,19 +99,14 @@ const StatusBadge = ({
     "Pending Review": {
       dot: "bg-[color:var(--primary)]",
       text: "text-[color:var(--primary)]",
-     
     },
-
     Approved: {
       dot: "bg-[color:var(--success-green)]",
       text: "text-[color:var(--success-green)]",
- 
     },
-
     Rejected: {
       dot: "bg-[color:var(--danger)]",
       text: "text-[color:var(--danger)]",
-
     },
   };
 
@@ -120,10 +116,9 @@ const StatusBadge = ({
     <div
       className={cn(
         "inline-flex items-center justify-center",
-        "min-w-[132px]",
-        "h-[28px]",
+        "min-w-[8.25rem]",   // was min-w-[132px]  → 132/16 = 8.25rem
+        "h-[1.75rem]",       // was h-[28px]       → 28/16  = 1.75rem
         "px-3",
-
       )}
     >
       <div className="flex items-center gap-2">
@@ -133,12 +128,12 @@ const StatusBadge = ({
             c.dot,
           )}
         />
-
         <span
           className={cn(
             "font-medium leading-none whitespace-nowrap",
             "font-[family-name:var(--font-sans)]",
-            "text-[11px] lg:text-[12px] xl:text-[13px]",
+            "text-[0.6875rem] lg:text-[0.75rem] xl:text-[0.8125rem]",
+            // was text-[11px] → 11/16=0.6875rem  |  12px → 0.75rem  |  13px → 0.8125rem
             c.text,
           )}
         >
@@ -166,15 +161,12 @@ const Avatar = ({
       "rounded-full",
       "overflow-hidden",
       "flex items-center justify-center",
-
       "bg-[color:var(--avatar-fallback)]",
-
       "shadow-[0px_2px_4px_rgba(0,0,0,0.10)]",
-
-      "w-[48px] h-[48px]",
-      "lg:w-[52px] lg:h-[52px]",
-      "xl:w-[56px] xl:h-[56px]",
-      "2xl:w-[64px] 2xl:h-[64px]",
+      "w-[3rem] h-[3rem]",             // was w-[48px]  → 48/16 = 3rem
+      "lg:w-[3.25rem] lg:h-[3.25rem]", // was 52px      → 52/16 = 3.25rem
+      "xl:w-[3.5rem] xl:h-[3.5rem]",   // was 56px      → 56/16 = 3.5rem
+      "2xl:w-[4rem] 2xl:h-[4rem]",     // was 64px      → 64/16 = 4rem
     )}
   >
     {url ? (
@@ -189,12 +181,12 @@ const Avatar = ({
           font-bold
           text-white
           font-[family-name:var(--font-heading)]
-
-          text-[14px]
-          lg:text-[15px]
-          xl:text-[16px]
-          2xl:text-[18px]
+          text-[0.875rem]
+          lg:text-[0.9375rem]
+          xl:text-[1rem]
+          2xl:text-[1.125rem]
         "
+        // was 14px→0.875rem | 15px→0.9375rem | 16px→1rem | 18px→1.125rem
       >
         {initials}
       </span>
@@ -205,19 +197,15 @@ const Avatar = ({
 // ─── Location Icon ────────────────────────────────────────────────────────────
 
 const LocationIcon = () => (
-  <svg
-    width="9"
-    height="12"
-    viewBox="0 0 9 12"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className="shrink-0"
-  >
-    <path
-      d="M4.5 0C2.01 0 0 2.01 0 4.5C0 7.875 4.5 12 4.5 12C4.5 12 9 7.875 9 4.5C9 2.01 6.99 0 4.5 0ZM4.5 6C3.675 6 3 5.325 3 4.5C3 3.675 3.675 3 4.5 3C5.325 3 6 3.675 6 4.5C6 5.325 5.325 6 4.5 6Z"
-      fill="var(--text-neutral)"
-    />
-  </svg>
+  <img
+    src={location}
+    alt="location"
+    className="flex-none object-contain"
+    style={{
+      width: "0.583rem",   // was 9.33px  → 9.33/16 ≈ 0.583rem
+      height: "0.729rem",  // was 11.67px → 11.67/16 ≈ 0.729rem
+    }}
+  />
 );
 
 // ─── Agent Row ────────────────────────────────────────────────────────────────
@@ -232,40 +220,32 @@ const AgentRow = ({
   <div
     className={cn(
       "relative w-full",
-
       "bg-[color:var(--card)]",
-
       "border border-[color:var(--border-soft)]",
-
       "shadow-[0px_20px_40px_rgba(0,49,50,0.06)]",
-
-      "rounded-[24px] lg:rounded-[28px] xl:rounded-[32px]",
-
+      "rounded-[1.5rem] lg:rounded-[1.75rem] xl:rounded-[2rem]",
+      // was rounded-[24px]→1.5rem | [28px]→1.75rem | [32px]→2rem
       "grid items-center",
-
-     "grid-cols-[minmax(0,1fr)_160px_160px]",
-
+      "grid-cols-[minmax(0,1fr)_10rem_10rem]",
+      // was 160px → 160/16 = 10rem
       "gap-4 lg:gap-6 xl:gap-8",
-
-      "px-[20px] lg:px-[22px] xl:px-[28px]",
-
-      "h-[90px] lg:h-[100px] xl:h-[110px] 2xl:h-[114px]",
-
+      "px-[1.25rem] lg:px-[1.375rem] xl:px-[1.75rem]",
+      // was px-[20px]→1.25rem | [22px]→1.375rem | [28px]→1.75rem
+      "h-[5.625rem] lg:h-[6.25rem] xl:h-[6.875rem] 2xl:h-[7.125rem]",
+      // was h-[90px]→5.625rem | [100px]→6.25rem | [110px]→6.875rem | [114px]→7.125rem
       "transition-shadow duration-200",
-
       "hover:shadow-[0px_24px_48px_rgba(0,49,50,0.10)]",
     )}
   >
     {/* Left Section */}
-   <div
-  className="
-    flex items-center
-    gap-4 lg:gap-5 xl:gap-6
-
-    min-w-0
-    overflow-hidden
-  "
->
+    <div
+      className="
+        flex items-center
+        gap-4 lg:gap-5 xl:gap-6
+        min-w-0
+        overflow-hidden
+      "
+    >
       <Avatar
         url={agent.avatarUrl}
         initials={agent.initials}
@@ -281,32 +261,29 @@ const AgentRow = ({
             text-[color:var(--text-dark)]
             leading-none
             truncate
-
-            !text-[16px]
-            lg:!text-[17px]
-            xl:!text-[18px]
-            2xl:!text-[20px]
+            !text-[1rem]
+            lg:!text-[1.0625rem]
+            xl:!text-[1.125rem]
+            2xl:!text-[1.25rem]
           "
+          // was 16px→1rem | 17px→1.0625rem | 18px→1.125rem | 20px→1.25rem
         >
           {agent.name}
         </Typography>
 
         <div className="flex items-center gap-1.5">
           <LocationIcon />
-
           <span
             className="
               text-[color:var(--text-neutral)]
-
               font-[family-name:var(--font-sans)]
-
               leading-none
-
-              text-[11px]
-              lg:text-[12px]
-              xl:text-[13px]
-              2xl:text-[14px]
+              text-[0.6875rem]
+              lg:text-[0.75rem]
+              xl:text-[0.8125rem]
+              2xl:text-[0.875rem]
             "
+            // was 11px→0.6875rem | 12px→0.75rem | 13px→0.8125rem | 14px→0.875rem
           >
             {agent.location}
           </span>
@@ -315,31 +292,32 @@ const AgentRow = ({
     </div>
 
     {/* Status Column */}
-    <div className="w-[150px] flex justify-start">
+    <div className="w-[9.375rem] flex justify-start">
+      {/* was w-[150px] → 150/16 = 9.375rem */}
       <StatusBadge status={agent.status} />
     </div>
 
     {/* Button Column */}
-    <div className="w-[150px] flex justify-end">
+    <div className="w-[9.375rem] flex justify-end">
+      {/* was w-[150px] → 9.375rem */}
       <Button
         variant="primary"
         onClick={() => onViewProfile(agent.id)}
         className="
-          !h-[36px]
-          lg:!h-[40px]
-          xl:!h-[42px]
-
+          !h-[2.25rem]
+          lg:!h-[2.5rem]
+          xl:!h-[2.625rem]
           !rounded-full
-
-          !text-[10px]
-          lg:!text-[11px]
-          xl:!text-[12px]
-          2xl:!text-[13px]
-
+          !text-[0.625rem]
+          lg:!text-[0.6875rem]
+          xl:!text-[0.75rem]
+          2xl:!text-[0.8125rem]
           !px-4
           lg:!px-5
           xl:!px-6
         "
+        // h: 36px→2.25rem | 40px→2.5rem | 42px→2.625rem
+        // text: 10px→0.625rem | 11px→0.6875rem | 12px→0.75rem | 13px→0.8125rem
       >
         View Profile
       </Button>
@@ -352,20 +330,13 @@ const AgentRow = ({
 export const AgentApprovalsPage = ({
   agents = [],
 }: AgentApprovalsPageProps) => {
+  const agentList = agents.length > 0 ? agents : fallbackAgents;
 
-  const agentList =
-    agents.length > 0
-      ? agents
-      : fallbackAgents;
+  const [visibleCount, setVisibleCount] = React.useState(5);
 
-  const [visibleCount, setVisibleCount] =
-    React.useState(5);
+  const visibleAgents = agentList.slice(0, visibleCount);
 
-  const visibleAgents =
-    agentList.slice(0, visibleCount);
-
-  const hasMore =
-    visibleCount < agentList.length;
+  const hasMore = visibleCount < agentList.length;
 
   const handleViewProfile = (id: string) => {
     console.log("View profile:", id);
@@ -380,54 +351,47 @@ export const AgentApprovalsPage = ({
       className="
         w-full
         min-h-screen
-
         bg-[color:var(--background)]
-
         font-[family-name:var(--font-sans)]
       "
     >
       <div
         className={cn(
           "mx-auto",
-
-          "max-w-[1900px]",
-
-          "px-[24px]",
-          "lg:px-[40px]",
-          "xl:px-[56px]",
-          "2xl:px-[64px]",
-
-          "py-[24px]",
-          "lg:py-[32px]",
-          "xl:py-[40px]",
-          "2xl:py-[48px]",
+          "max-w-[118.75rem]",
+          // was max-w-[1900px] → 1900/16 = 118.75rem
+          "px-[1.5rem]",
+          "lg:px-[2.5rem]",
+          "xl:px-[3.5rem]",
+          "2xl:px-[4rem]",
+          // was 24px→1.5rem | 40px→2.5rem | 56px→3.5rem | 64px→4rem
+          "py-[1.5rem]",
+          "lg:py-[2rem]",
+          "xl:py-[2.5rem]",
+          "2xl:py-[3rem]",
+          // was 24px→1.5rem | 32px→2rem | 40px→2.5rem | 48px→3rem
         )}
       >
         {/* Header */}
         <div
           className="
             flex items-center justify-between
-
-            mb-[24px]
-            lg:mb-[28px]
-            xl:mb-[32px]
+            mb-[1.5rem]
+            lg:mb-[1.75rem]
+            xl:mb-[2rem]
           "
         >
           <Typography
             variant="h1"
             className="
               font-[family-name:var(--font-heading)]
-
               font-bold
-
               text-[color:var(--foreground)]
-
               leading-none
-
-              !text-[26px]
-              lg:!text-[30px]
-              xl:!text-[33px]
-              2xl:!text-[36px]
+              !text-[1.625rem]
+              lg:!text-[1.875rem]
+              xl:!text-[2.0625rem]
+              2xl:!text-[2.25rem]
             "
           >
             Agent Approvals
@@ -443,22 +407,18 @@ export const AgentApprovalsPage = ({
               />
             }
             className="
-              !h-[44px]
-              lg:!h-[48px]
-              xl:!h-[52px]
-
+              !h-[2.75rem]
+              lg:!h-[3rem]
+              xl:!h-[3.25rem]
               !rounded-[var(--btn-radius-pill)]
-
               gap-1.5
-
-              !px-[18px]
-              lg:!px-[22px]
-              xl:!px-[26px]
-
-              !text-[11px]
-              lg:!text-[12px]
-              xl:!text-[13px]
-              2xl:!text-[14px]
+              !px-[1.125rem]
+              lg:!px-[1.375rem]
+              xl:!px-[1.625rem]
+              !text-[0.6875rem]
+              lg:!text-[0.75rem]
+              xl:!text-[0.8125rem]
+              2xl:!text-[0.875rem]
             "
           >
             Create Agent
@@ -469,11 +429,11 @@ export const AgentApprovalsPage = ({
         <div
           className="
             flex flex-col
-
-            gap-[12px]
-            lg:gap-[14px]
-            xl:gap-[16px]
+            gap-[0.75rem]
+            lg:gap-[0.875rem]
+            xl:gap-[1rem]
           "
+          // was 12px→0.75rem | 14px→0.875rem | 16px→1rem
         >
           {visibleAgents.map((agent) => (
             <AgentRow
@@ -488,48 +448,36 @@ export const AgentApprovalsPage = ({
         <div
           className="
             flex justify-center
-
-            mt-[24px]
-            lg:mt-[28px]
-            xl:mt-[32px]
+            mt-[1.5rem]
+            lg:mt-[1.75rem]
+            xl:mt-[2rem]
           "
+          // was 24px→1.5rem | 28px→1.75rem | 32px→2rem
         >
           <Button
             variant="secondary"
-            onClick={() =>
-              setVisibleCount((c) => c + 7)
-            }
+            onClick={() => setVisibleCount((c) => c + 7)}
             disabled={!hasMore}
             className="
-              !h-[52px]
-              lg:!h-[56px]
-              xl:!h-[60px]
-
+              !h-[3.25rem]
+              lg:!h-[3.5rem]
+              xl:!h-[3.75rem]
               !rounded-[var(--btn-radius-pill)]
-
               bg-[color:var(--card)]
-
               border
               border-[color:var(--border-soft)]
-
               shadow-none
-
-              !px-[36px]
-              lg:!px-[44px]
-              xl:!px-[56px]
-
+              !px-[2.25rem]
+              lg:!px-[2.75rem]
+              xl:!px-[3.5rem]
               uppercase
               tracking-[0.16em]
-
               font-medium
-
               text-[color:var(--foreground)]
-
-              !text-[11px]
-              lg:!text-[12px]
-              xl:!text-[13px]
-              2xl:!text-[14px]
-
+              !text-[0.6875rem]
+              lg:!text-[0.75rem]
+              xl:!text-[0.8125rem]
+              2xl:!text-[0.875rem]
               disabled:opacity-50
               disabled:cursor-not-allowed
             "

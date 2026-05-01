@@ -31,26 +31,30 @@ function Toggle({ defaultOn = true }: { defaultOn?: boolean }) {
       onClick={() => setEnabled(!enabled)}
       className={`
         relative
-        w-[clamp(36px,2.8vw,48px)]
-        h-[clamp(20px,1.5vw,26px)]
+        w-[clamp(2.25rem,2.8vw,3rem)]
+        h-[clamp(1.25rem,1.5vw,1.625rem)]
         rounded-full
         transition-colors
         duration-300
         shrink-0
         ${enabled ? "bg-[color:var(--toggle-active)]" : "bg-gray-300"}
       `}
+
     >
       <div
         className={`
           absolute
-          top-[clamp(2px,0.2vw,3px)]
-          w-[clamp(14px,1.1vw,20px)]
-          h-[clamp(14px,1.1vw,20px)]
+          top-[clamp(0.125rem,0.2vw,0.1875rem)]
+          w-[clamp(0.875rem,1.1vw,1.25rem)]
+          h-[clamp(0.875rem,1.1vw,1.25rem)]
           rounded-full
           bg-white
           transition-all
           duration-300
-          ${enabled ? "left-[clamp(18px,1.4vw,25px)]" : "left-[clamp(2px,0.2vw,3px)]"}
+          ${enabled
+            ? "left-[clamp(1.125rem,1.4vw,1.5625rem)]"
+            : "left-[clamp(0.125rem,0.2vw,0.1875rem)]"
+          }
         `}
       />
     </button>
@@ -84,8 +88,8 @@ export default function RoleManagerDetails({ data, onBack }: RoleManagerDetailsP
         w-full
         min-h-screen
         bg-[color:var(--background)]
-        px-[clamp(20px,5vw,98px)]
-        py-[clamp(20px,2vw,38px)]
+        px-[clamp(1.25rem,5vw,6.125rem)]
+        py-[clamp(1.25rem,2vw,2.375rem)]
       "
     >
       {/* Go Back */}
@@ -95,12 +99,12 @@ export default function RoleManagerDetails({ data, onBack }: RoleManagerDetailsP
         className="
           flex items-center gap-2
           px-5 py-3
-          mb-[clamp(24px,2.5vw,38px)]
+          mb-[clamp(1.5rem,2.5vw,2.375rem)]
           bg-[color:var(--card)]
           rounded-full
           shadow-[0px_0px_4px_rgba(0,0,0,0.12)]
           text-[color:var(--text-neutral)]
-          text-[clamp(12px,0.95vw,16px)]
+          text-[clamp(0.75rem,0.95vw,1rem)]
           font-[family-name:var(--btn-font-secondary)]
           hover:opacity-80
           transition-opacity
@@ -114,25 +118,27 @@ export default function RoleManagerDetails({ data, onBack }: RoleManagerDetailsP
       <div
         className="
           w-full
-          max-w-[1700px]
+          max-w-[106.25rem]
           mx-auto
           bg-[color:var(--card)]
-          rounded-[clamp(28px,2.5vw,46px)]
-          p-[clamp(20px,2vw,32px)]
-          space-y-[clamp(18px,1.8vw,26px)]
+          rounded-[clamp(1.75rem,2.5vw,2.875rem)]
+          p-[clamp(1.25rem,2vw,2rem)]
+          space-y-[clamp(1.125rem,1.8vw,1.625rem)]
         "
       >
         {/* ───────────── PROFILE CARD ───────────── */}
         <div
           className="
             overflow-hidden
-            rounded-[clamp(16px,1.5vw,24px)]
+            rounded-[clamp(1rem,1.5vw,1.5rem)]
             bg-[color:var(--card)]
             shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
           "
+          // rounded: 16px→1rem, 24px→1.5rem
         >
           {/* Banner */}
-          <div className="w-full h-[clamp(120px,11vw,170px)] overflow-hidden">
+          <div className="w-full h-[clamp(7.5rem,11vw,10.625rem)] overflow-hidden">
+            {/* h: 120px→7.5rem, 170px→10.625rem */}
             <img src={role} alt="banner" className="w-full h-full object-cover" />
           </div>
 
@@ -141,45 +147,57 @@ export default function RoleManagerDetails({ data, onBack }: RoleManagerDetailsP
             className="
               relative
               flex items-end justify-between
-              px-[clamp(20px,2vw,32px)]
-              pb-[clamp(16px,1.6vw,24px)]
-              -mt-[clamp(40px,4vw,60px)]
+              px-[clamp(1.25rem,2vw,2rem)]
+              pb-[clamp(1rem,1.6vw,1.5rem)]
+              -mt-[clamp(2.5rem,4vw,3.75rem)]
             "
           >
             {/* Left */}
-            <div className="flex items-end gap-[clamp(12px,1.2vw,20px)]">
+            <div className="flex items-end gap-[clamp(0.75rem,1.2vw,1.25rem)]">
+              {/* gap: 12px→0.75rem, 20px→1.25rem */}
+
               {/* Avatar */}
               <div
                 className="
                   shrink-0
                   rounded-full
                   overflow-hidden
-                  border-[clamp(2px,0.2vw,4px)]
+                  border-[clamp(0.125rem,0.2vw,0.25rem)]
                   border-[color:var(--card)]
                   bg-[color:var(--card)]
                   shadow-[0px_4px_10px_rgba(0,0,0,0.12)]
-                  w-[clamp(100px,6vw,160px)]
-                  h-[clamp(100px,6vw,160px)]
+                  w-[clamp(6.25rem,6vw,10rem)]
+                  h-[clamp(6.25rem,6vw,10rem)]
                   flex items-center justify-center
                 "
+                // border: 2px→0.125rem, 4px→0.25rem
+                // w/h: 100px→6.25rem, 160px→10rem
               >
                 {profile.profileImage ? (
-                  <img src={profile.profileImage} alt="profile" className="w-full h-full object-cover" />
+                  <img
+                    src={profile.profileImage}
+                    alt="profile"
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  <User strokeWidth={1.5} className="w-[38%] h-[38%] text-[color:var(--muted)]" />
+                  <User
+                    strokeWidth={1.5}
+                    className="w-[38%] h-[38%] text-[color:var(--muted)]"
+                  />
                 )}
               </div>
 
               {/* Name */}
-              <div className="pb-[clamp(4px,0.4vw,8px)]">
+              <div className="pb-[clamp(0.25rem,0.4vw,0.5rem)]">
+                {/* pb: 4px→0.25rem, 8px→0.5rem */}
                 <Typography
                   variant="h2"
                   className="
                     font-bold
                     leading-none
-                    pt-[clamp(60px,3.5vw,84px)]
+                    pt-[clamp(3.75rem,3.5vw,5.25rem)]
                     text-[color:var(--profile-text)]
-                    text-[clamp(18px,1.3vw,24px)]
+                    text-[clamp(1.125rem,1.3vw,1.5rem)]
                   "
                 >
                   {profile.firstName} {profile.lastName}
@@ -187,10 +205,10 @@ export default function RoleManagerDetails({ data, onBack }: RoleManagerDetailsP
 
                 <p
                   className="
-                    mt-[clamp(4px,0.4vw,8px)]
+                    mt-[clamp(0.25rem,0.4vw,0.5rem)]
                     font-medium
                     text-[color:var(--profile-subtext)]
-                    text-[clamp(11px,0.9vw,15px)]
+                    text-[clamp(0.6875rem,0.9vw,0.9375rem)]
                   "
                 >
                   {profile.role}
@@ -199,15 +217,17 @@ export default function RoleManagerDetails({ data, onBack }: RoleManagerDetailsP
             </div>
 
             {/* Badge */}
-            <div className="pb-[clamp(4px,0.5vw,10px)] shrink-0">
+            <div className="pb-[clamp(0.25rem,0.5vw,0.625rem)] shrink-0">
+              {/* pb: 4px→0.25rem, 10px→0.625rem */}
               <img
                 src={SuccessIcon}
                 alt="success"
                 className="
                   object-contain
-                  w-[clamp(34px,3vw,52px)]
-                  h-[clamp(34px,3vw,52px)]
+                  w-[clamp(2.125rem,3vw,3.25rem)]
+                  h-[clamp(2.125rem,3vw,3.25rem)]
                 "
+                // w/h: 34px→2.125rem, 52px→3.25rem
               />
             </div>
           </div>
@@ -217,20 +237,21 @@ export default function RoleManagerDetails({ data, onBack }: RoleManagerDetailsP
         <div
           className="
             bg-[color:var(--card)]
-            rounded-[clamp(16px,1.5vw,24px)]
+            rounded-[clamp(1rem,1.5vw,1.5rem)]
             shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
-            px-[clamp(20px,2vw,30px)]
-            py-[clamp(20px,2vw,28px)]
-            space-y-[clamp(18px,1.6vw,28px)]
+            px-[clamp(1.25rem,2vw,1.875rem)]
+            py-[clamp(1.25rem,2vw,1.75rem)]
+            space-y-[clamp(1.125rem,1.6vw,1.75rem)]
           "
         >
           <Typography
             variant="h3"
             className="
               font-semibold
-              text-[clamp(18px,1.5vw,24px)]
+              text-[clamp(1.125rem,1.5vw,1.5rem)]
               text-[color:var(--foreground)]
             "
+            // text: 18px→1.125rem, 24px→1.5rem
           >
             Personal Details
           </Typography>
@@ -241,8 +262,8 @@ export default function RoleManagerDetails({ data, onBack }: RoleManagerDetailsP
               grid-cols-1
               md:grid-cols-2
               2xl:grid-cols-3
-              gap-x-[clamp(16px,1.8vw,24px)]
-              gap-y-[clamp(16px,1.8vw,28px)]
+              gap-x-[clamp(1rem,1.8vw,1.5rem)]
+              gap-y-[clamp(1rem,1.8vw,1.75rem)]
             "
           >
             <Field label="First Name" value={profile.firstName} />
@@ -257,20 +278,21 @@ export default function RoleManagerDetails({ data, onBack }: RoleManagerDetailsP
         <div
           className="
             bg-[color:var(--card)]
-            rounded-[clamp(16px,1.5vw,24px)]
+            rounded-[clamp(1rem,1.5vw,1.5rem)]
             shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
-            px-[clamp(20px,2vw,30px)]
-            py-[clamp(20px,2vw,28px)]
-            space-y-[clamp(18px,1.6vw,28px)]
+            px-[clamp(1.25rem,2vw,1.875rem)]
+            py-[clamp(1.25rem,2vw,1.75rem)]
+            space-y-[clamp(1.125rem,1.6vw,1.75rem)]
           "
         >
           <Typography
             variant="h3"
             className="
               font-semibold
-              text-[clamp(18px,1.5vw,24px)]
+              text-[clamp(1.125rem,1.5vw,1.5rem)]
               text-[color:var(--foreground)]
             "
+            // text: 18px→1.125rem, 24px→1.5rem
           >
             Alerts
           </Typography>
@@ -280,26 +302,30 @@ export default function RoleManagerDetails({ data, onBack }: RoleManagerDetailsP
               grid
               grid-cols-1
               xl:grid-cols-2
-              gap-[clamp(18px,2vw,40px)]
+              gap-[clamp(1.125rem,2vw,2.5rem)]
             "
+            // gap: 18px→1.125rem, 40px→2.5rem
           >
             {/* Notifications */}
             <div className="flex items-center justify-between">
-              <div className="space-y-[clamp(2px,0.3vw,6px)]">
+              <div className="space-y-[clamp(0.125rem,0.3vw,0.375rem)]">
+                {/* space-y: 2px→0.125rem, 6px→0.375rem */}
                 <h4
                   className="
                     font-semibold
-                    text-[clamp(14px,1vw,18px)]
+                    text-[clamp(0.875rem,1vw,1.125rem)]
                     text-[color:var(--foreground)]
                   "
+                  // text: 14px→0.875rem, 18px→1.125rem
                 >
                   Notifications
                 </h4>
                 <p
                   className="
-                    text-[clamp(11px,0.9vw,14px)]
+                    text-[clamp(0.6875rem,0.9vw,0.875rem)]
                     text-[color:var(--muted)]
                   "
+                  // text: 11px→0.6875rem, 14px→0.875rem
                 >
                   Receive updates via Notifications
                 </p>
@@ -309,21 +335,24 @@ export default function RoleManagerDetails({ data, onBack }: RoleManagerDetailsP
 
             {/* SMS */}
             <div className="flex items-center justify-between">
-              <div className="space-y-[clamp(2px,0.3vw,6px)]">
+              <div className="space-y-[clamp(0.125rem,0.3vw,0.375rem)]">
+                {/* space-y: 2px→0.125rem, 6px→0.375rem */}
                 <h4
                   className="
                     font-semibold
-                    text-[clamp(14px,1vw,18px)]
+                    text-[clamp(0.875rem,1vw,1.125rem)]
                     text-[color:var(--foreground)]
                   "
+                  // text: 14px→0.875rem, 18px→1.125rem
                 >
                   SMS Alerts
                 </h4>
                 <p
                   className="
-                    text-[clamp(11px,0.9vw,14px)]
+                    text-[clamp(0.6875rem,0.9vw,0.875rem)]
                     text-[color:var(--muted)]
                   "
+                  // text: 11px→0.6875rem, 14px→0.875rem
                 >
                   Get important alerts via SMS
                 </p>

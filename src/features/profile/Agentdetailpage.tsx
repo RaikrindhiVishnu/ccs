@@ -2,7 +2,8 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
-import { ArrowLeft, User } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface AgentDetail {
@@ -10,20 +11,16 @@ interface AgentDetail {
   name: string;
   applicationId: string;
   status: "Pending Review" | "Approved" | "Rejected";
-
   avatarUrl?: string;
   initials?: string;
   bannerUrl?: string;
-
   email: string;
   phone: string;
   dateOfBirth: string;
   operatingTerritory: string;
-
   bankName: string;
   accountNumber: string;
   ifscCode: string;
-
   aadhaarImageUrl?: string;
   panImageUrl?: string;
 }
@@ -42,15 +39,11 @@ const agentData: AgentDetail = {
   name: "Aarav Sharma",
   applicationId: "GLC-992-IND",
   status: "Pending Review",
-
   initials: "AS",
-
   email: "ramkishore@gmail.com",
   phone: "+91 934-2848-293",
   dateOfBirth: "14 August 1992",
-
   operatingTerritory: "Tanuka, West Godavari, Andhra Pradesh, 534211",
-
   bankName: "HDFC Bank",
   accountNumber: "12345678910",
   ifscCode: "HDFC12345678",
@@ -65,13 +58,11 @@ const StatusBadge = ({ status }: { status: AgentDetail["status"] }) => {
       text: "text-[color:var(--primary)]",
       bg: "bg-[color:var(--status-pending-bg)]",
     },
-
     Approved: {
       dot: "bg-[color:var(--success-green)]",
       text: "text-[color:var(--success-green)]",
       bg: "bg-[color:var(--success-soft)]",
     },
-
     Rejected: {
       dot: "bg-[color:var(--danger)]",
       text: "text-[color:var(--danger)]",
@@ -85,27 +76,21 @@ const StatusBadge = ({ status }: { status: AgentDetail["status"] }) => {
     <div
       className={cn(
         "inline-flex items-center gap-2",
-
         "px-3 py-1.5",
-
         "rounded-full",
-
         c.bg,
       )}
     >
       <span className={cn("w-2 h-2 rounded-full shrink-0", c.dot)} />
-
       <span
         className={cn(
           "font-medium leading-none",
-
           "font-[family-name:var(--font-sans)]",
-
-          "text-[11px]",
-          "lg:text-[12px]",
-          "xl:text-[13px]",
-          "2xl:text-[14px]",
-
+          "text-[0.6875rem]",
+          "lg:text-[0.75rem]",
+          "xl:text-[0.8125rem]",
+          "2xl:text-[0.875rem]",
+          // 11px→0.6875rem | 12px→0.75rem | 13px→0.8125rem | 14px→0.875rem
           c.text,
         )}
       >
@@ -129,11 +114,10 @@ const InfoField = ({
   <div
     className={cn(
       "flex flex-col",
-
-      "gap-[6px]",
-      "lg:gap-[8px]",
-      "xl:gap-[10px]",
-
+      "gap-[0.375rem]",
+      "lg:gap-[0.5rem]",
+      "xl:gap-[0.625rem]",
+      // 6px→0.375rem | 8px→0.5rem | 10px→0.625rem
       className,
     )}
   >
@@ -141,33 +125,28 @@ const InfoField = ({
       className="
         font-medium
         leading-none
-
         font-[family-name:var(--font-sans)]
-
         text-[color:var(--label-color)]
-
-        text-[12px]
-        lg:text-[13px]
-        xl:text-[14px]
-        2xl:text-[16px]
+        text-[0.75rem]
+        lg:text-[0.8125rem]
+        xl:text-[0.875rem]
+        2xl:text-[1rem]
       "
+      // 12px→0.75rem | 13px→0.8125rem | 14px→0.875rem | 16px→1rem
     >
       {label}
     </span>
-
     <span
       className="
         leading-snug
-
         font-[family-name:'Inter',sans-serif]
-
         text-[color:var(--profile-text)]
-
-        text-[12px]
-        lg:text-[13px]
-        xl:text-[13px]
-        2xl:text-[14px]
+        text-[0.75rem]
+        lg:text-[0.8125rem]
+        xl:text-[0.8125rem]
+        2xl:text-[0.875rem]
       "
+      // 12px→0.75rem | 13px→0.8125rem | 13px→0.8125rem | 14px→0.875rem
     >
       {value}
     </span>
@@ -188,25 +167,23 @@ const SectionCard = ({
   <div
     className={cn(
       "bg-[color:var(--card)]",
-
-      "rounded-[16px]",
-      "lg:rounded-[20px]",
-      "xl:rounded-[24px]",
-
+      "rounded-[1rem]",
+      "lg:rounded-[1.25rem]",
+      "xl:rounded-[1.5rem]",
+      // 16px→1rem | 20px→1.25rem | 24px→1.5rem
       "shadow-[0px_0px_6px_rgba(0,0,0,0.12)]",
-
-      "px-[20px]",
-      "lg:px-[24px]",
-      "xl:px-[30px]",
-
-      "pt-[18px]",
-      "lg:pt-[20px]",
-      "xl:pt-[24px]",
-
-      "pb-[20px]",
-      "lg:pb-[24px]",
-      "xl:pb-[28px]",
-
+      "px-[1.25rem]",
+      "lg:px-[1.5rem]",
+      "xl:px-[1.875rem]",
+      // 20px→1.25rem | 24px→1.5rem | 30px→1.875rem
+      "pt-[1.125rem]",
+      "lg:pt-[1.25rem]",
+      "xl:pt-[1.5rem]",
+      // 18px→1.125rem | 20px→1.25rem | 24px→1.5rem
+      "pb-[1.25rem]",
+      "lg:pb-[1.5rem]",
+      "xl:pb-[1.75rem]",
+      // 20px→1.25rem | 24px→1.5rem | 28px→1.75rem
       className,
     )}
   >
@@ -215,24 +192,21 @@ const SectionCard = ({
       className="
         font-semibold
         leading-none
-
         font-[family-name:var(--font-sans)]
-
         text-[color:var(--text-subtle)]
-
-        mb-[20px]
-        lg:mb-[24px]
-        xl:mb-[28px]
-
-        !text-[16px]
-        lg:!text-[18px]
-        xl:!text-[20px]
-        2xl:!text-[24px]
+        mb-[1.25rem]
+        lg:mb-[1.5rem]
+        xl:mb-[1.75rem]
+        !text-[1rem]
+        lg:!text-[1.125rem]
+        xl:!text-[1.25rem]
+        2xl:!text-[1.5rem]
       "
+      // mb: 20px→1.25rem | 24px→1.5rem | 28px→1.75rem
+      // text: 16px→1rem | 18px→1.125rem | 20px→1.25rem | 24px→1.5rem
     >
       {title}
     </Typography>
-
     {children}
   </div>
 );
@@ -249,46 +223,39 @@ const DocumentCard = ({
   <div
     className="
       flex flex-col
-
-      gap-[8px]
-      lg:gap-[10px]
+      gap-[0.5rem]
+      lg:gap-[0.625rem]
     "
+    // 8px→0.5rem | 10px→0.625rem
   >
     <span
       className="
         font-medium
-
         font-[family-name:var(--font-sans)]
-
         text-[color:var(--label-color)]
-
-        text-[12px]
-        lg:text-[13px]
-        xl:text-[14px]
-        2xl:text-[16px]
+        text-[0.75rem]
+        lg:text-[0.8125rem]
+        xl:text-[0.875rem]
+        2xl:text-[1rem]
       "
+      // 12px→0.75rem | 13px→0.8125rem | 14px→0.875rem | 16px→1rem
     >
       {label}
     </span>
-
     <div
       className="
         border
         border-dashed
         border-[color:var(--input-border)]
-
-        rounded-[12px]
-        lg:rounded-[14px]
-        xl:rounded-[18px]
-
+        rounded-[0.75rem]
+        lg:rounded-[0.875rem]
+        xl:rounded-[1.125rem]
         overflow-hidden
-
         flex items-center justify-center
-
         w-full
-
         aspect-[323/197]
       "
+      // 12px→0.75rem | 14px→0.875rem | 18px→1.125rem
     >
       {imageUrl ? (
         <img
@@ -297,31 +264,25 @@ const DocumentCard = ({
           className="
             w-[75%]
             h-[80%]
-
             object-cover
-
-            rounded-[4px]
-
+            rounded-[0.25rem]
             shadow-[0px_4px_4px_rgba(0,0,0,0.25)]
           "
+          // 4px→0.25rem
         />
       ) : (
         <div
           className="
             w-[75%]
             h-[78%]
-
-            rounded-[6px]
-
+            rounded-[0.375rem]
             flex items-center justify-center
-
             shadow-[0px_4px_4px_rgba(0,0,0,0.10)]
-
             bg-gradient-to-br
-
             from-[color:var(--document-placeholder-from)]
             to-[color:var(--document-placeholder-to)]
           "
+          // 6px→0.375rem
         >
           <svg
             width="32"
@@ -339,9 +300,7 @@ const DocumentCard = ({
               stroke="var(--document-icon)"
               strokeWidth="1.5"
             />
-
             <path d="M2 9h20" stroke="var(--document-icon)" strokeWidth="1.5" />
-
             <circle cx="6" cy="13" r="1" fill="var(--document-icon)" />
           </svg>
         </div>
@@ -356,18 +315,19 @@ const BackButton = ({ onClick }: { onClick?: () => void }) => (
   <button
     onClick={onClick}
     className="
-          flex items-center gap-2
-          px-5 py-3
-          mb-[clamp(24px,2.5vw,38px)]
-          bg-[color:var(--card)]
-          rounded-full
-          shadow-[0px_0px_4px_rgba(0,0,0,0.12)]
-          text-[color:var(--text-neutral)]
-          text-[clamp(12px,0.95vw,16px)]
-          font-[family-name:var(--btn-font-secondary)]
-          hover:opacity-80
-          transition-opacity
-        "
+      flex items-center gap-2
+      px-5 py-3
+      mb-[clamp(1.5rem,2.5vw,2.375rem)]
+      bg-[color:var(--card)]
+      rounded-full
+      shadow-[0px_0px_4px_rgba(0,0,0,0.12)]
+      text-[color:var(--text-neutral)]
+      text-[clamp(0.75rem,0.95vw,1rem)]
+      font-[family-name:var(--btn-font-secondary)]
+      hover:opacity-80
+      transition-opacity
+    "
+    // clamp: 24px→1.5rem, 38px→2.375rem | 12px→0.75rem, 16px→1rem
   >
     <ArrowLeft size={16} strokeWidth={1.4} />
     Go Back to Dashboard
@@ -380,20 +340,18 @@ const ProfileHeaderCard = ({ agent }: { agent: AgentDetail }) => (
   <div
     className="
       bg-[color:var(--card)]
-
-      rounded-[16px]
-      lg:rounded-[20px]
-      xl:rounded-[24px]
-
+      rounded-[1rem]
+      lg:rounded-[1.25rem]
+      xl:rounded-[1.5rem]
       shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
-
       overflow-hidden
-
       relative
     "
+    // 16px→1rem | 20px→1.25rem | 24px→1.5rem
   >
     {/* Banner */}
-    <div className="h-[clamp(80px,12vw,140px)] overflow-hidden">
+    <div className="h-[clamp(5rem,12vw,8.75rem)] overflow-hidden">
+      {/* 80px→5rem | 140px→8.75rem */}
       <img src={Bannar} alt="Banner" className="w-full h-full object-cover" />
     </div>
 
@@ -401,62 +359,48 @@ const ProfileHeaderCard = ({ agent }: { agent: AgentDetail }) => (
     <div
       className="
         relative
-
         flex items-end justify-between
-
-        px-[20px]
-        lg:px-[28px]
-        xl:px-[50px]
-
-        pb-[16px]
-        lg:pb-[18px]
-        xl:pb-[22px]
+        px-[1.25rem]
+        lg:px-[1.75rem]
+        xl:px-[3.125rem]
+        pb-[1rem]
+        lg:pb-[1.125rem]
+        xl:pb-[1.375rem]
       "
     >
       {/* Left */}
       <div
         className="
           flex items-end
-
-          gap-[14px]
-          lg:gap-[16px]
-          xl:gap-[20px]
+          gap-[0.875rem]
+          lg:gap-[1rem]
+          xl:gap-[1.25rem]
         "
+        // 14px→0.875rem | 16px→1rem | 20px→1.25rem
       >
         {/* Avatar */}
         <div
           className="
             shrink-0
-
             rounded-full
-
             border-[3px]
             border-white
-
             overflow-hidden
-
             flex items-center justify-center
-
             bg-[color:var(--avatar-fallback)]
-
             shadow-[0px_2px_4px_rgba(0,0,0,0.10)]
-
-            -mt-[32px]
-            lg:-mt-[36px]
-            xl:-mt-[44px]
-            2xl:-mt-[52px]
-
-            w-[72px]
-            h-[72px]
-
-            lg:w-[90px]
-            lg:h-[90px]
-
-            xl:w-[110px]
-            xl:h-[110px]
-
-            2xl:w-[130px]
-            2xl:h-[130px]
+            -mt-[2rem]
+            lg:-mt-[2.25rem]
+            xl:-mt-[2.75rem]
+            2xl:-mt-[3.25rem]
+            w-[4.5rem]
+            h-[4.5rem]
+            lg:w-[5.625rem]
+            lg:h-[5.625rem]
+            xl:w-[6.875rem]
+            xl:h-[6.875rem]
+            2xl:w-[8.125rem]
+            2xl:h-[8.125rem]
           "
         >
           {agent.avatarUrl ? (
@@ -470,14 +414,13 @@ const ProfileHeaderCard = ({ agent }: { agent: AgentDetail }) => (
               className="
                 font-bold
                 text-white
-
                 font-[family-name:var(--font-heading)]
-
-                text-[20px]
-                lg:text-[24px]
-                xl:text-[28px]
-                2xl:text-[32px]
+                text-[1.25rem]
+                lg:text-[1.5rem]
+                xl:text-[1.75rem]
+                2xl:text-[2rem]
               "
+              // 20px→1.25rem | 24px→1.5rem | 28px→1.75rem | 32px→2rem
             >
               {agent.initials}
             </span>
@@ -488,45 +431,38 @@ const ProfileHeaderCard = ({ agent }: { agent: AgentDetail }) => (
         <div
           className="
             flex flex-col
-
-            gap-[4px]
-            lg:gap-[6px]
-
-            pb-[2px]
+            gap-[0.25rem]
+            lg:gap-[0.375rem]
+            pb-[0.125rem]
           "
+          // 4px→0.25rem | 6px→0.375rem | 2px→0.125rem
         >
           <Typography
             variant="h3"
             className="
               font-bold
               leading-none
-
               font-[family-name:var(--font-sans)]
-
               text-[color:var(--profile-text)]
-
-              !text-[16px]
-              lg:!text-[18px]
-              xl:!text-[20px]
-              2xl:!text-[24px]
+              !text-[1rem]
+              lg:!text-[1.125rem]
+              xl:!text-[1.25rem]
+              2xl:!text-[1.5rem]
             "
+            // 16px→1rem | 18px→1.125rem | 20px→1.25rem | 24px→1.5rem
           >
             {agent.name}
           </Typography>
-
           <span
             className="
               font-medium
               leading-none
-
               font-[family-name:var(--font-sans)]
-
               text-[color:var(--profile-subtext)]
-
-              text-[11px]
-              lg:text-[12px]
-              xl:text-[13px]
-              2xl:text-[16px]
+              text-[0.6875rem]
+              lg:text-[0.75rem]
+              xl:text-[0.8125rem]
+              2xl:text-[1rem]
             "
           >
             Application ID : {agent.applicationId}
@@ -535,7 +471,8 @@ const ProfileHeaderCard = ({ agent }: { agent: AgentDetail }) => (
       </div>
 
       {/* Status */}
-      <div className="pb-[2px]">
+      <div className="pb-[0.125rem]">
+        {/* 2px→0.125rem */}
         <StatusBadge status={agent.status} />
       </div>
     </div>
@@ -555,35 +492,31 @@ export const AgentDetailPage = ({
       className="
         w-full
         min-h-screen
-
         bg-[color:var(--background)]
-
         font-[family-name:var(--font-sans)]
       "
     >
       <div
         className="
           mx-auto
-
-          max-w-[1900px]
-
-          px-[24px]
-          lg:px-[40px]
-          xl:px-[56px]
-          2xl:px-[72px]
-
-          py-[24px]
-          lg:py-[32px]
-          xl:py-[40px]
-          2xl:py-[48px]
+          max-w-[118.75rem]
+          px-[1.5rem]
+          lg:px-[2.5rem]
+          xl:px-[3.5rem]
+          2xl:px-[4.5rem]
+          py-[1.5rem]
+          lg:py-[2rem]
+          xl:py-[2.5rem]
+          2xl:py-[3rem]
         "
       >
         <div
           className="
-            mb-[20px]
-            lg:mb-[24px]
-            xl:mb-[28px]
+            mb-[1.25rem]
+            lg:mb-[1.5rem]
+            xl:mb-[1.75rem]
           "
+          // 20px→1.25rem | 24px→1.5rem | 28px→1.75rem
         >
           <BackButton onClick={onBack} />
         </div>
@@ -591,28 +524,22 @@ export const AgentDetailPage = ({
         <div
           className="
             bg-[color:var(--card)]
-
-            rounded-[28px]
-            lg:rounded-[36px]
-            xl:rounded-[46px]
-
-            px-[20px]
-            lg:px-[32px]
-            xl:px-[50px]
-
-            pt-[24px]
-            lg:pt-[28px]
-            xl:pt-[32px]
-
-            pb-[32px]
-            lg:pb-[40px]
-            xl:pb-[48px]
-
+            rounded-[1.75rem]
+            lg:rounded-[2.25rem]
+            xl:rounded-[2.875rem]
+            px-[1.25rem]
+            lg:px-[2rem]
+            xl:px-[3.125rem]
+            pt-[1.5rem]
+            lg:pt-[1.75rem]
+            xl:pt-[2rem]
+            pb-[2rem]
+            lg:pb-[2.5rem]
+            xl:pb-[3rem]
             flex flex-col
-
-            gap-[16px]
-            lg:gap-[18px]
-            xl:gap-[20px]
+            gap-[1rem]
+            lg:gap-[1.125rem]
+            xl:gap-[1.25rem]
           "
         >
           <ProfileHeaderCard agent={agent} />
@@ -621,25 +548,19 @@ export const AgentDetailPage = ({
             <div
               className="
                 grid
-
                 grid-cols-2
                 xl:grid-cols-3
-
-                gap-x-[24px]
-                lg:gap-x-[32px]
-                xl:gap-x-[40px]
-
-                gap-y-[20px]
-                lg:gap-y-[24px]
-                xl:gap-y-[28px]
+                gap-x-[1.5rem]
+                lg:gap-x-[2rem]
+                xl:gap-x-[2.5rem]
+                gap-y-[1.25rem]
+                lg:gap-y-[1.5rem]
+                xl:gap-y-[1.75rem]
               "
             >
               <InfoField label="Email" value={agent.email} />
-
               <InfoField label="Phone number" value={agent.phone} />
-
               <InfoField label="Date Of Birth" value={agent.dateOfBirth} />
-
               <InfoField
                 label="Operating Territory"
                 value={agent.operatingTerritory}
@@ -652,22 +573,17 @@ export const AgentDetailPage = ({
             <div
               className="
                 grid
-
                 grid-cols-2
                 xl:grid-cols-3
-
-                gap-x-[24px]
-                lg:gap-x-[32px]
-                xl:gap-x-[40px]
-
-                gap-y-[20px]
-                lg:gap-y-[24px]
+                gap-x-[1.5rem]
+                lg:gap-x-[2rem]
+                xl:gap-x-[2.5rem]
+                gap-y-[1.25rem]
+                lg:gap-y-[1.5rem]
               "
             >
               <InfoField label="Bank Name" value={agent.bankName} />
-
               <InfoField label="Account Number" value={agent.accountNumber} />
-
               <InfoField label="IFSC Code" value={agent.ifscCode} />
             </div>
           </SectionCard>
@@ -676,19 +592,16 @@ export const AgentDetailPage = ({
             <div
               className="
                 grid grid-cols-2
-
-                gap-[20px]
-                lg:gap-[24px]
-                xl:gap-[32px]
-
-                max-w-[780px]
+                gap-[1.25rem]
+                lg:gap-[1.5rem]
+                xl:gap-[2rem]
+                max-w-[48.75rem]
               "
             >
               <DocumentCard
                 label="Aadhaar card"
                 imageUrl={agent.aadhaarImageUrl}
               />
-
               <DocumentCard label="Pan card" imageUrl={agent.panImageUrl} />
             </div>
           </SectionCard>
@@ -696,34 +609,26 @@ export const AgentDetailPage = ({
           <div
             className="
               flex items-center justify-end
-
-              gap-[10px]
-              lg:gap-[12px]
-              xl:gap-[14px]
-
-              pt-[4px]
+              gap-[0.625rem]
+              lg:gap-[0.75rem]
+              xl:gap-[0.875rem]
+              pt-[0.25rem]
             "
           >
             <button
               onClick={onDismiss}
               className="
                 font-medium
-
                 font-[family-name:'Inter',sans-serif]
-
                 text-[color:var(--profile-text)]
-
-                px-[20px]
-                lg:px-[24px]
-
-                py-[8px]
-
-                rounded-[6px]
-
-                text-[13px]
-                lg:text-[14px]
-                xl:text-[15px]
-                2xl:text-[16px]
+                px-[1.25rem]
+                lg:px-[1.5rem]
+                py-[0.5rem]
+                rounded-[0.375rem]
+                text-[0.8125rem]
+                lg:text-[0.875rem]
+                xl:text-[0.9375rem]
+                2xl:text-[1rem]
                 duration-150
               "
             >
@@ -734,28 +639,19 @@ export const AgentDetailPage = ({
               onClick={onApprove}
               className="
                 font-medium
-
                 font-[family-name:'Inter',sans-serif]
-
                 text-white
-
-                px-[28px]
-                lg:px-[32px]
-
-                py-[8px]
-
+                px-[1.75rem]
+                lg:px-[2rem]
+                py-[0.5rem]
                 rounded-full
-
                 bg-[linear-gradient(110.22deg,var(--approve-gradient-from)_0%,var(--approve-gradient-to)_100%)]
-
-                text-[13px]
-                lg:text-[14px]
-                xl:text-[15px]
-                2xl:text-[16px]
-
+                text-[0.8125rem]
+                lg:text-[0.875rem]
+                xl:text-[0.9375rem]
+                2xl:text-[1rem]
                 hover:opacity-90
                 active:scale-[0.97]
-
                 transition-all
                 duration-150
               "
