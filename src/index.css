@@ -13,6 +13,9 @@
 /* APPROVE BUTTON */
 --approve-gradient-from: #2680c4;
 --approve-gradient-to: #4a7bbb;
+  --font-sans: 'Plus Jakarta Sans';
+  --font-heading: 'Manrope';
+  --font-inter: 'Inter', sans-serif;
 
 /* SUCCESS */
 --success-soft: rgba(12, 160, 12, 0.08);
@@ -25,31 +28,40 @@
 
 --document-icon: #3d4949;
   /* BASE */
-  --background: #f2f2f2;
+  --background: #F2F2F2;
   --foreground: #000000;
   --card: #ffffff;
   --input: #f2f2f2;
 --danger: #ef4444;
 --danger-soft: rgba(239, 68, 68, 0.08);
+  --card: #FFFFFF;
+  --input: #F2F2F2;
+  --input-border: #e1e5ef;
+  --label-color: #3e4a3d;
+  --success-green: #0ca00c;
+
   /* TEXT */
   --muted: rgba(0, 0, 0, 0.6);
   --muted-strong: rgba(0, 0, 0, 0.4);
   --text-dark: #091426;
-  --text-neutral: #3d4949;
-  --text-subtle: #5a5c5e;
+  --text-neutral: #3D4949;
+  --text-subtle: #5A5C5E;
+  --profile-text: #191b1c;
+  --profile-subtext: #626c70;
 
   /* PRIMARY */
-  --primary: #2780c4;
-  --primary-light: #aed6ef;
+  --primary: #2780C4;
+  --primary-light: #AED6EF;
 
   /* SUCCESS CARD + FIGMA */
   --primary-soft: rgba(39, 128, 196, 0.08);
   --primary-faded: rgba(39, 128, 196, 0.4);
-  --success-bg: #ffffff;
+  --success-bg: #FFFFFF;
 
   /* CHIP / TAG */
-  --chip-bg: #3d93d1;
-  --chip-text: #ffffff;
+  --chip-bg: #3D93D1;
+  --chip-text: #FFFFFF;
+  --tag-pill-bg: #f3f4f5;
 
   /* BARS */
   --outerbar: rgba(39, 128, 196, 0.12);
@@ -77,49 +89,43 @@
   --radius-dropdown: 12px;
 
   /* HEADER GRADIENT */
-  --header-gradient: linear-gradient(
-    94.23deg,
-    rgba(66, 143, 223, 0.07) -8.84%,
-    #d3dde2 51.66%,
-    #d7ebf7 108.77%
-  );
+  --header-gradient: linear-gradient(94.23deg,
+      rgba(66, 143, 223, 0.07) -8.84%,
+      #D3DDE2 51.66%,
+      #D7EBF7 108.77%);
 
   /* CHART GRADIENT */
-  --chart-gradient: linear-gradient(
-    180deg,
-    rgba(174, 214, 239, 0.92) 0%,
-    #ffffff 100%
-  );
+  --chart-gradient: linear-gradient(180deg,
+      rgba(174, 214, 239, 0.92) 0%,
+      #FFFFFF 100%);
 
   /* PIE CHART */
-  --pie-1: #85bfe5;
-  --pie-2: #3d93d1;
-  --pie-3: #1d5e9c;
-  --pie-4: #d7ebf7;
+  --pie-1: #85BFE5;
+  --pie-2: #3D93D1;
+  --pie-3: #1D5E9C;
+  --pie-4: #D7EBF7;
 
   /* SIDEBAR */
-  --sidebar: #2c2c2c;
-  --sidebar-accent: #5c5c5c;
-  --sidebar-text: #ffffff;
+  --sidebar: #2C2C2C;
+  --sidebar-accent: #5C5C5C;
+  --sidebar-text: #FFFFFF;
 
-  /* ─── BUTTON TOKENS ─────────────────────────────── */
-
-  /* Solid backgrounds */
-  --btn-primary: #2780c4;
-  --btn-primary-text: #ffffff;
-  --btn-secondary: #96c9ed;
+  /* BUTTON TOKENS */
+  --btn-primary: #2780C4;
+  --btn-primary-text: #FFFFFF;
+  --btn-secondary: #96C9ED;
   --btn-secondary-text: #000000;
-  --btn-navy: #1c5f9d;
-  --btn-purple: #8280ff;
-  --btn-dark: #2b2d2f;
-  --btn-lime: #bdd327;
+  --btn-navy: #1C5F9D;
+  --btn-purple: #8280FF;
+  --btn-dark: #2B2D2F;
+  --btn-lime: #BDD327;
   --btn-lime-text: #000000;
 
-  /* Gradients — split into from/to so Tailwind arbitrary syntax works */
-  --btn-gradient-blue-from: #0095ff;
-  --btn-gradient-blue-to: #1f8aff;
-  --btn-gradient-dark-from: #3d4a0d;
-  --btn-gradient-dark-to: #2a3008;
+  /* Gradients */
+  --btn-gradient-blue-from: #0095FF;
+  --btn-gradient-blue-to: #1F8AFF;
+  --btn-gradient-dark-from: #3D4A0D;
+  --btn-gradient-dark-to: #2A3008;
 
   /* Outline variants */
   --btn-outline-primary-border: rgba(39, 128, 196, 0.8);
@@ -142,6 +148,19 @@
   --btn-font-secondary: "Inter", sans-serif;
   --btn-font-poppins: "Poppins", sans-serif;
 --primary-soft: rgba(39, 128, 196, 0.08);
+  --btn-outline-square-text: #2780C4;
+  --btn-export-border: #3D93D1;
+  --btn-export-text: #3D93D1;
+
+  /* Badge dot colors */
+  --btn-dot-fill: #3D93D1;
+  --btn-dot-border: #85BFE5;
+
+  /* Button fonts */
+  --btn-font-primary: var(--font-sans);
+  --btn-font-secondary: 'Inter', sans-serif;
+  --btn-font-poppins: 'Poppins', sans-serif;
+
   /* Button border radii */
   --btn-radius-pill: 48px;
   --avatar-fallback: #c0c0c0;
@@ -149,15 +168,27 @@
   --btn-radius-circle: 9999px;
   --btn-radius-square: 12px;
   --btn-radius-rounded: 8px;
+
+  --shadow-card-sm: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  --grid-faint: rgba(0, 0, 0, 0.08);
+
+  /* Chart tokens */
+  --chart-grid:                var(--grid);
+  --chart-bar-inactive:        var(--outerbar);
+  --chart-gradient-from:       rgba(223, 232, 200, 0);
+  --chart-gradient-to:         rgba(124, 171, 218, 0.77);
+  --chart-dot:                 var(--primary);
+  --chart-axis-text:           var(--muted-strong);
+  --chart-tick-active-bg:      var(--primary);
+  --chart-tick-inactive-bg:    var(--background);
+  --chart-tick-active-text:    var(--sidebar-text);
+  --chart-tick-inactive-text:  var(--foreground);
+  --chart-badge-bg:            var(--tooltip-bg);
+  --chart-badge-border:        var(--border-medium);
+  --chart-badge-text:          var(--foreground);
 }
-:root {
-  --input-border: #e1e5ef;
-  --label-color: #3e4a3d;
-  --success-green: #0ca00c;
-  --profile-text: #191b1c;
-  --profile-subtext: #626c70;
-}
-/* ─── BASE STYLES ───────────────────────────────────── */
+
+/* BASE STYLES */
 
 body {
   margin: 0;
@@ -166,11 +197,15 @@ body {
   color: var(--foreground);
 }
 
+.font-inter {
+  font-family: var(--font-inter);
+}
+
 h1 {
   font-family: var(--font-heading);
 }
 
-/* ─── UTILITIES ─────────────────────────────────────── */
+/* UTILITIES */
 
 .card {
   background: var(--card);
