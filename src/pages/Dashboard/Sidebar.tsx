@@ -13,9 +13,7 @@ const Sidebar: React.FC = () => {
   const iconSize = "clamp(14px,1.39vw,20px)";
 
   return (
-    <div
-      className="w-[clamp(44px,4vw,60px)] bg-[var(--sidebar)] rounded-[clamp(12px,1.39vw,20px)] flex flex-col justify-between p-[clamp(6px,0.69vw,10px)] box-border shrink-0 ml-[clamp(6px,0.83vw,12px)] mt-[clamp(6px,0.83vw,12px)] mb-[clamp(6px,0.83vw,12px)] h-[calc(100%-clamp(12px,1.67vw,24px))]"
-    >
+    <div className="w-[clamp(44px,4vw,60px)] bg-[var(--sidebar)] rounded-[clamp(12px,1.39vw,20px)] flex flex-col justify-between p-[clamp(6px,0.69vw,10px)] box-border shrink-0 ml-[clamp(6px,0.83vw,12px)] mt-[clamp(6px,0.83vw,12px)] mb-[clamp(6px,0.83vw,12px)] h-[calc(100%-clamp(12px,1.67vw,24px))]">
       {/* TOP */}
       <div className="flex flex-col gap-[clamp(12px,2.08vh,32px)] w-full items-center">
         {/* Logo */}
@@ -58,10 +56,10 @@ const Sidebar: React.FC = () => {
 
       {/* BOTTOM */}
       <div className="flex flex-col gap-[clamp(8px,1.39vh,20px)] items-center w-full">
-        <div className={getIconBtnClass()}>
-          <LogOut 
-            size={20} 
-            strokeWidth={1.5} 
+        <div className={getIconBtnClass()} data-logout="true">
+          <LogOut
+            size={20}
+            strokeWidth={1.5}
             className="text-[var(--sidebar-text)] w-[var(--icon-size)] h-[var(--icon-size)]"
             style={{ ["--icon-size" as any]: iconSize }}
           />
@@ -69,7 +67,11 @@ const Sidebar: React.FC = () => {
 
         {/* Profile avatar */}
         <div className="w-full aspect-square max-h-[clamp(36px,4.17vh,52px)] rounded-[clamp(8px,0.83vw,12px)] overflow-hidden bg-[var(--sidebar-accent)] shrink-0">
-          <img src={sidebarImg} alt="profile" className="w-full h-full object-cover" />
+          <img
+            src={sidebarImg}
+            alt="profile"
+            className="w-full h-full object-cover"
+          />
         </div>
       </div>
     </div>
