@@ -6,7 +6,15 @@ const DashboardHome = lazy(() => import('../../features/dashboard/pages/Dashboar
 const DesignSystem = lazy(() => import('../../features/design-system/pages/DesignSystem'));
 const Login = lazy(() => import("../../pages/Login"));
 const Home = lazy(() => import("../../pages/Home"));
+const AgentForm = lazy(() => import("../../features/agents/AgentForm"));
 
+const RoleManagerDetails = lazy( () => import("../../features/profile/RoleManagerDetails"));
+const AgentApprovals = lazy(
+  () => import("../../features/profile/Agentapprovals")
+);
+const Agentdetailpage = lazy(
+  () => import("../../features/profile/Agentdetailpage")
+);
 export const guestRoutes: RouteObject[] = [
   {
     path: '/login',
@@ -28,5 +36,21 @@ export const publicRoutes: RouteObject[] = [
   {
     path: '/design-system',
     element: <DesignSystem />,
+  },
+   {
+    path: "/agent-form",
+    element: <AgentForm />,
+  },
+  {
+    path: "/profile",
+    element: <RoleManagerDetails />,
+  },
+    {
+    path: "/agent-approvals",
+    element: <AgentApprovals />,
+  },
+   {
+    path: "/agent-details",
+    element: <Agentdetailpage />,
   },
 ];
