@@ -171,7 +171,7 @@ export default function AgentForm({
                     "
                 >
                     {/* Banner image */}
-                    <div className="h-[clamp(120px,13vw,180px)] overflow-hidden">
+                    <div className="h-[clamp(80px,13vw,140px)] overflow-hidden">
                         <img
                             src={Bannar}
                             alt="Banner"
@@ -248,7 +248,7 @@ export default function AgentForm({
                             </div>
 
                             {/* Name + role */}
-                            <div className="pt-0">
+                            <div className="pt-20">
                                 <Typography
                                     variant="h2"
                                     className="font-bold text-[color:var(--profile-text)] text-[length:clamp(16px,1.5vw,24px)]"

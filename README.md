@@ -89,9 +89,79 @@ Routes are split into three categories in `routes.config.tsx`:
 
 ---
 
+## 🎭 Role-Based Dynamic Layout System
+
+### Overview
+The app renders a **different shell layout** based on the logged-in user's role. Pages know nothing about which layout they are inside — they only render content. The layout is fully automatic.
+
+### Supported Roles & Layouts
+
+| Role | Layout Type | Style | Primary Color |
+|---|---|---|---|
+| `ROLE_MANAGER` | Left Sidebar + Header | Style A (Navy Blue) | `#0F2942` |
+| `FIELD_OFFICER` | Header Navigation Only | No sidebar | `#2780C4` |
+| `CCS_OFFICER` | Left Sidebar + Header | Style B (Dark Purple) | `#7C3AED` |
+
+### Architecture (4 Layers)
+
+```
+layoutConfig.ts          → Role key → { layoutVariant, navItems, roleLabel }
+      ↓
+useRoleLayout.ts         → Reads state.auth.user.role from Redux → returns config
+      ↓
+RootLayout.tsx           → LAYOUT_MAP[layoutVariant] → renders correct shell
+      ↓
+routes.config.tsx        → authRoutes wrapped with <RootLayout> as parent
+```
+
+### Key Files
+
+```text
+src/
+├── core/
+│   ├── config/
+│   │   └── layoutConfig.ts         ← Master role → layout map (update role strings here)
+│   └── hooks/
+│       └── useRoleLayout.ts        ← Hook: role from Redux → layout config
+│
+└── components/
+    └── common/
+        └── layouts/
+            ├── RootLayout.tsx      ← Switcher: picks shell by layoutVariant
+            ├── RoleManagerLayout.tsx   ← Sidebar Style A (Navy)
+            ├── CcsOfficerLayout.tsx    ← Sidebar Style B (Purple)
+            └── FieldOfficerLayout.tsx  ← Header-only nav
+```
+
+### Adding a New Role
+1. Add an entry in `src/core/config/layoutConfig.ts`:
+   ```ts
+   NEW_ROLE: {
+     layoutVariant: 'sidebar-role-manager', // reuse or add a new variant
+     roleLabel: 'New Role Name',
+     navItems: [...],
+   },
+   ```
+2. If a new layout style is needed, create a new layout component and register it in `RootLayout.tsx`:
+   ```ts
+   'sidebar-new-role': NewRoleLayout,
+   ```
+3. **Nothing else changes** — routes, guards, Redux are untouched.
+
+### Mock Login Credentials (Development Only)
+> These credentials are hardcoded in `src/core/config/layoutConfig.ts → MOCK_USERS`. Remove when real API is integrated.
+
+| Role | Email | Password |
+|---|---|---|
+| Role Manager | `manager@glc.com` | `manager@123` |
+| Field Officer | `officer@glc.com` | `officer@123` |
+| CCS Officer | `ccs@glc.com` | `ccs@123` |
+
+---
+
 ## 📝 Coding Standards
 
-- **Naming**: 
+- **Naming**:
   - `Components.tsx` (PascalCase)
   - `logicFiles.ts` (camelCase)
   - `feature-folders` (kebab-case)
