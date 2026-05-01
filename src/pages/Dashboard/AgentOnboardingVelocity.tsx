@@ -35,7 +35,7 @@ const AgentOnboardingVelocity: React.FC<Props> = ({
   }, [data]);
 
   return (
-    <div className="card p-[clamp(16px,2vw,24px)_clamp(20px,3vw,32px)] w-full flex-1 min-h-0 box-border flex flex-col overflow-hidden bg-white rounded-[24px]">
+    <div className="card p-[clamp(16px,2vw,24px)_clamp(20px,3vw,32px)] w-full flex-1 min-h-0 box-border flex flex-col overflow-hidden bg-white rounded-3xl">
       {/* Header Section */}
       <div className="flex justify-between items-start mb-[clamp(20px,4vh,32px)] shrink-0">
         <div className="flex flex-col gap-[clamp(4px,0.8vh,8px)]">
@@ -48,7 +48,7 @@ const AgentOnboardingVelocity: React.FC<Props> = ({
         </div>
 
         {/* Figma Style Week Pill */}
-        <div className="box-border flex items-center justify-center p-[6px_4px_6px_8px] w-[70px] h-[28px] border border-[#000000] rounded-[30px] cursor-pointer shrink-0 hover:bg-black/5 transition-colors">
+        <div className="box-border flex items-center justify-center p-[6px_4px_6px_8px] w-17.5 h-[28px] border border-[#000000] rounded-[30px] cursor-pointer shrink-0 hover:bg-black/5 transition-colors">
           <span className="font-['Plus_Jakarta_Sans'] font-normal text-[12px] text-[#000000] leading-none text-center">
             Week
           </span>
