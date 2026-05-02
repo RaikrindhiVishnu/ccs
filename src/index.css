@@ -16,7 +16,21 @@
   --font-sans: 'Plus Jakarta Sans';
   --font-heading: 'Manrope';
   --font-inter: 'Inter', sans-serif;
+  --sidebar-width: 17rem;          /* 272px */
+  --sidebar-width-collapsed: 4rem; /* 64px  */
+ /* ScreeningChart */
+--chart-bg: #F9F9F9;
+--chart-bar-approved: #2780C4;
+--chart-bar-review: #BDD327;
+--chart-bar-rejected: #37E8DD;
 
+/* ManualReviewsCard mirrored bars */
+--mirror-bar-up: rgba(255, 255, 255, 0.90);
+--mirror-bar-down: rgba(100, 200, 210, 0.65);
+  /* Right panel max width tokens */
+  --panel-right-sm:  22rem;   /* 352px  — lg  breakpoint */
+  --panel-right-md:  26rem;   /* 416px  — xl  breakpoint */
+  --panel-right-lg:  30rem;   /* 480px  — 2xl breakpoint */
 /* SUCCESS */
 --success-soft: rgba(12, 160, 12, 0.08);
 --status-pending-bg: #f3f3f5;

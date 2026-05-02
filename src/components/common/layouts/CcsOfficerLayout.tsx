@@ -1,6 +1,6 @@
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutGrid, CircleDashed, MapPin, LogOut, type LucideIcon } from 'lucide-react';
-
+import CcsDashboard from "@/features/dashboard/pages/CcsDashboard";
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { logOut } from '@/features/auth/store/authSlice';
 import { useRoleLayout } from '@/core/hooks/useRoleLayout';
@@ -17,9 +17,9 @@ const NavIcon = ({ name }: { name: string }) => {
   const Icon = ICON_MAP[name] ?? LayoutGrid;
   return <Icon className="lg:h-4 lg:w-4 xl:h-[1.125rem] xl:w-[1.125rem]" strokeWidth={1.6} />;
 };
+
 export const CcsOfficerLayout = () => {
   const { navItems } = useRoleLayout();
-
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
@@ -39,9 +39,11 @@ export const CcsOfficerLayout = () => {
     : 'U';
 
   return (
-    <div className="flex min-h-screen w-full overflow-hidden bg-[var(--card)]  rounded-3xl xl:rounded-[2.5rem]">
+    <div className="flex h-screen w-full overflow-hidden bg-[var(--card)] rounded-3xl xl:rounded-[2.5rem]">
+
       {/* ───────────────── SIDEBAR ───────────────── */}
-      <aside className="hidden lg:flex flex-col shrink-0 w-48 xl:w-52 2xl:w-60 bg-[var(--card)]">
+      <aside className="hidden lg:flex flex-col shrink-0 w-48 xl:w-52 2xl:w-60 h-full min-h-0 bg-[var(--card)]">
+
         {/* Logo */}
         <div className="shrink-0 px-5 pt-6 pb-7 xl:px-6 xl:pt-7 xl:pb-8">
           <img
@@ -52,7 +54,7 @@ export const CcsOfficerLayout = () => {
         </div>
 
         {/* Nav Links */}
-        <nav className="flex-1 overflow-y-auto px-2 xl:px-3 space-y-1">
+        <nav className="flex-1 min-h-0 overflow-y-auto px-2 xl:px-3 space-y-1">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
@@ -92,11 +94,9 @@ export const CcsOfficerLayout = () => {
           <div className="flex items-center justify-center h-12 w-12 xl:h-14 xl:w-14 rounded-full bg-[var(--primary)] text-white text-sm xl:text-base font-bold">
             {initials}
           </div>
-
           <p className="text-center leading-tight text-xs xl:text-sm font-semibold text-[var(--text-dark)]">
             {user?.name ?? "User"}
           </p>
-
           <button
             onClick={handleLogout}
             className="flex items-center gap-1.5 text-xs text-[var(--muted-strong)] transition-colors hover:text-[var(--danger)]"
@@ -108,11 +108,12 @@ export const CcsOfficerLayout = () => {
       </aside>
 
       {/* ───────────────── MAIN ───────────────── */}
-      <section className="flex-1 overflow-hidden p-3 lg:p-4 xl:p-5 lg:pl-0">
-        <div className="h-full w-full overflow-auto rounded-3xl xl:rounded-[2.5rem] bg-[var(--background)] shadow-[var(--shadow-card)]">
-          <Outlet />
+      <section className="flex-1 min-h-0 h-full p-3 lg:p-4 xl:p-5 lg:pl-0">
+        <div className="h-full w-full overflow-y-auto rounded-3xl xl:rounded-[2.5rem] bg-[var(--background)] shadow-[var(--shadow-card)]">
+          <CcsDashboard />
         </div>
       </section>
+
     </div>
   );
 };
