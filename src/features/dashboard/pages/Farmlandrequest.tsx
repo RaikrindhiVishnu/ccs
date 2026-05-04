@@ -1,6 +1,10 @@
-import { Clock, Search, Bell } from "lucide-react";
+import { Search, Bell } from "lucide-react";
 import FarmlandRequestCard from "@/components/ccs/Farmlandrequestcard";
 import { useFarmlandRequests } from "@/core/hooks/Usefarmlandrequests";
+import farmIcon from '@/assets/farm.svg';
+
+// then use it as:
+<img src={farmIcon} alt="" className="..." />
 /* ── Skeleton card ── */
 function SkeletonCard() {
   return (
@@ -54,13 +58,14 @@ export default function FarmlandRequest() {
       <div className="flex items-center justify-between">
         {/* LEFT — icon + title */}
         <div className="flex items-center gap-2">
-          <Clock
+            <img
+            src="/src/assets/farm.svg"
+            alt=""
             className="
-              h-[1rem] w-[1rem] text-[var(--foreground)]
+              h-[1rem] w-[1rem]
               lg:h-[1.125rem] lg:w-[1.125rem]
               xl:h-[1.25rem] xl:w-[1.25rem]
             "
-            strokeWidth={1.8}
           />
           <h2
             className="

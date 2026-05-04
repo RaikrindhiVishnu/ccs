@@ -4,6 +4,7 @@ import dashboardIcon    from '@/assets/dashboard.svg';
 import farmlandReqIcon  from '@/assets/farmland-request.svg';
 import farmlandListIcon from '@/assets/farmland-list.svg';
 
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 export type LayoutVariant =
   | 'sidebar-role-manager'
