@@ -14,9 +14,9 @@ export default function CcsDashboard() {
     <div
       className="
         flex min-h-full flex-col
-        px-[1.375rem] pt-[2.125rem] pb-[1.375rem]
-        xl:px-[1.875rem] xl:pt-[2.5rem] xl:pb-[1.875rem]
-        2xl:px-[2.5rem] 2xl:pt-[3rem] 2xl:pb-[2.5rem]
+     px-[1.375rem] py-[1.375rem]
+      xl:px-[1.875rem] xl:py-[1.875rem]
+      2xl:px-[2.5rem] 2xl:py-[2.5rem]
       "
     >
       {/* ── HEADER ── */}
@@ -97,7 +97,7 @@ export default function CcsDashboard() {
 
           {/* SCREENING CHART */}
           <div
-                  className="
+            className="
           flex min-h-0 flex-1 flex-col
           mt-[2.5rem]
           xl:mt-[3rem]

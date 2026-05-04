@@ -1,6 +1,5 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, Outlet } from 'react-router-dom';
 import { LayoutGrid, CircleDashed, MapPin, LogOut, type LucideIcon } from 'lucide-react';
-import CcsDashboard from "@/features/dashboard/pages/CcsDashboard";
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { logOut } from '@/features/auth/store/authSlice';
 import { useRoleLayout } from '@/core/hooks/useRoleLayout';
@@ -59,18 +58,18 @@ export const CcsOfficerLayout = () => {
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === "/"}
+              end={item.path === '/'}
               className={({ isActive }) =>
                 [
-                  "flex items-center gap-2 xl:gap-3",
-                  "rounded-xl xl:rounded-2xl",
-                  "px-3 py-2.5 xl:px-4 xl:py-3",
-                  "text-xs xl:text-sm",
-                  "transition-all duration-200",
+                  'flex items-center gap-2 xl:gap-3',
+                  'rounded-xl xl:rounded-2xl',
+                  'px-3 py-2.5 xl:px-4 xl:py-3',
+                  'text-xs xl:text-sm',
+                  'transition-all duration-200',
                   isActive
-                    ? "bg-[var(--primary-soft)] text-[var(--primary)] font-semibold shadow-sm"
-                    : "text-[var(--muted-strong)] font-medium hover:bg-[var(--primary-soft)] hover:text-[var(--text-dark)]",
-                ].join(" ")
+                    ? 'bg-[var(--primary-soft)] text-[var(--primary)] font-semibold shadow-sm'
+                    : 'text-[var(--muted-strong)] font-medium hover:bg-[var(--primary-soft)] hover:text-[var(--text-dark)]',
+                ].join(' ')
               }
             >
               <span className="shrink-0">
@@ -95,7 +94,7 @@ export const CcsOfficerLayout = () => {
             {initials}
           </div>
           <p className="text-center leading-tight text-xs xl:text-sm font-semibold text-[var(--text-dark)]">
-            {user?.name ?? "User"}
+            {user?.name ?? 'User'}
           </p>
           <button
             onClick={handleLogout}
@@ -110,7 +109,7 @@ export const CcsOfficerLayout = () => {
       {/* ───────────────── MAIN ───────────────── */}
       <section className="flex-1 min-h-0 h-full p-3 lg:p-4 xl:p-5 lg:pl-0">
         <div className="h-full w-full overflow-y-auto rounded-3xl xl:rounded-[2.5rem] bg-[var(--background)] shadow-[var(--shadow-card)]">
-          <CcsDashboard />
+          <Outlet />
         </div>
       </section>
 
