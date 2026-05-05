@@ -60,6 +60,9 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
       { label: 'Officers',  path: '/officers', icon: 'Users'           },
       { label: 'Reports',   path: '/reports',  icon: 'FileBarChart'    },
       { label: 'Settings',  path: '/settings', icon: 'Settings'        },
+      { label: 'Dashboard', path: '/role-manager/dashboard',      icon: 'LayoutDashboard' },
+      { label: 'User Directory', path: '/role-manager/user-directory', icon: 'Users' },
+      { label: 'Regions',    path: '/regions',   icon: 'Map' },
     ],
   },
 

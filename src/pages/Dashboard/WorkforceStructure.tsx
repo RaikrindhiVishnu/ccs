@@ -13,31 +13,29 @@ type Props = {
 };
 
 const fallbackData: DataItem[] = [
-  { label: "R.O.", value: 202, color: "var(--pie-3)" },
-  { label: "I.O.", value: 202, color: "var(--pie-2)" },
-  { label: "F.O.", value: 366, color: "var(--pie-4)", border: "1px solid var(--primary-light)" },
-  { label: "Agents", value: 482, color: "var(--pie-1)" },
+  { label: "R.O.", value: 202, color: "#1D4E77" },
+  { label: "I.O.", value: 202, color: "#2780C4" },
+  { label: "F.O.", value: 366, color: "#87C0E4", border: "1px solid rgba(39, 128, 196, 0.2)" },
+  { label: "Agents", value: 482, color: "#C6E1F4" },
 ];
 
 const WorkforceStructure: React.FC<Props> = ({ data = fallbackData }) => {
   return (
-    <div
-      className="card @container rounded-[var(--radius-xl)] shadow-[var(--shadow-card-sm)] p-[clamp(12px,4cqi,24px)_clamp(14px,5cqi,28px)] w-full flex-1 min-h-0 box-border flex flex-col overflow-hidden"
-    >
-      {/* ── Header ── */}
-      <div className="flex justify-between items-start mb-[clamp(8px,3cqi,16px)] shrink-0 gap-[8px]">
-        <div className="min-w-0">
-          <div className="font-sans font-medium text-[clamp(14px,4cqi,20px)] leading-[1.4] text-[var(--foreground)]">
+    <div className="card p-[clamp(12px,2vw,24px)_clamp(16px,2.5vw,32px)] w-full flex-1 min-h-0 box-border flex flex-col overflow-hidden">
+      {/* Header */}
+      <div className="flex justify-between items-start mb-[clamp(12px,2vh,24px)] shrink-0">
+        <div className="flex flex-col gap-[clamp(4px,0.8vh,8px)]">
+          <div className="font-sans font-medium text-[clamp(14px,1.5vw,20px)] leading-tight text-[var(--foreground)]">
             Workforce Structure
           </div>
-          <div className="font-sans font-normal text-[clamp(11px,2.8cqi,14px)] leading-[1.4] text-[var(--muted)] mt-[2px]">
+          <div className="font-sans font-normal text-[clamp(11px,1vw,14px)] leading-tight text-[var(--foreground)] opacity-60">
             Yearly overview of employee statuses
           </div>
         </div>
 
         {/* Year pill */}
-        <div className="border border-[var(--border-strong)] rounded-[var(--btn-radius-pill)] p-[5px_4px_5px_8px] flex items-center gap-[2px] cursor-pointer shrink-0">
-          <span className="font-sans font-normal text-[clamp(10px,2.5cqi,12px)] leading-[16px] text-[var(--foreground)]">
+        <div className="box-border flex items-center p-[5px_4px_5px_8px] border border-[var(--border-strong)] rounded-[30px] cursor-pointer shrink-0">
+          <span className="font-sans font-normal text-[12px] text-[var(--foreground)]">
             2026
           </span>
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="rotate-90 shrink-0">
@@ -46,33 +44,26 @@ const WorkforceStructure: React.FC<Props> = ({ data = fallbackData }) => {
         </div>
       </div>
 
-      {/* ── Body ── */}
-      <div className="flex flex-row items-center flex-1 min-h-0 gap-[clamp(10px,4cqi,20px)]">
+      {/* Body */}
+      <div className="flex flex-row items-center flex-1 min-h-0 gap-[clamp(16px,4vw,32px)]">
         {/* Donut */}
-        <div className="shrink-0 w-[clamp(64px,28cqi,140px)] aspect-square">
+        <div className="shrink-0 w-[clamp(100px,30%,160px)] aspect-square">
           <WorkforceDonut data={data} />
         </div>
 
-        {/* Legend */}
-        <div className="flex-1 min-w-0 flex flex-col justify-center gap-[clamp(5px,2cqi,12px)]">
+        {/* Legend List */}
+        <div className="flex-1 flex flex-col justify-center gap-[clamp(8px,2vh,16px)]">
           {data.map((item) => (
-            <div key={item.label} className="flex items-center gap-[clamp(4px,1.5cqi,8px)]">
-              {/* Color dot */}
+            <div key={item.label} className="flex items-center gap-2">
               <div
-                className="w-[clamp(6px,1.5cqi,9px)] h-[clamp(6px,1.5cqi,9px)] rounded-full shrink-0"
+                className="w-2.5 h-2.5 rounded-full shrink-0"
                 style={{ background: item.color, border: item.border ?? "none" }}
               />
-
-              {/* Label */}
-              <span className="font-sans font-medium text-[clamp(9px,2.2cqi,11px)] leading-[1.3] text-[var(--foreground)] whitespace-nowrap shrink-0">
+              <span className="font-sans font-medium text-[clamp(10px,1vw,12px)] text-[var(--foreground)] whitespace-nowrap">
                 {item.label}
               </span>
-
-              {/* Dotted line */}
-              <div className="flex-1 border-t border-dashed border-[var(--grid)] min-w-[4px]" />
-
-              {/* Value */}
-              <span className="font-sans font-medium text-[clamp(11px,3cqi,15px)] leading-[1.3] text-[var(--foreground)] shrink-0">
+              <div className="flex-1 border-t border-dashed border-[#2C2C2C] opacity-10 min-w-[10px]" />
+              <span className="font-sans font-bold text-[clamp(12px,1.2vw,16px)] text-[var(--foreground)]">
                 {item.value}
               </span>
             </div>

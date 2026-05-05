@@ -1,179 +1,78 @@
-import { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import {
-  ClipboardList,
-  MapPin,
-  FileBarChart,
-  UserCircle,
-  LogOut,
-  Menu,
-  X,
-  type LucideIcon,
-} from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import { logOut } from '@/features/auth/store/authSlice';
-import { useRoleLayout } from '@/core/hooks/useRoleLayout';
+import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
+import glcLogo from "../../../assets/glc-logo.svg";
+import bellIcon from "../../../assets/bellicon.svg";
+import profileImg from "../../../assets/profile.svg";
+import farmlandIcon from "../../../assets/farmland.svg"; 
+import draftsIcon from "../../../assets/alerts.svg";
+import requestInfoIcon from "../../../assets/requestinfo.svg";
+import farmlandAlertIcon from "../../../assets/farmlandalert.svg";
 
-// ─── Icon resolver ────────────────────────────────────────────────────────────
-const ICON_MAP: Record<string, LucideIcon> = {
-  ClipboardList,
-  MapPin,
-  FileBarChart,
-  UserCircle,
-};
-const NavIcon = ({ name }: { name: string }) => {
-  const Icon = ICON_MAP[name] ?? ClipboardList;
-  return <Icon size={16} strokeWidth={1.8} />;
-};
+const NAV_ITEMS = [
+  { id: "farmlands", label: "Farmlands", icon: farmlandIcon, width: "162px" },
+  { id: "drafts", label: "Drafts", icon: draftsIcon, width: "121px" },
+  { id: "request-info", label: "Request info", icon: requestInfoIcon, width: "175px" },
+  { id: "farmland-alerts", label: "Farmland Alerts", icon: farmlandAlertIcon, width: "203px" },
+];
 
-// ─── Component ────────────────────────────────────────────────────────────────
 export const FieldOfficerLayout = () => {
-  const { navItems, roleLabel } = useRoleLayout();
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const user = useAppSelector((state) => state.auth.user);
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const handleLogout = () => {
-    dispatch(logOut());
-    navigate('/login', { replace: true });
-  };
-
-  const initials = user?.name
-    ? user.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
-    : 'U';
+  const [active, setActive] = useState("farmlands");
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden" style={{ background: 'var(--background)' }}>
-
-      {/* ── Full-width Top Header ─────────────────────────────────────────── */}
-      <header
-        className="h-16 shrink-0 flex items-center gap-6 px-6 border-b"
-        style={{
-          background: 'var(--header-gradient)',
-          borderColor: 'var(--border)',
-        }}
-      >
-        {/* Logo */}
-        <div className="flex items-center gap-2 shrink-0">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white text-sm"
-            style={{ background: 'var(--primary)' }}
-          >
-            G
-          </div>
-          <span className="font-bold text-sm hidden sm:block" style={{ color: 'var(--text-dark)' }}>
-            GLC
-          </span>
-        </div>
-
-        {/* Divider */}
-        <div className="w-px h-5 hidden md:block" style={{ background: 'var(--border-medium)' }} />
-
-        {/* Horizontal Nav — desktop */}
-        <nav className="hidden md:flex items-center gap-1 flex-1">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.path === '/'}
-              className={({ isActive }) =>
-                `flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                 ${isActive
-                   ? 'text-white'
-                   : 'hover:bg-black/5'
-                 }`
-              }
-              style={({ isActive }) => ({
-                background: isActive ? 'var(--primary)' : undefined,
-                color: isActive ? '#fff' : 'var(--text-neutral)',
-              })}
-            >
-              <NavIcon name={item.icon} />
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* Right side */}
-        <div className="ml-auto flex items-center gap-3">
-          <span
-            className="text-xs px-3 py-1 rounded-full font-medium hidden sm:inline-block"
-            style={{
-              background: 'rgba(39,128,196,0.10)',
-              color: 'var(--primary)',
-            }}
-          >
-            {roleLabel}
-          </span>
-
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
-            style={{ background: 'var(--primary)' }}
-          >
-            {initials}
+    <div className="min-h-screen bg-[#F8F9FA] flex flex-col">
+      {/* Header Section - Responsive Navigation */}
+      <header className="w-full h-[80px] bg-white border-b border-gray-100 z-10 flex items-center">
+        <div className="w-full h-full flex items-center justify-between px-[4vw]">
+          
+          {/* Logo */}
+          <div className="w-[120px] h-[58px] flex-none">
+            <a href="/">
+              <img src={glcLogo} alt="Green Land Capital" className="w-full h-full object-contain" />
+            </a>
           </div>
 
-          <button
-            onClick={handleLogout}
-            title="Logout"
-            className="w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:bg-black/5 hidden sm:flex"
-          >
-            <LogOut size={16} strokeWidth={1.8} style={{ color: 'var(--text-subtle)' }} />
-          </button>
+          {/* Center Navigation - Flexible Pills */}
+          <nav className="hidden lg:flex items-center gap-[1vw]">
+            {NAV_ITEMS.map((item) => {
+              const IsActive = active === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActive(item.id)}
+                  className={`flex items-center h-[56px] px-[1vw] rounded-full transition-all duration-300 border-none cursor-pointer ${IsActive ? 'bg-[#1C5F9D]' : 'bg-white'}`}
+                  style={{ minWidth: `calc(${item.width} * 0.8)` }}
+                >
+                  <div className={`flex items-center justify-center w-[36px] h-[36px] rounded-full ${IsActive ? 'bg-white' : 'bg-transparent'}`}>
+                    <img src={item.icon} alt="" className="w-4 h-4" />
+                  </div>
+                  <span className={`ml-2 font-plus-jakarta font-medium text-[clamp(14px,1.1vw,18px)] ${IsActive ? 'text-white' : 'text-black'} whitespace-nowrap`}>
+                    {item.label}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
 
-          {/* Mobile hamburger */}
-          <button
-            className="md:hidden w-8 h-8 rounded-lg flex items-center justify-center hover:bg-black/5 transition-colors"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            {mobileOpen
-              ? <X size={18} style={{ color: 'var(--text-dark)' }} />
-              : <Menu size={18} style={{ color: 'var(--text-dark)' }} />}
-          </button>
+          {/* Right Actions Section */}
+          <div className="flex items-center gap-[1.5vw]">
+            <button className="flex items-center justify-center w-[52px] h-[52px] bg-white border border-gray-100 rounded-full relative cursor-pointer hover:bg-gray-50 transition-colors">
+              <img src={bellIcon} alt="Notifications" className="w-8 h-8" />
+            </button>
+            
+            <div className="w-[52px] h-[52px] rounded-full overflow-hidden border border-gray-100 shadow-sm">
+              <img src={profileImg} alt="Profile" className="w-full h-full object-cover" />
+            </div>
+          </div>
         </div>
       </header>
 
-      {/* Mobile dropdown nav */}
-      {mobileOpen && (
-        <div
-          className="md:hidden shrink-0 border-b flex flex-col gap-1 px-4 py-3"
-          style={{ background: 'var(--card)', borderColor: 'var(--border)' }}
-        >
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.path === '/'}
-              onClick={() => setMobileOpen(false)}
-              className={({ isActive }) =>
-                `flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
-                 ${isActive ? 'text-white' : ''}`
-              }
-              style={({ isActive }) => ({
-                background: isActive ? 'var(--primary)' : undefined,
-                color: isActive ? '#fff' : 'var(--text-neutral)',
-              })}
-            >
-              <NavIcon name={item.icon} />
-              {item.label}
-            </NavLink>
-          ))}
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium"
-            style={{ color: 'var(--text-subtle)' }}
-          >
-            <LogOut size={16} strokeWidth={1.8} />
-            Logout
-          </button>
-        </div>
-      )}
-
-      {/* ── Page content — full width, no sidebar ──────────────────────── */}
-      <main className="flex-1 overflow-auto">
-        <Outlet />
-      </main>
+      {/* Main Container - Responsive layout below the header */}
+      <div className="flex-1 w-full bg-[#F9F9F9] flex flex-col relative">
+        {/* Main Content Area */}
+        <main className="flex-1 overflow-y-auto px-6 py-8">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 };

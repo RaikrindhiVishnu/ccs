@@ -2,10 +2,12 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/core/hooks";
 import { logOut } from "@/features/auth/store/authSlice";
 import DashboardSidebar from "@/pages/Dashboard/Sidebar";
+import { useRoleLayout } from "@/core/hooks/useRoleLayout";
 
 export const RoleManagerLayout = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { navItems } = useRoleLayout();
 
   const handleLogout = () => {
     dispatch(logOut());
@@ -29,7 +31,7 @@ export const RoleManagerLayout = () => {
           }
         }}
       >
-        <DashboardSidebar />
+        <DashboardSidebar navItems={navItems} />
       </div>
 
       {/* ── Page content — full height, no header ──────────────────────────── */}

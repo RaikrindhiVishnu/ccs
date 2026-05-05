@@ -15,6 +15,12 @@ const Agentdetailpage    = lazy(() => import('../../features/profile/Agentdetail
 // ── CCS Officer pages ─────────────────────────────────────────────────────────
 const FarmlandRequest = lazy(() => import('../../features/dashboard/pages/Farmlandrequest'));
 // const FarmlandList = lazy(() => import('../../features/dashboard/pages/FarmlandList'));
+const RoleManagerDashboard = lazy(() => import('../../features/role-manager/pages/RoleManagerDashboard'));
+const UserDirectory = lazy(() => import('../../features/role-manager/pages/UserDirectory'));
+const DesignSystem = lazy(() => import('../../features/design-system/pages/DesignSystem'));
+const Login = lazy(() => import("../../pages/Login"));
+const Home = lazy(() => import("../../pages/Home"));
+const AgentForm = lazy(() => import("../../features/agents/AgentForm"));
 
 export const guestRoutes: RouteObject[] = [
   {
@@ -33,6 +39,12 @@ export const authRoutes: RouteObject[] = [
       // { path: '/farmland-list', element: <FarmlandList /> },
     ],
   },
+      { path: '/',    element: <RoleManagerDashboard /> },
+      { path: '/home', element: <Home /> },
+      { path: '/role-manager/dashboard', element: <RoleManagerDashboard /> },
+      { path: '/role-manager/user-directory', element: <UserDirectory /> },
+    ]
+  }
 ];
 
 export const publicRoutes: RouteObject[] = [

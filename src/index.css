@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   /* FONTS */
@@ -36,6 +34,10 @@
 --document-placeholder-to: #d4dce8;
 
 --document-icon: #3d4949;
+
+  /* HEADER GRADIENT — Refined for a cleaner, more vibrant look */
+  --header-gradient: linear-gradient(105deg, #428FDF 0%, #BBD6F2 45%, #D7EBF7 100%);
+
   /* BASE */
   --background: #F2F2F2;
   --foreground: #000000;
