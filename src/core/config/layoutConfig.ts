@@ -1,14 +1,21 @@
-// ─── Types ───────────────────────────────────────────────────────────────────
+// ─── Image imports for CCS_OFFICER nav icons ──────────────────────────────────
+// Replace these paths with your actual asset locations
+import dashboardIcon    from '@/assets/dashboard.svg';
+import farmlandReqIcon  from '@/assets/farmland-request.svg';
+import farmlandListIcon from '@/assets/farmland-list.svg';
 
+
+// ─── Types ───────────────────────────────────────────────────────────────────
 export type LayoutVariant =
-  | 'sidebar-role-manager'  // Left sidebar Style A (Navy Blue)
-  | 'sidebar-ccs-officer'   // Left sidebar Style B (Dark Purple)
-  | 'header-only';          // Top navigation bar, no sidebar
+  | 'sidebar-role-manager'
+  | 'sidebar-ccs-officer'
+  | 'header-only';
 
 export type NavItem = {
   label: string;
   path: string;
-  icon: string; // Lucide icon name string
+  icon: string;      // Lucide icon name (used by other roles)
+  iconImg?: string;  // Image asset (used by CCS_OFFICER)
 };
 
 export type RoleLayoutConfig = {
@@ -17,9 +24,7 @@ export type RoleLayoutConfig = {
   navItems: NavItem[];
 };
 
-// ─── Mock Credentials (for testing without backend) ──────────────────────────
-// Update these keys to match your real API role strings when backend is ready.
-
+// ─── Mock Credentials ─────────────────────────────────────────────────────────
 export const MOCK_USERS: Record<
   string,
   { email: string; password: string; name: string; role: string }
@@ -39,20 +44,22 @@ export const MOCK_USERS: Record<
   CCS_OFFICER: {
     email: 'ccs@glc.com',
     password: 'ccs@123',
-    name: 'Priya Menon',
+    name: 'Ram Varma',
     role: 'CCS_OFFICER',
   },
 };
 
-// ─── Master Layout Config Map ─────────────────────────────────────────────────
-// KEY = exact string returned by your login API in user.role
-// To add a new role → add an entry here only.
-
+// ─── Master Layout Config ─────────────────────────────────────────────────────
 export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
   ROLE_MANAGER: {
     layoutVariant: 'sidebar-role-manager',
     roleLabel: 'Role Manager',
     navItems: [
+      { label: 'Dashboard', path: '/',         icon: 'LayoutDashboard' },
+      { label: 'Regions',   path: '/regions',  icon: 'Map'             },
+      { label: 'Officers',  path: '/officers', icon: 'Users'           },
+      { label: 'Reports',   path: '/reports',  icon: 'FileBarChart'    },
+      { label: 'Settings',  path: '/settings', icon: 'Settings'        },
       { label: 'Dashboard', path: '/role-manager/dashboard',      icon: 'LayoutDashboard' },
       { label: 'User Directory', path: '/role-manager/user-directory', icon: 'Users' },
       { label: 'Regions',    path: '/regions',   icon: 'Map' },
@@ -63,10 +70,10 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     layoutVariant: 'header-only',
     roleLabel: 'Field Officer',
     navItems: [
-      { label: 'My Tasks',  path: '/',         icon: 'ClipboardList' },
-      { label: 'Visits',    path: '/visits',   icon: 'MapPin' },
-      { label: 'Reports',   path: '/reports',  icon: 'FileBarChart' },
-      { label: 'Profile',   path: '/profile',  icon: 'UserCircle' },
+      { label: 'My Tasks', path: '/',        icon: 'ClipboardList' },
+      { label: 'Visits',   path: '/visits',  icon: 'MapPin'        },
+      { label: 'Reports',  path: '/reports', icon: 'FileBarChart'  },
+      { label: 'Profile',  path: '/profile', icon: 'UserCircle'    },
     ],
   },
 
@@ -74,14 +81,13 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     layoutVariant: 'sidebar-ccs-officer',
     roleLabel: 'CCS Officer',
     navItems: [
-      { label: 'Dashboard',   path: '/',          icon: 'LayoutDashboard' },
-      { label: 'Cases',       path: '/cases',     icon: 'FolderOpen' },
-      { label: 'Schedule',    path: '/schedule',  icon: 'CalendarDays' },
-      { label: 'Escalations', path: '/escalate',  icon: 'AlertTriangle' },
+      { label: 'Dashboard',        path: '/',                 icon: 'LayoutDashboard', iconImg: dashboardIcon    },
+      { label: 'Farmland Request', path: '/farmland-request', icon: 'CircleDashed',    iconImg: farmlandReqIcon  },
+      { label: 'Farmland List',    path: '/farmland-list',    icon: 'MapPin',          iconImg: farmlandListIcon },
     ],
   },
 };
 
-// Fallback config when role is unknown
+// Fallback
 export const DEFAULT_LAYOUT_CONFIG: RoleLayoutConfig =
   ROLE_LAYOUT_CONFIG.ROLE_MANAGER;

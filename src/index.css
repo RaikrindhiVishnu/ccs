@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   /* FONTS */
@@ -16,7 +14,16 @@
   --font-sans: 'Plus Jakarta Sans';
   --font-heading: 'Manrope';
   --font-inter: 'Inter', sans-serif;
+ /* ScreeningChart */
+--chart-bg: #F9F9F9;
+--chart-bar-approved: #2780C4;
+--chart-bar-review: #BDD327;
+--chart-bar-rejected: #37E8DD;
 
+/* ManualReviewsCard mirrored bars */
+--mirror-bar-up: rgba(255, 255, 255, 0.90);
+--mirror-bar-down: rgba(100, 200, 210, 0.65);
+  /* Right panel max width tokens *
 /* SUCCESS */
 --success-soft: rgba(12, 160, 12, 0.08);
 --status-pending-bg: #f3f3f5;
@@ -175,7 +182,8 @@
 
   --shadow-card-sm: 0px 1px 2px rgba(0, 0, 0, 0.05);
   --grid-faint: rgba(0, 0, 0, 0.08);
-
+  --danger:      #ef4444;
+--danger-soft: rgba(239, 68, 68, 0.08);
   /* Chart tokens */
   --chart-grid:                var(--grid);
   --chart-bar-inactive:        var(--outerbar);

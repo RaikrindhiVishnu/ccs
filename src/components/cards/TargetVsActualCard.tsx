@@ -6,7 +6,7 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
-import WeekDropdown from "@/components/ui/Dropdown";
+import { WeekDropdown } from "@/components/ui/Dropdown";
 
 type DataType = {
   day: string;
