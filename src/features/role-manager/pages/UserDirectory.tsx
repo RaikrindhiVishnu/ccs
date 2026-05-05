@@ -1,24 +1,18 @@
 import React from "react";
 import { Typography } from "@/components/ui/typography";
-import { Search, UserPlus, Filter, MoreVertical } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import AgentOnboardingVelocity from "@/pages/Dashboard/AgentOnboardingVelocity";
+import WorkforceStructure from "@/pages/Dashboard/WorkforceStructure";
 
 const UserDirectory: React.FC = () => {
-  // Mock data for demonstration
-
-
   return (
-    <div className="flex flex-col p-[clamp(12px,1.5vw,24px)] gap-[clamp(12px,1.5vw,24px)] box-border min-h-full">
-      {/* Header Section */}
-      <div className="flex flex-row items-center justify-between">
-        <div>
-          <Typography variant="h2" className="text-3xl font-semibold tracking-tight text-[var(--text-dark)]">
-            User Directory
-          </Typography>
-          <Typography variant="p" className="text-sm text-[var(--muted)] opacity-80 mt-1">
-            Manage and monitor all users within your jurisdiction.
-          </Typography>
+    <div className="flex flex-col py-16 px-4 gap-6 box-border min-h-full">
+      {/* Graphs Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full h-90">
+        <div className="flex">
+          <AgentOnboardingVelocity />
+        </div>
+        <div className="flex">
+          <WorkforceStructure />
         </div>
       </div>
     </div>
