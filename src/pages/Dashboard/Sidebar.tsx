@@ -1,16 +1,13 @@
-import React from "react";
+import * as Icons from "lucide-react";
 import sidebarImg from "@/assets/sidebar.png";
-import { LayoutGrid, Users, Layers, LogOut } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { type NavItem } from "@/core/config/layoutConfig";
 
-// ─── Nav items — path maps to routes ─────────────────────────────────────────
-const NAV_ITEMS = [
-  { icon: LayoutGrid, label: "Dashboard", path: "/"       },
-  { icon: Users,      label: "Agents",    path: "/agents" },
-  { icon: Layers,     label: "Regions",   path: "/regions"},
-];
+interface SidebarProps {
+  navItems?: NavItem[];
+}
 
-const Sidebar: React.FC = () => {
+const Sidebar: React.FC<SidebarProps> = ({ navItems = [] }) => {
   const iconSize = "clamp(14px,1.39vw,20px)";
 
   const iconClass = `
@@ -30,24 +27,27 @@ const Sidebar: React.FC = () => {
 
         {/* Nav items */}
         <div className="flex flex-col gap-[clamp(2px,0.35vh,4px)] items-center w-full">
-          {NAV_ITEMS.map(({ icon: Icon, label, path }) => (
-            <NavLink
-              key={path}
-              to={path}
-              end={path === '/'}
-              title={label}
-              className={({ isActive }) =>
-                `${iconClass} ${isActive ? 'bg-[var(--sidebar-accent)]' : ''}`
-              }
-            >
-              <Icon
-                size={20}
-                strokeWidth={1.5}
-                className="text-[var(--sidebar-text)] w-[var(--icon-size)] h-[var(--icon-size)]"
-                style={{ ["--icon-size" as any]: iconSize }}
-              />
-            </NavLink>
-          ))}
+          {navItems.map(({ icon, label, path }) => {
+            const IconComponent = (Icons as any)[icon] || Icons.HelpCircle;
+            return (
+              <NavLink
+                key={path}
+                to={path}
+                end={path === '/'}
+                title={label}
+                className={({ isActive }) =>
+                  `${iconClass} ${isActive ? 'bg-[var(--sidebar-accent)]' : ''}`
+                }
+              >
+                <IconComponent
+                  size={20}
+                  strokeWidth={1.5}
+                  className="text-[var(--sidebar-text)] w-[var(--icon-size)] h-[var(--icon-size)]"
+                  style={{ ["--icon-size" as any]: iconSize }}
+                />
+              </NavLink>
+            );
+          })}
         </div>
       </div>
 
@@ -56,7 +56,7 @@ const Sidebar: React.FC = () => {
 
         {/* Logout */}
         <div className={iconClass} data-logout="true">
-          <LogOut
+          <Icons.LogOut
             size={20}
             strokeWidth={1.5}
             className="text-[var(--sidebar-text)] w-[var(--icon-size)] h-[var(--icon-size)]"
