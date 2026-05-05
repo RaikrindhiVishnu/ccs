@@ -6,7 +6,6 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
-  Cell,
 } from "recharts";
 
 export interface BarDataItem {
@@ -21,62 +20,62 @@ interface Props {
 }
 
 const CustomBar = (props: any) => {
-  const { x, y, width, height, value, label, activeLabel, yMax } = props;
+  const { x, y, width, height, value, label, activeLabel } = props;
   const isActive = label === activeLabel;
 
-  // Thin line width for inactive bars
-  const thinWidth = 1.4;
+  const thinLineWidth = 1.4;
   const centerX = x + width / 2;
 
   if (isActive) {
-    // Active capsule width (clamp equivalent logic)
-    const capsuleWidth = Math.max(44, Math.min(width * 0.8, 54));
+    const capsuleWidth = 54;
     const capsuleX = centerX - capsuleWidth / 2;
 
     return (
       <g>
         {/* Value Badge (Tooltip on top) */}
         <foreignObject x={centerX - 23} y={y - 45} width={46} height={28}>
-          <div className="flex justify-center items-center w-[46px] h-[28px] bg-[var(--tooltip-bg)] border border-[var(--border-medium)] rounded-[var(--radius-lg)] shadow-sm">
-            <span className="font-sans font-semibold text-[14px] text-[var(--foreground)] leading-none">
+          <div 
+            className="flex justify-center items-center rounded-[24px] border border-[rgba(0,0,0,0.24)] bg-[rgba(0,0,0,0.08)] h-7 w-11.5 shadow-none"
+          >
+            <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] text-[#000000] leading-none">
               {value}
             </span>
           </div>
         </foreignObject>
 
         {/* Top Dot */}
-        <circle cx={centerX} cy={y - 5} r={5.5} fill="var(--primary)" />
+        <circle cx={centerX} cy={y - 5.5} r={5.5} fill="#2780C4" />
 
-        {/* Capsule Bar */}
+        {/* Capsule Bar with Gradient */}
         <defs>
-          <linearGradient id="activeGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#ffffff" />
+          <linearGradient id="activeCapsuleGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="rgba(223, 232, 200, 0)" />
             <stop offset="100%" stopColor="rgba(124, 171, 218, 0.77)" />
           </linearGradient>
         </defs>
         <rect
           x={capsuleX}
-          y={y}
+          y={y - 10}
           width={capsuleWidth}
-          height={height}
-          rx={capsuleWidth / 2}
-          fill="url(#activeGradient)"
+          height={height + 55}
+          rx={27}
+          fill="url(#activeCapsuleGradient)"
         />
 
-        {/* Center vertical line */}
+        {/* Center vertical line (Primary) */}
         <line
           x1={centerX}
           y1={y}
           x2={centerX}
-          y2={y + height - 40}
-          stroke="var(--primary)"
+          y2={y + height}
+          stroke="#2780C4"
           strokeWidth={1.26}
         />
 
-        {/* Day label circle */}
-        <foreignObject x={centerX - 18} y={y + height - 42.88} width={36} height={36}>
-          <div className="w-[35.88px] h-[35.88px] bg-[var(--primary)] rounded-full flex justify-center items-center">
-            <span className="font-sans font-medium text-[10.77px] text-white">
+        {/* Active Day label circle */}
+        <foreignObject x={centerX - 18} y={y + height - 2} width={36} height={36}>
+          <div className="w-[36px] h-[36px] bg-[#2780C4] rounded-full flex justify-center items-center shadow-sm">
+            <span className="font-['Plus_Jakarta_Sans'] font-medium text-[10.7px] text-white">
               {label}
             </span>
           </div>
@@ -88,21 +87,22 @@ const CustomBar = (props: any) => {
   return (
     <g>
       {/* Top Dot */}
-      <circle cx={centerX} cy={y - 4} r={5.5} fill="var(--primary)" />
+      <circle cx={centerX} cy={y - 4} r={5.5} fill="#2780C4" />
 
-      {/* Thin line */}
+      {/* Thin line (Inactive) */}
       <rect
-        x={centerX - thinWidth / 2}
+        x={centerX - thinLineWidth / 2}
         y={y}
-        width={thinWidth}
-        height={height - 40}
-        fill="var(--border)"
+        width={thinLineWidth}
+        height={height}
+        fill="#2C2C2C"
+        opacity={0.16}
       />
 
-      {/* Day label circle placeholder area */}
-      <foreignObject x={centerX - 20} y={y + height - 40} width={40} height={40}>
-        <div className="w-[40px] h-[40px] bg-[var(--background)] rounded-full flex justify-center items-center">
-          <span className="font-sans font-medium text-[12px] text-[var(--foreground)]">
+      {/* Inactive Day label circle */}
+      <foreignObject x={centerX - 20} y={y + height - 2} width={40} height={40}>
+        <div className="w-10 h-10 bg-[#F2F2F2] rounded-full flex justify-center items-center">
+          <span className="font-['Plus_Jakarta_Sans'] font-medium text-[12px] text-[#000000]">
             {label}
           </span>
         </div>
@@ -112,24 +112,23 @@ const CustomBar = (props: any) => {
 };
 
 const BarChart: React.FC<Props> = ({ data, activeLabel, yMax: yMaxProp }) => {
-  const maxValue = Math.max(...data.map((d) => d.value));
-  const domainMax = yMaxProp ?? Math.ceil(maxValue / 100) * 100;
+  const domainMax = yMaxProp ?? 300; 
 
-  // Determine active label if not provided
-  const activeLbl = activeLabel ?? data.find((d) => d.value === maxValue)?.label;
+  const activeLbl = activeLabel ?? "We"; 
 
   return (
-    <div className="w-full h-full min-h-[300px]">
+    <div className="w-full h-full min-h-[150px]">
       <ResponsiveContainer width="100%" height="100%">
         <RechartsBar
           data={data}
-          margin={{ top: 50, right: 20, left: -20, bottom: 0 }}
+          margin={{ top: 50, right: 10, left: 10, bottom: 45 }}
           barGap={0}
         >
           <CartesianGrid
             vertical={false}
-            strokeDasharray="3 3"
-            stroke="var(--border)"
+            strokeDasharray="1 1"
+            stroke="#2C2C2C"
+            strokeOpacity={0.1}
           />
           <XAxis
             dataKey="label"
@@ -139,13 +138,15 @@ const BarChart: React.FC<Props> = ({ data, activeLabel, yMax: yMaxProp }) => {
           />
           <YAxis
             domain={[0, domainMax]}
-            tickCount={domainMax / 100 + 1}
+            ticks={[0, 100, 200, 300]}
+            width={40}
             axisLine={false}
             tickLine={false}
             tick={{
-              fill: "var(--muted-strong)",
+              fill: "#000000",
               fontSize: 12,
-              fontFamily: "var(--font-sans)",
+              opacity: 0.5,
+              fontFamily: "Plus Jakarta Sans",
             }}
           />
           <Bar
