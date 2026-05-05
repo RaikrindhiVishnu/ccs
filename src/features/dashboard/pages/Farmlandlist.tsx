@@ -1,6 +1,6 @@
-import {  Search, Bell } from 'lucide-react';
-import FarmlandListCard from '@/components/ccs/Farmlandlistcard';
-import { useFarmlandList } from '@/core/hooks/Usefarmlandlist';
+import { Search, Bell } from "lucide-react";
+import FarmlandListCard from "@/components/ccs/Farmlandlistcard";
+import { useFarmlandList } from "@/core/hooks/Usefarmlandlist";
 
 /* ── skeleton ── */
 function SkeletonCard() {
@@ -48,7 +48,7 @@ export default function FarmlandList() {
       <div className="flex items-center justify-between">
         {/* LEFT — icon + title */}
         <div className="flex items-center gap-2">
-            <img
+          <img
             src="/src/assets/farm.svg"
             alt=""
             className="
@@ -95,12 +95,16 @@ export default function FarmlandList() {
 
       {/* ── LIST ── */}
       <div className="mt-5 flex flex-col gap-3 xl:mt-6 xl:gap-4">
-
         {/* ERROR */}
         {error && (
           <div className="flex items-center justify-between rounded-[1rem] bg-[var(--danger-soft)] px-5 py-3">
-            <p className="text-[0.875rem] font-medium text-[var(--danger)]">{error}</p>
-            <button onClick={refetch} className="text-[0.8125rem] font-semibold text-[var(--danger)] underline">
+            <p className="text-[0.875rem] font-medium text-[var(--danger)]">
+              {error}
+            </p>
+            <button
+              onClick={refetch}
+              className="text-[0.8125rem] font-semibold text-[var(--danger)] underline"
+            >
               Try again
             </button>
           </div>
@@ -112,7 +116,7 @@ export default function FarmlandList() {
               <FarmlandListCard
                 key={item.id}
                 item={item}
-                onViewDetails={(id) => console.log('view details', id)}
+                onViewDetails={(id) => console.log("view details", id)}
               />
             ))}
       </div>

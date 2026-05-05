@@ -1,10 +1,10 @@
-import { Card } from '@/components/ui/card';
-import UserIcon from '@/assets/farm-user.svg';
-import MapPinIcon from '@/assets/map-pin.svg';
-import totalAreaIcon  from '@/assets/total-area.svg';
-import priceIcon      from '@/assets/price.svg';
-import listedOnIcon   from '@/assets/listed-on.svg';
-import costPerAcIcon  from '@/assets/cost-per-ac.svg';
+import { Card } from "@/components/ui/card";
+import UserIcon from "@/assets/farm-user.svg";
+import MapPinIcon from "@/assets/map-pin.svg";
+import totalAreaIcon from "@/assets/total-area.svg";
+import priceIcon from "@/assets/price.svg";
+import listedOnIcon from "@/assets/listed-on.svg";
+import costPerAcIcon from "@/assets/cost-per-ac.svg";
 
 export type FarmlandListItem = {
   id: string;
@@ -16,7 +16,7 @@ export type FarmlandListItem = {
   price: string;
   listedOn: string;
   costPerAc: string;
-  status: 'COMPLETED' | 'PENDING' | 'ACTIVE' | 'REJECTED';
+  status: "COMPLETED" | "PENDING" | "ACTIVE" | "REJECTED";
   liveOnWebsite: boolean;
 };
 
@@ -26,13 +26,29 @@ type Props = {
 };
 
 const STATUS_STYLES: Record<
-  FarmlandListItem['status'],
+  FarmlandListItem["status"],
   { bg: string; dot: string; text: string }
 > = {
-  COMPLETED: { bg: 'bg-[var(--success-soft)]',  dot: 'bg-[var(--success-green)]', text: 'text-[var(--success-green)]' },
-  PENDING:   { bg: 'bg-[#F2F2F2]',              dot: 'bg-[var( --dot)]',              text: 'text-[var( --dot)]'              },
-  ACTIVE:    { bg: 'bg-[var(--primary-soft)]',   dot: 'bg-[var(--primary)]',       text: 'text-[var(--primary)]'       },
-  REJECTED:  { bg: 'bg-[var(--danger-soft)]',    dot: 'bg-[var(--danger)]',        text: 'text-[var(--danger)]'        },
+  COMPLETED: {
+    bg: "bg-[var(--success-soft)]",
+    dot: "bg-[var(--success-green)]",
+    text: "text-[var(--success-green)]",
+  },
+  PENDING: {
+    bg: "bg-[var( --background)]",
+    dot: "bg-[var( --dot)]",
+    text: "text-[var( --dot)]",
+  },
+  ACTIVE: {
+    bg: "bg-[var(--primary-soft)]",
+    dot: "bg-[var(--primary)]",
+    text: "text-[var(--primary)]",
+  },
+  REJECTED: {
+    bg: "bg-[var(--danger-soft)]",
+    dot: "bg-[var(--danger)]",
+    text: "text-[var(--danger)]",
+  },
 };
 
 export default function FarmlandListCard({ item, onViewDetails }: Props) {
@@ -51,7 +67,6 @@ export default function FarmlandListCard({ item, onViewDetails }: Props) {
     >
       {/* ══ MAIN ROW ══ */}
       <div className="flex gap-4 lg:gap-5 xl:gap-6 2xl:gap-8">
-
         {/* ── LEFT: image + info ── */}
         <div
           className="
@@ -86,39 +101,50 @@ export default function FarmlandListCard({ item, onViewDetails }: Props) {
               {item.farmlandId}
             </h3>
 
-          <div className="flex items-center gap-2">
-  <img
-    src={UserIcon}
-    alt=""
-    className="h-[0.625rem] w-[0.625rem] shrink-0 lg:h-[0.6875rem] lg:w-[0.6875rem]"
-  />
-  <span className="text-[0.75rem] font-normal leading-[1.25rem] text-[#45474C] lg:text-[0.8125rem] xl:text-[0.875rem]">
-    {item.agentName}
-  </span>
-</div>
+            <div className="flex items-center gap-2">
+              <img
+                src={UserIcon}
+                alt=""
+                className="h-[0.625rem] w-[0.625rem] shrink-0 lg:h-[0.6875rem] lg:w-[0.6875rem]"
+              />
+              <span className="text-[0.75rem] font-normal leading-[1.25rem] text-[#45474C] lg:text-[0.8125rem] xl:text-[0.875rem]">
+                {item.agentName}
+              </span>
+            </div>
 
-<div className="flex items-center gap-2">
-  <img
-    src={MapPinIcon}
-    alt=""
-    className="h-[0.625rem] w-[0.625rem] shrink-0 lg:h-[0.6875rem] lg:w-[0.6875rem]"
-  />
-  <span className="text-[0.75rem] font-normal leading-[1.25rem] text-[#45474C] lg:text-[0.8125rem] xl:text-[0.875rem]">
-    {item.location}
-  </span>
-</div>
+            <div className="flex items-center gap-2">
+              <img
+                src={MapPinIcon}
+                alt=""
+                className="h-[0.625rem] w-[0.625rem] shrink-0 lg:h-[0.6875rem] lg:w-[0.6875rem]"
+              />
+              <span className="text-[0.75rem] font-normal leading-[1.25rem] text-[#45474C] lg:text-[0.8125rem] xl:text-[0.875rem]">
+                {item.location}
+              </span>
+            </div>
           </div>
         </div>
 
         {/* ── RIGHT: bento grid + status & action ── */}
         <div className="flex flex-1 flex-col justify-between gap-4 xl:gap-5">
-
           {/* BENTO GRID 2×2 — SVG icons */}
           <div className="grid grid-cols-2 gap-2 lg:gap-3 2xl:gap-4">
-            <BentoBox icon={totalAreaIcon}  label="Total Area" value={item.totalArea} />
-            <BentoBox icon={priceIcon}      label="Price"      value={item.price}     />
-            <BentoBox icon={listedOnIcon}   label="Listed On"  value={item.listedOn}  />
-            <BentoBox icon={costPerAcIcon}  label="Cost / AC"  value={item.costPerAc} />
+            <BentoBox
+              icon={totalAreaIcon}
+              label="Total Area"
+              value={item.totalArea}
+            />
+            <BentoBox icon={priceIcon} label="Price" value={item.price} />
+            <BentoBox
+              icon={listedOnIcon}
+              label="Listed On"
+              value={item.listedOn}
+            />
+            <BentoBox
+              icon={costPerAcIcon}
+              label="Cost / AC"
+              value={item.costPerAc}
+            />
           </div>
 
           {/* STATUS & ACTION */}
@@ -133,15 +159,16 @@ export default function FarmlandListCard({ item, onViewDetails }: Props) {
             <div className="flex items-center gap-3 xl:gap-4">
               <span
                 className={[
-                  'inline-flex items-center gap-[0.375rem]',
-                  'rounded-full px-3 py-[0.375rem]',
-                  'text-[0.6875rem] font-bold leading-[1rem]',
-                  'lg:px-4 lg:py-[0.4375rem]',
-                  'xl:text-[0.75rem]',
-                  s.bg, s.text,
-                ].join(' ')}
+                  "inline-flex items-center gap-[0.375rem]",
+                  "rounded-full px-3 py-[0.375rem]",
+                  "text-[0.6875rem] font-bold leading-[1rem]",
+                  "lg:px-4 lg:py-[0.4375rem]",
+                  "xl:text-[0.75rem]",
+                  s.bg,
+                  s.text,
+                ].join(" ")}
               >
-                <span className={['h-2 w-2 rounded-full', s.dot].join(' ')} />
+                <span className={["h-2 w-2 rounded-full", s.dot].join(" ")} />
                 {item.status}
               </span>
 
