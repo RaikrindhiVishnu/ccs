@@ -1,31 +1,24 @@
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import {
-  LayoutDashboard,
-  FolderOpen,
-  CalendarDays,
-  AlertTriangle,
-  LogOut,
-  type LucideIcon,
-} from 'lucide-react';
+import { NavLink, useNavigate, Outlet } from 'react-router-dom';
+import { LayoutGrid, CircleDashed, MapPin, LogOut, type LucideIcon } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { logOut } from '@/features/auth/store/authSlice';
 import { useRoleLayout } from '@/core/hooks/useRoleLayout';
 
-// ─── Icon resolver ────────────────────────────────────────────────────────────
+import logo from '@/assets/glc-logo.svg';
+
 const ICON_MAP: Record<string, LucideIcon> = {
-  LayoutDashboard,
-  FolderOpen,
-  CalendarDays,
-  AlertTriangle,
-};
-const NavIcon = ({ name }: { name: string }) => {
-  const Icon = ICON_MAP[name] ?? LayoutDashboard;
-  return <Icon size={18} strokeWidth={1.8} />;
+  LayoutDashboard: LayoutGrid,
+  CircleDashed,
+  MapPin,
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
+const NavIcon = ({ name }: { name: string }) => {
+  const Icon = ICON_MAP[name] ?? LayoutGrid;
+  return <Icon className="lg:h-4 lg:w-4 xl:h-[1.125rem] xl:w-[1.125rem]" strokeWidth={1.6} />;
+};
+
 export const CcsOfficerLayout = () => {
-  const { navItems, roleLabel } = useRoleLayout();
+  const { navItems } = useRoleLayout();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
@@ -36,96 +29,90 @@ export const CcsOfficerLayout = () => {
   };
 
   const initials = user?.name
-    ? user.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+    ? user.name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
     : 'U';
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: 'var(--background)' }}>
+    <div className="flex h-screen w-full overflow-hidden bg-[var(--card)] rounded-3xl xl:rounded-[2.5rem]">
 
-      {/* ── Sidebar B — Dark Purple / Indigo ─────────────────────────────── */}
-      <aside
-        className="w-72 flex flex-col shrink-0"
-        style={{ background: '#1A1A2E', borderRight: '1px solid rgba(255,255,255,0.04)' }}
-      >
-        {/* Branded header */}
-        <div
-          className="h-20 flex items-center gap-4 px-6 shrink-0"
-          style={{ background: '#12122A', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-        >
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white shrink-0"
-            style={{ background: '#7C3AED', boxShadow: '0 4px 14px rgba(124,58,237,0.35)' }}
-          >
-            CCS
-          </div>
-          <div className="overflow-hidden">
-            <p className="text-white text-sm font-bold leading-none tracking-wide">GLC Platform</p>
-            <p className="text-white/40 text-[10px] mt-1 uppercase tracking-widest">{roleLabel}</p>
-          </div>
+      {/* ───────────────── SIDEBAR ───────────────── */}
+      <aside className="hidden lg:flex flex-col shrink-0 w-48 xl:w-52 2xl:w-60 h-full min-h-0 bg-[var(--card)]">
+
+        {/* Logo */}
+        <div className="shrink-0 px-5 pt-6 pb-7 xl:px-6 xl:pt-7 xl:pb-8">
+          <img
+            src={logo}
+            alt="Green Land Capital"
+            className="w-full max-w-[7rem] xl:max-w-[8rem] object-contain"
+          />
         </div>
 
-        {/* Section label */}
-        <div className="px-5 pt-6 pb-2 shrink-0">
-          <span className="text-[10px] uppercase tracking-widest font-semibold text-white/20">
-            Main Menu
-          </span>
-        </div>
-
-        {/* Nav */}
-        <nav className="flex-1 px-3 space-y-0.5 overflow-y-auto">
+        {/* Nav Links */}
+        <nav className="flex-1 min-h-0 overflow-y-auto px-2 xl:px-3 space-y-1">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
               end={item.path === '/'}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150
-                 ${isActive
-                   ? 'bg-[#7C3AED] text-white shadow-lg'
-                   : 'text-white/45 hover:bg-white/5 hover:text-white/80'
-                 }`
-              }
-              style={({ isActive }) =>
-                isActive ? { boxShadow: '0 4px 12px rgba(124,58,237,0.30)' } : {}
+                [
+                  'flex items-center gap-2 xl:gap-3',
+                  'rounded-xl xl:rounded-2xl',
+                  'px-3 py-2.5 xl:px-4 xl:py-3',
+                  'text-xs xl:text-sm',
+                  'transition-all duration-200',
+                  isActive
+                    ? 'bg-[var(--primary-soft)] text-[var(--primary)] font-semibold shadow-sm'
+                    : 'text-[var(--muted-strong)] font-medium hover:bg-[var(--primary-soft)] hover:text-[var(--text-dark)]',
+                ].join(' ')
               }
             >
-              <span className="shrink-0"><NavIcon name={item.icon} /></span>
-              <span>{item.label}</span>
+              <span className="shrink-0">
+                {item.iconImg ? (
+                  <img
+                    src={item.iconImg}
+                    alt={item.label}
+                    className="h-[1.125rem] w-[1.125rem] object-contain"
+                  />
+                ) : (
+                  <NavIcon name={item.icon} />
+                )}
+              </span>
+              <span className="truncate">{item.label}</span>
             </NavLink>
           ))}
         </nav>
 
-        {/* User block + logout */}
-        <div className="p-3 shrink-0" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-          <div
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1"
-            style={{ background: 'rgba(255,255,255,0.04)' }}
-          >
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
-              style={{ background: '#7C3AED' }}
-            >
-              {initials}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-white text-sm font-medium truncate leading-none">{user?.name ?? 'User'}</p>
-              <p className="text-white/35 text-[11px] truncate mt-0.5">{user?.email ?? ''}</p>
-            </div>
+        {/* User Section */}
+        <div className="shrink-0 px-3 py-4 xl:px-4 xl:py-5 flex flex-col items-center gap-2">
+          <div className="flex items-center justify-center h-12 w-12 xl:h-14 xl:w-14 rounded-full bg-[var(--primary)] text-white text-sm xl:text-base font-bold">
+            {initials}
           </div>
+          <p className="text-center leading-tight text-xs xl:text-sm font-semibold text-[var(--text-dark)]">
+            {user?.name ?? 'User'}
+          </p>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-white/35 hover:bg-white/5 hover:text-white/70 transition-colors"
+            className="flex items-center gap-1.5 text-xs text-[var(--muted-strong)] transition-colors hover:text-[var(--danger)]"
           >
-            <LogOut size={15} strokeWidth={1.8} />
+            <LogOut className="h-3 w-3 xl:h-3.5 xl:w-3.5" strokeWidth={1.8} />
             <span>Sign out</span>
           </button>
         </div>
       </aside>
 
-      {/* ── Main Content — no header, sidebar only ──────────────────────── */}
-      <main className="flex-1 overflow-auto" style={{ background: 'var(--background)' }}>
-        <Outlet />
-      </main>
+      {/* ───────────────── MAIN ───────────────── */}
+      <section className="flex-1 min-h-0 h-full p-3 lg:p-4 xl:p-5 lg:pl-0">
+        <div className="h-full w-full overflow-y-auto rounded-3xl xl:rounded-[2.5rem] bg-[var(--background)] shadow-[var(--shadow-card)]">
+          <Outlet />
+        </div>
+      </section>
+
     </div>
   );
 };
