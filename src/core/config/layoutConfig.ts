@@ -55,11 +55,6 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     layoutVariant: 'sidebar-role-manager',
     roleLabel: 'Role Manager',
     navItems: [
-      { label: 'Dashboard', path: '/',         icon: 'LayoutDashboard' },
-      { label: 'Regions',   path: '/regions',  icon: 'Map'             },
-      { label: 'Officers',  path: '/officers', icon: 'Users'           },
-      { label: 'Reports',   path: '/reports',  icon: 'FileBarChart'    },
-      { label: 'Settings',  path: '/settings', icon: 'Settings'        },
       { label: 'Dashboard', path: '/role-manager/dashboard',      icon: 'LayoutDashboard' },
       { label: 'User Directory', path: '/role-manager/user-directory', icon: 'Users' },
       { label: 'Regions',    path: '/regions',   icon: 'Map' },
