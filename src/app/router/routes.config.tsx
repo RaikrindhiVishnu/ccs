@@ -11,7 +11,8 @@ const CcsDashboard    = lazy(() => import('../../features/dashboard/pages/CcsDas
 const RoleManagerDetails = lazy(() => import('../../features/profile/RoleManagerDetails'));
 const AgentApprovals     = lazy(() => import('../../features/profile/Agentapprovals'));
 const Agentdetailpage    = lazy(() => import('../../features/profile/Agentdetailpage'));
-
+import CreateRegionsAndAreas from "@/features/role-manager/pages/Createregionsandareas";
+import CreateRoles from "@/features/role-manager/pages/Createroles";
 // ── CCS Officer pages ─────────────────────────────────────────────────────────
 const FarmlandRequest = lazy(() => import('../../features/dashboard/pages/Farmlandrequest'));
 const FarmlandList = lazy(() => import('../../features/dashboard/pages/Farmlandlist'));
@@ -39,6 +40,9 @@ export const authRoutes: RouteObject[] = [
        { path: '/farmland-list', element: <FarmlandList /> },
       { path: '/role-manager/dashboard', element: <RoleManagerDashboard /> },
       { path: '/role-manager/user-directory', element: <UserDirectory /> },
+      // Inside your router:
+{ path: "/role-manager/create", element: <CreateRegionsAndAreas /> },
+ { path:"/role-manager/create-roles" ,element:<CreateRoles />}
     ],
   },
 ];
