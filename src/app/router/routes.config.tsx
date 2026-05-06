@@ -14,7 +14,7 @@ const Agentdetailpage    = lazy(() => import('../../features/profile/Agentdetail
 
 // ── CCS Officer pages ─────────────────────────────────────────────────────────
 const FarmlandRequest = lazy(() => import('../../features/dashboard/pages/Farmlandrequest'));
-// const FarmlandList = lazy(() => import('../../features/dashboard/pages/FarmlandList'));
+const FarmlandList = lazy(() => import('../../features/dashboard/pages/Farmlandlist'));
 const RoleManagerDashboard = lazy(() => import('../../features/role-manager/pages/RoleManagerDashboard'));
 const UserDirectory = lazy(() => import('../../features/role-manager/pages/UserDirectory'));
 const DesignSystem = lazy(() => import('../../features/design-system/pages/DesignSystem'));
@@ -36,6 +36,7 @@ export const authRoutes: RouteObject[] = [
        { path: '/',                 element: <CcsDashboard /> },  
       { path: '/home', element: <Home /> },
        { path: '/farmland-request', element: <FarmlandRequest /> },
+       { path: '/farmland-list', element: <FarmlandList /> },
       { path: '/role-manager/dashboard', element: <RoleManagerDashboard /> },
       { path: '/role-manager/user-directory', element: <UserDirectory /> },
     ],
