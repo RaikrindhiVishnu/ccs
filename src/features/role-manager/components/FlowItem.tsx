@@ -29,19 +29,19 @@ export const FlowItem: React.FC<FlowItemProps> = ({
       <div 
         className={cn(
           "flex flex-col gap-4 p-4 rounded-2xl transition-all relative",
-          active ? "bg-[var(--tag-pill-bg)]" : "hover:bg-[var(--primary-soft)]"
+          // active ? "bg-(--tag-pill-bg)" : "hover:bg-(--primary-soft)"
         )}
       >
         <div className="flex justify-between items-start">
           <img src={avatar} alt={name} className="w-12 h-12 rounded-full object-cover border border-[var(--border)]" />
           <div className="flex gap-2">
-            <Edit2 size={16} className="text-(--muted-strong) cursor-pointer hover:text-[var(--primary)] transition-colors" />
-            <Eye size={16} className="text-(--muted-strong) cursor-pointer hover:text-[var(--primary)] transition-colors" />
+            <Edit2 size={16} className="text-(--muted-strong) cursor-pointer hover:text-(--primary) transition-colors" />
+            <Eye size={16} className="text-(--muted-strong) cursor-pointer hover:text-(--primary) transition-colors" />
           </div>
         </div>
         
-        <div className="flex flex-col gap-1">
-          <Typography variant="p" className="font-semibold text-(--text-dark)">
+        <div className="flex flex-col gap-1 text-sm">
+          <Typography variant="p" className=" font-semibold text-(--text-dark)">
             {name} - {role}
           </Typography>
           <Typography variant="p" className="text-sm text-(--muted)">
@@ -62,7 +62,7 @@ export const FlowItem: React.FC<FlowItemProps> = ({
       onClick={onClick}
       className={cn(
         "flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer group",
-        active ? "bg-[var(--primary-soft)] border-l-4 border-[var(--primary)]" : "hover:bg-[var(--primary-soft)]/50 border-l-4 border-transparent"
+        active ? "bg-(--primaryz-soft) border-l-4 border-(--primary)" : "hover:bg-[var(--primary-soft)]/50 border-l-4 border-transparent"
       )}
     >
       <div className="flex items-center gap-3">

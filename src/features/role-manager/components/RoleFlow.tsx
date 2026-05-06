@@ -35,13 +35,13 @@ export const RoleFlow: React.FC = () => {
       {/* Level 1: RO & IO */}
       <div className="flex items-center w-1/3">
         <FlowCard>
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-4">
             {MOCK_ROLE_DATA.map((role, idx) => (
               <React.Fragment key={role.id}>
                 <FlowItem 
                   {...role} 
                   variant="detailed" 
-                  active={idx === 0} 
+                  active={idx === 0}
                 />
                 {idx < MOCK_ROLE_DATA.length - 1 && (
                   <div className="h-px bg-gray-100 w-full" />

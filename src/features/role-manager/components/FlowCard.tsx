@@ -12,7 +12,7 @@ export const FlowCard: React.FC<FlowCardProps> = ({ children, header, className 
   return (
     <Card className={cn(
       "bg-(--card) rounded-xl border border-(--border) shadow-(--shadow-card) flex flex-col overflow-hidden",
-      "w-full h-100",
+      "w-full h-100 px-8 py-4",
       className
     )}>
       {header && (
@@ -20,7 +20,7 @@ export const FlowCard: React.FC<FlowCardProps> = ({ children, header, className 
           {header}
         </div>
       )}
-      <div className="flex-1 overflow-y-auto p-6 pt-2 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto  custom-scrollbar">
         {children}
       </div>
     </Card>
