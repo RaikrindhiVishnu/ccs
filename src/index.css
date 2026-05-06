@@ -79,7 +79,13 @@
 
   /* BARS */
   --outerbar: rgba(39, 128, 196, 0.12);
+/* Illustration sub-card backgrounds */
+--region-card-top-bg: linear-gradient(0deg, rgba(0,0,0,0.04), rgba(0,0,0,0.04)), rgba(39, 128, 196, 0.06);
+--area-card-bottom-bg: rgba(39, 128, 196, 0.08);
+--illus-card-white-bg: rgba(255, 255, 255, 0.10);
 
+/* Glow effect inside illustration cards */
+--illus-glow: rgba(242, 255, 219, 0.34);
   /* BORDERS */
   --border: rgba(0, 0, 0, 0.1);
   --border-strong: #000000;
