@@ -16,7 +16,7 @@ export const FlowCard: React.FC<FlowCardProps> = ({ children, header, className 
       className
     )}>
       {header && (
-        <div className="p-6 pb-2">
+        <div>
           {header}
         </div>
       )}
