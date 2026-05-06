@@ -5,10 +5,11 @@ import { Typography } from "@/components/ui/typography";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PillDropdown } from "@/components/ui/Dropdown";
+import { RoleFlow } from "../components/RoleFlow";
 
 const UserDirectory: React.FC = () => {
   return (
-    <div className="flex flex-col py-16 px-4 gap-6 box-border min-h-full bg-[var(--background)]">
+    <div className="flex flex-col py-16 px-4 gap-6 box-border min-h-full bg-(--background)">
       {/* Graphs Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full h-90">
         <div className="flex">
@@ -56,9 +57,13 @@ const UserDirectory: React.FC = () => {
             <PillDropdown 
               options={["Vizag Zone", "Vijayawada Zone", "Guntur Zone", "Kurnool Zone"]} 
               defaultValue="Vizag Zone" 
-              // className="min-w-[160px]"
             />
           </div>
+        </div>
+
+        {/* Role Flow Diagram Section */}
+        <div className="mt-4">
+          <RoleFlow />
         </div>
       </div>
     </div>

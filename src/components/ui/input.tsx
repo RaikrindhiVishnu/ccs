@@ -8,6 +8,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   labelRightElement?: React.ReactNode;
   variant?: "default" | "white" | "form";
   containerClassName?: string;
+  wrapperClassName?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -21,6 +22,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       labelRightElement,
       variant = "default",
       containerClassName,
+      wrapperClassName,
       id,
       ...props
     },
@@ -39,6 +41,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           "bg-[var(--card)]",
           "border border-[var(--input-border)]",
           "rounded-[var(--btn-radius-square)]",
+          wrapperClassName
         )
       : cn(
           "relative flex items-center shrink-0 rounded-full",
@@ -46,6 +49,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           variant === "white"
             ? "bg-[var(--card)]"
             : "bg-[var(--input)]",
+          wrapperClassName
         );
 
     const inputClass = cn(

@@ -82,6 +82,7 @@
   --border-strong: #000000;
   --border-medium: rgba(0, 0, 0, 0.4);
   --border-soft: rgba(197, 198, 205, 0.3);
+  --border-light: #EBEBEB;
 
   /* GRID */
   --grid: rgba(0, 0, 0, 0.05);
