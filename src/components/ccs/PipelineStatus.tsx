@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/card';
+import { Typography } from '@/components/ui/typography';
 
 function ScreeningPaceCard({ value = 76 }: { value?: number }) {
   const totalTicks = 38;
@@ -20,26 +21,32 @@ function ScreeningPaceCard({ value = 76 }: { value?: number }) {
   return (
     <Card
       className="
-        flex flex-col
-        rounded-[1.4492rem] border-0
-        bg-[var(--card)]
+        flex flex-col rounded-[1.4492rem] border-0
+        bg-[var(--card)] shadow-[var(--shadow-card-sm)]
         h-[11rem] lg:h-[12rem] xl:h-[13rem] 2xl:h-[14rem]
-        p-[1rem]
-        shadow-[var(--shadow-card-sm)]
-        xl:p-[1.1867rem]
+        p-[1rem] xl:p-[1.1867rem]
       "
     >
       <div className="flex items-start justify-between">
-        <span className="text-[0.8rem] font-bold leading-[120%] text-[var(--text-dark)] xl:text-[0.8845rem]">
+        <Typography
+          variant="span"
+          className="text-[0.8rem] font-bold leading-[120%] text-[var(--text-dark)] xl:text-[0.8845rem]"
+        >
           Screening Pace
-        </span>
+        </Typography>
         <div className="flex items-start leading-none">
-          <span className="text-[1.625rem] font-semibold leading-[120%] text-[var(--text-dark)] xl:text-[1.875rem]">
+          <Typography
+            variant="span"
+            className="text-[1.625rem] font-semibold leading-[120%] text-[var(--text-dark)] xl:text-[1.875rem]"
+          >
             {value}
-          </span>
-          <span className="mt-[0.1875rem] text-[1.05rem] font-semibold leading-[120%] text-[var(--muted)] xl:text-[1.2193rem]">
+          </Typography>
+          <Typography
+            variant="span"
+            className="mt-[0.1875rem] text-[1.05rem] font-semibold leading-[120%] text-[var(--muted)] xl:text-[1.2193rem]"
+          >
             %
-          </span>
+          </Typography>
         </div>
       </div>
 
@@ -61,77 +68,73 @@ function ScreeningPaceCard({ value = 76 }: { value?: number }) {
       </div>
 
       <div className="flex items-center justify-between">
-        <span className="text-[0.7rem] font-normal leading-[120%] text-[var(--muted)] xl:text-[0.774rem]">
+        <Typography
+          variant="span"
+          className="text-[0.7rem] font-normal leading-[120%] text-[var(--muted)] xl:text-[0.774rem]"
+        >
           +2.1% vs Last Week
-        </span>
-        <span className="text-[0.7rem] font-normal leading-[120%] text-[var(--muted)] xl:text-[0.774rem]">
+        </Typography>
+        <Typography
+          variant="span"
+          className="text-[0.7rem] font-normal leading-[120%] text-[var(--muted)] xl:text-[0.774rem]"
+        >
           Target &gt; 90%
-        </span>
+        </Typography>
       </div>
     </Card>
   );
 }
 
 function ManualReviewsCard({ count = 24 }: { count?: number }) {
-  const barData = [13, 22, 16, 28, 20, 14, 18, 12, 16, 20, 14, 18, 24, 16, 12, 19, 17, 14, 22, 18, 24, 16, 12, 20, 18, 16, 20, 14, 18, 24];
-  const maxVal = Math.max(...barData);
-
-  const upH    = 44;
-  const downH  = 32;
-  const gap    = 6;
-  const TOTAL  = upH + gap + downH;
-  const barW   = 5;
-  const barGap = 4.2;
-  const rx     = barW / 2;
-  const SVG_W  = barData.length * (barW + barGap) - barGap;
+  const barData = [13,22,16,28,20,14,18,12,16,20,14,18,24,16,12,19,17,14,22,18,24,16,12,20,18,16,20,14,18,24];
+  const maxVal  = Math.max(...barData);
+  const upH = 44, downH = 32, gap = 6, TOTAL = upH + gap + downH;
+  const barW = 5, barGap = 4.2, rx = barW / 2;
+  const SVG_W = barData.length * (barW + barGap) - barGap;
 
   return (
     <Card
       className="
-        flex flex-col
-        rounded-[1.4492rem] border-0
-        bg-[var(--primary)]
+        flex flex-col rounded-[1.4492rem] border-0
+        bg-[var(--primary)] shadow-[var(--shadow-card-sm)]
         h-[11rem] lg:h-[12rem] xl:h-[13rem] 2xl:h-[14rem]
-        p-[1rem]
-        shadow-[var(--shadow-card-sm)]
-        xl:p-[1.1867rem]
+        p-[1rem] xl:p-[1.1867rem]
       "
     >
-      {/* HEADER */}
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-[0.8rem] font-bold leading-[120%] text-[var(--btn-primary-text)] xl:text-[0.8845rem]">
+          <Typography
+            variant="p"
+            className="text-[0.8rem] font-bold leading-[120%] text-[var(--btn-primary-text)] xl:text-[0.8845rem]"
+          >
             Manual Reviews Required
-          </p>
-          <p className="mt-1 text-[0.6rem] font-normal leading-[120%] text-[var(--primary-light)] xl:text-[0.6634rem]">
+          </Typography>
+          <Typography
+            variant="p"
+            className="mt-1 text-[0.6rem] font-normal leading-[120%] text-[var(--primary-light)] xl:text-[0.6634rem]"
+          >
             Avg Review Time: 1.2 Hrs
-          </p>
+          </Typography>
         </div>
-        <span className="shrink-0 text-[1.625rem] font-semibold leading-[120%] text-[var(--btn-primary-text)] xl:text-[1.875rem]">
+        <Typography
+          variant="span"
+          className="shrink-0 text-[1.625rem] font-semibold leading-[120%] text-[var(--btn-primary-text)] xl:text-[1.875rem]"
+        >
           {count}
-        </span>
+        </Typography>
       </div>
 
-      {/* MIRRORED BAR CHART */}
       <div className="mt-auto">
-        <svg
-          width="100%"
-          height={TOTAL}
-          viewBox={`0 0 ${SVG_W} ${TOTAL}`}
-          preserveAspectRatio="none"
-        >
+        <svg width="100%" height={TOTAL} viewBox={`0 0 ${SVG_W} ${TOTAL}`} preserveAspectRatio="none">
           {barData.map((v, i) => {
-            const x     = i * (barW + barGap);
-            const uH    = (v / maxVal) * upH;
-            const dH    = (v / maxVal) * downH;
-            const upY   = upH - uH;
+            const x    = i * (barW + barGap);
+            const uH   = (v / maxVal) * upH;
+            const dH   = (v / maxVal) * downH;
+            const upY  = upH - uH;
             const downY = upH + gap;
-
             return (
               <g key={i}>
-                {/* UP — white */}
-                <rect x={x} y={upY} width={barW} height={uH} rx={rx} fill="var(--mirror-bar-up)" />
-                {/* DOWN — teal, detached */}
+                <rect x={x} y={upY}   width={barW} height={uH} rx={rx} fill="var(--mirror-bar-up)" />
                 <rect x={x} y={downY} width={barW} height={dH} rx={rx} fill="var(--mirror-bar-down)" />
               </g>
             );

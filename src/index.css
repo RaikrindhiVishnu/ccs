@@ -14,6 +14,9 @@
   --font-sans: 'Plus Jakarta Sans';
   --font-heading: 'Manrope';
   --font-inter: 'Inter', sans-serif;
+  --success-soft:  rgba(12, 160, 12, 0.08);
+--success-green: #0ca00c;
+--status-pending-bg: #f3f3f5;
  /* ScreeningChart */
 --chart-bg: #F9F9F9;
 --chart-bar-approved: #2780C4;
@@ -50,7 +53,7 @@
   --input-border: #e1e5ef;
   --label-color: #3e4a3d;
   --success-green: #0ca00c;
-
+   --dot:  #131600;
   /* TEXT */
   --muted: rgba(0, 0, 0, 0.6);
   --muted-strong: rgba(0, 0, 0, 0.4);
