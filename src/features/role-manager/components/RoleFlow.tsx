@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Typography } from "@/components/ui/typography";
@@ -9,6 +10,7 @@ import { MOCK_ROLE_DATA } from "../data/mockRoles";
 import type { UserRole } from "../data/mockRoles";
 
 export const RoleFlow: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedFO, setSelectedFO] = useState<UserRole | null>(MOCK_ROLE_DATA[0]?.children?.[0] || null);
   const [searchFO, setSearchFO] = useState("");
   const [searchAgent, setSearchAgent] = useState("");
@@ -42,6 +44,8 @@ export const RoleFlow: React.FC = () => {
                   {...role} 
                   variant="detailed" 
                   active={idx === 0}
+                  onEdit={() => navigate("/role-manager/agent-edit")}
+                  onView={() => navigate("/role-manager/profile")}
                 />
                 {idx < MOCK_ROLE_DATA.length - 1 && (
                   <div className="h-px bg-gray-100 w-full" />
@@ -74,6 +78,8 @@ export const RoleFlow: React.FC = () => {
                 {...fo}
                 active={selectedFO?.id === fo.id}
                 onClick={() => setSelectedFO(fo)}
+                onEdit={() => navigate("/role-manager/agent-edit")}
+                onView={() => navigate("/role-manager/profile")}
               />
             ))}
           </div>
@@ -101,6 +107,8 @@ export const RoleFlow: React.FC = () => {
                 <FlowItem 
                   key={ag.id}
                   {...ag}
+                  onEdit={() => navigate("/role-manager/agent-edit")}
+                  onView={() => navigate("/role-manager/profile")}
                 />
               ))
             ) : (
