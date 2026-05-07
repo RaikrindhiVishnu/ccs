@@ -6,7 +6,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import AgentForm from "@/features/agents/AgentForm";
+// import AgentForm from "@/features/agents/AgentForm";
 import { Typography } from "@/components/ui/typography";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -302,7 +302,7 @@ const DesignSystem = () => {
     Agent Creation UI
   </Typography>
 
-  <AgentForm />
+  {/* <AgentForm /> */}
 </div>
 
       </section>

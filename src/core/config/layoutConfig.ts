@@ -57,7 +57,7 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     navItems: [
       { label: 'Dashboard', path: '/role-manager/dashboard',      icon: 'LayoutDashboard' },
       { label: 'User Directory', path: '/role-manager/user-directory', icon: 'Users' },
-      { label: 'Regions',    path: '/regions',   icon: 'Map' },
+      { label: 'Regions',    path: '/role-manager/region-area',   icon: 'Map' },
     ],
   },
 
