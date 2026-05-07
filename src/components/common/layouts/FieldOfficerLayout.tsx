@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import glcLogo from "../../../assets/glc-logo.svg";
 import bellIcon from "../../../assets/bellicon.svg";

@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import type { RouteObject } from 'react-router-dom';
 import AuthGuard from './AuthGuard';
 import GuestGuard from './GuestGuard';
-import { guestRoutes, authRoutes, publicRoutes } from './routes.config';
+import { guestRoutes, authRoutes, publicRoutes } from './routes.definitions';
 
 const PageLoader = () => (
   <div className="flex min-h-screen items-center justify-center bg-gray-50/50 backdrop-blur-sm">

@@ -164,7 +164,7 @@ export function PillDropdown({
           "border border-[color:var(--border)]",
           "rounded-full",
           "text-[length:clamp(11px,0.8vw,15px)] font-medium",
-          "font-[family-name:var(--btn-font-secondary)]",
+          "font-[family-name:var(--font-inter)]",
           "text-[color:var(--foreground)]",
           "transition-colors duration-150 cursor-pointer",
           "hover:bg-[color:var(--primary-soft)]",
@@ -183,7 +183,7 @@ export function PillDropdown({
               key={opt}
               active={selected === opt}
               onClick={() => pick(opt)}
-              fontClass="font-[family-name:var(--btn-font-secondary)]"
+              fontClass="font-[family-name:var(--font-inter)]"
             >
               {opt}
             </MenuItem>
@@ -301,14 +301,13 @@ export function TagPillDropdown({
           "flex items-center gap-[clamp(4px,0.4vw,8px)]",
           "h-[clamp(28px,2.2vw,38px)] w-[clamp(110px,8.5vw,150px)]",
           "px-[clamp(8px,0.8vw,14px)]",
-          "bg-[color:var(--tag-pill-bg)]", // ← NEW token (see note above)
+          "bg-[color:var(--tag-pill-bg)]",
           "border border-[color:var(--border-soft)]",
           "rounded-full",
           "transition-all duration-150 cursor-pointer",
           "hover:brightness-95",
         )}
       >
-        {/* Icon */}
         <span className="shrink-0 flex items-center justify-center text-[color:var(--muted)] w-[clamp(14px,1.1vw,20px)] h-[clamp(14px,1.1vw,20px)]">
           {icon ?? (
             <svg viewBox="0 0 21 21" fill="none" className="w-full h-full">
@@ -447,11 +446,7 @@ export function SquareDropdown({
                   onClick={(e) => removeChip(val, e)}
                   className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity flex items-center"
                 >
-                  <svg
-                    viewBox="0 0 8 8"
-                    fill="none"
-                    className="w-[8px] h-[8px]"
-                  >
+                  <svg viewBox="0 0 8 8" fill="none" className="w-[8px] h-[8px]">
                     <path
                       d="M1 1L7 7M7 1L1 7"
                       stroke="white"
@@ -574,7 +569,6 @@ export function CheckboxDropdown({
 
       {open && (
         <DropdownMenu align="left">
-          {/* Search */}
           <div className="px-[clamp(8px,0.8vw,14px)] pt-[clamp(8px,0.8vw,14px)] pb-[clamp(4px,0.4vw,8px)]">
             <input
               type="text"
@@ -597,7 +591,6 @@ export function CheckboxDropdown({
             />
           </div>
 
-          {/* Options */}
           <div className="max-h-[clamp(160px,12vw,240px)] overflow-y-auto">
             {filtered.length === 0 ? (
               <p className="px-4 py-3 text-[length:clamp(11px,0.75vw,14px)] text-[color:var(--muted)] font-[family-name:var(--font-sans)]">
@@ -653,20 +646,17 @@ export function FormDropdown({
   containerClassName,
   className,
 }: FormDropdownProps) {
-  // Normalize options to { label, value }
   const normalized = options.map((o) =>
     typeof o === "string" ? { label: o, value: o } : o,
   );
 
   const [open, setOpen] = useState(false);
-  const [internal, setInternal] = useState(defaultValue);
+  // ✅ Fix: use value prop as initial state instead of useEffect sync
+  const [internal, setInternal] = useState(value ?? defaultValue);
   const ref = useOutsideClick(() => setOpen(false));
 
-  // Sync controlled value
+  // ✅ Fix: derive selected directly — no useEffect needed
   const selected = value !== undefined ? value : internal;
-  useEffect(() => {
-    if (value !== undefined) setInternal(value);
-  }, [value]);
 
   const selectedLabel =
     normalized.find((o) => o.value === selected)?.label ?? placeholder;
@@ -685,14 +675,12 @@ export function FormDropdown({
         containerClassName,
       )}
     >
-      {/* Label */}
       {label && (
         <label className="font-medium leading-none text-[length:clamp(12px,0.97vw,16px)] text-[color:var(--label-color)] font-[family-name:var(--font-sans)]">
           {label}
         </label>
       )}
 
-      {/* Trigger */}
       <button
         onClick={() => !disabled && setOpen(!open)}
         disabled={disabled}
@@ -700,7 +688,7 @@ export function FormDropdown({
           "flex items-center w-full bg-[color:var(--card)] cursor-pointer",
           "h-[clamp(36px,2.9vw,40px)]",
           "border border-[color:var(--input-border)]",
-          "rounded-[var(--btn-radius-square)]",
+          "rounded-[var(--radius-dropdown)]",
           "px-[clamp(10px,0.9vw,14px)]",
           "transition-colors duration-150",
           "hover:border-[color:var(--primary)]",
@@ -712,7 +700,7 @@ export function FormDropdown({
         <span
           className={cn(
             "flex-1 text-left truncate",
-            "text-[length:clamp(12px,0.9vw,14px)] font-[family-name:var(--btn-font-secondary)]",
+            "text-[length:clamp(12px,0.9vw,14px)] font-[family-name:var(--font-inter)]",
             selected
               ? "text-[color:var(--profile-text)]"
               : "text-[color:var(--muted-strong)]",
@@ -721,7 +709,6 @@ export function FormDropdown({
           {selectedLabel}
         </span>
 
-        {/* Chevron */}
         <svg
           width="20"
           height="20"
@@ -743,7 +730,6 @@ export function FormDropdown({
         </svg>
       </button>
 
-      {/* Menu */}
       {open && (
         <DropdownMenu align="left">
           {normalized.map((opt) => (
@@ -752,7 +738,7 @@ export function FormDropdown({
               onClick={() => pick(opt.value)}
               className={cn(
                 "w-full text-left px-4 py-[clamp(8px,0.6vw,10px)]",
-                "text-[length:clamp(11px,0.85vw,14px)] font-[family-name:var(--btn-font-secondary)]",
+                "text-[length:clamp(11px,0.85vw,14px)] font-[family-name:var(--font-inter)]",
                 "transition-colors duration-150",
                 "hover:bg-[color:var(--primary-soft)]",
                 selected === opt.value

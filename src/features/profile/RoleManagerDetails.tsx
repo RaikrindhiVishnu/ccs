@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Typography } from "@/components/ui/typography";
+
 import { Input } from "@/components/ui/input";
 import role from "@/assets/role profile.svg";
 import SuccessIcon from "@/assets/sucess.svg";
@@ -39,7 +40,6 @@ function Toggle({ defaultOn = true }: { defaultOn?: boolean }) {
         shrink-0
         ${enabled ? "bg-[color:var(--toggle-active)]" : "bg-gray-300"}
       `}
-
     >
       <div
         className={`
@@ -111,7 +111,7 @@ export default function RoleManagerDetails({
           shadow-[0px_0px_4px_rgba(0,0,0,0.12)]
           text-[color:var(--text-neutral)]
           text-[clamp(0.75rem,0.95vw,1rem)]
-          font-[family-name:var(--font-inter)]
+          font-[family-name:var(--btn-font-secondary)]
           hover:opacity-80
           transition-opacity
         "

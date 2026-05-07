@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormDropdown } from "@/components/ui/Dropdown";
@@ -107,13 +107,11 @@ export default function AgentForm({
     onCancel,
     isLoading = false,
 }: AgentFormProps) {
-    const [formData, setFormData] = useState<AgentFormData>(emptyForm);
-
-    useEffect(() => {
-        if (initialData) {
-            setFormData((prev) => ({ ...prev, ...initialData }));
-        }
-    }, [initialData]);
+    // Initialise directly from initialData — no useEffect needed
+    const [formData, setFormData] = useState<AgentFormData>(() => ({
+        ...emptyForm,
+        ...initialData,
+    }));
 
     const handleChange = (key: keyof AgentFormData, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -143,7 +141,7 @@ export default function AgentForm({
                     shadow-[0px_0px_4px_rgba(0,0,0,0.12)]
                     text-[color:var(--text-neutral)]
                     text-[length:clamp(12px,0.9vw,16px)]
-                    font-[family-name:var(--btn-font-secondary)]
+                    font-[family-name:var(--font-inter)]
                     hover:opacity-80 transition-opacity cursor-pointer
                 "
             >
@@ -441,7 +439,7 @@ export default function AgentForm({
                         disabled={isLoading}
                         className="
                             !h-[40px] !min-w-[101px] !px-[24px] !py-[8px]
-                            !font-[family-name:var(--btn-font-secondary)] !font-medium
+                            !font-[family-name:var(--font-inter)] !font-medium
                             !text-[length:clamp(13px,0.9vw,16px)] !leading-[24px]
                             !normal-case !tracking-normal !shadow-none
                         "
@@ -457,7 +455,7 @@ export default function AgentForm({
                             !h-[40px] !min-w-[155px]
                             !rounded-[100px]
                             !px-[32px] !py-[8px]
-                            !font-[family-name:var(--btn-font-secondary)] !font-medium
+                            !font-[family-name:var(--font-inter)] !font-medium
                             !text-[length:clamp(13px,0.9vw,16px)] !leading-[24px]
                             !normal-case !tracking-normal
                             !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
@@ -535,7 +533,7 @@ function UploadBox({
                     flex flex-col items-center justify-center gap-2
                     h-[clamp(100px,9vw,128px)]
                     border-2 border-dashed border-[color:var(--input-border)]
-                    rounded-[var(--btn-radius-square)]
+                    rounded-[var(--radius-dropdown)]
                     cursor-pointer
                     bg-[color:var(--input)]
                     hover:brightness-95

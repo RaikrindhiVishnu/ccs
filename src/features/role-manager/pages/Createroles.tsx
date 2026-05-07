@@ -23,7 +23,8 @@ const ROLES: RoleItem[] = [
   {
     id: "regional-officer",
     title: "Regional Officer",
-    description: "Oversees territory strategy and approves final land acquisitions.",
+    description:
+      "Oversees territory strategy and approves final land acquisitions.",
     badge: "Approval Authority",
     imageSrc: regionalOfficerImg,
     imageAlt: "Regional Officer",
@@ -31,7 +32,8 @@ const ROLES: RoleItem[] = [
   {
     id: "intelligence-officer",
     title: "Intelligence Officer",
-    description: "Validates documentation and ensures all assets are risk-free.",
+    description:
+      "Validates documentation and ensures all assets are risk-free.",
     badge: "Risk Assessment",
     imageSrc: intelligenceOfficerImg,
     imageAlt: "Intelligence Officer",
@@ -39,7 +41,8 @@ const ROLES: RoleItem[] = [
   {
     id: "field-officer",
     title: "Field Officer",
-    description: "Conducts physical inspections to verify boundaries and reality.",
+    description:
+      "Conducts physical inspections to verify boundaries and reality.",
     badge: "Physical Verification",
     imageSrc: fieldOfficerImg,
     imageAlt: "Field Officer",
@@ -71,7 +74,7 @@ const GoBackButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
     aria-label="Go Back to Dashboard"
   >
     {/* Arrow icon — Figma: 24×24, rotated so it points left */}
-     <span className="flex items-center justify-center shrink-0 w-5 h-5 lg:w-6 lg:h-6">
+    <span className="flex items-center justify-center shrink-0 w-5 h-5 lg:w-6 lg:h-6">
       <img src={arrowLeftIcon} alt="Back Arrow" className="w-5 h-5 shrink-0" />
     </span>
 
@@ -224,9 +227,9 @@ const CreateRoles: React.FC = () => {
           "max-w-[640px] xl:max-w-[860px] [@media(min-width:1440px)]:max-w-[996px] [@media(min-width:1920px)]:max-w-[1120px]",
         )}
       >
-        Assign clear responsibilities across your land operations, from approvals
-        and risk assessment to field verification and deal sourcing, so every
-        step is structured, transparent, and easy to manage.
+        Assign clear responsibilities across your land operations, from
+        approvals and risk assessment to field verification and deal sourcing,
+        so every step is structured, transparent, and easy to manage.
       </Typography>
 
       <div

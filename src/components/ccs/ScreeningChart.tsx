@@ -7,8 +7,8 @@ export default function ScreeningChart() {
   const days     = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   const legend = [
-    { label: "Approved",       color: "var(--chart-bar-approved)" },
-    { label: "Manual Reviews", color: "var(--chart-bar-review)"   },
+    { label: "Approved",       color: "var(--primary)" },
+    { label: "Manual Reviews", color: "var(--btn-lime)"   },
     { label: "Rejected",       color: "var(--chart-bar-rejected)" },
   ];
 
@@ -42,8 +42,8 @@ export default function ScreeningChart() {
               const jH = (rejected[i] / 100) * SVG_H;
               return (
                 <g key={i}>
-                  <rect x={x}                      y={SVG_H - aH} width={barW} height={aH} rx={barW/2} fill="var(--chart-bar-approved)" />
-                  <rect x={x + barW - overlap}      y={SVG_H - rH} width={barW} height={rH} rx={barW/2} fill="var(--chart-bar-review)"   />
+                  <rect x={x}                      y={SVG_H - aH} width={barW} height={aH} rx={barW/2} fill="var(--primary)" />
+                  <rect x={x + barW - overlap}      y={SVG_H - rH} width={barW} height={rH} rx={barW/2} fill="var(--btn-lime)"   />
                   <rect x={x + (barW-overlap) * 2}  y={SVG_H - jH} width={barW} height={jH} rx={barW/2} fill="var(--chart-bar-rejected)" />
                   <text x={x + barW - overlap} y={SVG_H + 12} textAnchor="middle" fontSize="8" fill="var(--chart-axis-text)">{days[i]}</text>
                 </g>
