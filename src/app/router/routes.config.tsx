@@ -1,6 +1,8 @@
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
 import { RootLayout } from '@/components/common/layouts/RootLayout';
+import CreateRegionsAndAreas from "@/features/role-manager/pages/Createregionsandareas";
+import CreateRoles from "@/features/role-manager/pages/Createroles";
 
 const CcsDashboard    = lazy(() => import('../../features/dashboard/pages/CcsDashboard'));
 // const DesignSystem    = lazy(() => import('../../features/design-system/pages/DesignSystem'));
@@ -40,6 +42,9 @@ export const authRoutes: RouteObject[] = [
        { path: '/farmland-list', element: <FarmlandList /> },
       { path: '/role-manager/dashboard', element: <RoleManagerDashboard /> },
       { path: '/role-manager/user-directory', element: <UserDirectory /> },
+      // Inside your router:
+{ path: "/role-manager/create", element: <CreateRegionsAndAreas /> },
+ { path:"/role-manager/create-roles" ,element:<CreateRoles />}
     ],
   },
 ];
