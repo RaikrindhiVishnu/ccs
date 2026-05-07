@@ -94,16 +94,16 @@ const fallbackAgents: Agent[] = [
 const StatusBadge = ({ status }: { status: Agent["status"] }) => {
   const config = {
     "Pending Review": {
-      dot: "bg-[color:var(--primary)]",
-      text: "text-[color:var(--primary)]",
+      dot: "bg-[color:var(--brand-500)]",
+      text: "text-[color:var(--brand-500)]",
     },
     Approved: {
-      dot: "bg-[color:var(--success-green)]",
-      text: "text-[color:var(--success-green)]",
+      dot: "bg-[color:var(--status-success)]",
+      text: "text-[color:var(--status-success)]",
     },
     Rejected: {
-      dot: "bg-[color:var(--danger)]",
-      text: "text-[color:var(--danger)]",
+      dot: "bg-[color:var(--status-danger)]",
+      text: "text-[color:var(--status-danger)]",
     },
   };
 
@@ -208,7 +208,7 @@ const AgentRow = ({
   <div
     className={cn(
       "relative w-full",
-      "bg-[color:var(--card)]",
+      "bg-[color:var(--surface-card)]",
       "border border-[color:var(--border-soft)]",
       "shadow-[0px_20px_40px_rgba(0,49,50,0.06)]",
       "rounded-[1.5rem] lg:rounded-[1.75rem] xl:rounded-[2rem]",
@@ -246,7 +246,7 @@ const AgentRow = ({
           className="
             font-[family-name:var(--font-heading)]
             font-bold
-            text-[color:var(--text-dark)]
+            text-[color:var(--text-heading)]
             leading-none
             truncate
             !text-[1rem]
@@ -263,7 +263,7 @@ const AgentRow = ({
           <LocationIcon />
           <span
             className="
-              text-[color:var(--text-neutral)]
+              text-[color:var(--text-secondary)]
               font-[family-name:var(--font-sans)]
               leading-none
               text-[0.6875rem]
@@ -339,7 +339,7 @@ export const AgentApprovalsPage = ({
       className="
         w-full
         min-h-screen
-        bg-[color:var(--background)]
+        bg-[color:var(--surface-page)]
         font-[family-name:var(--font-sans)]
       "
     >
@@ -374,7 +374,7 @@ export const AgentApprovalsPage = ({
             className="
               font-[family-name:var(--font-heading)]
               font-bold
-              text-[color:var(--foreground)]
+              text-[color:var(--text-primary)]
               leading-none
               !text-[1.625rem]
               lg:!text-[1.875rem]
@@ -446,7 +446,7 @@ export const AgentApprovalsPage = ({
               lg:!h-[3.5rem]
               xl:!h-[3.75rem]
               !rounded-[var(--btn-radius-pill)]
-              bg-[color:var(--card)]
+              bg-[color:var(--surface-card)]
               border
               border-[color:var(--border-soft)]
               shadow-none
@@ -456,7 +456,7 @@ export const AgentApprovalsPage = ({
               uppercase
               tracking-[0.16em]
               font-medium
-              text-[color:var(--foreground)]
+              text-[color:var(--text-primary)]
               !text-[0.6875rem]
               lg:!text-[0.75rem]
               xl:!text-[0.8125rem]

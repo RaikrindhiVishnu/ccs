@@ -8,7 +8,7 @@ export default function StatsCard({ title, value, icon }: Props) {
     <Card
       className="
         flex w-full flex-col justify-between rounded-[2rem]
-        border border-[var(--border)] bg-[var(--card)]
+        border border-[var(--border)] bg-[var(--surface-card)]
         px-5 pb-5 pt-[0.4375rem] shadow-[var(--shadow-card-sm)]
         h-[7.5rem] lg:h-[8rem] xl:h-[8.75rem] xl:px-8 xl:pb-8 2xl:h-[9.5rem]
       "
@@ -16,7 +16,7 @@ export default function StatsCard({ title, value, icon }: Props) {
       <div className="flex items-start justify-between gap-2 pt-5">
         <Typography
           variant="span"
-          className="text-[0.5625rem] font-bold uppercase leading-[0.9375rem] tracking-[0.0625rem] text-[var(--text-neutral)] xl:text-[0.625rem]"
+          className="text-[0.5625rem] font-bold uppercase leading-[0.9375rem] tracking-[0.0625rem] text-[var(--text-secondary)] xl:text-[0.625rem]"
         >
           {title}
         </Typography>
@@ -27,7 +27,7 @@ export default function StatsCard({ title, value, icon }: Props) {
 
       <Typography
         variant="h2"
-        className="text-[1.25rem] font-extrabold leading-[1.875rem] tracking-[-0.03125rem] text-[var(--text-dark)] lg:text-[1.375rem] xl:text-[1.5rem] xl:leading-[2.25rem] 2xl:text-[1.75rem]"
+        className="text-[1.25rem] font-extrabold leading-[1.875rem] tracking-[-0.03125rem] text-[var(--text-heading)] lg:text-[1.375rem] xl:text-[1.5rem] xl:leading-[2.25rem] 2xl:text-[1.75rem]"
       >
         {value}
       </Typography>

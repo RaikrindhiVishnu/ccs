@@ -72,8 +72,8 @@ function CustomDot({
         width={bubbleW}
         height={bubbleH}
         rx={13}
-        fill="var(--background)"
-        stroke="var(--border-strong)"
+        fill="var(--surface-page)"
+        stroke="var(--text-primary)"
         strokeWidth={1.2}
         filter="url(#bubbleShadow)"
       />
@@ -156,7 +156,7 @@ export default function RegionVelocityCard({
           </h3>
           <p
             className="text-[clamp(12px,1vw,14px)] text-foreground/60 mt-1"
-            style={{ color: "var(--muted)" }}
+            style={{ color: "var(--text-muted)" }}
           >
             {subtitle}
           </p>
@@ -187,12 +187,12 @@ export default function RegionVelocityCard({
               <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="0%"
-                  stopColor="var(--primary)"
+                  stopColor="var(--brand-500)"
                   stopOpacity={0.65}
                 />
                 <stop
                   offset="100%"
-                  stopColor="var(--primary)"
+                  stopColor="var(--brand-500)"
                   stopOpacity={0}
                 />
               </linearGradient>
@@ -246,7 +246,7 @@ export default function RegionVelocityCard({
             <Area
               type="monotone"
               dataKey="value"
-              stroke="var(--primary)"
+              stroke="var(--brand-500)"
               strokeWidth={2}
               fill="url(#areaGradient)"
               dot={(props: CustomDotProps) => (
@@ -254,15 +254,15 @@ export default function RegionVelocityCard({
               )}
               activeDot={{
                 r: 6,
-                fill: "var(--primary)",
-                stroke: "var(--primary-light)",
+                fill: "var(--brand-500)",
+                stroke: "var(--brand-200)",
                 strokeWidth: 6,
               }}
             />
 
             <Tooltip
               cursor={{
-                stroke: "var(--primary-light)",
+                stroke: "var(--brand-200)",
                 strokeWidth: 20,
                 opacity: 0.25,
               }}
@@ -272,7 +272,7 @@ export default function RegionVelocityCard({
                   return (
                     <div
                       style={{
-                        background: isPeak ? "var(--primary)" : "white",
+                        background: isPeak ? "var(--brand-500)" : "white",
                         color: isPeak ? "white" : "#0f172a",
                         border: isPeak ? "none" : "1px solid #e2e8f0",
                         borderRadius: "999px",

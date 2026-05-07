@@ -30,27 +30,27 @@ const Header: React.FC = () => {
         {/* Dashboard label */}
         <div className="flex items-center gap-1.5">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
-            <rect x="1" y="1" width="6" height="6" rx="1" fill="var(--foreground)" />
-            <rect x="9" y="1" width="6" height="6" rx="1" fill="var(--foreground)" />
-            <rect x="1" y="9" width="6" height="6" rx="1" fill="var(--foreground)" />
-            <rect x="9" y="9" width="6" height="6" rx="1" fill="var(--foreground)" />
+            <rect x="1" y="1" width="6" height="6" rx="1" fill="var(--text-primary)" />
+            <rect x="9" y="1" width="6" height="6" rx="1" fill="var(--text-primary)" />
+            <rect x="1" y="9" width="6" height="6" rx="1" fill="var(--text-primary)" />
+            <rect x="9" y="9" width="6" height="6" rx="1" fill="var(--text-primary)" />
           </svg>
-          <span className="font-sans font-normal text-[12px] text-(--foreground)">
+          <span className="font-sans font-normal text-[12px] text-(--text-primary)">
             Dashboard
           </span>
         </div>
 
         {/* Search + Bell */}
         <div className="flex items-center gap-3 shrink-0">
-          <div className="flex items-center gap-2 px-4 bg-(--card) rounded-full w-[200px] h-[34px] border border-(--border-soft) shadow-sm">
+          <div className="flex items-center gap-2 px-4 bg-(--surface-card) rounded-full w-[200px] h-[34px] border border-(--border-soft) shadow-sm">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
               <circle cx="11" cy="11" r="7" stroke="currentColor" strokeOpacity="0.4" strokeWidth="2" />
               <path d="M16.5 16.5L21 21" stroke="currentColor" strokeOpacity="0.4" strokeWidth="2" strokeLinecap="round" />
             </svg>
-            <span className="font-sans text-[12px] text-(--muted) opacity-60">Search...</span>
+            <span className="font-sans text-[12px] text-(--text-muted) opacity-60">Search...</span>
           </div>
 
-          <div className="w-[34px] h-[34px] bg-(--card) rounded-full flex justify-center items-center cursor-pointer border border-(--border-soft) shadow-sm">
+          <div className="w-[34px] h-[34px] bg-(--surface-card) rounded-full flex justify-center items-center cursor-pointer border border-(--border-soft) shadow-sm">
             <img src={bellIcon} alt="notification" className="w-5 h-5 opacity-70" />
           </div>
         </div>

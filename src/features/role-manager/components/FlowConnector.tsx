@@ -11,7 +11,7 @@ export const FlowConnector: React.FC<FlowConnectorProps> = ({
   type = "branch",
   startOffset = 0.5 
 }) => {
-  const strokeColor = "var(--primary)";
+  const strokeColor = "var(--brand-500)";
   const strokeWidth = 1.2;
 
   // Map 0-1 offset to SVG coordinate space (40 to 280 in our 320 height viewbox)
@@ -61,15 +61,15 @@ export const FlowConnector: React.FC<FlowConnectorProps> = ({
           <path d="M 41 277 L 45 280 L 41 283" stroke={strokeColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
 
           {/* Connection Dot (matches design) */}
-          <circle cx="2" cy={yStart} r="6" fill="var(--primary-light)" fillOpacity="0.4" />
-          <circle cx="2" cy={yStart} r="2.5" fill="var(--text-dark)" />
+          <circle cx="2" cy={yStart} r="6" fill="var(--brand-200)" fillOpacity="0.4" />
+          <circle cx="2" cy={yStart} r="2.5" fill="var(--text-heading)" />
         </svg>
       ) : (
         <svg width="100%" height="40" viewBox="0 0 60 40" fill="none">
           <line x1="0" y1="20" x2="45" y2="20" stroke={strokeColor} strokeWidth={strokeWidth} />
           <path d="M 41 17 L 45 20 L 41 23" stroke={strokeColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
-          <circle cx="2" cy="20" r="6" fill="var(--primary-light)" fillOpacity="0.4" />
-          <circle cx="2" cy="20" r="2.5" fill="var(--text-dark)" />
+          <circle cx="2" cy="20" r="6" fill="var(--brand-200)" fillOpacity="0.4" />
+          <circle cx="2" cy="20" r="2.5" fill="var(--text-heading)" />
         </svg>
       )}
     </div>

@@ -71,7 +71,7 @@ export const RoleFlow: React.FC = () => {
               value={searchFO}
               onChange={(e) => setSearchFO(e.target.value)}
               icon={<Search size={16} />}
-              wrapperClassName="border border-[var(--border-light)] rounded-full h-10 text-sm"
+              wrapperClassName="border border-[var(--border-subtle)] rounded-full h-10 text-sm"
               variant="white"
             />
           }
@@ -101,7 +101,7 @@ export const RoleFlow: React.FC = () => {
               value={searchAgent}
               onChange={(e) => setSearchAgent(e.target.value)}
               icon={<Search size={16} />}
-              wrapperClassName="border border-[var(--border-light)] rounded-full h-10 text-sm"
+              wrapperClassName="border border-[var(--border-subtle)] rounded-full h-10 text-sm"
               variant="white"
             />
           }

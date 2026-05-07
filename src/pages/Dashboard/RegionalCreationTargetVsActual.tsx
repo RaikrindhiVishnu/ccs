@@ -33,13 +33,13 @@ interface TooltipProps {
 const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[var(--card)] border border-[var(--border-soft)] p-2.5 rounded-xl shadow-xl">
-        <p className="font-sans font-bold text-[12px] mb-1 text-[var(--foreground)]">{label}</p>
+      <div className="bg-[var(--surface-card)] border border-[var(--border-soft)] p-2.5 rounded-xl shadow-xl">
+        <p className="font-sans font-bold text-[12px] mb-1 text-[var(--text-primary)]">{label}</p>
         <div className="flex flex-col gap-0.5">
-          <p className="font-sans text-[11px] text-[var(--primary)] opacity-60">
+          <p className="font-sans text-[11px] text-[var(--brand-500)] opacity-60">
             Target: {payload[0].value}
           </p>
-          <p className="font-sans text-[11px] text-[var(--primary)] font-semibold">
+          <p className="font-sans text-[11px] text-[var(--brand-500)] font-semibold">
             Actual: {payload[1]?.value}
           </p>
         </div>
@@ -56,16 +56,16 @@ const RegionalCreationTargetVsActual: React.FC = () => (
     {/* Header */}
     <div className="flex justify-between items-start mb-[clamp(12px,2vh,24px)] shrink-0">
       <div className="flex flex-col gap-[clamp(4px,0.8vh,8px)]">
-        <div className="font-sans font-medium text-[clamp(14px,1.5vw,20px)] leading-tight text-[var(--foreground)]">
+        <div className="font-sans font-medium text-[clamp(14px,1.5vw,20px)] leading-tight text-[var(--text-primary)]">
           Regional Creation Target vs Actual
         </div>
-        <div className="font-sans font-normal text-[clamp(11px,1vw,14px)] leading-tight text-[var(--foreground)] opacity-60">
+        <div className="font-sans font-normal text-[clamp(11px,1vw,14px)] leading-tight text-[var(--text-primary)] opacity-60">
           Weekly overview of regional creation
         </div>
       </div>
 
-      <div className="box-border flex items-center p-[5px_4px_5px_8px] border border-[var(--border-strong)] rounded-[30px] cursor-pointer shrink-0">
-        <span className="font-sans font-normal text-[12px] text-[var(--foreground)]">
+      <div className="box-border flex items-center p-[5px_4px_5px_8px] border border-[var(--text-primary)] rounded-[30px] cursor-pointer shrink-0">
+        <span className="font-sans font-normal text-[12px] text-[var(--text-primary)]">
           Weekly
         </span>
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="rotate-90 shrink-0">
@@ -93,7 +93,7 @@ const RegionalCreationTargetVsActual: React.FC = () => (
             axisLine={false}
             tickLine={false}
             tick={{
-              fill: "var(--foreground)",
+              fill: "var(--text-primary)",
               fontSize: "clamp(9px, 0.7vw, 11px)",
               opacity: 0.5,
               fontFamily: "var(--font-sans)",
@@ -105,7 +105,7 @@ const RegionalCreationTargetVsActual: React.FC = () => (
             axisLine={false}
             tickLine={false}
             tick={{
-              fill: "var(--foreground)",
+              fill: "var(--text-primary)",
               fontSize: "clamp(9px, 0.7vw, 11px)",
               opacity: 0.5,
               fontFamily: "var(--font-sans)",

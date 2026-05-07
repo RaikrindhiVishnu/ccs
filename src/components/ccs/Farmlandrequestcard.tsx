@@ -25,7 +25,7 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
     <Card
       className="
         relative flex flex-col justify-between
-        rounded-[2rem] border-0 bg-[var(--card)]
+        rounded-[2rem] border-0 bg-[var(--surface-card)]
         p-6 shadow-[var(--shadow-card)]
         transition-shadow hover:shadow-[var(--shadow-dropdown)]
         lg:p-7
@@ -114,12 +114,12 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
           border border-[rgba(188,201,201,0.1)]
           bg-[#F9F9FB]
           transition-colors
-          hover:border-[var(--primary)] hover:bg-[var(--primary-soft)]
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]
+          hover:border-[var(--brand-500)] hover:bg-[var(--brand-tint)]
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-500)]
         "
       >
         <ArrowRight
-          className="h-[0.875rem] w-[0.875rem] lg:h-4 lg:w-4 text-[var(--primary)]"
+          className="h-[0.875rem] w-[0.875rem] lg:h-4 lg:w-4 text-[var(--brand-500)]"
           strokeWidth={2}
         />
       </button>
@@ -161,7 +161,7 @@ function InfoField({
         className={[
           'font-[\'Inter\'] font-semibold leading-6',
           'text-[0.875rem] lg:text-[0.9375rem] xl:text-[1rem]',
-          accent ? 'text-[var(--primary)]' : 'text-[#1A1C1D]',
+          accent ? 'text-[var(--brand-500)]' : 'text-[#1A1C1D]',
         ].join(' ')}
       >
         {value}

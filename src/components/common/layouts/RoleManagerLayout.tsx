@@ -17,7 +17,7 @@ export const RoleManagerLayout = () => {
   return (
     <div
       className="flex h-screen overflow-hidden"
-      style={{ background: "var(--background)" }}
+      style={{ background: "var(--surface-page)" }}
     >
       {/* ── Existing Dashboard Sidebar — no modifications ─────────────────── */}
       {/* Logout click is passed down so the icon button actually works       */}

@@ -8,7 +8,7 @@ import { useFarmlandList } from "@/core/hooks/Usefarmlandlist";
 /* ── skeleton ── */
 function SkeletonCard() {
   return (
-    <div className="flex animate-pulse overflow-hidden rounded-[1.5rem] bg-[var(--card)] shadow-[var(--shadow-card)] xl:rounded-[2rem]">
+    <div className="flex animate-pulse overflow-hidden rounded-[1.5rem] bg-[var(--surface-card)] shadow-[var(--shadow-card)] xl:rounded-[2rem]">
       <div className="h-[11rem] w-full bg-[var(--input)] lg:h-auto lg:w-[13rem] xl:w-[15rem]" />
       <div className="flex flex-1 flex-col gap-3 p-4 xl:p-5">
         <div className="h-5 w-[7rem] rounded bg-[var(--input)]" />
@@ -55,7 +55,7 @@ export default function FarmlandList() {
           />
           <Typography
             variant="h4"
-            className="text-[var(--foreground)] text-[0.9375rem] font-normal leading-tight lg:text-[1rem] xl:text-[1.125rem]"
+            className="text-[var(--text-primary)] text-[0.9375rem] font-normal leading-tight lg:text-[1rem] xl:text-[1.125rem]"
           >
             Farmland List
           </Typography>
@@ -64,7 +64,7 @@ export default function FarmlandList() {
         {/* RIGHT — search + bell */}
         <div className="flex items-center gap-2">
           {/* SEARCH BAR */}
-          <div className="flex items-center gap-2 rounded-[3.75rem] bg-[var(--card)] px-4 py-[0.875rem] lg:px-5 lg:py-[0.9375rem]">
+          <div className="flex items-center gap-2 rounded-[3.75rem] bg-[var(--surface-card)] px-4 py-[0.875rem] lg:px-5 lg:py-[0.9375rem]">
             <Search
               className="h-5 w-5 shrink-0 text-[var(--text-subtle)]"
               strokeWidth={1.6}
@@ -76,9 +76,9 @@ export default function FarmlandList() {
           </div>
 
           {/* BELL BUTTON — no variant fits a pure icon button, keep as-is */}
-          <button className="relative flex h-[3.125rem] w-[3.125rem] items-center justify-center rounded-full bg-[var(--card)] transition-colors hover:bg-[var(--primary-soft)] xl:h-[3.25rem] xl:w-[3.25rem]">
-            <span className="absolute right-[0.75rem] top-[0.625rem] h-[0.3125rem] w-[0.3125rem] rounded-full bg-[var(--danger)]" />
-            <Bell className="h-5 w-5 text-[var(--sidebar)]" strokeWidth={1.5} />
+          <button className="relative flex h-[3.125rem] w-[3.125rem] items-center justify-center rounded-full bg-[var(--surface-card)] transition-colors hover:bg-[var(--brand-tint)] xl:h-[3.25rem] xl:w-[3.25rem]">
+            <span className="absolute right-[0.75rem] top-[0.625rem] h-[0.3125rem] w-[0.3125rem] rounded-full bg-[var(--status-danger)]" />
+            <Bell className="h-5 w-5 text-[var(--surface-sidebar)]" strokeWidth={1.5} />
             <span className="sr-only">Notifications</span>
           </button>
         </div>
@@ -88,10 +88,10 @@ export default function FarmlandList() {
       <div className="mt-5 flex flex-col gap-3 xl:mt-6 xl:gap-4">
         {/* ERROR */}
         {error && (
-          <div className="flex items-center justify-between rounded-[1rem] bg-[var(--danger-soft)] px-5 py-3">
+          <div className="flex items-center justify-between rounded-[1rem] bg-[var(--status-danger-soft)] px-5 py-3">
             <Typography
               variant="p"
-              className="text-[var(--danger)] text-[0.875rem] font-medium"
+              className="text-[var(--status-danger)] text-[0.875rem] font-medium"
             >
               {error}
             </Typography>

@@ -55,19 +55,19 @@ const agentData: AgentDetail = {
 const StatusBadge = ({ status }: { status: AgentDetail["status"] }) => {
   const config = {
     "Pending Review": {
-      dot: "bg-[color:var(--primary)]",
-      text: "text-[color:var(--primary)]",
+      dot: "bg-[color:var(--brand-500)]",
+      text: "text-[color:var(--brand-500)]",
       bg: "bg-[color:var(--status-pending-bg)]",
     },
     Approved: {
-      dot: "bg-[color:var(--success-green)]",
-      text: "text-[color:var(--success-green)]",
-      bg: "bg-[color:var(--success-soft)]",
+      dot: "bg-[color:var(--status-success)]",
+      text: "text-[color:var(--status-success)]",
+      bg: "bg-[color:var(--status-success-soft)]",
     },
     Rejected: {
-      dot: "bg-[color:var(--danger)]",
-      text: "text-[color:var(--danger)]",
-      bg: "bg-[color:var(--danger-soft)]",
+      dot: "bg-[color:var(--status-danger)]",
+      text: "text-[color:var(--status-danger)]",
+      bg: "bg-[color:var(--status-danger-soft)]",
     },
   };
 
@@ -167,7 +167,7 @@ const SectionCard = ({
 }) => (
   <div
     className={cn(
-      "bg-[color:var(--card)]",
+      "bg-[color:var(--surface-card)]",
       "rounded-[1rem]",
       "lg:rounded-[1.25rem]",
       "xl:rounded-[1.5rem]",
@@ -247,7 +247,7 @@ const DocumentCard = ({
       className="
         border
         border-dashed
-        border-[color:var(--input-border)]
+        border-[color:var(--border-default)]
         rounded-[0.75rem]
         lg:rounded-[0.875rem]
         xl:rounded-[1.125rem]
@@ -319,10 +319,10 @@ const BackButton = ({ onClick }: { onClick?: () => void }) => (
       flex items-center gap-2
       px-5 py-3
       mb-[clamp(1.5rem,2.5vw,2.375rem)]
-      bg-[color:var(--card)]
+      bg-[color:var(--surface-card)]
       rounded-full
       shadow-[0px_0px_4px_rgba(0,0,0,0.12)]
-      text-[color:var(--text-neutral)]
+      text-[color:var(--text-secondary)]
       text-[clamp(0.75rem,0.95vw,1rem)]
       font-[family-name:var(--btn-font-secondary)]
       hover:opacity-80
@@ -340,7 +340,7 @@ const BackButton = ({ onClick }: { onClick?: () => void }) => (
 const ProfileHeaderCard = ({ agent }: { agent: AgentDetail }) => (
   <div
     className="
-      bg-[color:var(--card)]
+      bg-[color:var(--surface-card)]
       rounded-[1rem]
       lg:rounded-[1.25rem]
       xl:rounded-[1.5rem]
@@ -459,7 +459,7 @@ const ProfileHeaderCard = ({ agent }: { agent: AgentDetail }) => (
               font-medium
               leading-none
               font-[family-name:var(--font-sans)]
-              text-[color:var(--profile-subtext)]
+              text-[color:var(--text-supporting)]
               text-[0.6875rem]
               lg:text-[0.75rem]
               xl:text-[0.8125rem]
@@ -493,7 +493,7 @@ export const AgentDetailPage = ({
       className="
         w-full
         min-h-screen
-        bg-[color:var(--background)]
+        bg-[color:var(--surface-page)]
         font-[family-name:var(--font-sans)]
       "
     >
@@ -524,7 +524,7 @@ export const AgentDetailPage = ({
 
         <div
           className="
-            bg-[color:var(--card)]
+            bg-[color:var(--surface-card)]
             rounded-[1.75rem]
             lg:rounded-[2.25rem]
             xl:rounded-[2.875rem]

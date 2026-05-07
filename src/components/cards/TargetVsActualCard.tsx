@@ -49,13 +49,13 @@ const ActualBarShape = ({
         width={width}
         height={height}
         rx={14}
-        fill="var(--primary)"
+        fill="var(--brand-500)"
       />
       <circle
         cx={centerX}
         cy={y + 2}
         r={Math.max(10, width * 0.25)}
-        fill="var(--primary-light)"
+        fill="var(--brand-200)"
         opacity={0.9}
       />
       <text
@@ -64,7 +64,7 @@ const ActualBarShape = ({
         textAnchor="middle"
         fontSize={Math.max(9, width * 0.2)}
         fontWeight="600"
-        fill="var(--foreground)"
+        fill="var(--text-primary)"
       >
         {payload?.actual}
       </text>
@@ -98,7 +98,7 @@ export default function TargetVsActualCard({
           </h3>
           <p
             className="text-[clamp(12px,1vw,14px)] text-foreground/60 mt-1"
-            style={{ color: "var(--muted)" }}
+            style={{ color: "var(--text-muted)" }}
           >
             {subtitle}
           </p>
@@ -144,7 +144,7 @@ export default function TargetVsActualCard({
               dataKey="target"
               barSize={40}
               radius={[14, 14, 0, 0]}
-              fill="var(--outerbar)"
+              fill="var(--brand-bar)"
             />
 
             <Bar

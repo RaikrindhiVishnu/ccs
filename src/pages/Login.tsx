@@ -41,7 +41,7 @@ export default function Login() {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-[var(--background)] font-sans">
+    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-[var(--surface-page)] font-sans">
       <div className="flex flex-row items-center w-[clamp(831px,81.18vw,1542px)] gap-[clamp(67px,6.74vw,128px)]">
         {/* ── Logo Side ── */}
         <div className="flex items-center justify-center shrink-0 flex-[0_0_clamp(372px,36.32vw,690px)]">
@@ -61,7 +61,7 @@ export default function Login() {
             style={{
               fontFamily: "var(--font-heading)",
               fontSize: "clamp(24px, 2.5vw, 47px)",
-              color: "var(--foreground)",
+              color: "var(--text-primary)",
               marginBottom: "clamp(10px, 1.37vh, 18px)",
             }}
           >
@@ -71,7 +71,7 @@ export default function Login() {
           {/* Subtext */}
           <Typography
             variant="p"
-            className="font-normal leading-[1.625] m-0 shrink-0 text-left text-[clamp(11px,1.11vw,21px)] text-[var(--muted)] mb-[clamp(28px,3.71vh,50px)]"
+            className="font-normal leading-[1.625] m-0 shrink-0 text-left text-[clamp(11px,1.11vw,21px)] text-[var(--text-muted)] mb-[clamp(28px,3.71vh,50px)]"
           >
             Secure access for authorised role managers.
             <br /> Please authenticate to continue.
@@ -105,7 +105,7 @@ export default function Login() {
               labelRightElement={
                 <button
                   type="button"
-                  className="login-forgot font-sans font-medium bg-transparent border-none cursor-pointer p-0 transition-opacity duration-150 text-[clamp(10px,0.97vw,18px)] text-[var(--muted)] hover:opacity-70"
+                  className="login-forgot font-sans font-medium bg-transparent border-none cursor-pointer p-0 transition-opacity duration-150 text-[clamp(10px,0.97vw,18px)] text-[var(--text-muted)] hover:opacity-70"
                 >
                   Forgot Password?
                 </button>
@@ -131,14 +131,14 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="login-btn w-full h-[clamp(45px,5.86vh,78px)] text-[clamp(10px,0.97vw,18px)] font-sans border-none rounded-full cursor-pointer font-semibold uppercase tracking-[0.7px] transition-all duration-200 flex items-center justify-center active:scale-[0.985] disabled:opacity-50 bg-[var(--primary)] text-[var(--card)] hover:bg-[#1e6aaa] hover:shadow-[0_4px_20px_rgba(39,128,196,0.28)]"
+                className="login-btn w-full h-[clamp(45px,5.86vh,78px)] text-[clamp(10px,0.97vw,18px)] font-sans border-none rounded-full cursor-pointer font-semibold uppercase tracking-[0.7px] transition-all duration-200 flex items-center justify-center active:scale-[0.985] disabled:opacity-50 bg-[var(--brand-500)] text-[var(--surface-card)] hover:bg-[#1e6aaa] hover:shadow-[0_4px_20px_rgba(39,128,196,0.28)]"
               >
                 Login
               </button>
             </div>
 
             {/* ── Footer ── */}
-            <div className="flex items-center mt-auto shrink-0 pl-[10px] gap-[clamp(6px,1.11vw,21px)] pt-[clamp(12px,1.95vh,26px)] text-[var(--muted)]">
+            <div className="flex items-center mt-auto shrink-0 pl-[10px] gap-[clamp(6px,1.11vw,21px)] pt-[clamp(12px,1.95vh,26px)] text-[var(--text-muted)]">
               <ShieldCheck
                 size={16}
                 strokeWidth={1.8}

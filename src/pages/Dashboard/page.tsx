@@ -8,7 +8,7 @@ import Header from "./Header";
 
 const DashboardPage: React.FC = () => {
   return (
-    <div className="h-screen w-screen bg-[var(--background)] flex flex-row box-border overflow-hidden">
+    <div className="h-screen w-screen bg-[var(--surface-page)] flex flex-row box-border overflow-hidden">
       <Sidebar />
 
       {/* Main content area */}
