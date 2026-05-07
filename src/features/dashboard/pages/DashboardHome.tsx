@@ -1,4 +1,3 @@
-import React from "react";
 import avatars from "../../../assets/dashboard/avatars.png";
 import icons from "../../../assets/dashboard/icons.png";
 import plusIcon from "../../../assets/Vector.svg";

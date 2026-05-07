@@ -46,7 +46,7 @@ const base =
 const variantClasses: Record<ButtonVariant, string> = {
   // ── Solid filled pills ───────────────────────────────────────────────────
   primary:
-    "bg-[var(--btn-primary)] text-[var(--btn-primary-text)] border-none " +
+    "bg-[var(--primary)] text-[var(--btn-primary-text)] border-none " +
     "rounded-[var(--btn-radius-pill)] " +
     "font-[family-name:var(--btn-font-primary)] font-semibold uppercase tracking-[0.7px] " +
     "px-6 lg:px-7 xl:px-8 2xl:px-10 " +
@@ -54,8 +54,8 @@ const variantClasses: Record<ButtonVariant, string> = {
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
 
   "primary-sm":
-    "bg-[var(--btn-primary)] text-[var(--btn-primary-text)] border-none " +
-    "rounded-[24px] font-[family-name:var(--btn-font-secondary)] font-bold " +
+    "bg-[var(--primary)] text-[var(--btn-primary-text)] border-none " +
+    "rounded-[24px] font-[family-name:var(--font-inter)] font-bold " +
     "px-3 lg:px-4 " +
     "h-[26px] lg:h-[28px] xl:h-[30px] 2xl:h-[31px] " +
     "text-[9px] lg:text-[10px] xl:text-[10px] 2xl:text-[11px]",
@@ -127,17 +127,17 @@ const variantClasses: Record<ButtonVariant, string> = {
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
 
   "outline-square":
-    "bg-transparent text-[var(--btn-outline-square-text)] " +
+    "bg-transparent text-[var(--primary)] " +
     "border border-[var(--btn-outline-square-border)] " +
-    "rounded-[var(--btn-radius-square)] " +
-    "font-[family-name:var(--btn-font-secondary)] font-semibold " +
+    "rounded-[var(--radius-dropdown)] " +
+    "font-[family-name:var(--font-inter)] font-semibold " +
     "px-4 lg:px-5 " +
     "h-[36px] lg:h-[38px] xl:h-[40px] 2xl:h-[42px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
 
   export:
-    "bg-transparent text-[var(--btn-export-text)] " +
-    "border border-[var(--btn-export-border)] " +
+    "bg-transparent text-[var(--chip-bg)] " +
+    "border border-[var(--chip-bg)] " +
     "rounded-[var(--btn-radius-rounded)] gap-1.5 " +
     "font-[family-name:var(--btn-font-primary)] font-medium " +
     "px-4 lg:px-5 " +
@@ -148,7 +148,7 @@ const variantClasses: Record<ButtonVariant, string> = {
   "gradient-blue":
     "bg-[linear-gradient(135deg,var(--btn-gradient-blue-from)_0%,var(--btn-gradient-blue-to)_100%)] " +
     "text-white border-none rounded-[var(--btn-radius-circle)] " +
-    "font-[family-name:var(--btn-font-secondary)] font-medium " +
+    "font-[family-name:var(--font-inter)] font-medium " +
     "shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.10),0px_2px_4px_-2px_rgba(0,0,0,0.10)] " +
     "px-4 lg:px-5 " +
     "h-[30px] lg:h-[32px] xl:h-[34px] 2xl:h-[36px] " +
@@ -157,7 +157,7 @@ const variantClasses: Record<ButtonVariant, string> = {
   "gradient-dark":
     "bg-[radial-gradient(50%_50%_at_50%_50%,var(--btn-gradient-dark-from)_0%,var(--btn-gradient-dark-to)_100%)] " +
     "text-white border-none rounded-[69px] uppercase tracking-[0.4px] " +
-    "font-[family-name:var(--btn-font-secondary)] font-normal " +
+    "font-[family-name:var(--font-inter)] font-normal " +
     "px-8 lg:px-9 xl:px-10 " +
     "h-[40px] lg:h-[42px] xl:h-[44px] 2xl:h-[48px] " +
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
@@ -239,7 +239,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
         {/* Dark: dot indicator */}
         {variant === "dark" && showDot && (
-          <span className="shrink-0 rounded-full w-[12px] h-[12px] bg-[var(--btn-dot-fill)] border-[2px] border-[var(--btn-dot-border)]" />
+          <span className="shrink-0 rounded-full w-[12px] h-[12px] bg-[var(--chip-bg)] border-[2px] border-[var(--pie-1)]" />
         )}
 
         {/* Left icon (non-navy) */}

@@ -20,7 +20,17 @@ const data = [
   { label: "Sun", target: 75, actual: 68 },
 ];
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{ value: number }>;
+  label?: string;
+}
+
+// ── CustomTooltip ─────────────────────────────────────────────────────────────
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-[var(--card)] border border-[var(--border-soft)] p-2.5 rounded-xl shadow-xl">
@@ -30,7 +40,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             Target: {payload[0].value}
           </p>
           <p className="font-sans text-[11px] text-[var(--primary)] font-semibold">
-            Actual: {payload[1].value}
+            Actual: {payload[1]?.value}
           </p>
         </div>
       </div>
@@ -38,6 +48,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   }
   return null;
 };
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 const RegionalCreationTargetVsActual: React.FC = () => (
   <div className="card p-[clamp(12px,2vw,24px)_clamp(16px,2.5vw,32px)] w-full flex-1 min-h-0 box-border flex flex-col overflow-hidden">
@@ -68,7 +80,7 @@ const RegionalCreationTargetVsActual: React.FC = () => (
         <BarChart
           data={data}
           margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
-          barGap={-32} // Stacked/Overlay effect
+          barGap={-32}
         >
           <CartesianGrid
             vertical={false}
@@ -99,16 +111,16 @@ const RegionalCreationTargetVsActual: React.FC = () => (
               fontFamily: "var(--font-sans)",
             }}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
-          <Legend 
-            verticalAlign="top" 
-            align="right" 
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
+          <Legend
+            verticalAlign="top"
+            align="right"
             iconType="circle"
-            wrapperStyle={{ 
-              fontSize: '11px', 
-              fontFamily: 'var(--font-sans)',
-              paddingBottom: '20px',
-              opacity: 0.8
+            wrapperStyle={{
+              fontSize: "11px",
+              fontFamily: "var(--font-sans)",
+              paddingBottom: "20px",
+              opacity: 0.8,
             }}
           />
           {/* Target Bar (Background) */}

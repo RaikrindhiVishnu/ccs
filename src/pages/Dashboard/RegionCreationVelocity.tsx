@@ -24,11 +24,28 @@ const data = [
 const MAX = 500;
 const PEAK_VAL = 499;
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{ value: number }>;
+  label?: string;
+}
+
+interface ReferenceDotLabelProps {
+  cx?: number;
+  cy?: number;
+}
+
+// ── CustomTooltip ─────────────────────────────────────────────────────────────
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-[var(--card)] border border-[var(--border-soft)] p-2.5 rounded-xl shadow-xl">
-        <p className="font-sans font-bold text-[12px] mb-0.5 text-[var(--foreground)]">{label}</p>
+        <p className="font-sans font-bold text-[12px] mb-0.5 text-[var(--foreground)]">
+          {label}
+        </p>
         <p className="font-sans text-[11px] text-[var(--primary)] font-semibold">
           Velocity: {payload[0].value}
         </p>
@@ -37,6 +54,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   }
   return null;
 };
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 const RegionCreationVelocity: React.FC = () => {
   return (
@@ -63,8 +82,16 @@ const RegionCreationVelocity: React.FC = () => {
           >
             <defs>
               <linearGradient id="rcvGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.25} />
-                <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
+                <stop
+                  offset="0%"
+                  stopColor="var(--primary)"
+                  stopOpacity={0.25}
+                />
+                <stop
+                  offset="100%"
+                  stopColor="var(--primary)"
+                  stopOpacity={0}
+                />
               </linearGradient>
             </defs>
             <CartesianGrid
@@ -77,8 +104,11 @@ const RegionCreationVelocity: React.FC = () => {
               dataKey="label"
               axisLine={false}
               tickLine={false}
-              tick={(props: any) => {
-                const { x, y, payload, index } = props;
+              tick={(props) => {
+                const x = props.x as number;
+                const y = props.y as number;
+                const payload = props.payload as { value: string };
+                const index = props.index as number;
                 return (
                   <text
                     x={x}
@@ -134,8 +164,8 @@ const RegionCreationVelocity: React.FC = () => {
               fill="var(--primary)"
               stroke="#fff"
               strokeWidth={2}
-              label={(props: any) => {
-                const { cx, cy } = props;
+              label={(props: ReferenceDotLabelProps) => {
+                const { cx = 0, cy = 0 } = props;
                 return (
                   <foreignObject x={cx - 20} y={cy - 40} width={40} height={25}>
                     <div className="bg-[#2780C4] rounded-[24px] p-[2px_6px] font-sans font-semibold text-[10px] text-white text-center shadow-md">

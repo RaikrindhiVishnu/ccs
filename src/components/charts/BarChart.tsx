@@ -19,8 +19,32 @@ interface Props {
   yMax?: number;
 }
 
-const CustomBar = (props: any) => {
-  const { x, y, width, height, value, label, activeLabel } = props;
+// ─────────────────────────────────────────────
+//  Types
+// ─────────────────────────────────────────────
+interface CustomBarProps {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  value?: number;
+  label?: string;
+  activeLabel?: string;
+  index?: number; // ← add this
+}
+
+// ─────────────────────────────────────────────
+//  CustomBar — outside component
+// ─────────────────────────────────────────────
+const CustomBar = ({
+  x = 0,
+  y = 0,
+  width = 0,
+  height = 0,
+  value = 0,
+  label = "",
+  activeLabel = "",
+}: CustomBarProps) => {
   const isActive = label === activeLabel;
 
   const thinLineWidth = 1.4;
@@ -32,11 +56,9 @@ const CustomBar = (props: any) => {
 
     return (
       <g>
-        {/* Value Badge (Tooltip on top) */}
+        {/* Value Badge */}
         <foreignObject x={centerX - 23} y={y - 45} width={46} height={28}>
-          <div 
-            className="flex justify-center items-center rounded-[24px] border border-[rgba(0,0,0,0.24)] bg-[rgba(0,0,0,0.08)] h-7 w-11.5 shadow-none"
-          >
+          <div className="flex justify-center items-center rounded-[24px] border border-[rgba(0,0,0,0.24)] bg-[rgba(0,0,0,0.08)] h-7 w-11.5 shadow-none">
             <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] text-[#000000] leading-none">
               {value}
             </span>
@@ -48,7 +70,13 @@ const CustomBar = (props: any) => {
 
         {/* Capsule Bar with Gradient */}
         <defs>
-          <linearGradient id="activeCapsuleGradient" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient
+            id="activeCapsuleGradient"
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="1"
+          >
             <stop offset="0%" stopColor="rgba(223, 232, 200, 0)" />
             <stop offset="100%" stopColor="rgba(124, 171, 218, 0.77)" />
           </linearGradient>
@@ -62,7 +90,7 @@ const CustomBar = (props: any) => {
           fill="url(#activeCapsuleGradient)"
         />
 
-        {/* Center vertical line (Primary) */}
+        {/* Center vertical line */}
         <line
           x1={centerX}
           y1={y}
@@ -73,7 +101,12 @@ const CustomBar = (props: any) => {
         />
 
         {/* Active Day label circle */}
-        <foreignObject x={centerX - 18} y={y + height - 2} width={36} height={36}>
+        <foreignObject
+          x={centerX - 18}
+          y={y + height - 2}
+          width={36}
+          height={36}
+        >
           <div className="w-[36px] h-[36px] bg-[#2780C4] rounded-full flex justify-center items-center shadow-sm">
             <span className="font-['Plus_Jakarta_Sans'] font-medium text-[10.7px] text-white">
               {label}
@@ -111,10 +144,12 @@ const CustomBar = (props: any) => {
   );
 };
 
+// ─────────────────────────────────────────────
+//  Main component
+// ─────────────────────────────────────────────
 const BarChart: React.FC<Props> = ({ data, activeLabel, yMax: yMaxProp }) => {
-  const domainMax = yMaxProp ?? 300; 
-
-  const activeLbl = activeLabel ?? "We"; 
+  const domainMax = yMaxProp ?? 300;
+  const activeLbl = activeLabel ?? "We";
 
   return (
     <div className="w-full h-full min-h-[150px]">
@@ -130,12 +165,7 @@ const BarChart: React.FC<Props> = ({ data, activeLabel, yMax: yMaxProp }) => {
             stroke="#2C2C2C"
             strokeOpacity={0.1}
           />
-          <XAxis
-            dataKey="label"
-            hide
-            axisLine={false}
-            tickLine={false}
-          />
+          <XAxis dataKey="label" hide axisLine={false} tickLine={false} />
           <YAxis
             domain={[0, domainMax]}
             ticks={[0, 100, 200, 300]}
@@ -151,13 +181,20 @@ const BarChart: React.FC<Props> = ({ data, activeLabel, yMax: yMaxProp }) => {
           />
           <Bar
             dataKey="value"
-            shape={(props: any) => (
-              <CustomBar
-                {...props}
-                activeLabel={activeLbl}
-                label={data[props.index].label}
-              />
-            )}
+            shape={(props: unknown) => {
+              const p = props as CustomBarProps & { index: number };
+              return (
+                <CustomBar
+                  x={p.x}
+                  y={p.y}
+                  width={p.width}
+                  height={p.height}
+                  value={p.value}
+                  activeLabel={activeLbl}
+                  label={data[p.index ?? 0].label}
+                />
+              );
+            }}
             isAnimationActive={false}
           />
         </RechartsBar>

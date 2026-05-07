@@ -26,23 +26,27 @@ export interface TypographyProps
 
 const Typography = React.forwardRef<HTMLElement, TypographyProps>(
   ({ className, variant, as, ...props }, ref) => {
-    // Determine the semantic HTML tag based on variant or the explicit `as` prop
     let Component: React.ElementType = "p"
+
     if (as) {
       Component = as
-    } else if (variant && ["h1", "h2", "h3", "h4", "p", "span"].includes(variant)) {
-      Component = variant as React.ElementType
+    } else if (
+      variant &&
+      ["h1", "h2", "h3", "h4", "p", "span"].includes(variant)
+    ) {
+      Component = variant
     }
 
     return (
       <Component
-        ref={ref as any}
+        ref={ref}
         className={cn(typographyVariants({ variant }), className)}
         {...props}
       />
     )
   }
 )
+
 Typography.displayName = "Typography"
 
-export { Typography, typographyVariants }
+export { Typography }

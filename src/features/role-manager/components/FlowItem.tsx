@@ -26,30 +26,34 @@ export const FlowItem: React.FC<FlowItemProps> = ({
   active = false,
   onClick,
   onEdit,
-  onView
+  onView,
 }) => {
   if (variant === "detailed") {
     return (
-      <div 
+      <div
         className={cn(
           "flex flex-col gap-4 p-4 rounded-2xl transition-all relative",
           // active ? "bg-(--tag-pill-bg)" : "hover:bg-(--primary-soft)"
         )}
       >
         <div className="flex justify-between items-start">
-          <img src={avatar} alt={name} className="w-12 h-12 rounded-full object-cover border border-(--border)" />
+          <img
+            src={avatar}
+            alt={name}
+            className="w-12 h-12 rounded-full object-cover border border-(--border)"
+          />
           <div className="flex gap-2">
-            <Edit2 
-              size={16} 
-              className="text-(--muted-strong) cursor-pointer hover:text-(--primary) transition-colors" 
+            <Edit2
+              size={16}
+              className="text-(--muted-strong) cursor-pointer hover:text-(--primary) transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit?.();
               }}
             />
-            <Eye 
-              size={16} 
-              className="text-(--muted-strong) cursor-pointer hover:text-(--primary) transition-colors" 
+            <Eye
+              size={16}
+              className="text-(--muted-strong) cursor-pointer hover:text-(--primary) transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 onView?.();
@@ -57,9 +61,12 @@ export const FlowItem: React.FC<FlowItemProps> = ({
             />
           </div>
         </div>
-        
+
         <div className="flex flex-col gap-1">
-          <Typography variant="p" className="text-sm font-semibold text-(--muted)">
+          <Typography
+            variant="p"
+            className="text-sm font-semibold text-(--muted)"
+          >
             {name} - {role}
           </Typography>
           <Typography variant="p" className="text-sm text-(--muted)">
@@ -76,17 +83,26 @@ export const FlowItem: React.FC<FlowItemProps> = ({
   }
 
   return (
-    <div 
+    <div
       onClick={onClick}
       className={cn(
         "flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer group",
-        active ? "bg-(--primaryz-soft) border-l-4 border-(--primary)" : "hover:bg-(--primary-soft)/50 border-l-4 border-transparent"
+        active
+          ? "bg-(--primaryz-soft) border-l-4 border-(--primary)"
+          : "hover:bg-(--primary-soft)/50 border-l-4 border-transparent",
       )}
     >
       <div className="flex items-center gap-3">
-        <img src={avatar} alt={name} className="w-10 h-10 rounded-full object-cover" />
+        <img
+          src={avatar}
+          alt={name}
+          className="w-10 h-10 rounded-full object-cover"
+        />
         <div className="flex flex-col">
-          <Typography variant="p" className="font-semibold text-(--text-dark) text-sm">
+          <Typography
+            variant="p"
+            className="font-semibold text-(--text-dark) text-sm"
+          >
             {name}
           </Typography>
           <Typography variant="p" className="text-[11px] text-(--muted)">
@@ -94,19 +110,19 @@ export const FlowItem: React.FC<FlowItemProps> = ({
           </Typography>
         </div>
       </div>
-      
+
       <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Edit2 
-          size={14} 
-          className="text-(--muted-strong) cursor-pointer hover:text-(--primary)" 
+        <Edit2
+          size={14}
+          className="text-(--muted-strong) cursor-pointer hover:text-(--primary)"
           onClick={(e) => {
             e.stopPropagation();
             onEdit?.();
           }}
         />
-        <Eye 
-          size={14} 
-          className="text-(--muted-strong) cursor-pointer hover:text-(--primary)" 
+        <Eye
+          size={14}
+          className="text-(--muted-strong) cursor-pointer hover:text-(--primary)"
           onClick={(e) => {
             e.stopPropagation();
             onView?.();

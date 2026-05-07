@@ -18,9 +18,9 @@ export default function Login() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     const matchedUser = Object.values(MOCK_USERS).find(
-      (u) => u.email === loginId
+      (u) => u.email === loginId,
     );
 
     setTimeout(() => {
@@ -34,7 +34,7 @@ export default function Login() {
           },
           accessToken: `mock-token-${matchedUser?.role ?? "default"}`,
           refreshToken: `mock-refresh-${matchedUser?.role ?? "default"}`,
-        })
+        }),
       );
       setLoading(false);
     }, 1000);
@@ -79,7 +79,6 @@ export default function Login() {
 
           {/* Form */}
           <form className="flex flex-col flex-1" onSubmit={handleLogin}>
-
             {/* ── Login ID Field ── */}
             <Input
               id="login-id"
@@ -140,7 +139,11 @@ export default function Login() {
 
             {/* ── Footer ── */}
             <div className="flex items-center mt-auto shrink-0 pl-[10px] gap-[clamp(6px,1.11vw,21px)] pt-[clamp(12px,1.95vh,26px)] text-[var(--muted)]">
-              <ShieldCheck size={16} strokeWidth={1.8} className="shrink-0 opacity-50" />
+              <ShieldCheck
+                size={16}
+                strokeWidth={1.8}
+                className="shrink-0 opacity-50"
+              />
               <Typography
                 variant="span"
                 className="leading-[1.33] text-[clamp(9px,0.83vw,16px)]"

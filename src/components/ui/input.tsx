@@ -40,7 +40,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           "h-[clamp(36px,2.9vw,40px)]",
           "bg-[var(--card)]",
           "border border-[var(--input-border)]",
-          "rounded-[var(--btn-radius-square)]",
+          "rounded-[var(--radius-dropdown)]",
           wrapperClassName
         )
       : cn(
