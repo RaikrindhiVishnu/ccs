@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import AgentOnboardingVelocity from "@/pages/Dashboard/AgentOnboardingVelocity";
 import WorkforceStructure from "@/pages/Dashboard/WorkforceStructure";
 import { Typography } from "@/components/ui/typography";
@@ -8,6 +9,7 @@ import { PillDropdown } from "@/components/ui/Dropdown";
 import { RoleFlow } from "../components/RoleFlow";
 
 const UserDirectory: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col py-16 px-4 gap-6 box-border min-h-full bg-(--background)">
       {/* Graphs Section */}
@@ -33,6 +35,7 @@ const UserDirectory: React.FC = () => {
             variant="primary-sm" 
             leftIcon={<Plus size={10} />}
             className="h-10 text-sm font-medium rounded-full"
+            onClick={() => navigate("/role-manager/agent-create")}
           >
              Create roles
           </Button>

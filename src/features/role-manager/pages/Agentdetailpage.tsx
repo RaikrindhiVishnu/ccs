@@ -114,7 +114,7 @@ const InfoField = ({
   <div
     className={cn(
       "flex flex-col",
-      "gap-[0.375rem]",
+      "gap-1.5",
       "lg:gap-[0.5rem]",
       "xl:gap-[0.625rem]",
       // 6px→0.375rem | 8px→0.5rem | 10px→0.625rem
