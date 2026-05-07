@@ -44,8 +44,8 @@ export const RoleFlow: React.FC = () => {
                   {...role} 
                   variant="detailed" 
                   active={idx === 0}
-                  onEdit={() => navigate("/agent-form")}
-                  onView={() => navigate("/profile")}
+                  onEdit={() => navigate("/role-manager/agent-edit")}
+                  onView={() => navigate("/role-manager/profile")}
                 />
                 {idx < MOCK_ROLE_DATA.length - 1 && (
                   <div className="h-px bg-gray-100 w-full" />
@@ -78,8 +78,8 @@ export const RoleFlow: React.FC = () => {
                 {...fo}
                 active={selectedFO?.id === fo.id}
                 onClick={() => setSelectedFO(fo)}
-                onEdit={() => navigate("/agent-form")}
-                onView={() => navigate("/profile")}
+                onEdit={() => navigate("/role-manager/agent-edit")}
+                onView={() => navigate("/role-manager/profile")}
               />
             ))}
           </div>
@@ -107,8 +107,8 @@ export const RoleFlow: React.FC = () => {
                 <FlowItem 
                   key={ag.id}
                   {...ag}
-                  onEdit={() => navigate("/agent-form")}
-                  onView={() => navigate("/profile")}
+                  onEdit={() => navigate("/role-manager/agent-edit")}
+                  onView={() => navigate("/role-manager/profile")}
                 />
               ))
             ) : (
