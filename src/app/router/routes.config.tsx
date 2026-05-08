@@ -25,6 +25,7 @@ const Home = lazy(() => import("../../pages/Home"));
 const AgentCreate = lazy(() => import("../../features/role-manager/pages/AgentCreate"));
 const AgentEdit = lazy(() => import("../../features/role-manager/pages/AgentEdit"));
 const RegionAndArea = lazy(() => import("../../features/role-manager/pages/RegionAndArea"));
+const RegionSelection = lazy(() => import("../../features/role-manager/pages/RegionSelection"));
 
 export const guestRoutes: RouteObject[] = [
   {
@@ -46,7 +47,8 @@ export const authRoutes: RouteObject[] = [
       // Inside your router:
 { path: "/role-manager/create", element: <CreateRegionsAndAreas /> },
  { path:"/role-manager/create-roles" ,element:<CreateRoles />},
- { path: "/role-manager/region-area", element: <RegionAndArea /> }
+ { path: "/role-manager/region-area", element: <RegionAndArea /> },
+ { path: "/role-manager/region-selection", element: <RegionSelection /> }
     ],
   },
 ];
