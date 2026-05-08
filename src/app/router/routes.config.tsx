@@ -15,3 +15,4 @@ export const AgentCreate         = lazy(() => import('../../features/role-manage
 export const AgentEdit           = lazy(() => import('../../features/role-manager/pages/AgentEdit'));
 export const RegionAndArea       = lazy(() => import("../../features/role-manager/pages/RegionAndArea"));
 export const RegionSelection     = lazy(() => import("../../features/role-manager/pages/RegionSelection"));
+export const ActiveVerifications = lazy(() => import('../../features/dashboard/pages/Activeverifications'));
