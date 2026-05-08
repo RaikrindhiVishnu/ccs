@@ -3,41 +3,115 @@ import { useDispatch } from "react-redux";
 import logo from "@/assets/glc-logo.svg"
 import { User, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { setCredentials } from "../features/auth/store/authSlice";
+import { useLoginMutation } from "../features/auth/api/authApi";
+import { UserRole, ROLE_CODES } from "../features/auth/types";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { Input } from "@/components/ui/input";
-import { MOCK_USERS } from "@/core/config/layoutConfig";
+import { useNavigate } from "react-router-dom";
+
+const MOCK_API_USERS = [
+  {
+    login_id: "sadmin@glc.com",
+    password: "sadmin@123",
+    response: {
+      id: 101,
+      login_id: "sadmin@glc.com",
+      first_name: "Super",
+      last_name: "Admin",
+      role_id: UserRole.SADMIN,
+      is_first_login: 0,
+      token: "mock-token-sadmin",
+      refreshToken: "mock-refresh-token-sadmin",
+    },
+  },
+  {
+    login_id: "manager@glc.com",
+    password: "manager@123",
+    response: {
+      id: 102,
+      login_id: "manager@glc.com",
+      first_name: "Role",
+      last_name: "Manager",
+      role_id: UserRole.ROLEMNGR,
+      is_first_login: 0,
+      token: "mock-token-rolemngr",
+      refreshToken: "mock-refresh-token-rolemngr",
+    },
+  },
+  {
+    login_id: "ccs@glc.com",
+    password: "ccs@123",
+    response: {
+      id: 103,
+      login_id: "ccs@glc.com",
+      first_name: "CCS",
+      last_name: "Officer",
+      role_id: UserRole.CCS,
+      is_first_login: 0,
+      token: "mock-token-ccs",
+      refreshToken: "mock-refresh-token-ccs",
+    },
+  },
+];
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [loginId, setLoginId] = useState("manager@glc.com");
-  const [password, setPassword] = useState("manager@123");
-  const [loading, setLoading] = useState(false);
+  const [loginId, setLoginId] = useState("john.doe@example.com");
+  const [password, setPassword] = useState("MySecret@123");
+  const [error, setError] = useState<string | null>(null);
+  
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [login, { isLoading }] = useLoginMutation();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setError(null);
 
-    const matchedUser = Object.values(MOCK_USERS).find(
-      (u) => u.email === loginId,
+    // 1. Check for Mock Users first
+    const mockUser = MOCK_API_USERS.find(
+      (u) => u.login_id === loginId && u.password === password
     );
 
-    setTimeout(() => {
+    if (mockUser) {
+      const { token, refreshToken, ...userData } = mockUser.response;
       dispatch(
         setCredentials({
           user: {
-            id: matchedUser?.role ?? "unknown",
-            email: loginId,
-            name: matchedUser?.name ?? "User",
-            role: matchedUser?.role ?? "ROLE_MANAGER",
+            ...userData,
+            role: ROLE_CODES[userData.role_id],
           },
-          accessToken: `mock-token-${matchedUser?.role ?? "default"}`,
-          refreshToken: `mock-refresh-${matchedUser?.role ?? "default"}`,
+          accessToken: token,
+          refreshToken: refreshToken,
+        })
+      );
+      navigate("/role-manager/dashboard");
+      return;
+    }
+
+    // 2. If not a mock user, call real API
+    try {
+      const response = await login({ login_id: loginId, password }).unwrap();
+      
+      const { token, refreshToken, ...userData } = response;
+      
+      dispatch(
+        setCredentials({
+          user: {
+            ...userData,
+            role: ROLE_CODES[userData.role_id],
+          },
+          accessToken: token,
+          refreshToken: refreshToken,
         }),
       );
-      setLoading(false);
-    }, 1000);
+      
+      navigate("/role-manager/dashboard");
+    } catch (err: any) {
+      console.error("Login failed:", err);
+      setError(err?.data?.message || "Login failed. Please check your credentials.");
+    }
   };
 
   return (
@@ -76,6 +150,12 @@ export default function Login() {
             Secure access for authorised role managers.
             <br /> Please authenticate to continue.
           </Typography>
+
+          {error && (
+            <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-600 border border-red-200">
+              {error}
+            </div>
+          )}
 
           {/* Form */}
           <form className="flex flex-col flex-1" onSubmit={handleLogin}>
@@ -130,10 +210,10 @@ export default function Login() {
             <div className="shrink-0 mt-[clamp(36px,4.69vh,63px)]">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={isLoading}
                 className="login-btn w-full h-[clamp(45px,5.86vh,78px)] text-[clamp(10px,0.97vw,18px)] font-sans border-none rounded-full cursor-pointer font-semibold uppercase tracking-[0.7px] transition-all duration-200 flex items-center justify-center active:scale-[0.985] disabled:opacity-50 bg-[var(--brand-500)] text-[var(--surface-card)] hover:bg-[#1e6aaa] hover:shadow-[0_4px_20px_rgba(39,128,196,0.28)]"
               >
-                Login
+                {isLoading ? "Signing in..." : "Login"}
               </button>
             </div>
 

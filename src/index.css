@@ -94,6 +94,13 @@
   --document-placeholder-from: #e8edf5;
   --document-placeholder-to: #d4dce8;
 
+  /* ─── MAP COLORS ────────────────────────────────────────────── */
+  --state-text-color: #606170;
+  --map-primary: #A1BEEF;
+  --map-background: #D6E6FF; /* Decreased intensity of #A1BEEF for water */
+  --map-land-fill-color: #F0EEF0;
+  --map-secondary: #B8D995;
+
   /* ─── ILLUSTRATION CARDS ────────────────────────────────────── */
   --region-card-top-bg: linear-gradient(0deg, rgba(0,0,0,0.04), rgba(0,0,0,0.04)), rgba(39, 128, 196, 0.06);
   --area-card-bottom-bg: rgba(39, 128, 196, 0.08);
