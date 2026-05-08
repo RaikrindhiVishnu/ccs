@@ -13,3 +13,5 @@ export const Login               = lazy(() => import('../../pages/Login'));
 export const Home                = lazy(() => import('../../pages/Home'));
 export const AgentCreate         = lazy(() => import('../../features/role-manager/pages/AgentCreate'));
 export const AgentEdit           = lazy(() => import('../../features/role-manager/pages/AgentEdit'));
+export const RegionAndArea       = lazy(() => import("../../features/role-manager/pages/RegionAndArea"));
+export const RegionSelection     = lazy(() => import("../../features/role-manager/pages/RegionSelection"));

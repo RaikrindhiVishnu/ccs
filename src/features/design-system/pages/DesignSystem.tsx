@@ -6,7 +6,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import AgentForm from "@/features/role-manager/pages/AgentForm";
+// import AgentForm from "@/features/agents/AgentForm";
 import { Typography } from "@/components/ui/typography";
 
 import { Input } from "@/components/ui/input";
@@ -412,8 +412,9 @@ const DesignSystem = () => {
             Agent Creation UI
           </Typography>
 
-          <AgentForm />
-        </div>
+  {/* <AgentForm /> */}
+</div>
+
       </section>
     </div>
   );
