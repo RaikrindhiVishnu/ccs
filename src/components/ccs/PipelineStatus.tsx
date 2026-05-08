@@ -22,7 +22,7 @@ function ScreeningPaceCard({ value = 76 }: { value?: number }) {
     <Card
       className="
         flex flex-col rounded-[1.4492rem] border-0
-        bg-[var(--card)] shadow-[var(--shadow-card-sm)]
+        bg-[var(--surface-card)] shadow-[var(--shadow-card-sm)]
         h-[11rem] lg:h-[12rem] xl:h-[13rem] 2xl:h-[14rem]
         p-[1rem] xl:p-[1.1867rem]
       "
@@ -30,20 +30,20 @@ function ScreeningPaceCard({ value = 76 }: { value?: number }) {
       <div className="flex items-start justify-between">
         <Typography
           variant="span"
-          className="text-[0.8rem] font-bold leading-[120%] text-[var(--text-dark)] xl:text-[0.8845rem]"
+          className="text-[0.8rem] font-bold leading-[120%] text-[var(--text-heading)] xl:text-[0.8845rem]"
         >
           Screening Pace
         </Typography>
         <div className="flex items-start leading-none">
           <Typography
             variant="span"
-            className="text-[1.625rem] font-semibold leading-[120%] text-[var(--text-dark)] xl:text-[1.875rem]"
+            className="text-[1.625rem] font-semibold leading-[120%] text-[var(--text-heading)] xl:text-[1.875rem]"
           >
             {value}
           </Typography>
           <Typography
             variant="span"
-            className="mt-[0.1875rem] text-[1.05rem] font-semibold leading-[120%] text-[var(--muted)] xl:text-[1.2193rem]"
+            className="mt-[0.1875rem] text-[1.05rem] font-semibold leading-[120%] text-[var(--text-muted)] xl:text-[1.2193rem]"
           >
             %
           </Typography>
@@ -56,12 +56,12 @@ function ScreeningPaceCard({ value = 76 }: { value?: number }) {
             <line
               key={i}
               x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
-              stroke={t.filled ? 'var(--primary)' : 'var(--primary-light)'}
+              stroke={t.filled ? 'var(--brand-500)' : 'var(--brand-200)'}
               strokeWidth={t.filled ? 3 : 2}
               strokeLinecap="round"
             />
           ))}
-          <text x="80" y="80" textAnchor="middle" fontSize="18" fontWeight="600" fill="var(--text-dark)">
+          <text x="80" y="80" textAnchor="middle" fontSize="18" fontWeight="600" fill="var(--text-heading)">
             {value}%
           </text>
         </svg>
@@ -70,13 +70,13 @@ function ScreeningPaceCard({ value = 76 }: { value?: number }) {
       <div className="flex items-center justify-between">
         <Typography
           variant="span"
-          className="text-[0.7rem] font-normal leading-[120%] text-[var(--muted)] xl:text-[0.774rem]"
+          className="text-[0.7rem] font-normal leading-[120%] text-[var(--text-muted)] xl:text-[0.774rem]"
         >
           +2.1% vs Last Week
         </Typography>
         <Typography
           variant="span"
-          className="text-[0.7rem] font-normal leading-[120%] text-[var(--muted)] xl:text-[0.774rem]"
+          className="text-[0.7rem] font-normal leading-[120%] text-[var(--text-muted)] xl:text-[0.774rem]"
         >
           Target &gt; 90%
         </Typography>
@@ -96,7 +96,7 @@ function ManualReviewsCard({ count = 24 }: { count?: number }) {
     <Card
       className="
         flex flex-col rounded-[1.4492rem] border-0
-        bg-[var(--primary)] shadow-[var(--shadow-card-sm)]
+        bg-[var(--brand-500)] shadow-[var(--shadow-card-sm)]
         h-[11rem] lg:h-[12rem] xl:h-[13rem] 2xl:h-[14rem]
         p-[1rem] xl:p-[1.1867rem]
       "
@@ -105,20 +105,20 @@ function ManualReviewsCard({ count = 24 }: { count?: number }) {
         <div>
           <Typography
             variant="p"
-            className="text-[0.8rem] font-bold leading-[120%] text-[var(--btn-primary-text)] xl:text-[0.8845rem]"
+            className="text-[0.8rem] font-bold leading-[120%] text-[var(--surface-card)] xl:text-[0.8845rem]"
           >
             Manual Reviews Required
           </Typography>
           <Typography
             variant="p"
-            className="mt-1 text-[0.6rem] font-normal leading-[120%] text-[var(--primary-light)] xl:text-[0.6634rem]"
+            className="mt-1 text-[0.6rem] font-normal leading-[120%] text-[var(--brand-200)] xl:text-[0.6634rem]"
           >
             Avg Review Time: 1.2 Hrs
           </Typography>
         </div>
         <Typography
           variant="span"
-          className="shrink-0 text-[1.625rem] font-semibold leading-[120%] text-[var(--btn-primary-text)] xl:text-[1.875rem]"
+          className="shrink-0 text-[1.625rem] font-semibold leading-[120%] text-[var(--surface-card)] xl:text-[1.875rem]"
         >
           {count}
         </Typography>

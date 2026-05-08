@@ -115,7 +115,7 @@ const InfoField = ({
   <div
     className={cn(
       "flex flex-col",
-      "gap-1.5",
+      "gap-[0.375rem]",
       "lg:gap-[0.5rem]",
       "xl:gap-[0.625rem]",
       // 6px→0.375rem | 8px→0.5rem | 10px→0.625rem
@@ -298,11 +298,11 @@ const DocumentCard = ({
               width="20"
               height="16"
               rx="2"
-              stroke="var(--text-secondary)"
+              stroke="var(--document-icon)"
               strokeWidth="1.5"
             />
-            <path d="M2 9h20" stroke="var(--text-secondary)" strokeWidth="1.5" />
-            <circle cx="6" cy="13" r="1" fill="var(--text-secondary)" />
+            <path d="M2 9h20" stroke="var(--document-icon)" strokeWidth="1.5" />
+            <circle cx="6" cy="13" r="1" fill="var(--document-icon)" />
           </svg>
         </div>
       )}
@@ -324,7 +324,7 @@ const BackButton = ({ onClick }: { onClick?: () => void }) => (
       shadow-[0px_0px_4px_rgba(0,0,0,0.12)]
       text-[color:var(--text-secondary)]
       text-[clamp(0.75rem,0.95vw,1rem)]
-      font-[family-name:var(--font-inter)]
+      font-[family-name:var(--btn-font-secondary)]
       hover:opacity-80
       transition-opacity
     "

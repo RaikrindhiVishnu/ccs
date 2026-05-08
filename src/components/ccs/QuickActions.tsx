@@ -6,7 +6,7 @@ export default function QuickActions() {
     <div className="w-full">
       <Typography
         variant="h3"
-        className="mb-[1.25rem] text-[0.8125rem] font-semibold uppercase leading-[120%] tracking-[0.0625rem] text-[var(--foreground)] xl:mb-[1.5rem] xl:text-[0.875rem]"
+        className="mb-[1.25rem] text-[0.8125rem] font-semibold uppercase leading-[120%] tracking-[0.0625rem] text-[var(--text-primary)] xl:mb-[1.5rem] xl:text-[0.875rem]"
       >
         Quick Actions
       </Typography>
@@ -17,7 +17,7 @@ export default function QuickActions() {
             key={index}
             className="
               flex h-[3.75rem] w-[3.75rem] shrink-0 items-center justify-center
-              rounded-full bg-[var(--primary)]
+              rounded-full bg-[var(--brand-500)]
               transition-all duration-200 hover:opacity-90
               xl:h-[4.126rem] xl:w-[4.126rem]
             "

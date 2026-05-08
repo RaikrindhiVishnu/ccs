@@ -7,7 +7,7 @@ export default function AlertBanner() {
     <div
       className="
         flex items-center justify-between gap-3
-        rounded-[3.75rem] bg-[var(--card)]
+        rounded-[3.75rem] bg-[var(--surface-card)]
         px-[1.875rem] py-[1.375rem] shadow-[var(--shadow-card-sm)]
         lg:gap-4 lg:px-[2rem] lg:py-[1.5rem]
         xl:px-[2.1875rem] xl:py-[1.6875rem]
@@ -35,7 +35,7 @@ export default function AlertBanner() {
         className="
           flex h-[2.875rem] w-[2.875rem] shrink-0 items-center justify-center
           rounded-full border-2 border-[#4E4E4E] bg-transparent
-          transition-colors hover:bg-[var(--primary-soft)]
+          transition-colors hover:bg-[var(--brand-tint)]
           xl:h-[3.25rem] xl:w-[3.25rem] 2xl:h-[3.75rem] 2xl:w-[3.75rem]
         "
       >

@@ -21,6 +21,113 @@ type Props = {
   subtitle?: string;
 };
 
+// ── Types for custom renderers ──────────────────────────────────────────────
+
+interface CustomDotProps {
+  cx?: number;
+  cy?: number;
+  index?: number;
+  data?: ChartData[];
+  maxIndex?: number;
+}
+
+interface XAxisTickProps {
+  x?: number;
+  y?: number;
+  payload?: { value: string };
+  maxDay?: string;
+  activeDay?: string | null;
+}
+
+// ── CustomDot — declared OUTSIDE the component to avoid recreating on render ─
+
+function CustomDot({
+  cx = 0,
+  cy = 0,
+  index = 0,
+  data = [],
+  maxIndex = -1,
+}: CustomDotProps) {
+  if (index !== maxIndex) return null;
+
+  const bubbleW = 56;
+  const bubbleH = 26;
+  const bubbleX = cx - bubbleW / 2;
+  const bubbleY = cy - bubbleH - 16;
+
+  return (
+    <g>
+      <line
+        x1={cx}
+        y1={bubbleY + bubbleH}
+        x2={cx}
+        y2={cy - 10}
+        stroke="#cbd5e1"
+        strokeWidth={1}
+        strokeDasharray="2 2"
+      />
+      <rect
+        x={bubbleX}
+        y={bubbleY}
+        width={bubbleW}
+        height={bubbleH}
+        rx={13}
+        fill="var(--surface-page)"
+        stroke="var(--text-primary)"
+        strokeWidth={1.2}
+        filter="url(#bubbleShadow)"
+      />
+      <text
+        x={cx}
+        y={bubbleY + 17}
+        textAnchor="middle"
+        fontSize={13}
+        fontWeight={700}
+        fill="#0f172a"
+      >
+        {data[index]?.value}
+      </text>
+      <circle cx={cx} cy={cy} r={14} fill="#bfdbfe" opacity={0.45} />
+      <circle
+        cx={cx}
+        cy={cy}
+        r={9}
+        fill="white"
+        stroke="#93c5fd"
+        strokeWidth={2}
+      />
+      <circle cx={cx} cy={cy} r={4} fill="#93c5fd" />
+    </g>
+  );
+}
+
+// ── XAxisTick — declared outside to satisfy react-hooks/static-components ───
+
+function XAxisTick({
+  x = 0,
+  y = 0,
+  payload,
+  maxDay = "",
+  activeDay = null,
+}: XAxisTickProps) {
+  const isPeak = payload?.value === maxDay;
+  const isActive = payload?.value === activeDay;
+  return (
+    <text
+      x={x}
+      y={y + 10}
+      textAnchor="middle"
+      fontSize={11}
+      fontWeight={isPeak || isActive ? 700 : 400}
+      fill={isPeak || isActive ? "#0f172a" : "rgba(0,0,0,0.5)"}
+    >
+      {payload?.value}
+    </text>
+  );
+}
+
+// ── Main component ───────────────────────────────────────────────────────────
+
 export default function RegionVelocityCard({
   data,
   title = "Region Creation Velocity",
@@ -38,57 +145,9 @@ export default function RegionVelocityCard({
   const roundedMax = Math.ceil(max / 100) * 100;
   const maxIndex = data.findIndex((d) => d.value === max);
   const tickCount = roundedMax / 100;
-  const CustomDot = (props: any) => {
-    const { cx, cy, index } = props;
-    if (index !== maxIndex) return null;
-
-    const bubbleW = 56;
-    const bubbleH = 26;
-    const bubbleX = cx - bubbleW / 2;
-    const bubbleY = cy - bubbleH - 16;
-
-    return (
-      <g>
-        <line
-          x1={cx}
-          y1={bubbleY + bubbleH}
-          x2={cx}
-          y2={cy - 10}
-          stroke="#cbd5e1"
-          strokeWidth={1}
-          strokeDasharray="2 2"
-        />
-        <rect
-          x={bubbleX}
-          y={bubbleY}
-          width={bubbleW}
-          height={bubbleH}
-          rx={13}
-          fill="var(--background)"
-          stroke="var(--border-strong)"
-          strokeWidth={1.2}
-          filter="url(#bubbleShadow)"
-        />
-        <text
-          x={cx}
-          y={bubbleY + 17}
-          textAnchor="middle"
-          fontSize={13}
-          fontWeight={700}
-          fill="#0f172a"
-        >
-          {data[index].value}
-        </text>
-        <circle cx={cx} cy={cy} r={14} fill="#bfdbfe" opacity={0.45} />
-        <circle cx={cx} cy={cy} r={9} fill="white" stroke="#93c5fd" strokeWidth={2} />
-        <circle cx={cx} cy={cy} r={4} fill="#93c5fd" />
-      </g>
-    );
-  };
 
   return (
     <div className="w-full h-full bg-card rounded-[24px] p-[clamp(16px,2vw,24px)] shadow-sm flex flex-col">
-
       {/* HEADER */}
       <div className="flex justify-between items-start mb-[clamp(12px,1.5vh,20px)]">
         <div>
@@ -97,7 +156,7 @@ export default function RegionVelocityCard({
           </h3>
           <p
             className="text-[clamp(12px,1vw,14px)] text-foreground/60 mt-1"
-            style={{ color: "var(--muted)" }}
+            style={{ color: "var(--text-muted)" }}
           >
             {subtitle}
           </p>
@@ -114,20 +173,42 @@ export default function RegionVelocityCard({
           <AreaChart
             data={data}
             margin={{ top: 42, right: 8, bottom: 0, left: 0 }}
-            onMouseMove={(state: any) => {
-              if (state?.activePayload?.length) {
-                setActiveDay(state.activePayload[0].payload.day);
+            onMouseMove={(state) => {
+              const payload = (
+                state as { activePayload?: Array<{ payload: ChartData }> }
+              ).activePayload;
+              if (payload?.length) {
+                setActiveDay(payload[0].payload.day);
               }
             }}
             onMouseLeave={() => setActiveDay(null)}
           >
             <defs>
               <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.65} />
-                <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
+                <stop
+                  offset="0%"
+                  stopColor="var(--brand-500)"
+                  stopOpacity={0.65}
+                />
+                <stop
+                  offset="100%"
+                  stopColor="var(--brand-500)"
+                  stopOpacity={0}
+                />
               </linearGradient>
-              <filter id="bubbleShadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="#00000018" />
+              <filter
+                id="bubbleShadow"
+                x="-20%"
+                y="-20%"
+                width="140%"
+                height="140%"
+              >
+                <feDropShadow
+                  dx="0"
+                  dy="1"
+                  stdDeviation="2"
+                  floodColor="#00000018"
+                />
               </filter>
             </defs>
 
@@ -141,26 +222,17 @@ export default function RegionVelocityCard({
               dataKey="day"
               axisLine={false}
               tickLine={false}
-              tick={(props: any) => {
-                const { x, y, payload } = props;
-                const isPeak = payload.value === data[maxIndex].day;
-                const isActive = payload.value === activeDay;
-                return (
-                  <text
-                    x={x}
-                    y={y + 10}
-                    textAnchor="middle"
-                    fontSize={11}
-                    fontWeight={isPeak || isActive ? 700 : 400}
-                    fill={isPeak || isActive ? "#0f172a" : "rgba(0,0,0,0.5)"}
-                  >
-                    {payload.value}
-                  </text>
-                );
-              }}
+              tick={(props) => (
+                <XAxisTick
+                  x={props.x as number}
+                  y={props.y as number}
+                  payload={props.payload as { value: string }}
+                  maxDay={data[maxIndex].day}
+                  activeDay={activeDay}
+                />
+              )}
             />
 
-          // In YAxis:
             <YAxis
               domain={[0, roundedMax]}
               ticks={Array.from({ length: tickCount + 1 }, (_, i) => i * 100)}
@@ -174,21 +246,23 @@ export default function RegionVelocityCard({
             <Area
               type="monotone"
               dataKey="value"
-              stroke="var(--primary)"
+              stroke="var(--brand-500)"
               strokeWidth={2}
               fill="url(#areaGradient)"
-              dot={<CustomDot />}
+              dot={(props: CustomDotProps) => (
+                <CustomDot {...props} data={data} maxIndex={maxIndex} />
+              )}
               activeDot={{
                 r: 6,
-                fill: "var(--primary)",
-                stroke: "var(--primary-light)",
+                fill: "var(--brand-500)",
+                stroke: "var(--brand-200)",
                 strokeWidth: 6,
               }}
             />
 
             <Tooltip
               cursor={{
-                stroke: "var(--primary-light)",
+                stroke: "var(--brand-200)",
                 strokeWidth: 20,
                 opacity: 0.25,
               }}
@@ -198,7 +272,7 @@ export default function RegionVelocityCard({
                   return (
                     <div
                       style={{
-                        background: isPeak ? "var(--primary)" : "white",
+                        background: isPeak ? "var(--brand-500)" : "white",
                         color: isPeak ? "white" : "#0f172a",
                         border: isPeak ? "none" : "1px solid #e2e8f0",
                         borderRadius: "999px",

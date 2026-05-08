@@ -20,6 +20,60 @@ type Props = {
   subtitle?: string;
 };
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface ActualBarShapeProps {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  payload?: DataType;
+}
+
+// ─── ActualBarShape (outside component) ──────────────────────────────────────
+
+const ActualBarShape = ({
+  x = 0,
+  y = 0,
+  width = 0,
+  height = 0,
+  payload,
+}: ActualBarShapeProps) => {
+  const centerX = x + width / 2;
+
+  return (
+    <g>
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        rx={14}
+        fill="var(--brand-500)"
+      />
+      <circle
+        cx={centerX}
+        cy={y + 2}
+        r={Math.max(10, width * 0.25)}
+        fill="var(--brand-200)"
+        opacity={0.9}
+      />
+      <text
+        x={centerX}
+        y={y + 5}
+        textAnchor="middle"
+        fontSize={Math.max(9, width * 0.2)}
+        fontWeight="600"
+        fill="var(--text-primary)"
+      >
+        {payload?.actual}
+      </text>
+    </g>
+  );
+};
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export default function TargetVsActualCard({
   data,
   title = "Regional Creation Target vs Actual",
@@ -42,30 +96,28 @@ export default function TargetVsActualCard({
           <h3 className="text-[clamp(16px,1.3vw,20px)] font-medium text-foreground">
             {title}
           </h3>
-          <p className="text-[clamp(12px,1vw,14px)] text-foreground/60 mt-1"
-            style={{
-              color: "var(--muted)"
-            }}>
+          <p
+            className="text-[clamp(12px,1vw,14px)] text-foreground/60 mt-1"
+            style={{ color: "var(--text-muted)" }}
+          >
             {subtitle}
           </p>
         </div>
 
-       <WeekDropdown
-  options={["Weekly", "Monthly", "Quarterly", "Yearly"]}
-  defaultValue="Weekly"  
-/>
+        <WeekDropdown
+          options={["Weekly", "Monthly", "Quarterly", "Yearly"]}
+          defaultValue="Weekly"
+        />
       </div>
 
-      {/* CHART — flex-1 + min-h-0 fills remaining card height */}
+      {/* CHART */}
       <div className="flex-1 min-h-0 w-full">
-
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
             barCategoryGap="22%"
             barGap={-40}
           >
-
             <CartesianGrid
               stroke="var(--grid)"
               strokeDasharray="4 4"
@@ -92,7 +144,7 @@ export default function TargetVsActualCard({
               dataKey="target"
               barSize={40}
               radius={[14, 14, 0, 0]}
-              fill="var(--outerbar)"
+              fill="var(--brand-bar)"
             />
 
             <Bar
@@ -100,45 +152,10 @@ export default function TargetVsActualCard({
               barSize={40}
               radius={[14, 14, 0, 0]}
               label={false}
-              shape={(props: any) => {
-                const { x, y, width, height, payload } = props;
-                const centerX = x + width / 2;
-
-                return (
-                  <g>
-                    <rect
-                      x={x}
-                      y={y}
-                      width={width}
-                      height={height}
-                      rx={14}
-                      fill="var(--primary)"
-                    />
-                    <circle
-                      cx={centerX}
-                      cy={y + 2}
-                      r={Math.max(10, width * 0.25)}
-                      fill="var(--primary-light)"
-                      opacity={0.9}
-                    />
-                    <text
-                      x={centerX}
-                      y={y + 5}
-                      textAnchor="middle"
-                      fontSize={Math.max(9, width * 0.2)}
-                      fontWeight="600"
-                      fill="var(--foreground)"
-                    >
-                      {payload.actual}
-                    </text>
-                  </g>
-                );
-              }}
+              shape={<ActualBarShape />}
             />
-
           </BarChart>
         </ResponsiveContainer>
-
       </div>
     </div>
   );

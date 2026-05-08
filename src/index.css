@@ -1,222 +1,180 @@
 @import "tailwindcss";
 
 :root {
-  /* FONTS */
+
+  /* ─── FONTS ─────────────────────────────────────────────────── */
   --font-sans: "Plus Jakarta Sans";
   --font-heading: "Manrope";
- /* PROFILE / DETAIL PAGE */
---banner-from: #2a5c3f;
---banner-via: #3a7d5a;
---banner-to: #2c6b4a;
-/* APPROVE BUTTON */
---approve-gradient-from: #2680c4;
---approve-gradient-to: #4a7bbb;
-  --font-sans: 'Plus Jakarta Sans';
-  --font-heading: 'Manrope';
   --font-inter: 'Inter', sans-serif;
-  --success-soft:  rgba(12, 160, 12, 0.08);
---success-green: #0ca00c;
---status-pending-bg: #f3f3f5;
- /* ScreeningChart */
---chart-bg: #F9F9F9;
---chart-bar-approved: #2780C4;
---chart-bar-review: #BDD327;
---chart-bar-rejected: #37E8DD;
 
-/* ManualReviewsCard mirrored bars */
---mirror-bar-up: rgba(255, 255, 255, 0.90);
---mirror-bar-down: rgba(100, 200, 210, 0.65);
-  /* Right panel max width tokens *
-/* SUCCESS */
---success-soft: rgba(12, 160, 12, 0.08);
---status-pending-bg: #f3f3f5;
+  /* ─── BRAND RAMP (10-step, anchored at 500) ─────────────────── */
+  --brand-50:  #EAF3FA;
+  --brand-100: #D4E6F3;
+  --brand-200: #AED6EF;
+  --brand-300: #7DB4D8;
+  --brand-400: #3D93D1;
+  --brand-500: #2780C4;
+  --brand-600: #1F66A3;
+  --brand-700: #174D7B;
+  --brand-800: #103354;
+  --brand-900: #081A24;
+  --brand-tint: rgba(39, 128, 196, 0.08);
+  --brand-tint-strong: rgba(39, 128, 196, 0.4);
+  --brand-bar: rgba(39, 128, 196, 0.12);
 
---text-button: #353535;
+  /* ─── SURFACES ──────────────────────────────────────────────── */
+  --surface-page: #F2F2F2;
+  --surface-card: #FFFFFF;
+  --surface-sidebar: #191B1C;
+  --surface-sidebar-accent: #5C5C5C;
+  --surface-sidebar-text: #FFFFFF;
 
---document-placeholder-from: #e8edf5;
---document-placeholder-to: #d4dce8;
-
---document-icon: #3d4949;
-
-  /* HEADER GRADIENT — Refined for a cleaner, more vibrant look */
-  --header-gradient: linear-gradient(105deg, #428FDF 0%, #BBD6F2 45%, #D7EBF7 100%);
-
-  /* BASE */
-  --background: #F2F2F2;
-  --foreground: #000000;
-  --card: #ffffff;
-  --input: #f2f2f2;
---danger: #ef4444;
---danger-soft: rgba(239, 68, 68, 0.08);
-  --card: #FFFFFF;
-  --input: #F2F2F2;
-  --input-border: #e1e5ef;
-  --label-color: #3e4a3d;
-  --success-green: #0ca00c;
-   --dot:  #131600;
-  /* TEXT */
-  --muted: rgba(0, 0, 0, 0.6);
-  --muted-strong: rgba(0, 0, 0, 0.4);
-  --text-dark: #091426;
-  --text-neutral: #3D4949;
+  /* ─── TEXT ──────────────────────────────────────────────────── */
+  --text-primary: #191B1C;
+  --text-secondary: #626C70;
   --text-subtle: #5A5C5E;
+  --text-heading: #091426;
+  --text-muted: rgba(0, 0, 0, 0.6);
+  --text-muted-strong: rgba(0, 0, 0, 0.4);
+  --text-supporting: #626c70;
   --profile-text: #191b1c;
-  --profile-subtext: #626c70;
+  --text-button: #353535;
 
-  /* PRIMARY */
-  --primary: #2780C4;
-  --primary-light: #AED6EF;
+  /* ─── STATUS ────────────────────────────────────────────────── */
+  --status-pending: var(--brand-500);
+  --status-success: #16A34A;
+  --status-success-soft: rgba(22, 163, 74, 0.08);
+  --status-warning: #F59E0B;
+  --status-warning-soft: rgba(245, 158, 11, 0.08);
+  --status-danger: #DC2626;
+  --status-danger-soft: rgba(220, 38, 38, 0.08);
+  --status-pending-bg: #f3f3f5;
 
-  /* SUCCESS CARD + FIGMA */
-  --primary-soft: rgba(39, 128, 196, 0.08);
-  --primary-faded: rgba(39, 128, 196, 0.4);
-  --success-bg: #FFFFFF;
-
-  /* CHIP / TAG */
-  --chip-bg: #3D93D1;
-  --chip-text: #FFFFFF;
-  --tag-pill-bg: #f3f4f5;
-
-  /* BARS */
-  --outerbar: rgba(39, 128, 196, 0.12);
-/* Illustration sub-card backgrounds */
---region-card-top-bg: linear-gradient(0deg, rgba(0,0,0,0.04), rgba(0,0,0,0.04)), rgba(39, 128, 196, 0.06);
---area-card-bottom-bg: rgba(39, 128, 196, 0.08);
---illus-card-white-bg: rgba(255, 255, 255, 0.10);
-
-/* Glow effect inside illustration cards */
---illus-glow: rgba(242, 255, 219, 0.34);
-  /* BORDERS */
+  /* ─── BORDERS ───────────────────────────────────────────────── */
   --border: rgba(0, 0, 0, 0.1);
-  --border-strong: #000000;
-  --border-medium: rgba(0, 0, 0, 0.4);
+  --border-default: #e1e5ef;
   --border-soft: rgba(197, 198, 205, 0.3);
-  --border-light: #EBEBEB;
+  --border-subtle: #EBEBEB;
 
-  /* GRID */
+  /* ─── INPUT ─────────────────────────────────────────────────── */
+  --input: var(--surface-page);
+  --label-color: #3e4a3d;
+
+  /* ─── GRID / TOOLTIP ────────────────────────────────────────── */
   --grid: rgba(0, 0, 0, 0.05);
-
-  /* TOOLTIP */
   --tooltip-bg: rgba(0, 0, 0, 0.08);
 
-  /* SHADOW */
+  /* ─── SHADOWS ───────────────────────────────────────────────── */
   --shadow-card: 0px 1px 5px rgba(0, 0, 0, 0.08);
+  --shadow-card-sm: 0px 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-dropdown: 0px 4px 16px rgba(0, 0, 0, 0.08);
 
-  /* RADIUS */
+  /* ─── RADIUS ────────────────────────────────────────────────── */
   --radius: 0.625rem;
   --radius-lg: 24px;
   --radius-xl: 32px;
   --radius-dropdown: 12px;
 
-  /* HEADER GRADIENT */
+  /* ─── MISC ──────────────────────────────────────────────────── */
+  --dot: #131600;
+  --toggle-active: #4caf50;
+  --avatar-fallback: #c0c0c0;
+  --tag-pill-bg: #f3f4f5;
+
+  /* ─── PROFILE / DETAIL PAGE ─────────────────────────────────── */
+  --banner-from: #2a5c3f;
+  --banner-via: #3a7d5a;
+  --banner-to: #2c6b4a;
+
+  /* ─── APPROVE BUTTON ────────────────────────────────────────── */
+  --approve-gradient-from: #2680c4;
+  --approve-gradient-to: #4a7bbb;
+
+  /* ─── DOCUMENT ──────────────────────────────────────────────── */
+  --document-placeholder-from: #e8edf5;
+  --document-placeholder-to: #d4dce8;
+
+  /* ─── ILLUSTRATION CARDS ────────────────────────────────────── */
+  --region-card-top-bg: linear-gradient(0deg, rgba(0,0,0,0.04), rgba(0,0,0,0.04)), rgba(39, 128, 196, 0.06);
+  --area-card-bottom-bg: rgba(39, 128, 196, 0.08);
+  --illus-card-white-bg: rgba(255, 255, 255, 0.10);
+  --illus-glow: rgba(242, 255, 219, 0.34);
+
+  /* ─── HEADER GRADIENT ───────────────────────────────────────── */
   --header-gradient: linear-gradient(94.23deg,
       rgba(66, 143, 223, 0.07) -8.84%,
       #D3DDE2 51.66%,
       #D7EBF7 108.77%);
 
-  /* CHART GRADIENT */
+  /* ─── SCREENING CHART ───────────────────────────────────────── */
+  --chart-bg: #F9F9F9;
+  --chart-bar-rejected: #37E8DD;
   --chart-gradient: linear-gradient(180deg,
       rgba(174, 214, 239, 0.92) 0%,
       #FFFFFF 100%);
+  --chart-grid:               var(--grid);
+  --chart-bar-inactive:       var(--brand-bar);
+  --chart-gradient-from:      rgba(223, 232, 200, 0);
+  --chart-gradient-to:        rgba(124, 171, 218, 0.77);
+  --chart-dot:                var(--brand-500);
+  --chart-axis-text:          var(--text-muted-strong);
+  --chart-tick-active-bg:     var(--brand-500);
+  --chart-tick-inactive-bg:   var(--surface-page);
+  --chart-tick-active-text:   var(--surface-sidebar-text);
+  --chart-tick-inactive-text: var(--text-primary);
+  --chart-badge-bg:           var(--tooltip-bg);
+  --chart-badge-border:       var(--text-muted-strong);
+  --chart-badge-text:         var(--text-primary);
 
-  /* PIE CHART */
+  /* ─── MANUAL REVIEWS MIRRORED BARS ──────────────────────────── */
+  --mirror-bar-up: rgba(255, 255, 255, 0.90);
+  --mirror-bar-down: rgba(100, 200, 210, 0.65);
+
+  /* ─── PIE CHART ─────────────────────────────────────────────── */
   --pie-1: #85BFE5;
-  --pie-2: #3D93D1;
   --pie-3: #1D5E9C;
   --pie-4: #D7EBF7;
 
-  /* SIDEBAR */
-  --sidebar: #2C2C2C;
-  --sidebar-accent: #5C5C5C;
-  --sidebar-text: #FFFFFF;
-
-  /* BUTTON TOKENS */
-  --btn-primary: #2780C4;
-  --btn-primary-text: #FFFFFF;
+  /* ─── BUTTON TOKENS ─────────────────────────────────────────── */
   --btn-secondary: #96C9ED;
-  --btn-secondary-text: #000000;
   --btn-navy: #1C5F9D;
   --btn-purple: #8280FF;
   --btn-dark: #2B2D2F;
   --btn-lime: #BDD327;
-  --btn-lime-text: #000000;
 
-  /* Gradients */
+  /* ─── BUTTON GRADIENTS ──────────────────────────────────────── */
   --btn-gradient-blue-from: #0095FF;
   --btn-gradient-blue-to: #1F8AFF;
   --btn-gradient-dark-from: #3D4A0D;
   --btn-gradient-dark-to: #2A3008;
 
-  /* Outline variants */
+  /* ─── BUTTON OUTLINE VARIANTS ───────────────────────────────── */
   --btn-outline-primary-border: rgba(39, 128, 196, 0.8);
-  --btn-outline-primary-text: rgba(39, 128, 196, 0.8);
+  --btn-outline-primary-text: var(--btn-outline-primary-border);
   --btn-outline-dark-border: rgba(0, 0, 0, 0.27);
   --btn-outline-dark-text: rgba(0, 0, 0, 0.8);
   --btn-outline-danger-border: rgba(205, 0, 0, 0.27);
   --btn-outline-danger-text: rgba(208, 20, 20, 0.8);
   --btn-outline-square-border: rgba(39, 128, 196, 0.5);
-  --btn-outline-square-text: #2780c4;
-  --btn-export-border: #3d93d1;
-  --btn-export-text: #3d93d1;
-  --tag-pill-bg: #f3f4f5;
-  /* Badge dot colors (dark variant) */
-  --btn-dot-fill: #3d93d1;
-  --btn-dot-border: #85bfe5;
- --toggle-active: #4caf50;
-  /* Button fonts — reuse project fonts */
+
+  /* ─── BUTTON FONTS ──────────────────────────────────────────── */
   --btn-font-primary: var(--font-sans);
-  --btn-font-secondary: "Inter", sans-serif;
   --btn-font-poppins: "Poppins", sans-serif;
---primary-soft: rgba(39, 128, 196, 0.08);
-  --btn-outline-square-text: #2780C4;
-  --btn-export-border: #3D93D1;
-  --btn-export-text: #3D93D1;
 
-  /* Badge dot colors */
-  --btn-dot-fill: #3D93D1;
-  --btn-dot-border: #85BFE5;
-
-  /* Button fonts */
-  --btn-font-primary: var(--font-sans);
-  --btn-font-secondary: 'Inter', sans-serif;
-  --btn-font-poppins: 'Poppins', sans-serif;
-
-  /* Button border radii */
+  /* ─── BUTTON RADII ──────────────────────────────────────────── */
   --btn-radius-pill: 48px;
-  --avatar-fallback: #c0c0c0;
   --btn-radius-pill-sm: 33px;
   --btn-radius-circle: 9999px;
-  --btn-radius-square: 12px;
   --btn-radius-rounded: 8px;
-
-  --shadow-card-sm: 0px 1px 2px rgba(0, 0, 0, 0.05);
-  --grid-faint: rgba(0, 0, 0, 0.08);
-  --danger:      #ef4444;
---danger-soft: rgba(239, 68, 68, 0.08);
-  /* Chart tokens */
-  --chart-grid:                var(--grid);
-  --chart-bar-inactive:        var(--outerbar);
-  --chart-gradient-from:       rgba(223, 232, 200, 0);
-  --chart-gradient-to:         rgba(124, 171, 218, 0.77);
-  --chart-dot:                 var(--primary);
-  --chart-axis-text:           var(--muted-strong);
-  --chart-tick-active-bg:      var(--primary);
-  --chart-tick-inactive-bg:    var(--background);
-  --chart-tick-active-text:    var(--sidebar-text);
-  --chart-tick-inactive-text:  var(--foreground);
-  --chart-badge-bg:            var(--tooltip-bg);
-  --chart-badge-border:        var(--border-medium);
-  --chart-badge-text:          var(--foreground);
 }
 
-/* BASE STYLES */
+/* ─── BASE STYLES ────────────────────────────────────────────────── */
 
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--surface-page);
+  color: var(--text-primary);
 }
 
 .font-inter {
@@ -227,14 +185,14 @@ h1 {
   font-family: var(--font-heading);
 }
 
-/* UTILITIES */
+/* ─── UTILITIES ──────────────────────────────────────────────────── */
 
 .card {
-  background: var(--card);
+  background: var(--surface-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
 }
 
 .text-muted {
-  color: var(--muted);
+  color: var(--text-muted);
 }

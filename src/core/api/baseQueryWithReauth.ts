@@ -4,12 +4,19 @@ import { Mutex } from 'async-mutex';
 import { env } from '../config/env';
 import { logOut, updateTokens } from '../../features/auth/store/authSlice';
 
+interface AuthState {
+  auth: {
+    accessToken: string | null;
+    refreshToken: string | null;
+  };
+}
+
 const mutex = new Mutex();
 
 const baseQuery = fetchBaseQuery({
   baseUrl: env.API_BASE_URL,
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as any).auth.accessToken;
+    const token = (getState() as AuthState).auth.accessToken;
     if (token) {
       headers.set('authorization', `Bearer ${token}`);
     }
@@ -17,11 +24,7 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-export const baseQueryWithReauth: BaseQueryFn<
-  string | FetchArgs,
-  unknown,
-  FetchBaseQueryError
-> = async (args, api, extraOptions) => {
+export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (args, api, extraOptions) => {
   await mutex.waitForUnlock();
   let result = await baseQuery(args, api, extraOptions);
 
@@ -29,8 +32,8 @@ export const baseQueryWithReauth: BaseQueryFn<
     if (!mutex.isLocked()) {
       const release = await mutex.acquire();
       try {
-        const refreshToken = (api.getState() as any).auth.refreshToken;
-        
+        const refreshToken = (api.getState() as AuthState).auth.refreshToken;
+
         if (refreshToken) {
           const refreshResult = await baseQuery(
             {
@@ -43,7 +46,11 @@ export const baseQueryWithReauth: BaseQueryFn<
           );
 
           if (refreshResult.data) {
-            api.dispatch(updateTokens(refreshResult.data as { accessToken: string; refreshToken: string }));
+            api.dispatch(
+              updateTokens(
+                refreshResult.data as { accessToken: string; refreshToken: string }
+              )
+            );
             result = await baseQuery(args, api, extraOptions);
           } else {
             api.dispatch(logOut());
@@ -59,5 +66,6 @@ export const baseQueryWithReauth: BaseQueryFn<
       result = await baseQuery(args, api, extraOptions);
     }
   }
+
   return result;
 };

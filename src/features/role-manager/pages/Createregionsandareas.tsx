@@ -12,14 +12,14 @@ const GoBackButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
     onClick={onClick}
     className={cn(
       "inline-flex flex-row items-center gap-2 self-start",
-      "bg-[var(--card)] rounded-[var(--btn-radius-pill)]",
+      "bg-[var(--surface-card)] rounded-[var(--btn-radius-pill)]",
       // Padding — scales from mobile → 2xl
       "px-4 lg:px-5",
       // Height — scales across all laptop sizes up to 2xl
       "h-10 lg:h-11 xl:h-[3.25rem] 2xl:h-[3.5rem]",
       "shadow-[0px_0px_4px_rgba(0,0,0,0.12)]",
       "transition-all duration-150 hover:opacity-80 active:scale-[0.97]",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-500)]",
       "cursor-pointer border-0",
     )}
     aria-label="Go Back to Dashboard"
@@ -33,7 +33,7 @@ const GoBackButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
       variant="span"
       className={cn(
         "font-[family-name:var(--font-sans)] font-normal",
-        "text-[var(--foreground)]",
+        "text-[var(--text-primary)]",
         // Text scales: 14px → 15px → 16px → 17px
         "text-[0.875rem] lg:text-[0.9375rem] xl:text-[1rem] 2xl:text-[1.0625rem]",
         "leading-[110%] whitespace-nowrap",
@@ -63,7 +63,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
     <div
       className={cn(
         "relative flex flex-col",
-        "bg-[var(--card)] rounded-[1.5rem]",
+        "bg-[var(--surface-card)] rounded-[1.5rem]",
         "shadow-[0px_0px_8.4px_rgba(0,0,0,0.06)]",
         "w-full overflow-hidden",
         "h-[20rem] lg:h-[21.25rem] xl:h-[23.75rem] 2xl:h-[26rem]",
@@ -85,7 +85,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
           variant="span"
           className={cn(
             "font-[family-name:var(--font-sans)] font-medium",
-            "text-[var(--foreground)]",
+            "text-[var(--text-primary)]",
             "tracking-[-0.01em] leading-6",
             // Title scales: 16px → 17px → 19px → 20px
             "text-[1rem] lg:text-[1.0625rem] xl:text-[1.1875rem] 2xl:text-[1.25rem]",
@@ -99,7 +99,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
           variant="span"
           className={cn(
             "font-[family-name:var(--font-sans)] font-normal",
-            "text-[var(--foreground)] opacity-60",
+            "text-[var(--text-primary)] opacity-60",
             "tracking-[-0.01em]",
             // Line height scales
             "leading-[1.1rem] lg:leading-[1.125rem] 2xl:leading-5",
@@ -139,7 +139,7 @@ const CreateRegionsAndAreas: React.FC = () => {
   return (
     <div
       className={cn(
-        "min-h-screen bg-[var(--background)]",
+        "min-h-screen bg-[var(--surface-page)]",
         "flex items-center justify-center",
         // Page padding scales smoothly
         "px-6 lg:px-10 xl:px-16 2xl:px-24",
@@ -162,7 +162,7 @@ const CreateRegionsAndAreas: React.FC = () => {
         {/* ── White container card ─────────────────────────── */}
         <Card
           className={cn(
-            "w-full bg-[var(--card)]",
+            "w-full bg-[var(--surface-card)]",
             "rounded-[1.5rem]",
             "shadow-[var(--shadow-card)]",
             "overflow-hidden",
@@ -181,7 +181,7 @@ const CreateRegionsAndAreas: React.FC = () => {
               variant="span"
               className={cn(
                 "font-[family-name:var(--font-sans)] font-bold",
-                "text-[var(--foreground)] text-center",
+                "text-[var(--text-primary)] text-center",
                 // Title: 20px → 22px → 24px → 26px
                 "text-[1.25rem] lg:text-[1.375rem] xl:text-[1.5rem] 2xl:text-[1.625rem]",
                 "leading-[1.875rem]",

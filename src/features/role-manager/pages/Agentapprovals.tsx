@@ -2,6 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
+
 import { Plus } from "lucide-react";
 import location from "@/assets/location.svg";
 
@@ -90,23 +91,19 @@ const fallbackAgents: Agent[] = [
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
 
-const StatusBadge = ({
-  status,
-}: {
-  status: Agent["status"];
-}) => {
+const StatusBadge = ({ status }: { status: Agent["status"] }) => {
   const config = {
     "Pending Review": {
-      dot: "bg-[color:var(--primary)]",
-      text: "text-[color:var(--primary)]",
+      dot: "bg-[color:var(--brand-500)]",
+      text: "text-[color:var(--brand-500)]",
     },
     Approved: {
-      dot: "bg-[color:var(--success-green)]",
-      text: "text-[color:var(--success-green)]",
+      dot: "bg-[color:var(--status-success)]",
+      text: "text-[color:var(--status-success)]",
     },
     Rejected: {
-      dot: "bg-[color:var(--danger)]",
-      text: "text-[color:var(--danger)]",
+      dot: "bg-[color:var(--status-danger)]",
+      text: "text-[color:var(--status-danger)]",
     },
   };
 
@@ -116,18 +113,13 @@ const StatusBadge = ({
     <div
       className={cn(
         "inline-flex items-center justify-center",
-        "min-w-[8.25rem]",   // was min-w-[132px]  → 132/16 = 8.25rem
-        "h-[1.75rem]",       // was h-[28px]       → 28/16  = 1.75rem
+        "min-w-[8.25rem]", // was min-w-[132px]  → 132/16 = 8.25rem
+        "h-[1.75rem]", // was h-[28px]       → 28/16  = 1.75rem
         "px-3",
       )}
     >
       <div className="flex items-center gap-2">
-        <span
-          className={cn(
-            "w-2 h-2 rounded-full shrink-0",
-            c.dot,
-          )}
-        />
+        <span className={cn("w-2 h-2 rounded-full shrink-0", c.dot)} />
         <span
           className={cn(
             "font-medium leading-none whitespace-nowrap",
@@ -163,18 +155,14 @@ const Avatar = ({
       "flex items-center justify-center",
       "bg-[color:var(--avatar-fallback)]",
       "shadow-[0px_2px_4px_rgba(0,0,0,0.10)]",
-      "w-[3rem] h-[3rem]",             // was w-[48px]  → 48/16 = 3rem
+      "w-[3rem] h-[3rem]", // was w-[48px]  → 48/16 = 3rem
       "lg:w-[3.25rem] lg:h-[3.25rem]", // was 52px      → 52/16 = 3.25rem
-      "xl:w-[3.5rem] xl:h-[3.5rem]",   // was 56px      → 56/16 = 3.5rem
-      "2xl:w-[4rem] 2xl:h-[4rem]",     // was 64px      → 64/16 = 4rem
+      "xl:w-[3.5rem] xl:h-[3.5rem]", // was 56px      → 56/16 = 3.5rem
+      "2xl:w-[4rem] 2xl:h-[4rem]", // was 64px      → 64/16 = 4rem
     )}
   >
     {url ? (
-      <img
-        src={url}
-        alt={name}
-        className="w-full h-full object-cover"
-      />
+      <img src={url} alt={name} className="w-full h-full object-cover" />
     ) : (
       <span
         className="
@@ -202,8 +190,8 @@ const LocationIcon = () => (
     alt="location"
     className="flex-none object-contain"
     style={{
-      width: "0.583rem",   // was 9.33px  → 9.33/16 ≈ 0.583rem
-      height: "0.729rem",  // was 11.67px → 11.67/16 ≈ 0.729rem
+      width: "0.583rem", // was 9.33px  → 9.33/16 ≈ 0.583rem
+      height: "0.729rem", // was 11.67px → 11.67/16 ≈ 0.729rem
     }}
   />
 );
@@ -220,7 +208,7 @@ const AgentRow = ({
   <div
     className={cn(
       "relative w-full",
-      "bg-[color:var(--card)]",
+      "bg-[color:var(--surface-card)]",
       "border border-[color:var(--border-soft)]",
       "shadow-[0px_20px_40px_rgba(0,49,50,0.06)]",
       "rounded-[1.5rem] lg:rounded-[1.75rem] xl:rounded-[2rem]",
@@ -258,7 +246,7 @@ const AgentRow = ({
           className="
             font-[family-name:var(--font-heading)]
             font-bold
-            text-[color:var(--text-dark)]
+            text-[color:var(--text-heading)]
             leading-none
             truncate
             !text-[1rem]
@@ -275,7 +263,7 @@ const AgentRow = ({
           <LocationIcon />
           <span
             className="
-              text-[color:var(--text-neutral)]
+              text-[color:var(--text-secondary)]
               font-[family-name:var(--font-sans)]
               leading-none
               text-[0.6875rem]
@@ -351,7 +339,7 @@ export const AgentApprovalsPage = ({
       className="
         w-full
         min-h-screen
-        bg-[color:var(--background)]
+        bg-[color:var(--surface-page)]
         font-[family-name:var(--font-sans)]
       "
     >
@@ -386,7 +374,7 @@ export const AgentApprovalsPage = ({
             className="
               font-[family-name:var(--font-heading)]
               font-bold
-              text-[color:var(--foreground)]
+              text-[color:var(--text-primary)]
               leading-none
               !text-[1.625rem]
               lg:!text-[1.875rem]
@@ -400,12 +388,7 @@ export const AgentApprovalsPage = ({
           <Button
             variant="primary"
             onClick={handleCreateAgent}
-            leftIcon={
-              <Plus
-                size={16}
-                strokeWidth={2.2}
-              />
-            }
+            leftIcon={<Plus size={16} strokeWidth={2.2} />}
             className="
               !h-[2.75rem]
               lg:!h-[3rem]
@@ -463,7 +446,7 @@ export const AgentApprovalsPage = ({
               lg:!h-[3.5rem]
               xl:!h-[3.75rem]
               !rounded-[var(--btn-radius-pill)]
-              bg-[color:var(--card)]
+              bg-[color:var(--surface-card)]
               border
               border-[color:var(--border-soft)]
               shadow-none
@@ -473,7 +456,7 @@ export const AgentApprovalsPage = ({
               uppercase
               tracking-[0.16em]
               font-medium
-              text-[color:var(--foreground)]
+              text-[color:var(--text-primary)]
               !text-[0.6875rem]
               lg:!text-[0.75rem]
               xl:!text-[0.8125rem]

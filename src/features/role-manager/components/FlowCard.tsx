@@ -11,7 +11,7 @@ interface FlowCardProps {
 export const FlowCard: React.FC<FlowCardProps> = ({ children, header, className }) => {
   return (
     <Card className={cn(
-      "bg-(--card) rounded-xl border border-(--border) shadow-(--shadow-card) flex flex-col overflow-hidden",
+      "bg-(--surface-card) rounded-xl border border-(--border) shadow-(--shadow-card) flex flex-col overflow-hidden",
       "w-full h-100 px-8 py-4",
       className
     )}>

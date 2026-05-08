@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormDropdown } from "@/components/ui/Dropdown";
@@ -107,13 +107,11 @@ export default function AgentForm({
     onCancel,
     isLoading = false,
 }: AgentFormProps) {
-    const [formData, setFormData] = useState<AgentFormData>(emptyForm);
-
-    useEffect(() => {
-        if (initialData) {
-            setFormData((prev) => ({ ...prev, ...initialData }));
-        }
-    }, [initialData]);
+    // Initialise directly from initialData — no useEffect needed
+    const [formData, setFormData] = useState<AgentFormData>(() => ({
+        ...emptyForm,
+        ...initialData,
+    }));
 
     const handleChange = (key: keyof AgentFormData, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -133,17 +131,17 @@ export default function AgentForm({
     const isVerified = isEdit && !!initialData?.firstName;
 
     return (
-        <div className="min-h-screen bg-[color:var(--background)] p-[clamp(16px,2vw,32px)]">
+        <div className="min-h-screen bg-[color:var(--surface-page)] p-[clamp(16px,2vw,32px)]">
             {/* ── Go Back ── */}
             <button
                 onClick={onCancel}
                 className="
                     flex items-center gap-2 px-5 py-3 mb-10
-                    bg-[color:var(--card)] rounded-full
+                    bg-[color:var(--surface-card)] rounded-full
                     shadow-[0px_0px_4px_rgba(0,0,0,0.12)]
-                    text-[color:var(--text-neutral)]
+                    text-[color:var(--text-secondary)]
                     text-[length:clamp(12px,0.9vw,16px)]
-                    font-[family-name:var(--btn-font-secondary)]
+                    font-[family-name:var(--font-inter)]
                     hover:opacity-80 transition-opacity cursor-pointer
                 "
             >
@@ -156,7 +154,7 @@ export default function AgentForm({
                 className="
                     max-w-[1600px] mx-auto
                     space-y-[clamp(16px,1.5vw,24px)]
-                    bg-[color:var(--card)]
+                    bg-[color:var(--surface-card)]
                     rounded-[clamp(24px,2.5vw,46px)]
                     p-[clamp(20px,2vw,36px)]
                 "
@@ -165,7 +163,7 @@ export default function AgentForm({
                 <div
                     className="
                         relative overflow-hidden
-                        bg-[color:var(--card)]
+                        bg-[color:var(--surface-card)]
                         rounded-[clamp(16px,1.5vw,24px)]
                         shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
                     "
@@ -193,8 +191,8 @@ export default function AgentForm({
                                 {/* Profile image */}
                                 <div
                                     className="
-                                        rounded-full bg-[color:var(--card)]
-                                        border-4 border-[color:var(--card)]
+                                        rounded-full bg-[color:var(--surface-card)]
+                                        border-4 border-[color:var(--surface-card)]
                                         overflow-hidden
                                         flex items-center justify-center
                                         w-[clamp(80px,8vw,160px)] h-[clamp(80px,8vw,160px)]
@@ -209,7 +207,7 @@ export default function AgentForm({
                                     ) : (
                                         <User
                                             strokeWidth={1.5}
-                                            className="w-[40%] h-[40%] text-[color:var(--muted)]"
+                                            className="w-[40%] h-[40%] text-[color:var(--text-muted)]"
                                         />
                                     )}
                                 </div>
@@ -219,7 +217,7 @@ export default function AgentForm({
                                     className="
                                         absolute bottom-1 right-1
                                         w-[32px] h-[32px]
-                                        rounded-full bg-[color:var(--card)]
+                                        rounded-full bg-[color:var(--surface-card)]
                                         border border-[color:var(--border)]
                                         flex items-center justify-center
                                         shadow-sm cursor-pointer hover:opacity-80
@@ -257,7 +255,7 @@ export default function AgentForm({
                                         ? `${formData.firstName} ${formData.lastName}`.trim()
                                         : "Agent Name"}
                                 </Typography>
-                                <p className="font-medium text-[length:clamp(12px,1vw,16px)] text-[color:var(--profile-subtext)]">
+                                <p className="font-medium text-[length:clamp(12px,1vw,16px)] text-[color:var(--text-supporting)]">
                                     Agent
                                 </p>
                             </div>
@@ -441,7 +439,7 @@ export default function AgentForm({
                         disabled={isLoading}
                         className="
                             !h-[40px] !min-w-[101px] !px-[24px] !py-[8px]
-                            !font-[family-name:var(--btn-font-secondary)] !font-medium
+                            !font-[family-name:var(--font-inter)] !font-medium
                             !text-[length:clamp(13px,0.9vw,16px)] !leading-[24px]
                             !normal-case !tracking-normal !shadow-none
                         "
@@ -457,7 +455,7 @@ export default function AgentForm({
                             !h-[40px] !min-w-[155px]
                             !rounded-[100px]
                             !px-[32px] !py-[8px]
-                            !font-[family-name:var(--btn-font-secondary)] !font-medium
+                            !font-[family-name:var(--font-inter)] !font-medium
                             !text-[length:clamp(13px,0.9vw,16px)] !leading-[24px]
                             !normal-case !tracking-normal
                             !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
@@ -485,7 +483,7 @@ function FormSection({
         <div
             className="
                 space-y-[clamp(14px,1.5vw,20px)]
-                bg-[color:var(--card)]
+                bg-[color:var(--surface-card)]
                 border border-[color:var(--border)]
                 rounded-[clamp(16px,1.5vw,24px)]
                 shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
@@ -534,8 +532,8 @@ function UploadBox({
                 className="
                     flex flex-col items-center justify-center gap-2
                     h-[clamp(100px,9vw,128px)]
-                    border-2 border-dashed border-[color:var(--input-border)]
-                    rounded-[var(--btn-radius-square)]
+                    border-2 border-dashed border-[color:var(--border-default)]
+                    rounded-[var(--radius-dropdown)]
                     cursor-pointer
                     bg-[color:var(--input)]
                     hover:brightness-95

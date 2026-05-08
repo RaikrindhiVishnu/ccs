@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "../../index.css";
 import BarChart from "@/components/charts/BarChart";
 import type { BarDataItem } from "@/components/charts/BarChart";
@@ -28,11 +28,7 @@ const AgentOnboardingVelocity: React.FC<Props> = ({
   title = "Agent Onboarding Velocity",
   subtitle = "Weekly overview of Onboarding of Agents",
 }) => {
-  const [chartData, setChartData] = useState<BarDataItem[]>(data ?? DEMO_DATA);
-
-  useEffect(() => {
-    if (data && data.length > 0) setChartData(data);
-  }, [data]);
+  const chartData = data && data.length > 0 ? data : DEMO_DATA;
 
   return (
     <div className="card p-[clamp(16px,2vw,24px)_clamp(20px,3vw,32px)] w-full flex-1 min-h-0 box-border flex flex-col overflow-hidden bg-white rounded-3xl">

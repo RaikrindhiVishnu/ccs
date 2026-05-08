@@ -7,8 +7,8 @@ export default function ScreeningChart() {
   const days     = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   const legend = [
-    { label: "Approved",       color: "var(--chart-bar-approved)" },
-    { label: "Manual Reviews", color: "var(--chart-bar-review)"   },
+    { label: "Approved",       color: "var(--brand-500)" },
+    { label: "Manual Reviews", color: "var(--btn-lime)"   },
     { label: "Rejected",       color: "var(--chart-bar-rejected)" },
   ];
 
@@ -27,7 +27,7 @@ export default function ScreeningChart() {
     >
       <Typography
         variant="h3"
-        className="shrink-0 mt-[0.5rem] text-[0.6875rem] font-semibold uppercase leading-[120%] tracking-[0.0625rem] text-[var(--foreground)] xl:mt-[0.625rem] xl:text-[0.75rem] 2xl:mt-[0.75rem] 2xl:text-[0.875rem]"
+        className="shrink-0 mt-[0.5rem] text-[0.6875rem] font-semibold uppercase leading-[120%] tracking-[0.0625rem] text-[var(--text-primary)] xl:mt-[0.625rem] xl:text-[0.75rem] 2xl:mt-[0.75rem] 2xl:text-[0.875rem]"
       >
         Daily Screening Outcomes
       </Typography>
@@ -42,8 +42,8 @@ export default function ScreeningChart() {
               const jH = (rejected[i] / 100) * SVG_H;
               return (
                 <g key={i}>
-                  <rect x={x}                      y={SVG_H - aH} width={barW} height={aH} rx={barW/2} fill="var(--chart-bar-approved)" />
-                  <rect x={x + barW - overlap}      y={SVG_H - rH} width={barW} height={rH} rx={barW/2} fill="var(--chart-bar-review)"   />
+                  <rect x={x}                      y={SVG_H - aH} width={barW} height={aH} rx={barW/2} fill="var(--brand-500)" />
+                  <rect x={x + barW - overlap}      y={SVG_H - rH} width={barW} height={rH} rx={barW/2} fill="var(--btn-lime)"   />
                   <rect x={x + (barW-overlap) * 2}  y={SVG_H - jH} width={barW} height={jH} rx={barW/2} fill="var(--chart-bar-rejected)" />
                   <text x={x + barW - overlap} y={SVG_H + 12} textAnchor="middle" fontSize="8" fill="var(--chart-axis-text)">{days[i]}</text>
                 </g>
@@ -61,7 +61,7 @@ export default function ScreeningChart() {
               />
               <Typography
                 variant="span"
-                className="whitespace-nowrap text-[0.625rem] font-normal text-[var(--foreground)] xl:text-[0.6875rem]"
+                className="whitespace-nowrap text-[0.625rem] font-normal text-[var(--text-primary)] xl:text-[0.6875rem]"
               >
                 {item.label}
               </Typography>

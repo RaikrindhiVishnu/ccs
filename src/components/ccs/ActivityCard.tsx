@@ -29,11 +29,11 @@ export default function ActivityCard({
         {/* PERCENTAGE CIRCLE */}
         <div className="relative h-[2.5rem] w-[2.5rem] shrink-0 xl:h-[2.659rem] xl:w-[2.659rem]">
           <svg width="100%" height="100%" viewBox="0 0 44 44">
-            <circle cx="22" cy="22" r="18" fill="none" stroke="var(--outerbar)" strokeWidth="5" />
+            <circle cx="22" cy="22" r="18" fill="none" stroke="var(--brand-bar)" strokeWidth="5" />
             <circle
               cx="22" cy="22" r="18"
               fill="none"
-              stroke="var(--primary)"
+              stroke="var(--brand-500)"
               strokeWidth="5"
               strokeLinecap="round"
               strokeDasharray={circumference}
@@ -43,7 +43,7 @@ export default function ActivityCard({
           </svg>
           <Typography
             variant="span"
-            className="absolute inset-0 flex items-center justify-center text-[0.5625rem] font-bold leading-none text-[var(--foreground)] xl:text-[0.6154rem]"
+            className="absolute inset-0 flex items-center justify-center text-[0.5625rem] font-bold leading-none text-[var(--text-primary)] xl:text-[0.6154rem]"
           >
             {percentage}
           </Typography>
@@ -53,13 +53,13 @@ export default function ActivityCard({
         <div className="flex min-w-0 flex-col gap-[0.1875rem]">
           <Typography
             variant="p"
-            className="truncate text-[0.75rem] font-semibold leading-[137.52%] text-[var(--foreground)] xl:text-[0.8069rem]"
+            className="truncate text-[0.75rem] font-semibold leading-[137.52%] text-[var(--text-primary)] xl:text-[0.8069rem]"
           >
             {title}
           </Typography>
           <Typography
             variant="p"
-            className="truncate text-[0.5625rem] font-normal leading-[137.52%] text-[var(--muted)] xl:text-[0.625rem]"
+            className="truncate text-[0.5625rem] font-normal leading-[137.52%] text-[var(--text-muted)] xl:text-[0.625rem]"
           >
             {subtitle}
           </Typography>

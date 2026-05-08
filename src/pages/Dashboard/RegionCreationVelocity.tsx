@@ -24,12 +24,29 @@ const data = [
 const MAX = 500;
 const PEAK_VAL = 499;
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{ value: number }>;
+  label?: string;
+}
+
+interface ReferenceDotLabelProps {
+  cx?: number;
+  cy?: number;
+}
+
+// ── CustomTooltip ─────────────────────────────────────────────────────────────
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[var(--card)] border border-[var(--border-soft)] p-2.5 rounded-xl shadow-xl">
-        <p className="font-sans font-bold text-[12px] mb-0.5 text-[var(--foreground)]">{label}</p>
-        <p className="font-sans text-[11px] text-[var(--primary)] font-semibold">
+      <div className="bg-[var(--surface-card)] border border-[var(--border-soft)] p-2.5 rounded-xl shadow-xl">
+        <p className="font-sans font-bold text-[12px] mb-0.5 text-[var(--text-primary)]">
+          {label}
+        </p>
+        <p className="font-sans text-[11px] text-[var(--brand-500)] font-semibold">
           Velocity: {payload[0].value}
         </p>
       </div>
@@ -38,16 +55,18 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
+// ── Component ─────────────────────────────────────────────────────────────────
+
 const RegionCreationVelocity: React.FC = () => {
   return (
     <div className="card p-[clamp(12px,2vw,24px)_clamp(16px,2.5vw,32px)] w-full flex-1 min-h-0 box-border flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex justify-between items-start mb-[clamp(12px,2vh,24px)] shrink-0">
         <div className="flex flex-col gap-[clamp(4px,0.8vh,8px)]">
-          <div className="font-sans font-medium text-[clamp(14px,1.5vw,20px)] leading-tight text-[var(--foreground)]">
+          <div className="font-sans font-medium text-[clamp(14px,1.5vw,20px)] leading-tight text-[var(--text-primary)]">
             Region Creation Velocity
           </div>
-          <div className="font-sans font-normal text-[clamp(11px,1vw,14px)] leading-tight text-[var(--foreground)] opacity-60">
+          <div className="font-sans font-normal text-[clamp(11px,1vw,14px)] leading-tight text-[var(--text-primary)] opacity-60">
             Weekly overview of Region Creation Velocity
           </div>
         </div>
@@ -63,8 +82,16 @@ const RegionCreationVelocity: React.FC = () => {
           >
             <defs>
               <linearGradient id="rcvGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.25} />
-                <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
+                <stop
+                  offset="0%"
+                  stopColor="var(--brand-500)"
+                  stopOpacity={0.25}
+                />
+                <stop
+                  offset="100%"
+                  stopColor="var(--brand-500)"
+                  stopOpacity={0}
+                />
               </linearGradient>
             </defs>
             <CartesianGrid
@@ -77,14 +104,17 @@ const RegionCreationVelocity: React.FC = () => {
               dataKey="label"
               axisLine={false}
               tickLine={false}
-              tick={(props: any) => {
-                const { x, y, payload, index } = props;
+              tick={(props) => {
+                const x = props.x as number;
+                const y = props.y as number;
+                const payload = props.payload as { value: string };
+                const index = props.index as number;
                 return (
                   <text
                     x={x}
                     y={y + 12}
                     textAnchor="middle"
-                    className={`font-sans text-[clamp(9px,0.7vw,11px)] fill-[var(--foreground)] ${
+                    className={`font-sans text-[clamp(9px,0.7vw,11px)] fill-[var(--text-primary)] ${
                       index === 3 ? "opacity-100 font-semibold" : "opacity-50"
                     }`}
                   >
@@ -99,7 +129,7 @@ const RegionCreationVelocity: React.FC = () => {
               axisLine={false}
               tickLine={false}
               tick={{
-                fill: "var(--foreground)",
+                fill: "var(--text-primary)",
                 fontSize: "clamp(9px, 0.7vw, 11px)",
                 opacity: 0.5,
                 fontFamily: "var(--font-sans)",
@@ -109,20 +139,20 @@ const RegionCreationVelocity: React.FC = () => {
             <Area
               type="monotone"
               dataKey="value"
-              stroke="var(--primary)"
+              stroke="var(--brand-500)"
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#rcvGrad)"
               isAnimationActive={false}
               dot={{
                 r: 3.5,
-                fill: "var(--primary)",
+                fill: "var(--brand-500)",
                 strokeWidth: 0,
               }}
               activeDot={{
                 r: 5,
-                fill: "var(--primary)",
-                stroke: "var(--card)",
+                fill: "var(--brand-500)",
+                stroke: "var(--surface-card)",
                 strokeWidth: 2,
               }}
             />
@@ -131,11 +161,11 @@ const RegionCreationVelocity: React.FC = () => {
               x="Wed"
               y={PEAK_VAL}
               r={4}
-              fill="var(--primary)"
+              fill="var(--brand-500)"
               stroke="#fff"
               strokeWidth={2}
-              label={(props: any) => {
-                const { cx, cy } = props;
+              label={(props: ReferenceDotLabelProps) => {
+                const { cx = 0, cy = 0 } = props;
                 return (
                   <foreignObject x={cx - 20} y={cy - 40} width={40} height={25}>
                     <div className="bg-[#2780C4] rounded-[24px] p-[2px_6px] font-sans font-semibold text-[10px] text-white text-center shadow-md">

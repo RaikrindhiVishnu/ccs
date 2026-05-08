@@ -37,7 +37,7 @@ function DropdownMenu({
     <div
       className={cn(
         "absolute top-full z-50 mt-1 overflow-hidden",
-        "bg-[color:var(--card)]",
+        "bg-[color:var(--surface-card)]",
         "border border-[color:var(--border)]",
         "rounded-[var(--radius-dropdown)]",
         "shadow-[var(--shadow-card)]",
@@ -71,11 +71,11 @@ function MenuItem({
         "px-4 py-[clamp(6px,0.5vw,10px)]",
         "text-[length:clamp(11px,0.75vw,14px)]",
         "transition-colors duration-150",
-        "hover:bg-[color:var(--primary-soft)]",
+        "hover:bg-[color:var(--brand-tint)]",
         fontClass,
         active
-          ? "text-[color:var(--primary)] font-medium"
-          : "text-[color:var(--foreground)] font-normal",
+          ? "text-[color:var(--brand-500)] font-medium"
+          : "text-[color:var(--text-primary)] font-normal",
       )}
     >
       {children}
@@ -93,8 +93,8 @@ function CheckboxTick({ checked }: { checked: boolean }) {
         "w-[clamp(14px,1vw,18px)] h-[clamp(14px,1vw,18px)]",
         "border transition-colors duration-150",
         checked
-          ? "bg-[color:var(--chip-bg)] border-[color:var(--chip-bg)]"
-          : "bg-[color:var(--card)] border-[color:var(--border)]",
+          ? "bg-[color:var(--brand-400)] border-[color:var(--brand-400)]"
+          : "bg-[color:var(--surface-card)] border-[color:var(--border)]",
       )}
     >
       {checked && (
@@ -160,14 +160,14 @@ export function PillDropdown({
           "flex items-center gap-[clamp(6px,0.5vw,10px)]",
           "h-[clamp(32px,2.5vw,44px)] min-w-[clamp(100px,7.5vw,140px)]",
           "px-[clamp(10px,1vw,18px)]",
-          "bg-[color:var(--card)]",
+          "bg-[color:var(--surface-card)]",
           "border border-[color:var(--border)]",
           "rounded-full",
           "text-[length:clamp(11px,0.8vw,15px)] font-medium",
-          "font-[family-name:var(--btn-font-secondary)]",
-          "text-[color:var(--foreground)]",
+          "font-[family-name:var(--font-inter)]",
+          "text-[color:var(--text-primary)]",
           "transition-colors duration-150 cursor-pointer",
-          "hover:bg-[color:var(--primary-soft)]",
+          "hover:bg-[color:var(--brand-tint)]",
         )}
       >
         <span className="flex-1 text-left whitespace-nowrap">{selected}</span>
@@ -183,7 +183,7 @@ export function PillDropdown({
               key={opt}
               active={selected === opt}
               onClick={() => pick(opt)}
-              fontClass="font-[family-name:var(--btn-font-secondary)]"
+              fontClass="font-[family-name:var(--font-inter)]"
             >
               {opt}
             </MenuItem>
@@ -229,18 +229,18 @@ export function WeekDropdown({
           "h-[clamp(24px,1.8vw,32px)] w-[clamp(58px,4.5vw,80px)]",
           "px-[clamp(6px,0.6vw,10px)]",
           "bg-transparent",
-          "border border-[color:var(--border-strong)]",
+          "border border-[color:var(--text-primary)]",
           "rounded-full",
           "text-[length:clamp(10px,0.7vw,13px)] font-normal font-[family-name:var(--font-sans)]",
-          "text-[color:var(--foreground)]",
+          "text-[color:var(--text-primary)]",
           "transition-colors duration-150 cursor-pointer",
-          "hover:bg-[color:var(--primary-soft)]",
+          "hover:bg-[color:var(--brand-tint)]",
         )}
       >
         {selected}
         <ChevronDown
           className={cn(
-            "text-[color:var(--foreground)] transition-transform duration-200",
+            "text-[color:var(--text-primary)] transition-transform duration-200",
             open ? "rotate-180" : "",
           )}
         />
@@ -301,15 +301,14 @@ export function TagPillDropdown({
           "flex items-center gap-[clamp(4px,0.4vw,8px)]",
           "h-[clamp(28px,2.2vw,38px)] w-[clamp(110px,8.5vw,150px)]",
           "px-[clamp(8px,0.8vw,14px)]",
-          "bg-[color:var(--tag-pill-bg)]", // ← NEW token (see note above)
+          "bg-[color:var(--tag-pill-bg)]",
           "border border-[color:var(--border-soft)]",
           "rounded-full",
           "transition-all duration-150 cursor-pointer",
           "hover:brightness-95",
         )}
       >
-        {/* Icon */}
-        <span className="shrink-0 flex items-center justify-center text-[color:var(--muted)] w-[clamp(14px,1.1vw,20px)] h-[clamp(14px,1.1vw,20px)]">
+        <span className="shrink-0 flex items-center justify-center text-[color:var(--text-muted)] w-[clamp(14px,1.1vw,20px)] h-[clamp(14px,1.1vw,20px)]">
           {icon ?? (
             <svg viewBox="0 0 21 21" fill="none" className="w-full h-full">
               <path
@@ -337,7 +336,7 @@ export function TagPillDropdown({
         <span
           className={cn(
             "flex-1 text-left truncate font-medium font-[family-name:var(--font-sans)]",
-            "text-[color:var(--text-dark)]",
+            "text-[color:var(--text-heading)]",
             "text-[length:clamp(11px,0.8vw,14px)]",
           )}
         >
@@ -417,15 +416,15 @@ export function SquareDropdown({
           "relative flex items-center w-full cursor-pointer transition-colors duration-150",
           "h-[clamp(44px,3.5vw,60px)]",
           "px-[clamp(14px,1.5vw,26px)]",
-          "bg-[color:var(--card)]",
-          "border border-[color:var(--border-medium)]",
+          "bg-[color:var(--surface-card)]",
+          "border border-[color:var(--text-muted-strong)]",
           "rounded-[8px]",
-          "hover:border-[color:var(--primary)]",
+          "hover:border-[color:var(--brand-500)]",
         )}
       >
         <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
           {selected.length === 0 ? (
-            <span className="text-[color:var(--muted)] text-[length:clamp(13px,1.1vw,20px)] font-normal font-[family-name:var(--font-sans)]">
+            <span className="text-[color:var(--text-muted)] text-[length:clamp(13px,1.1vw,20px)] font-normal font-[family-name:var(--font-sans)]">
               {placeholder}
             </span>
           ) : (
@@ -434,7 +433,7 @@ export function SquareDropdown({
                 key={val}
                 className={cn(
                   "shrink-0 flex items-center gap-1",
-                  "bg-[color:var(--primary)] text-[color:var(--btn-primary-text)]",
+                  "bg-[color:var(--brand-500)] text-[color:var(--surface-card)]",
                   "rounded-[6px] font-medium font-[family-name:var(--btn-font-poppins)]",
                   "px-[clamp(8px,0.8vw,14px)]",
                   "h-[clamp(20px,1.6vw,28px)]",
@@ -447,11 +446,7 @@ export function SquareDropdown({
                   onClick={(e) => removeChip(val, e)}
                   className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity flex items-center"
                 >
-                  <svg
-                    viewBox="0 0 8 8"
-                    fill="none"
-                    className="w-[8px] h-[8px]"
-                  >
+                  <svg viewBox="0 0 8 8" fill="none" className="w-[8px] h-[8px]">
                     <path
                       d="M1 1L7 7M7 1L1 7"
                       stroke="white"
@@ -481,10 +476,10 @@ export function SquareDropdown({
                 "text-[length:clamp(11px,0.75vw,14px)]",
                 "font-[family-name:var(--font-sans)]",
                 "transition-colors duration-150",
-                "hover:bg-[color:var(--primary-soft)]",
+                "hover:bg-[color:var(--brand-tint)]",
                 selected.includes(opt)
-                  ? "text-[color:var(--primary)]"
-                  : "text-[color:var(--foreground)]",
+                  ? "text-[color:var(--brand-500)]"
+                  : "text-[color:var(--text-primary)]",
               )}
             >
               {multiSelect && <CheckboxTick checked={selected.includes(opt)} />}
@@ -551,18 +546,18 @@ export function CheckboxDropdown({
           "relative flex items-center w-full cursor-pointer transition-colors duration-150",
           "h-[clamp(44px,3.5vw,60px)]",
           "px-[clamp(14px,1.5vw,26px)]",
-          "bg-[color:var(--card)]",
-          "border border-[color:var(--border-medium)]",
+          "bg-[color:var(--surface-card)]",
+          "border border-[color:var(--text-muted-strong)]",
           "rounded-[8px]",
-          "hover:border-[color:var(--primary)]",
+          "hover:border-[color:var(--brand-500)]",
         )}
       >
         <span
           className={cn(
             "flex-1 text-left text-[length:clamp(13px,1.1vw,20px)] font-normal font-[family-name:var(--font-sans)]",
             selected.length === 0
-              ? "text-[color:var(--muted)]"
-              : "text-[color:var(--foreground)]",
+              ? "text-[color:var(--text-muted)]"
+              : "text-[color:var(--text-primary)]",
           )}
         >
           {label}
@@ -574,7 +569,6 @@ export function CheckboxDropdown({
 
       {open && (
         <DropdownMenu align="left">
-          {/* Search */}
           <div className="px-[clamp(8px,0.8vw,14px)] pt-[clamp(8px,0.8vw,14px)] pb-[clamp(4px,0.4vw,8px)]">
             <input
               type="text"
@@ -587,20 +581,19 @@ export function CheckboxDropdown({
                 "bg-[color:var(--input)]",
                 "border border-[color:var(--border)]",
                 "rounded-[8px]",
-                "text-[color:var(--foreground)]",
+                "text-[color:var(--text-primary)]",
                 "text-[length:clamp(11px,0.75vw,14px)]",
                 "font-[family-name:var(--font-sans)]",
                 "px-[clamp(8px,0.7vw,12px)] py-[clamp(6px,0.5vw,10px)]",
-                "focus:border-[color:var(--primary)]",
-                "placeholder:text-[color:var(--muted)]",
+                "focus:border-[color:var(--brand-500)]",
+                "placeholder:text-[color:var(--text-muted)]",
               )}
             />
           </div>
 
-          {/* Options */}
           <div className="max-h-[clamp(160px,12vw,240px)] overflow-y-auto">
             {filtered.length === 0 ? (
-              <p className="px-4 py-3 text-[length:clamp(11px,0.75vw,14px)] text-[color:var(--muted)] font-[family-name:var(--font-sans)]">
+              <p className="px-4 py-3 text-[length:clamp(11px,0.75vw,14px)] text-[color:var(--text-muted)] font-[family-name:var(--font-sans)]">
                 No results
               </p>
             ) : (
@@ -612,10 +605,10 @@ export function CheckboxDropdown({
                     "w-full text-left flex items-center gap-[clamp(8px,0.6vw,12px)]",
                     "px-[clamp(12px,1vw,18px)] py-[clamp(8px,0.6vw,12px)]",
                     "text-[length:clamp(11px,0.75vw,14px)]",
-                    "text-[color:var(--foreground)]",
+                    "text-[color:var(--text-primary)]",
                     "font-[family-name:var(--font-sans)]",
                     "transition-colors duration-150",
-                    "hover:bg-[color:var(--primary-soft)]",
+                    "hover:bg-[color:var(--brand-tint)]",
                   )}
                 >
                   <CheckboxTick checked={selected.includes(opt)} />
@@ -653,20 +646,17 @@ export function FormDropdown({
   containerClassName,
   className,
 }: FormDropdownProps) {
-  // Normalize options to { label, value }
   const normalized = options.map((o) =>
     typeof o === "string" ? { label: o, value: o } : o,
   );
 
   const [open, setOpen] = useState(false);
-  const [internal, setInternal] = useState(defaultValue);
+  // ✅ Fix: use value prop as initial state instead of useEffect sync
+  const [internal, setInternal] = useState(value ?? defaultValue);
   const ref = useOutsideClick(() => setOpen(false));
 
-  // Sync controlled value
+  // ✅ Fix: derive selected directly — no useEffect needed
   const selected = value !== undefined ? value : internal;
-  useEffect(() => {
-    if (value !== undefined) setInternal(value);
-  }, [value]);
 
   const selectedLabel =
     normalized.find((o) => o.value === selected)?.label ?? placeholder;
@@ -685,43 +675,40 @@ export function FormDropdown({
         containerClassName,
       )}
     >
-      {/* Label */}
       {label && (
         <label className="font-medium leading-none text-[length:clamp(12px,0.97vw,16px)] text-[color:var(--label-color)] font-[family-name:var(--font-sans)]">
           {label}
         </label>
       )}
 
-      {/* Trigger */}
       <button
         onClick={() => !disabled && setOpen(!open)}
         disabled={disabled}
         className={cn(
-          "flex items-center w-full bg-[color:var(--card)] cursor-pointer",
+          "flex items-center w-full bg-[color:var(--surface-card)] cursor-pointer",
           "h-[clamp(36px,2.9vw,40px)]",
-          "border border-[color:var(--input-border)]",
-          "rounded-[var(--btn-radius-square)]",
+          "border border-[color:var(--border-default)]",
+          "rounded-[var(--radius-dropdown)]",
           "px-[clamp(10px,0.9vw,14px)]",
           "transition-colors duration-150",
-          "hover:border-[color:var(--primary)]",
+          "hover:border-[color:var(--brand-500)]",
           "disabled:opacity-45 disabled:cursor-not-allowed",
-          open && "border-[color:var(--primary)]",
+          open && "border-[color:var(--brand-500)]",
           className,
         )}
       >
         <span
           className={cn(
             "flex-1 text-left truncate",
-            "text-[length:clamp(12px,0.9vw,14px)] font-[family-name:var(--btn-font-secondary)]",
+            "text-[length:clamp(12px,0.9vw,14px)] font-[family-name:var(--font-inter)]",
             selected
               ? "text-[color:var(--profile-text)]"
-              : "text-[color:var(--muted-strong)]",
+              : "text-[color:var(--text-muted-strong)]",
           )}
         >
           {selectedLabel}
         </span>
 
-        {/* Chevron */}
         <svg
           width="20"
           height="20"
@@ -738,12 +725,11 @@ export function FormDropdown({
             strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-[color:var(--profile-subtext)]"
+            className="text-[color:var(--text-supporting)]"
           />
         </svg>
       </button>
 
-      {/* Menu */}
       {open && (
         <DropdownMenu align="left">
           {normalized.map((opt) => (
@@ -752,11 +738,11 @@ export function FormDropdown({
               onClick={() => pick(opt.value)}
               className={cn(
                 "w-full text-left px-4 py-[clamp(8px,0.6vw,10px)]",
-                "text-[length:clamp(11px,0.85vw,14px)] font-[family-name:var(--btn-font-secondary)]",
+                "text-[length:clamp(11px,0.85vw,14px)] font-[family-name:var(--font-inter)]",
                 "transition-colors duration-150",
-                "hover:bg-[color:var(--primary-soft)]",
+                "hover:bg-[color:var(--brand-tint)]",
                 selected === opt.value
-                  ? "text-[color:var(--primary)] font-medium"
+                  ? "text-[color:var(--brand-500)] font-medium"
                   : "text-[color:var(--profile-text)] font-normal",
               )}
             >
