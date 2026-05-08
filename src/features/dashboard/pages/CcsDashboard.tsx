@@ -53,7 +53,7 @@ export default function CcsDashboard() {
         {/* ════ RIGHT PANEL ════ */}
         <div
           className="
-            flex flex-col rounded-[1.5rem] bg-[var(--card)] gap-0
+            flex flex-col rounded-[1.5rem] bg-[var(--surface-card)] gap-0
             px-[1.5rem] py-[1.5rem]
             xl:rounded-[1.75rem] xl:px-[2rem] xl:py-[2rem]
             2xl:rounded-[2.0625rem] 2xl:px-[2.5rem] 2xl:py-[2.5rem]

@@ -33,7 +33,7 @@ export const FlowItem: React.FC<FlowItemProps> = ({
       <div
         className={cn(
           "flex flex-col gap-4 p-4 rounded-2xl transition-all relative",
-          // active ? "bg-(--tag-pill-bg)" : "hover:bg-(--primary-soft)"
+          // active ? "bg-(--tag-pill-bg)" : "hover:bg-(--brand-tint)"
         )}
       >
         <div className="flex justify-between items-start">
@@ -45,7 +45,7 @@ export const FlowItem: React.FC<FlowItemProps> = ({
           <div className="flex gap-2">
             <Edit2
               size={16}
-              className="text-(--muted-strong) cursor-pointer hover:text-(--primary) transition-colors"
+              className="text-(--text-muted-strong) cursor-pointer hover:text-(--brand-500) transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit?.();
@@ -53,7 +53,7 @@ export const FlowItem: React.FC<FlowItemProps> = ({
             />
             <Eye
               size={16}
-              className="text-(--muted-strong) cursor-pointer hover:text-(--primary) transition-colors"
+              className="text-(--text-muted-strong) cursor-pointer hover:text-(--brand-500) transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 onView?.();
@@ -65,15 +65,15 @@ export const FlowItem: React.FC<FlowItemProps> = ({
         <div className="flex flex-col gap-1">
           <Typography
             variant="p"
-            className="text-sm font-semibold text-(--muted)"
+            className="text-sm font-semibold text-(--text-muted)"
           >
             {name} - {role}
           </Typography>
-          <Typography variant="p" className="text-sm text-(--muted)">
+          <Typography variant="p" className="text-sm text-(--text-muted)">
             Role ID - {roleId}
           </Typography>
           {contact && (
-            <Typography variant="p" className="text-sm text-(--muted)">
+            <Typography variant="p" className="text-sm text-(--text-muted)">
               Contact - {contact}
             </Typography>
           )}
@@ -88,8 +88,8 @@ export const FlowItem: React.FC<FlowItemProps> = ({
       className={cn(
         "flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer group",
         active
-          ? "bg-(--primaryz-soft) border-l-4 border-(--primary)"
-          : "hover:bg-(--primary-soft)/50 border-l-4 border-transparent",
+          ? "bg-(--primaryz-soft) border-l-4 border-(--brand-500)"
+          : "hover:bg-(--brand-tint)/50 border-l-4 border-transparent",
       )}
     >
       <div className="flex items-center gap-3">
@@ -101,11 +101,11 @@ export const FlowItem: React.FC<FlowItemProps> = ({
         <div className="flex flex-col">
           <Typography
             variant="p"
-            className="font-semibold text-(--text-dark) text-sm"
+            className="font-semibold text-(--text-heading) text-sm"
           >
             {name}
           </Typography>
-          <Typography variant="p" className="text-[11px] text-(--muted)">
+          <Typography variant="p" className="text-[11px] text-(--text-muted)">
             Role ID - {roleId}
           </Typography>
         </div>
@@ -114,7 +114,7 @@ export const FlowItem: React.FC<FlowItemProps> = ({
       <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <Edit2
           size={14}
-          className="text-(--muted-strong) cursor-pointer hover:text-(--primary)"
+          className="text-(--text-muted-strong) cursor-pointer hover:text-(--brand-500)"
           onClick={(e) => {
             e.stopPropagation();
             onEdit?.();
@@ -122,7 +122,7 @@ export const FlowItem: React.FC<FlowItemProps> = ({
         />
         <Eye
           size={14}
-          className="text-(--muted-strong) cursor-pointer hover:text-(--primary)"
+          className="text-(--text-muted-strong) cursor-pointer hover:text-(--brand-500)"
           onClick={(e) => {
             e.stopPropagation();
             onView?.();

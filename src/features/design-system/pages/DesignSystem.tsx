@@ -159,7 +159,7 @@ const DesignSystem = () => {
             </div>
             <div
               className="space-y-4 rounded-xl border p-6"
-              style={{ background: "var(--background)" }}
+              style={{ background: "var(--surface-page)" }}
             >
               <Typography variant="p" className="font-semibold text-sm mb-4">
                 White Variant

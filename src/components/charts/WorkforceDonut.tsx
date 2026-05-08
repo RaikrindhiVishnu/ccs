@@ -44,10 +44,10 @@ export default function WorkforceDonut({ data }: Props) {
 
       {/* CENTER CIRCLE — More stable text sizing */}
       <div className="absolute inset-0 flex flex-col items-center justify-center z-[3] pointer-events-none">
-        <span className="font-sans font-medium text-[clamp(9px,1vw,11px)] text-[var(--foreground)] opacity-50 uppercase tracking-wider">
+        <span className="font-sans font-medium text-[clamp(9px,1vw,11px)] text-[var(--text-primary)] opacity-50 uppercase tracking-wider">
           Total
         </span>
-        <span className="font-sans font-bold text-[clamp(16px,1.8vw,24px)] text-[var(--foreground)]">
+        <span className="font-sans font-bold text-[clamp(16px,1.8vw,24px)] text-[var(--text-primary)]">
           {total.toLocaleString()}
         </span>
       </div>

@@ -33,24 +33,24 @@ const STATUS_STYLES: Record<
   { bg: string; dot: string; text: string }
 > = {
   COMPLETED: {
-    bg: "bg-[var(--success-soft)]",
-    dot: "bg-[var(--success-green)]",
-    text: "text-[var(--success-green)]",
+    bg: "bg-[var(--status-success-soft)]",
+    dot: "bg-[var(--status-success)]",
+    text: "text-[var(--status-success)]",
   },
   PENDING: {
-    bg: "bg-[var(--background)]",
+    bg: "bg-[var(--surface-page)]",
     dot: "bg-[var(--dot)]",
     text: "text-[var(--dot)]",
   },
   ACTIVE: {
-    bg: "bg-[var(--primary-soft)]",
-    dot: "bg-[var(--primary)]",
-    text: "text-[var(--primary)]",
+    bg: "bg-[var(--brand-tint)]",
+    dot: "bg-[var(--brand-500)]",
+    text: "text-[var(--brand-500)]",
   },
   REJECTED: {
-    bg: "bg-[var(--danger-soft)]",
-    dot: "bg-[var(--danger)]",
-    text: "text-[var(--danger)]",
+    bg: "bg-[var(--status-danger-soft)]",
+    dot: "bg-[var(--status-danger)]",
+    text: "text-[var(--status-danger)]",
   },
 };
 
@@ -61,7 +61,7 @@ export default function FarmlandListCard({ item, onViewDetails }: Props) {
     <Card
       className="
         flex flex-col
-        rounded-[2rem] border-0 bg-[var(--card)]
+        rounded-[2rem] border-0 bg-[var(--surface-card)]
         p-4 shadow-[0px_8px_30px_rgba(0,0,0,0.04)]
         lg:p-5 xl:p-6 2xl:p-7
       "

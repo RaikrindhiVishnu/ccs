@@ -25,17 +25,17 @@ const WorkforceStructure: React.FC<Props> = ({ data = fallbackData }) => {
       {/* Header */}
       <div className="flex justify-between items-start mb-[clamp(12px,2vh,24px)] shrink-0">
         <div className="flex flex-col gap-[clamp(4px,0.8vh,8px)]">
-          <div className="font-sans font-medium text-[clamp(14px,1.5vw,20px)] leading-tight text-[var(--foreground)]">
+          <div className="font-sans font-medium text-[clamp(14px,1.5vw,20px)] leading-tight text-[var(--text-primary)]">
             Workforce Structure
           </div>
-          <div className="font-sans font-normal text-[clamp(11px,1vw,14px)] leading-tight text-[var(--foreground)] opacity-60">
+          <div className="font-sans font-normal text-[clamp(11px,1vw,14px)] leading-tight text-[var(--text-primary)] opacity-60">
             Yearly overview of employee statuses
           </div>
         </div>
 
         {/* Year pill */}
-        <div className="box-border flex items-center p-[5px_4px_5px_8px] border border-[var(--border-strong)] rounded-[30px] cursor-pointer shrink-0">
-          <span className="font-sans font-normal text-[12px] text-[var(--foreground)]">
+        <div className="box-border flex items-center p-[5px_4px_5px_8px] border border-[var(--text-primary)] rounded-[30px] cursor-pointer shrink-0">
+          <span className="font-sans font-normal text-[12px] text-[var(--text-primary)]">
             2026
           </span>
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="rotate-90 shrink-0">
@@ -59,11 +59,11 @@ const WorkforceStructure: React.FC<Props> = ({ data = fallbackData }) => {
                 className="w-2.5 h-2.5 rounded-full shrink-0"
                 style={{ background: item.color, border: item.border ?? "none" }}
               />
-              <span className="font-sans font-medium text-[clamp(10px,1vw,12px)] text-[var(--foreground)] whitespace-nowrap">
+              <span className="font-sans font-medium text-[clamp(10px,1vw,12px)] text-[var(--text-primary)] whitespace-nowrap">
                 {item.label}
               </span>
               <div className="flex-1 border-t border-dashed border-[#2C2C2C] opacity-10 min-w-[10px]" />
-              <span className="font-sans font-bold text-[clamp(12px,1.2vw,16px)] text-[var(--foreground)]">
+              <span className="font-sans font-bold text-[clamp(12px,1.2vw,16px)] text-[var(--text-primary)]">
                 {item.value}
               </span>
             </div>

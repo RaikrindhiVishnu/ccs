@@ -93,7 +93,7 @@ export default function RoleManagerDetails({
       className="
         w-full
         min-h-screen
-        bg-[color:var(--background)]
+        bg-[color:var(--surface-page)]
         px-[clamp(1.25rem,5vw,6.125rem)]
         py-[clamp(1.25rem,2vw,2.375rem)]
       "
@@ -106,10 +106,10 @@ export default function RoleManagerDetails({
           flex items-center gap-2
           px-5 py-3
           mb-[clamp(1.5rem,2.5vw,2.375rem)]
-          bg-[color:var(--card)]
+          bg-[color:var(--surface-card)]
           rounded-full
           shadow-[0px_0px_4px_rgba(0,0,0,0.12)]
-          text-[color:var(--text-neutral)]
+          text-[color:var(--text-secondary)]
           text-[clamp(0.75rem,0.95vw,1rem)]
           font-[family-name:var(--font-inter)]
           hover:opacity-80
@@ -126,7 +126,7 @@ export default function RoleManagerDetails({
           w-full
           max-w-[106.25rem]
           mx-auto
-          bg-[color:var(--card)]
+          bg-[color:var(--surface-card)]
           rounded-[clamp(1.75rem,2.5vw,2.875rem)]
           p-[clamp(1.25rem,2vw,2rem)]
           space-y-[clamp(1.125rem,1.8vw,1.625rem)]
@@ -137,7 +137,7 @@ export default function RoleManagerDetails({
           className="
             overflow-hidden
             rounded-[clamp(1rem,1.5vw,1.5rem)]
-            bg-[color:var(--card)]
+            bg-[color:var(--surface-card)]
             shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
           "
           // rounded: 16px→1rem, 24px→1.5rem
@@ -173,8 +173,8 @@ export default function RoleManagerDetails({
                   rounded-full
                   overflow-hidden
                   border-[clamp(0.125rem,0.2vw,0.25rem)]
-                  border-[color:var(--card)]
-                  bg-[color:var(--card)]
+                  border-[color:var(--surface-card)]
+                  bg-[color:var(--surface-card)]
                   shadow-[0px_4px_10px_rgba(0,0,0,0.12)]
                   w-[clamp(6.25rem,6vw,10rem)]
                   h-[clamp(6.25rem,6vw,10rem)]
@@ -192,7 +192,7 @@ export default function RoleManagerDetails({
                 ) : (
                   <User
                     strokeWidth={1.5}
-                    className="w-[38%] h-[38%] text-[color:var(--muted)]"
+                    className="w-[38%] h-[38%] text-[color:var(--text-muted)]"
                   />
                 )}
               </div>
@@ -217,7 +217,7 @@ export default function RoleManagerDetails({
                   className="
                     mt-[clamp(0.25rem,0.4vw,0.5rem)]
                     font-medium
-                    text-[color:var(--profile-subtext)]
+                    text-[color:var(--text-supporting)]
                     text-[clamp(0.6875rem,0.9vw,0.9375rem)]
                   "
                 >
@@ -246,7 +246,7 @@ export default function RoleManagerDetails({
         {/* ───────────── PERSONAL DETAILS ───────────── */}
         <div
           className="
-            bg-[color:var(--card)]
+            bg-[color:var(--surface-card)]
             rounded-[clamp(1rem,1.5vw,1.5rem)]
             shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
             px-[clamp(1.25rem,2vw,1.875rem)]
@@ -259,7 +259,7 @@ export default function RoleManagerDetails({
             className="
               font-semibold
               text-[clamp(1.125rem,1.5vw,1.5rem)]
-              text-[color:var(--foreground)]
+              text-[color:var(--text-primary)]
             "
             // text: 18px→1.125rem, 24px→1.5rem
           >
@@ -287,7 +287,7 @@ export default function RoleManagerDetails({
         {/* ───────────── ALERTS ───────────── */}
         <div
           className="
-            bg-[color:var(--card)]
+            bg-[color:var(--surface-card)]
             rounded-[clamp(1rem,1.5vw,1.5rem)]
             shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
             px-[clamp(1.25rem,2vw,1.875rem)]
@@ -300,7 +300,7 @@ export default function RoleManagerDetails({
             className="
               font-semibold
               text-[clamp(1.125rem,1.5vw,1.5rem)]
-              text-[color:var(--foreground)]
+              text-[color:var(--text-primary)]
             "
             // text: 18px→1.125rem, 24px→1.5rem
           >
@@ -324,7 +324,7 @@ export default function RoleManagerDetails({
                   className="
                     font-semibold
                     text-[clamp(0.875rem,1vw,1.125rem)]
-                    text-[color:var(--foreground)]
+                    text-[color:var(--text-primary)]
                   "
                   // text: 14px→0.875rem, 18px→1.125rem
                 >
@@ -333,7 +333,7 @@ export default function RoleManagerDetails({
                 <p
                   className="
                     text-[clamp(0.6875rem,0.9vw,0.875rem)]
-                    text-[color:var(--muted)]
+                    text-[color:var(--text-muted)]
                   "
                   // text: 11px→0.6875rem, 14px→0.875rem
                 >
@@ -351,7 +351,7 @@ export default function RoleManagerDetails({
                   className="
                     font-semibold
                     text-[clamp(0.875rem,1vw,1.125rem)]
-                    text-[color:var(--foreground)]
+                    text-[color:var(--text-primary)]
                   "
                   // text: 14px→0.875rem, 18px→1.125rem
                 >
@@ -360,7 +360,7 @@ export default function RoleManagerDetails({
                 <p
                   className="
                     text-[clamp(0.6875rem,0.9vw,0.875rem)]
-                    text-[color:var(--muted)]
+                    text-[color:var(--text-muted)]
                   "
                   // text: 11px→0.6875rem, 14px→0.875rem
                 >

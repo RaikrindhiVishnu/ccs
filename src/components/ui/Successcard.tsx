@@ -30,7 +30,7 @@ function AnimatedDots() {
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className={`inline-block rounded-full transition-colors duration-300 w-[clamp(7px,0.8vw,11px)] h-[clamp(7px,0.8vw,11px)] ${i === active ? "bg-[var(--primary)]" : "bg-[var(--primary-faded)]"}`}
+          className={`inline-block rounded-full transition-colors duration-300 w-[clamp(7px,0.8vw,11px)] h-[clamp(7px,0.8vw,11px)] ${i === active ? "bg-[var(--brand-500)]" : "bg-[var(--brand-tint-strong)]"}`}
         />
       ))}
     </div>
@@ -41,17 +41,17 @@ function AnimatedDots() {
 function MapPlaceholder({ regionName }: { regionName: string }) {
   return (
     <svg viewBox="0 0 200 249" width="100%" height="100%">
-      <rect width="200" height="249" fill="var(--primary-light)" />
+      <rect width="200" height="249" fill="var(--brand-200)" />
       <polygon
         points="40,220 55,60 100,40 148,65 170,130 155,220 110,240 65,238"
-        fill="var(--primary-light)"
-        stroke="var(--primary)"
+        fill="var(--brand-200)"
+        stroke="var(--brand-500)"
         strokeWidth="1.5"
       />
       <text
         x="100" y="145"
         fontSize="12"
-        fill="var(--primary)"
+        fill="var(--brand-500)"
         textAnchor="middle"
         fontWeight="600"
       >
@@ -93,11 +93,11 @@ export default function Successcard({
         }
       `}</style>
       <div
-        className="w-full flex items-center justify-center min-h-screen p-[clamp(12px,2vw,24px)] bg-[var(--background)] font-sans overflow-hidden"
+        className="w-full flex items-center justify-center min-h-screen p-[clamp(12px,2vw,24px)] bg-[var(--surface-page)] font-sans overflow-hidden"
       >
         {/* CARD */}
         <div
-          className="success-card w-full flex max-w-[clamp(700px,90vw,1301px)] min-h-[clamp(380px,68vh,640px)] bg-[var(--card)] rounded-[clamp(24px,3.3vw,48px)] p-[clamp(20px,2.5vw,40px)_clamp(20px,3vw,70px)] gap-[clamp(20px,3vw,48px)] overflow-hidden"
+          className="success-card w-full flex max-w-[clamp(700px,90vw,1301px)] min-h-[clamp(380px,68vh,640px)] bg-[var(--surface-card)] rounded-[clamp(24px,3.3vw,48px)] p-[clamp(20px,2.5vw,40px)_clamp(20px,3vw,70px)] gap-[clamp(20px,3vw,48px)] overflow-hidden"
         >
           {/* ── LEFT ── */}
           <div className="flex flex-col justify-between flex-1 min-w-0">
@@ -111,17 +111,17 @@ export default function Successcard({
                 />
               </div>
 
-              <span className="text-[clamp(11px,1.1vw,16px)] font-semibold text-[var(--muted)] ml-[clamp(8px,2vw,20px)]">
+              <span className="text-[clamp(11px,1.1vw,16px)] font-semibold text-[var(--text-muted)] ml-[clamp(8px,2vw,20px)]">
                 {badgeLabel}
               </span>
             </div>
 
             {/* TITLE */}
             <div className="leading-[1.05]">
-              <div className="text-[clamp(26px,4vw,56px)] font-semibold text-[var(--primary)]">
+              <div className="text-[clamp(26px,4vw,56px)] font-semibold text-[var(--brand-500)]">
                 {titleLine1}
               </div>
-              <div className="text-[clamp(26px,4vw,56px)] font-bold text-[var(--foreground)]">
+              <div className="text-[clamp(26px,4vw,56px)] font-bold text-[var(--text-primary)]">
                 {titleLine2}
               </div>
             </div>
@@ -129,7 +129,7 @@ export default function Successcard({
             {/* REDIRECT */}
             <div className="flex items-center mt-0 gap-[clamp(6px,0.7vw,10px)]">
               <AnimatedDots />
-              <span className="text-[clamp(13px,1.2vw,18px)] font-semibold text-[var(--primary)]">
+              <span className="text-[clamp(13px,1.2vw,18px)] font-semibold text-[var(--brand-500)]">
                 {redirectText}
               </span>
             </div>
@@ -151,7 +151,7 @@ export default function Successcard({
             </div>
 
             {/* INFO GRID */}
-            <div className="w-full bg-[var(--background)] p-[clamp(12px,1.5vw,20px)] pl-[clamp(16px,2vw,28px)] rounded-[clamp(18px,2vw,28px)] grid grid-cols-2 gap-x-[clamp(16px,2vw,24px)] gap-y-[clamp(10px,1.2vh,18px)]">
+            <div className="w-full bg-[var(--surface-page)] p-[clamp(12px,1.5vw,20px)] pl-[clamp(16px,2vw,28px)] rounded-[clamp(18px,2vw,28px)] grid grid-cols-2 gap-x-[clamp(16px,2vw,24px)] gap-y-[clamp(10px,1.2vh,18px)]">
               {[
                 {
                   label: titleLine1 === "Area" ? "AREA NAME" : "REGION NAME",
@@ -162,11 +162,11 @@ export default function Successcard({
                 { label: "CREATED TIME", value: createdTime },
               ].map((item) => (
                 <div key={item.label} className="flex flex-col gap-1">
-                  <span className="text-[clamp(10px,0.75vw,12px)] text-[var(--muted)] font-medium tracking-[0.03em] whitespace-nowrap overflow-hidden text-ellipsis">
+                  <span className="text-[clamp(10px,0.75vw,12px)] text-[var(--text-muted)] font-medium tracking-[0.03em] whitespace-nowrap overflow-hidden text-ellipsis">
                     {item.label}
                   </span>
 
-                  <span className="text-[clamp(11px,0.9vw,14px)] font-semibold text-[var(--foreground)] whitespace-nowrap overflow-hidden text-ellipsis">
+                  <span className="text-[clamp(11px,0.9vw,14px)] font-semibold text-[var(--text-primary)] whitespace-nowrap overflow-hidden text-ellipsis">
                     {item.value}
                   </span>
                 </div>

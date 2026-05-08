@@ -11,7 +11,7 @@ function SkeletonCard() {
     <div
       className="
         flex animate-pulse flex-col gap-5
-        rounded-[2rem] bg-[var(--card)]
+        rounded-[2rem] bg-[var(--surface-card)]
         p-6 shadow-[var(--shadow-card)]
         lg:p-7 xl:p-8
         min-h-[280px] lg:min-h-[300px] xl:min-h-[334px]
@@ -64,7 +64,7 @@ export default function FarmlandRequest() {
           />
           <Typography
             variant="h4"
-            className="text-[var(--foreground)] text-[0.9375rem] font-normal leading-tight lg:text-[1rem] xl:text-[1.125rem]"
+            className="text-[var(--text-primary)] text-[0.9375rem] font-normal leading-tight lg:text-[1rem] xl:text-[1.125rem]"
           >
             Farmland Request
           </Typography>
@@ -73,7 +73,7 @@ export default function FarmlandRequest() {
         {/* RIGHT — search + bell */}
         <div className="flex items-center gap-2">
           {/* SEARCH BAR */}
-          <div className="flex items-center gap-2 rounded-[3.75rem] bg-[var(--card)] px-4 py-[0.875rem] lg:px-5 lg:py-[0.9375rem]">
+          <div className="flex items-center gap-2 rounded-[3.75rem] bg-[var(--surface-card)] px-4 py-[0.875rem] lg:px-5 lg:py-[0.9375rem]">
             <Search
               className="h-5 w-5 shrink-0 text-[var(--text-subtle)]"
               strokeWidth={1.6}
@@ -85,9 +85,9 @@ export default function FarmlandRequest() {
           </div>
 
           {/* BELL — icon-only circle, no matching variant, keep raw */}
-          <button className="relative flex h-[3.125rem] w-[3.125rem] items-center justify-center rounded-full bg-[var(--card)] transition-colors hover:bg-[var(--primary-soft)] xl:h-[3.25rem] xl:w-[3.25rem]">
-            <span className="absolute right-[0.75rem] top-[0.625rem] h-[0.3125rem] w-[0.3125rem] rounded-full bg-[var(--danger)]" />
-            <Bell className="h-5 w-5 text-[var(--sidebar)]" strokeWidth={1.5} />
+          <button className="relative flex h-[3.125rem] w-[3.125rem] items-center justify-center rounded-full bg-[var(--surface-card)] transition-colors hover:bg-[var(--brand-tint)] xl:h-[3.25rem] xl:w-[3.25rem]">
+            <span className="absolute right-[0.75rem] top-[0.625rem] h-[0.3125rem] w-[0.3125rem] rounded-full bg-[var(--status-danger)]" />
+            <Bell className="h-5 w-5 text-[var(--surface-sidebar)]" strokeWidth={1.5} />
             <span className="sr-only">Notifications</span>
           </button>
         </div>
@@ -95,10 +95,10 @@ export default function FarmlandRequest() {
 
       {/* ── ERROR BANNER ── */}
       {error && (
-        <div className="mt-4 flex items-center justify-between rounded-2xl bg-[var(--danger-soft)] px-5 py-3">
+        <div className="mt-4 flex items-center justify-between rounded-2xl bg-[var(--status-danger-soft)] px-5 py-3">
           <Typography
             variant="p"
-            className="text-[var(--danger)] text-[0.875rem] font-medium"
+            className="text-[var(--status-danger)] text-[0.875rem] font-medium"
           >
             {error}
           </Typography>

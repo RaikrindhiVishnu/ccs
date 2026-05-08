@@ -12,7 +12,7 @@ import { RoleFlow } from "../components/RoleFlow";
 const UserDirectory: React.FC = () => {
   const navigate = useNavigate();
   return (
-    <div className="flex flex-col py-16 px-4 gap-6 box-border min-h-full bg-(--background)">
+    <div className="flex flex-col py-16 px-4 gap-6 box-border min-h-full bg-( --surface-page)">
       {/* Graphs Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full h-90">
         <div className="flex">

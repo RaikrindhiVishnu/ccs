@@ -7,82 +7,61 @@
   --font-heading: "Manrope";
   --font-inter: 'Inter', sans-serif;
 
-  /* ─── PROFILE / DETAIL PAGE ─────────────────────────────────── */
-  --banner-from: #2a5c3f;
-  --banner-via: #3a7d5a;
-  --banner-to: #2c6b4a;
+  /* ─── BRAND RAMP (10-step, anchored at 500) ─────────────────── */
+  --brand-50:  #EAF3FA;
+  --brand-100: #D4E6F3;
+  --brand-200: #AED6EF;
+  --brand-300: #7DB4D8;
+  --brand-400: #3D93D1;
+  --brand-500: #2780C4;
+  --brand-600: #1F66A3;
+  --brand-700: #174D7B;
+  --brand-800: #103354;
+  --brand-900: #081A24;
+  --brand-tint: rgba(39, 128, 196, 0.08);
+  --brand-tint-strong: rgba(39, 128, 196, 0.4);
+  --brand-bar: rgba(39, 128, 196, 0.12);
 
-  /* ─── APPROVE BUTTON ────────────────────────────────────────── */
-  --approve-gradient-from: #2680c4;
-  --approve-gradient-to: #4a7bbb;
-
-  /* ─── STATUS ────────────────────────────────────────────────── */
-  --status-pending-bg: #f3f3f5;
-  --text-button: #353535;
-  --dot: #131600;
-  --toggle-active: #4caf50;
-  --avatar-fallback: #c0c0c0;
-
-  /* ─── DOCUMENT ──────────────────────────────────────────────── */
-  --document-placeholder-from: #e8edf5;
-  --document-placeholder-to: #d4dce8;
-
-  /* ─── BASE ──────────────────────────────────────────────────── */
-  --background: #F2F2F2;
-  --foreground: #000000;
-  --card: #FFFFFF;
-  --input: var(--background);
-  --input-border: #e1e5ef;
-  --label-color: #3e4a3d;
+  /* ─── SURFACES ──────────────────────────────────────────────── */
+  --surface-page: #F2F2F2;
+  --surface-card: #FFFFFF;
+  --surface-sidebar: #191B1C;
+  --surface-sidebar-accent: #5C5C5C;
+  --surface-sidebar-text: #FFFFFF;
 
   /* ─── TEXT ──────────────────────────────────────────────────── */
-  --muted: rgba(0, 0, 0, 0.6);
-  --muted-strong: rgba(0, 0, 0, 0.4);
-  --text-dark: #091426;
-  --text-neutral: #3D4949;
+  --text-primary: #191B1C;
+  --text-secondary: #626C70;
   --text-subtle: #5A5C5E;
+  --text-heading: #091426;
+  --text-muted: rgba(0, 0, 0, 0.6);
+  --text-muted-strong: rgba(0, 0, 0, 0.4);
+  --text-supporting: #626c70;
   --profile-text: #191b1c;
-  --profile-subtext: #626c70;
+  --text-button: #353535;
 
-  /* ─── PRIMARY ───────────────────────────────────────────────── */
-  --primary: #2780C4;
-  --primary-light: #AED6EF;
-  --primary-soft: rgba(39, 128, 196, 0.08);
-  --primary-faded: rgba(39, 128, 196, 0.4);
+  /* ─── STATUS ────────────────────────────────────────────────── */
+  --status-pending: var(--brand-500);
+  --status-success: #16A34A;
+  --status-success-soft: rgba(22, 163, 74, 0.08);
+  --status-warning: #F59E0B;
+  --status-warning-soft: rgba(245, 158, 11, 0.08);
+  --status-danger: #DC2626;
+  --status-danger-soft: rgba(220, 38, 38, 0.08);
+  --status-pending-bg: #f3f3f5;
 
-  /* ─── SUCCESS ───────────────────────────────────────────────── */
-  --success-green: #0ca00c;
-  --success-soft: rgba(12, 160, 12, 0.08);
-
-  /* ─── DANGER ────────────────────────────────────────────────── */
-  --danger: #ef4444;
-  --danger-soft: rgba(239, 68, 68, 0.08);
-
-  /* ─── CHIP / TAG ────────────────────────────────────────────── */
-  --chip-bg: #3D93D1;
-  --chip-text: var(--card);
-  --tag-pill-bg: #f3f4f5;
-
-  /* ─── BARS ──────────────────────────────────────────────────── */
-  --outerbar: rgba(39, 128, 196, 0.12);
-
-
-  /* ─── ILLUSTRATION CARDS ────────────────────────────────────── */
-  --region-card-top-bg: linear-gradient(0deg, rgba(0,0,0,0.04), rgba(0,0,0,0.04)), rgba(39, 128, 196, 0.06);
-  --area-card-bottom-bg: rgba(39, 128, 196, 0.08);
-  --illus-card-white-bg: rgba(255, 255, 255, 0.10);
-  --illus-glow: rgba(242, 255, 219, 0.34);
   /* ─── BORDERS ───────────────────────────────────────────────── */
   --border: rgba(0, 0, 0, 0.1);
-  --border-strong: var(--foreground);
-  --border-medium: var(--muted-strong);
+  --border-default: #e1e5ef;
   --border-soft: rgba(197, 198, 205, 0.3);
-  --border-light: #EBEBEB;
+  --border-subtle: #EBEBEB;
 
-  /* ─── GRID ──────────────────────────────────────────────────── */
+  /* ─── INPUT ─────────────────────────────────────────────────── */
+  --input: var(--surface-page);
+  --label-color: #3e4a3d;
+
+  /* ─── GRID / TOOLTIP ────────────────────────────────────────── */
   --grid: rgba(0, 0, 0, 0.05);
-
-  /* ─── TOOLTIP ───────────────────────────────────────────────── */
   --tooltip-bg: rgba(0, 0, 0, 0.08);
 
   /* ─── SHADOWS ───────────────────────────────────────────────── */
@@ -95,6 +74,31 @@
   --radius-lg: 24px;
   --radius-xl: 32px;
   --radius-dropdown: 12px;
+
+  /* ─── MISC ──────────────────────────────────────────────────── */
+  --dot: #131600;
+  --toggle-active: #4caf50;
+  --avatar-fallback: #c0c0c0;
+  --tag-pill-bg: #f3f4f5;
+
+  /* ─── PROFILE / DETAIL PAGE ─────────────────────────────────── */
+  --banner-from: #2a5c3f;
+  --banner-via: #3a7d5a;
+  --banner-to: #2c6b4a;
+
+  /* ─── APPROVE BUTTON ────────────────────────────────────────── */
+  --approve-gradient-from: #2680c4;
+  --approve-gradient-to: #4a7bbb;
+
+  /* ─── DOCUMENT ──────────────────────────────────────────────── */
+  --document-placeholder-from: #e8edf5;
+  --document-placeholder-to: #d4dce8;
+
+  /* ─── ILLUSTRATION CARDS ────────────────────────────────────── */
+  --region-card-top-bg: linear-gradient(0deg, rgba(0,0,0,0.04), rgba(0,0,0,0.04)), rgba(39, 128, 196, 0.06);
+  --area-card-bottom-bg: rgba(39, 128, 196, 0.08);
+  --illus-card-white-bg: rgba(255, 255, 255, 0.10);
+  --illus-glow: rgba(242, 255, 219, 0.34);
 
   /* ─── HEADER GRADIENT ───────────────────────────────────────── */
   --header-gradient: linear-gradient(94.23deg,
@@ -109,18 +113,18 @@
       rgba(174, 214, 239, 0.92) 0%,
       #FFFFFF 100%);
   --chart-grid:               var(--grid);
-  --chart-bar-inactive:       var(--outerbar);
+  --chart-bar-inactive:       var(--brand-bar);
   --chart-gradient-from:      rgba(223, 232, 200, 0);
   --chart-gradient-to:        rgba(124, 171, 218, 0.77);
-  --chart-dot:                var(--primary);
-  --chart-axis-text:          var(--muted-strong);
-  --chart-tick-active-bg:     var(--primary);
-  --chart-tick-inactive-bg:   var(--background);
-  --chart-tick-active-text:   var(--sidebar-text);
-  --chart-tick-inactive-text: var(--foreground);
+  --chart-dot:                var(--brand-500);
+  --chart-axis-text:          var(--text-muted-strong);
+  --chart-tick-active-bg:     var(--brand-500);
+  --chart-tick-inactive-bg:   var(--surface-page);
+  --chart-tick-active-text:   var(--surface-sidebar-text);
+  --chart-tick-inactive-text: var(--text-primary);
   --chart-badge-bg:           var(--tooltip-bg);
-  --chart-badge-border:       var(--border-medium);
-  --chart-badge-text:         var(--foreground);
+  --chart-badge-border:       var(--text-muted-strong);
+  --chart-badge-text:         var(--text-primary);
 
   /* ─── MANUAL REVIEWS MIRRORED BARS ──────────────────────────── */
   --mirror-bar-up: rgba(255, 255, 255, 0.90);
@@ -131,20 +135,12 @@
   --pie-3: #1D5E9C;
   --pie-4: #D7EBF7;
 
-  /* ─── SIDEBAR ───────────────────────────────────────────────── */
-  --sidebar: #2C2C2C;
-  --sidebar-accent: #5C5C5C;
-  --sidebar-text: var(--card);
-
   /* ─── BUTTON TOKENS ─────────────────────────────────────────── */
-  --btn-primary-text: var(--card);
   --btn-secondary: #96C9ED;
-  --btn-secondary-text: var(--foreground);
   --btn-navy: #1C5F9D;
   --btn-purple: #8280FF;
   --btn-dark: #2B2D2F;
   --btn-lime: #BDD327;
-  --btn-lime-text: var(--foreground);
 
   /* ─── BUTTON GRADIENTS ──────────────────────────────────────── */
   --btn-gradient-blue-from: #0095FF;
@@ -164,6 +160,12 @@
   /* ─── BUTTON FONTS ──────────────────────────────────────────── */
   --btn-font-primary: var(--font-sans);
   --btn-font-poppins: "Poppins", sans-serif;
+
+  /* ─── BUTTON RADII ──────────────────────────────────────────── */
+  --btn-radius-pill: 48px;
+  --btn-radius-pill-sm: 33px;
+  --btn-radius-circle: 9999px;
+  --btn-radius-rounded: 8px;
 }
 
 /* ─── BASE STYLES ────────────────────────────────────────────────── */
@@ -171,8 +173,8 @@
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--surface-page);
+  color: var(--text-primary);
 }
 
 .font-inter {
@@ -186,11 +188,11 @@ h1 {
 /* ─── UTILITIES ──────────────────────────────────────────────────── */
 
 .card {
-  background: var(--card);
+  background: var(--surface-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
 }
 
 .text-muted {
-  color: var(--muted);
+  color: var(--text-muted);
 }

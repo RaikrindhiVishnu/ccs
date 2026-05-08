@@ -41,12 +41,12 @@ const base =
   "transition-all duration-150 ease-in-out " +
   "hover:opacity-85 active:scale-[0.97] " +
   "disabled:opacity-45 disabled:cursor-not-allowed focus-visible:outline-none " +
-  "focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2";
+  "focus-visible:ring-2 focus-visible:ring-[var(--brand-500)] focus-visible:ring-offset-2";
 
 const variantClasses: Record<ButtonVariant, string> = {
   // ── Solid filled pills ───────────────────────────────────────────────────
   primary:
-    "bg-[var(--primary)] text-[var(--btn-primary-text)] border-none " +
+    "bg-[var(--brand-500)] text-[var(--surface-card)] border-none " +
     "rounded-[var(--btn-radius-pill)] " +
     "font-[family-name:var(--btn-font-primary)] font-semibold uppercase tracking-[0.7px] " +
     "px-6 lg:px-7 xl:px-8 2xl:px-10 " +
@@ -54,14 +54,14 @@ const variantClasses: Record<ButtonVariant, string> = {
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
 
   "primary-sm":
-    "bg-[var(--primary)] text-[var(--btn-primary-text)] border-none " +
+    "bg-[var(--brand-500)] text-[var(--surface-card)] border-none " +
     "rounded-[24px] font-[family-name:var(--font-inter)] font-bold " +
     "px-3 lg:px-4 " +
     "h-[26px] lg:h-[28px] xl:h-[30px] 2xl:h-[31px] " +
     "text-[9px] lg:text-[10px] xl:text-[10px] 2xl:text-[11px]",
 
   secondary:
-    "bg-[var(--btn-secondary)] text-[var(--btn-secondary-text)] border-none " +
+    "bg-[var(--btn-secondary)] text-[var(--text-primary)] border-none " +
     "rounded-[var(--btn-radius-pill)] " +
     "font-[family-name:var(--btn-font-primary)] font-semibold uppercase tracking-[0.7px] " +
     "px-6 lg:px-7 xl:px-8 2xl:px-10 " +
@@ -92,7 +92,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
 
   lime:
-    "bg-[var(--btn-lime)] text-[var(--btn-lime-text)] border-none " +
+    "bg-[var(--btn-lime)] text-[var(--text-primary)] border-none " +
     "rounded-[20px] font-[family-name:var(--btn-font-primary)] font-medium " +
     "px-4 lg:px-5 " +
     "h-[34px] lg:h-[36px] xl:h-[38px] 2xl:h-[40px] " +
@@ -127,7 +127,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
 
   "outline-square":
-    "bg-transparent text-[var(--primary)] " +
+    "bg-transparent text-[var(--brand-500)] " +
     "border border-[var(--btn-outline-square-border)] " +
     "rounded-[var(--radius-dropdown)] " +
     "font-[family-name:var(--font-inter)] font-semibold " +
@@ -136,8 +136,8 @@ const variantClasses: Record<ButtonVariant, string> = {
     "text-[11px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px]",
 
   export:
-    "bg-transparent text-[var(--chip-bg)] " +
-    "border border-[var(--chip-bg)] " +
+    "bg-transparent text-[var(--brand-400)] " +
+    "border border-[var(--brand-400)] " +
     "rounded-[var(--btn-radius-rounded)] gap-1.5 " +
     "font-[family-name:var(--btn-font-primary)] font-medium " +
     "px-4 lg:px-5 " +
@@ -239,7 +239,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
         {/* Dark: dot indicator */}
         {variant === "dark" && showDot && (
-          <span className="shrink-0 rounded-full w-[12px] h-[12px] bg-[var(--chip-bg)] border-[2px] border-[var(--pie-1)]" />
+          <span className="shrink-0 rounded-full w-[12px] h-[12px] bg-[var(--brand-400)] border-[2px] border-[var(--pie-1)]" />
         )}
 
         {/* Left icon (non-navy) */}
