@@ -16,6 +16,8 @@ import {
   Home,
   AgentCreate,
   AgentEdit,
+  RegionAndArea,
+  RegionSelection
 } from './routes.config';
 
 export const guestRoutes: RouteObject[] = [
@@ -37,6 +39,8 @@ export const authRoutes: RouteObject[] = [
       { path: '/role-manager/user-directory', element: <UserDirectory /> },
       { path: '/role-manager/create',       element: <CreateRegionsAndAreas /> },
       { path: '/role-manager/create-roles', element: <CreateRoles /> },
+      { path: "/role-manager/region-area", element: <RegionAndArea /> },
+      { path: "/role-manager/region-selection", element: <RegionSelection /> }
     ],
   },
 ];
