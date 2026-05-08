@@ -125,7 +125,8 @@
   --chart-badge-bg:           var(--tooltip-bg);
   --chart-badge-border:       var(--text-muted-strong);
   --chart-badge-text:         var(--text-primary);
-
+  --chart-fo:     #D3ECFE;  
+  --chart-agents: #A5BFD7; 
   /* ─── MANUAL REVIEWS MIRRORED BARS ──────────────────────────── */
   --mirror-bar-up: rgba(255, 255, 255, 0.90);
   --mirror-bar-down: rgba(100, 200, 210, 0.65);
@@ -134,7 +135,6 @@
   --pie-1: #85BFE5;
   --pie-3: #1D5E9C;
   --pie-4: #D7EBF7;
-
   /* ─── BUTTON TOKENS ─────────────────────────────────────────── */
   --btn-secondary: #96C9ED;
   --btn-navy: #1C5F9D;

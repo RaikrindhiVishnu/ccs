@@ -2,7 +2,9 @@ import React from "react";
 import AgentOnboardingVelocity from "./AgentOnboardingVelocity";
 import RegionCreationVelocity from "./RegionCreationVelocity";
 import WorkforceStructure from "./WorkforceStructure";
-import RegionalCreationTargetVsActual from "./RegionalCreationTargetVsActual";
+// import RegionalCreationTargetVsActual from "./RegionalCreationTargetVsActual";
+import RoleCreationOverviewCard from "@/pages/Dashboard/Rolecreationoverviewcard";
+
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 
@@ -36,7 +38,8 @@ const DashboardPage: React.FC = () => {
               <WorkforceStructure />
             </div>
             <div className="flex-[58] min-h-0 flex">
-              <RegionalCreationTargetVsActual />
+              {/* <RegionalCreationTargetVsActual /> */}
+                <RoleCreationOverviewCard />
             </div>
           </div>
         </div>
