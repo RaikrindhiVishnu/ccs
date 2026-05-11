@@ -47,3 +47,9 @@ export const ActiveVerifications = lazy(
 export const GeospatialAudit = lazy(
   () => import("../../features/ccs/pages/Geospatialauditscreen"),
 );
+export const SendPaymentLink = lazy(     // ← ADD
+  () => import("../../features/ccs/pages/payment"),
+);
+export const ProcessingFeeScreen = lazy(
+  () => import("../../features/ccs/pages/ProcessingFeeScreen"),
+);
