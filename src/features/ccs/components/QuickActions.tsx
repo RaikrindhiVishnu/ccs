@@ -1,7 +1,15 @@
-import { Typography } from '@/components/ui/typography';
-import { quickActions } from '@/data/ccs/ccsDashboardData';
+import { useNavigate } from "react-router-dom";
+import { Typography } from "@/components/ui/typography";
+import { quickActions } from "@/features/ccs/data/ccsDashboardData";
 
 export default function QuickActions() {
+  const navigate = useNavigate();
+
+  const handleClick = (index: number) => {
+    if (index === 0) navigate("/pending-cases");
+    if (index === 1) navigate("/geospatial-audit");
+  };
+
   return (
     <div className="w-full">
       <Typography
@@ -15,6 +23,7 @@ export default function QuickActions() {
         {quickActions.map((item, index) => (
           <button
             key={index}
+            onClick={() => handleClick(index)}
             className="
               flex h-[3.75rem] w-[3.75rem] shrink-0 items-center justify-center
               rounded-full bg-[var(--brand-500)]
