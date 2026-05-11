@@ -1,5 +1,4 @@
 import React from "react";
-import "../../index.css";
 import BarChart from "@/components/charts/BarChart";
 import type { BarDataItem } from "@/components/charts/BarChart";
 

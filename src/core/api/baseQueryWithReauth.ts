@@ -3,6 +3,7 @@ import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolk
 import { Mutex } from 'async-mutex';
 import { env } from '../config/env';
 import { logOut, updateTokens } from '../../features/auth/store/authSlice';
+import type { LoginResponse } from '../../features/auth/types';
 
 interface AuthState {
   auth: {
@@ -37,19 +38,21 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
         if (refreshToken) {
           const refreshResult = await baseQuery(
             {
-              url: '/auth/refresh',
+              url: '/auth/refreshToken',
               method: 'POST',
-              body: { refreshToken },
+              body: { token: refreshToken },
             },
             api,
             extraOptions
           );
 
           if (refreshResult.data) {
+            const data = refreshResult.data as LoginResponse;
             api.dispatch(
-              updateTokens(
-                refreshResult.data as { accessToken: string; refreshToken: string }
-              )
+              updateTokens({
+                accessToken: data.token,
+                refreshToken: data.refreshToken,
+              })
             );
             result = await baseQuery(args, api, extraOptions);
           } else {
