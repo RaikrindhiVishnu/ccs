@@ -76,17 +76,24 @@ export default function Login() {
 
     if (mockUser) {
       const { token, refreshToken, ...userData } = mockUser.response;
+      const roleCode = ROLE_CODES[userData.role_id];
       dispatch(
         setCredentials({
           user: {
             ...userData,
-            role: ROLE_CODES[userData.role_id],
+            role: roleCode,
           },
           accessToken: token,
           refreshToken: refreshToken,
         })
       );
-      navigate("/role-manager/dashboard");
+      
+      // Navigate based on role
+      if (roleCode === "CCS") {
+        navigate("/");
+      } else {
+        navigate("/role-manager/dashboard");
+      }
       return;
     }
 
@@ -95,19 +102,25 @@ export default function Login() {
       const response = await login({ login_id: loginId, password }).unwrap();
       
       const { token, refreshToken, ...userData } = response;
+      const roleCode = ROLE_CODES[userData.role_id];
       
       dispatch(
         setCredentials({
           user: {
             ...userData,
-            role: ROLE_CODES[userData.role_id],
+            role: roleCode,
           },
           accessToken: token,
           refreshToken: refreshToken,
         }),
       );
       
-      navigate("/role-manager/dashboard");
+      // Navigate based on role
+      if (roleCode === "CCS") {
+        navigate("/");
+      } else {
+        navigate("/role-manager/dashboard");
+      }
     } catch (err: any) {
       console.error("Login failed:", err);
       setError(err?.data?.message || "Login failed. Please check your credentials.");
