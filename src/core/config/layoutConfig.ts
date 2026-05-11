@@ -9,6 +9,7 @@ import farmlandListIcon from '@/assets/farmland-list.svg';
 export type LayoutVariant =
   | 'sidebar-role-manager'
   | 'sidebar-ccs-officer'
+  | 'sidebar-intelligence-officer'
   | 'header-only';
 
 export type NavItem = {
@@ -79,6 +80,16 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
       { label: 'Dashboard',        path: '/',                 icon: 'LayoutDashboard', iconImg: dashboardIcon    },
       { label: 'Farmland Request', path: '/farmland-request', icon: 'CircleDashed',    iconImg: farmlandReqIcon  },
       { label: 'Farmland List',    path: '/farmland-list',    icon: 'MapPin',          iconImg: farmlandListIcon },
+    ],
+  },
+
+  IO: {
+    layoutVariant: 'sidebar-intelligence-officer',
+    roleLabel: 'Intelligence Officer',
+    navItems: [
+      { label: 'Dashboard',   path: '/role-manager/dashboard', icon: 'LayoutDashboard' },
+      { label: 'Intelligence', path: '/intelligence',          icon: 'Shield'          },
+      { label: 'Reports',      path: '/reports',               icon: 'FileText'        },
     ],
   },
 };
