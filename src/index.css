@@ -69,12 +69,28 @@
   --shadow-card-sm: 0px 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-dropdown: 0px 4px 16px rgba(0, 0, 0, 0.08);
 
-  /* ─── RADIUS ────────────────────────────────────────────────── */
-  --radius: 0.625rem;
-  --radius-lg: 24px;
-  --radius-xl: 32px;
-  --radius-dropdown: 12px;
-
+/* Add these to :root in index.css if not already present */
+--timer-danger-bg: #FEF2F2;
+--timer-danger-text: #BA1A1A;
+--queue-bg: #E7E8E9;
+--queue-text: #45474C;
+--check-overlay-bg: rgba(243, 244, 245, 0.5);
+--agent-avatar-bg: #D8E3FB;
+--geo-card-bg:        rgba(255, 255, 255, 0.95);
+--geo-card-shadow:    0px 1.369rem 2.739rem -0.657rem rgba(9, 20, 38, 0.10);
+--geo-nav-bg:         rgba(255, 255, 255, 0.75);
+--geo-overlay-dark:   rgba(9, 20, 38, 0.90);
+--geo-scan-ring:      rgba(255, 255, 255, 0.20);
+--geo-boundary-fill:  rgba(9, 20, 38, 0.10);
+--geo-blue-check-bg:  rgba(105, 182, 254, 0.20);
+--geo-dot-pending:    rgba(9, 20, 38, 0.05);
+--geo-verified-bg:    rgba(188, 210, 37, 0.20);
+--geo-verified-text:  #191E00;
+--geo-logo-bg:        #091426;
+--geo-white-wash:  rgba(255, 255, 255, 0.15);
+--geo-dot-grid:    radial-gradient(circle, rgba(0,98,158,0.06) 1px, transparent 1px);
+--geo-scan-blur:   rgba(255, 255, 255, 0.10);
+--geo-scan-sweep:  linear-gradient(180deg, rgba(0,98,158,0) 0%, rgba(0,98,158,0.20) 50%, rgba(0,98,158,0) 100%);
   /* ─── MISC ──────────────────────────────────────────────────── */
   --dot: #131600;
   --toggle-active: #4caf50;
