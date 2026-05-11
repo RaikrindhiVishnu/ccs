@@ -1,12 +1,12 @@
 import React from "react";
-import AgentOnboardingVelocity from "./AgentOnboardingVelocity";
-import RegionCreationVelocity from "./RegionCreationVelocity";
-import WorkforceStructure from "./WorkforceStructure";
+import AgentOnboardingVelocity from "../../features/role-manager/components/AgentOnboardingVelocity";
+import RegionCreationVelocity from "../../features/role-manager/components/RegionCreationVelocity";
+import WorkforceStructure from "../../features/role-manager/components/WorkforceStructure";
 // import RegionalCreationTargetVsActual from "./RegionalCreationTargetVsActual";
-import RoleCreationOverviewCard from "@/pages/Dashboard/Rolecreationoverviewcard";
+import RoleCreationOverviewCard from "@/features/role-manager/components/Rolecreationoverviewcard";
 
-import Sidebar from "./Sidebar";
-import Header from "./Header";
+import Sidebar from "../../features/role-manager/components/layout/Sidebar";
+import Header from "../../features/role-manager/components/layout/Header";
 
 const DashboardPage: React.FC = () => {
   return (
@@ -39,7 +39,7 @@ const DashboardPage: React.FC = () => {
             </div>
             <div className="flex-[58] min-h-0 flex">
               {/* <RegionalCreationTargetVsActual /> */}
-                <RoleCreationOverviewCard />
+              <RoleCreationOverviewCard />
             </div>
           </div>
         </div>

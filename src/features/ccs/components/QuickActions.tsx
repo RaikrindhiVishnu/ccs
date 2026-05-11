@@ -1,12 +1,13 @@
-import { useNavigate } from 'react-router-dom';
-import { Typography } from '@/components/ui/typography';
-import { quickActions } from '@/data/ccs/ccsDashboardData';
+import { useNavigate } from "react-router-dom";
+import { Typography } from "@/components/ui/typography";
+import { quickActions } from "@/features/ccs/data/ccsDashboardData";
 
 export default function QuickActions() {
   const navigate = useNavigate();
 
   const handleClick = (index: number) => {
-    if (index === 0) navigate('/pending-cases');
+    if (index === 0) navigate("/pending-cases");
+    if (index === 1) navigate("/geospatial-audit");
   };
 
   return (

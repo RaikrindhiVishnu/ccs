@@ -4,10 +4,10 @@ import { Typography } from "@/components/ui/typography";
 
 import { Input } from "@/components/ui/input";
 import bellIcon from "@/assets/bellicon.svg";
-import AgentOnboardingVelocity from "@/pages/Dashboard/AgentOnboardingVelocity";
-import RegionCreationVelocity from "@/pages/Dashboard/RegionCreationVelocity";
-import WorkforceStructure from "@/pages/Dashboard/WorkforceStructure";
-import RoleCreationOverviewCard from "@/pages/Dashboard/Rolecreationoverviewcard";
+import AgentOnboardingVelocity from "@/features/role-manager/components/AgentOnboardingVelocity";
+import RegionCreationVelocity from "@/features/role-manager/components/RegionCreationVelocity";
+import WorkforceStructure from "@/features/role-manager/components/WorkforceStructure";
+import RoleCreationOverviewCard from "@/features/role-manager/components/Rolecreationoverviewcard";
 
 // import RegionalCreationTargetVsActual from "@/pages/Dashboard/RegionalCreationTargetVsActual";
 // ─── Local Header Component (Copied for independence) ──────────────────────────
@@ -102,7 +102,7 @@ const RoleManagerDashboard: React.FC = () => {
           </div>
           <div className="bg-[var(--surface-card)] rounded-2xl shadow-sm overflow-hidden min-h-[400px] flex flex-col">
             {/* <RegionalCreationTargetVsActual /> */}
-             <RoleCreationOverviewCard />
+            <RoleCreationOverviewCard />
           </div>
         </div>
       </div>

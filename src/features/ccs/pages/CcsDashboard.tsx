@@ -1,9 +1,14 @@
-import { Typography } from '@/components/ui/typography';
+import { Typography } from "@/components/ui/typography";
 import {
-  DashboardHeader, StatsCard, QuickActions,
-  PipelineStatus, ScreeningChart, ActivityCard, AlertBanner,
-} from "@/components/ccs";
-import { statsData, activities } from "@/data/ccs/ccsDashboardData";
+  DashboardHeader,
+  StatsCard,
+  QuickActions,
+  PipelineStatus,
+  ScreeningChart,
+  ActivityCard,
+  AlertBanner,
+} from "@/features/ccs/components";
+import { statsData, activities } from "@/features/ccs/data/ccsDashboardData";
 
 export default function CcsDashboard() {
   return (
@@ -31,7 +36,12 @@ export default function CcsDashboard() {
         <div className="flex flex-col">
           <div className="grid grid-cols-2 gap-[0.75rem] xl:gap-[0.875rem] 2xl:gap-[0.9375rem]">
             {statsData.map((item) => (
-              <StatsCard key={item.title} title={item.title} value={item.value} icon={item.icon} />
+              <StatsCard
+                key={item.title}
+                title={item.title}
+                value={item.value}
+                icon={item.icon}
+              />
             ))}
           </div>
 
