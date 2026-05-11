@@ -67,6 +67,20 @@ const MOCK_API_USERS = [
       refreshToken: "mock-refresh-token-fo",
     },
   },
+  {
+    login_id: "io@glc.com",
+    password: "io@123",
+    response: {
+      id: 105,
+      login_id: "io@glc.com",
+      first_name: "Intelligence",
+      last_name: "Officer",
+      role_id: UserRole.IO,
+      is_first_login: 0,
+      token: "mock-token-io",
+      refreshToken: "mock-refresh-token-io",
+    },
+  },
 ];
 
 export default function Login() {
