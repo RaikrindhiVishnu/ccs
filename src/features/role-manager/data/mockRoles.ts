@@ -1,7 +1,7 @@
 export type UserRole = {
   id: string;
   name: string;
-  role: "Regional Officer" | "Intelligence Officer" | "Field Officer" | "Agent";
+  role: "Regional Officer" | "Intelligence Officer" | "Field Officer" | "Agent" | "CCS Officer";
   roleId: string;
   contact?: string;
   avatar: string;
