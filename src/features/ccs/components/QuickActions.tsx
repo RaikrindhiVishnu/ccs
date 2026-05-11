@@ -8,6 +8,7 @@ export default function QuickActions() {
   const handleClick = (index: number) => {
     if (index === 0) navigate("/pending-cases");
     if (index === 1) navigate("/geospatial-audit");
+    if (index === 3) navigate("/send-payment-link"); // ← ADD
   };
 
   return (
