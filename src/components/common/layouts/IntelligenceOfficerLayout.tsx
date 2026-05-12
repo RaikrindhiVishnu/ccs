@@ -183,248 +183,256 @@ export const IntelligenceOfficerLayout = () => {
     : "IO";
 
   return (
+ <div
+  className="
+    relative
+    flex flex-col
+    w-full
+    min-h-screen
+    overflow-hidden
+
+    bg-[var(--chart-bg)]
+
+    pt-[0.25rem]
+    sm:pt-[0.3rem]
+    lg:pt-[0.35rem]
+    xl:pt-[0.55rem]
+    2xl:pt-[0.7rem]
+  "
+>
+  {/* ═══════════════════════════════════ */}
+  {/* DASHBOARD BACKGROUND BLURS         */}
+  {/* ═══════════════════════════════════ */}
+
+  {isDashboard && (
     <div
-      className={cn(
-        `
-        relative
-        flex flex-col
-        w-full
-        min-h-screen
-
-        pt-[0.25rem]
-        sm:pt-[0.3rem]
-        lg:pt-[0.35rem]
-        xl:pt-[0.55rem]
-        2xl:pt-[0.7rem]
-        `,
-        isDashboard
-          ? "bg-[var(--chart-bg)]"
-          : "bg-[var(--surface-page)] overflow-hidden"
-      )}
+      className="
+        fixed inset-0
+        pointer-events-none
+        z-0
+        overflow-hidden
+      "
     >
-      {/* ═══════════════════════════════════ */}
-      {/* FULL PAGE BACKGROUND BLURS         */}
-      {/* ═══════════════════════════════════ */}
+      <div className="absolute left-[-14rem] top-[-2.875rem] w-[28.5625rem] h-[19rem] rounded-full bg-[var(--priority-card-bg)] blur-[1.45rem]" />
 
-      {isDashboard && (
-        <div
-          className="
-            fixed inset-0
-            pointer-events-none z-0
-            overflow-hidden
-            bg-[var(--chart-bg)]
-          "
-        >
-          <div className="absolute left-[-14rem] top-[-2.875rem] w-[28.5625rem] h-[19rem] rounded-full bg-[var(--priority-card-bg)] blur-[1.45rem]" />
-          <div className="absolute left-[-7.75rem] top-[10.25rem] w-[11.75rem] h-[14.8125rem] rounded-full bg-[var(--performance-card-bg)] blur-[1.56rem]" />
-          <div className="absolute left-[13.9375rem] top-[-2.1875rem] w-[32.3125rem] h-[14.125rem] rounded-full bg-[var(--performance-card-bg)] blur-[1.45rem]" />
-          <div className="absolute left-[39.9375rem] top-[-2.875rem] w-[27.375rem] h-[15.75rem] rounded-full bg-[var(--priority-card-bg)] blur-[1.45rem]" />
-          <div className="absolute right-[-1.625rem] top-[-1.4375rem] w-[22.9375rem] h-[20.875rem] rounded-full bg-[var(--performance-card-bg)] opacity-70 blur-[1.45rem]" />
-          <div className="absolute left-[-3rem] top-[3.25rem] w-[38.9375rem] h-[13.6875rem] rounded-full bg-[var(--priority-card-bg)] opacity-40 blur-[1.45rem]" />
-          <div className="absolute left-[29.75rem] top-[5.9375rem] w-[22.9375rem] h-[8.875rem] rounded-full bg-[var(--performance-card-bg)] blur-[1.45rem]" />
-          <div className="absolute left-[43rem] top-[5.75rem] w-[25.125rem] h-[9.875rem] rounded-full bg-[var(--performance-card-bg)] opacity-70 blur-[1.45rem]" />
-        </div>
-      )}
+      <div className="absolute left-[-7.75rem] top-[10.25rem] w-[11.75rem] h-[14.8125rem] rounded-full bg-[var(--performance-card-bg)] blur-[1.56rem]" />
 
-      {/* ═══════════════════════════════════ */}
-      {/* HEADER                             */}
-      {/* ═══════════════════════════════════ */}
+      <div className="absolute left-[13.9375rem] top-[-2.1875rem] w-[32.3125rem] h-[14.125rem] rounded-full bg-[var(--performance-card-bg)] blur-[1.45rem]" />
 
-      <header
-        className={cn(
-          `
-          relative z-[1]
-          shrink-0 w-full
-          flex items-center justify-between
+      <div className="absolute left-[39.9375rem] top-[-2.875rem] w-[27.375rem] h-[15.75rem] rounded-full bg-[var(--priority-card-bg)] blur-[1.45rem]" />
 
-          rounded-[1rem]
-          sm:rounded-[1.25rem]
-          lg:rounded-[1.5rem]
-          xl:rounded-[2rem]
+      <div className="absolute right-[-1.625rem] top-[-1.4375rem] w-[22.9375rem] h-[20.875rem] rounded-full bg-[var(--performance-card-bg)] opacity-70 blur-[1.45rem]" />
 
-          h-[3.25rem]
-          sm:h-[3.5rem]
-          lg:h-[4rem]
-          xl:h-[4.5rem]
-          2xl:h-[4.75rem]
+      <div className="absolute left-[-3rem] top-[3.25rem] w-[38.9375rem] h-[13.6875rem] rounded-full bg-[var(--priority-card-bg)] opacity-40 blur-[1.45rem]" />
 
-          px-[0.4rem]
-          sm:px-[0.5rem]
-          lg:px-[0.7rem]
-          xl:px-[1rem]
-          2xl:px-[1.25rem]
-          `,
-          isDashboard
-            ? "bg-transparent"
-            : "bg-[var(--surface-page)]",
-        )}
-      >
-        {/* LOGO */}
-        <div className="shrink-0 flex items-center">
-          <img
-            src={logo}
-            alt="Green Land Capital"
-            className="
-              object-contain
-              w-[4rem]
-              sm:w-[4.5rem]
-              lg:w-[5.5rem]
-              xl:w-[6.75rem]
-              2xl:w-[7.5rem]
-            "
-          />
-        </div>
+      <div className="absolute left-[29.75rem] top-[5.9375rem] w-[22.9375rem] h-[8.875rem] rounded-full bg-[var(--performance-card-bg)] blur-[1.45rem]" />
 
-        {/* NAVIGATION */}
-        <nav
-          className="
-            flex items-center
-            gap-[0.2rem]
-            sm:gap-[0.25rem]
-            lg:gap-[0.38rem]
-            xl:gap-[0.6rem]
-            2xl:gap-[0.75rem]
-          "
-        >
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.path === "/"}
-            >
-              {({ isActive }) => (
-                <NavItem item={item} isActive={isActive} />
-              )}
-            </NavLink>
-          ))}
-        </nav>
+      <div className="absolute left-[43rem] top-[5.75rem] w-[25.125rem] h-[9.875rem] rounded-full bg-[var(--performance-card-bg)] opacity-70 blur-[1.45rem]" />
+    </div>
+  )}
 
-        {/* RIGHT ACTIONS */}
-        <div
-          className="
-            shrink-0
-            flex items-center
-            gap-[0.3rem]
-            sm:gap-[0.38rem]
-            lg:gap-[0.55rem]
-            xl:gap-[0.75rem]
-            2xl:gap-[0.82rem]
-          "
-        >
-          {/* BELL */}
-          <button
-            className="
-              relative
-              flex items-center justify-center
-              rounded-full
-              bg-[var(--surface-card)]
-              transition-colors
-              hover:bg-[var(--surface-page)]
+  {/* ═══════════════════════════════════ */}
+  {/* HEADER                             */}
+  {/* ═══════════════════════════════════ */}
 
-              w-[1.9rem] h-[1.9rem]
-              sm:w-[2.1rem] sm:h-[2.1rem]
-              lg:w-[2.5rem] lg:h-[2.5rem]
-              xl:w-[3rem] xl:h-[3rem]
-              2xl:w-[3.25rem] 2xl:h-[3.25rem]
-            "
-            aria-label="Notifications"
-          >
-            <Bell
-              strokeWidth={1.5}
-              color="var(--text-primary)"
-              className="
-                w-[0.8rem] h-[0.8rem]
-                sm:w-[0.9rem] sm:h-[0.9rem]
-                lg:w-[1rem] lg:h-[1rem]
-                xl:w-[1.2rem] xl:h-[1.2rem]
-              "
-            />
+  <header
+    className="
+      relative z-[1]
+      shrink-0 w-full
+      flex items-center justify-between
 
-            {/* RED DOT */}
-            <span
-              className="
-                absolute rounded-full
-                bg-[var(--status-danger)]
-                w-[0.32rem] h-[0.32rem]
-                xl:w-[0.42rem] xl:h-[0.42rem]
-                top-[0.45rem] right-[0.45rem]
-                xl:top-[0.8rem] xl:right-[0.8rem]
-              "
-            />
-          </button>
+      bg-transparent
 
-          {/* AVATAR */}
-          <button
-            onClick={handleLogout}
-            title="Logout"
-            className="
-              relative overflow-hidden
-              flex items-center justify-center
-              rounded-full
-              bg-[var(--surface-card)]
-              transition-opacity
-              hover:opacity-90
+      rounded-[1rem]
+      sm:rounded-[1.25rem]
+      lg:rounded-[1.5rem]
+      xl:rounded-[2rem]
 
-              w-[1.9rem] h-[1.9rem]
-              sm:w-[2.1rem] sm:h-[2.1rem]
-              lg:w-[2.5rem] lg:h-[2.5rem]
-              xl:w-[3rem] xl:h-[3rem]
-              2xl:w-[3.25rem] 2xl:h-[3.25rem]
-            "
-          >
-            {user?.avatarUrl ? (
-              <img
-                src={user.avatarUrl}
-                alt={user.name}
-                className="w-full h-full rounded-full object-cover"
-              />
-            ) : (
-              <Typography
-                as="span"
-                variant="span"
-                className="
-                  font-bold
-                  text-[var(--text-primary)]
-                  font-[var(--font-sans)]
-                  text-[0.55rem]
-                  sm:text-[0.6rem]
-                  lg:text-[0.7rem]
-                  xl:text-[0.78rem]
-                "
-              >
-                {initials}
-              </Typography>
-            )}
-          </button>
-        </div>
-      </header>
+      h-[3.25rem]
+      sm:h-[3.5rem]
+      lg:h-[4rem]
+      xl:h-[4.5rem]
+      2xl:h-[4.75rem]
 
-      {/* ═══════════════════════════════════ */}
-      {/* PAGE CONTENT                       */}
-      {/* ═══════════════════════════════════ */}
-
-      <main
+      px-[0.4rem]
+      sm:px-[0.5rem]
+      lg:px-[0.7rem]
+      xl:px-[1rem]
+      2xl:px-[1.25rem]
+    "
+  >
+    {/* LOGO */}
+    <div className="shrink-0 flex items-center">
+      <img
+        src={logo}
+        alt="Green Land Capital"
         className="
-          relative z-[1]
-          flex-1 min-h-0
-          overflow-auto
+          object-contain
+          w-[4rem]
+          sm:w-[4.5rem]
+          lg:w-[5.5rem]
+          xl:w-[6.75rem]
+          2xl:w-[7.5rem]
+        "
+      />
+    </div>
 
-          pt-[0.2rem]
-          sm:pt-[0.25rem]
-          lg:pt-[0.3rem]
-          xl:pt-[0.35rem]
+    {/* NAVIGATION */}
+    <nav
+      className="
+        flex items-center
 
-          px-0
+        gap-[0.2rem]
+        sm:gap-[0.25rem]
+        lg:gap-[0.38rem]
+        xl:gap-[0.6rem]
+        2xl:gap-[0.75rem]
+      "
+    >
+      {navItems.map((item) => (
+        <NavLink
+          key={item.path}
+          to={item.path}
+          end={item.path === "/"}
+        >
+          {({ isActive }) => (
+            <NavItem item={item} isActive={isActive} />
+          )}
+        </NavLink>
+      ))}
+    </nav>
 
-          pb-[0.75rem]
-          sm:pb-[0.9rem]
-          lg:pb-[1.2rem]
-          xl:pb-[1.35rem]
-          2xl:pb-[1.75rem]
+    {/* RIGHT ACTIONS */}
+    <div
+      className="
+        shrink-0
+        flex items-center
+
+        gap-[0.3rem]
+        sm:gap-[0.38rem]
+        lg:gap-[0.55rem]
+        xl:gap-[0.75rem]
+        2xl:gap-[0.82rem]
+      "
+    >
+      {/* BELL */}
+      <button
+        className="
+          relative
+          flex items-center justify-center
+          rounded-full
+
+          bg-[var(--surface-card)]
+          transition-colors
+          hover:bg-[var(--surface-page)]
+
+          w-[1.9rem] h-[1.9rem]
+          sm:w-[2.1rem] sm:h-[2.1rem]
+          lg:w-[2.5rem] lg:h-[2.5rem]
+          xl:w-[3rem] xl:h-[3rem]
+          2xl:w-[3.25rem] 2xl:h-[3.25rem]
+        "
+        aria-label="Notifications"
+      >
+        <Bell
+          strokeWidth={1.5}
+          color="var(--text-primary)"
+          className="
+            w-[0.8rem] h-[0.8rem]
+            sm:w-[0.9rem] sm:h-[0.9rem]
+            lg:w-[1rem] lg:h-[1rem]
+            xl:w-[1.2rem] xl:h-[1.2rem]
+          "
+        />
+
+        <span
+          className="
+            absolute rounded-full
+            bg-[var(--status-danger)]
+
+            w-[0.32rem] h-[0.32rem]
+            xl:w-[0.42rem] xl:h-[0.42rem]
+
+            top-[0.45rem] right-[0.45rem]
+            xl:top-[0.8rem] xl:right-[0.8rem]
+          "
+        />
+      </button>
+
+      {/* AVATAR */}
+      <button
+        onClick={handleLogout}
+        title="Logout"
+        className="
+          relative overflow-hidden
+          flex items-center justify-center
+          rounded-full
+
+          bg-[var(--surface-card)]
+          transition-opacity
+          hover:opacity-90
+
+          w-[1.9rem] h-[1.9rem]
+          sm:w-[2.1rem] sm:h-[2.1rem]
+          lg:w-[2.5rem] lg:h-[2.5rem]
+          xl:w-[3rem] xl:h-[3rem]
+          2xl:w-[3.25rem] 2xl:h-[3.25rem]
         "
       >
-        <Outlet />
-      </main>
+        {user?.avatarUrl ? (
+          <img
+            src={user.avatarUrl}
+            alt={user.name}
+            className="w-full h-full rounded-full object-cover"
+          />
+        ) : (
+          <Typography
+            as="span"
+            variant="span"
+            className="
+              font-bold
+              font-[var(--font-sans)]
+              text-[var(--text-primary)]
+
+              text-[0.55rem]
+              sm:text-[0.6rem]
+              lg:text-[0.7rem]
+              xl:text-[0.78rem]
+            "
+          >
+            {initials}
+          </Typography>
+        )}
+      </button>
     </div>
+  </header>
+
+  {/* ═══════════════════════════════════ */}
+  {/* PAGE CONTENT                       */}
+  {/* ═══════════════════════════════════ */}
+
+  <main
+    className="
+      relative z-[1]
+      flex-1 min-h-0
+      overflow-auto
+
+      pt-[0.2rem]
+      sm:pt-[0.25rem]
+      lg:pt-[0.3rem]
+      xl:pt-[0.35rem]
+
+      px-0
+
+      pb-[0.75rem]
+      sm:pb-[0.9rem]
+      lg:pb-[1.2rem]
+      xl:pb-[1.35rem]
+      2xl:pb-[1.75rem]
+    "
+  >
+    <Outlet />
+  </main>
+</div>
   );
 };

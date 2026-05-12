@@ -3,12 +3,23 @@ import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { FARMLAND_STATS } from "../data/Farmlandstats.dummy";
 
-interface FarmlandStatCardProps {
+/* ────────────────────────────────────────────────────────── */
+/* TYPES */
+/* ────────────────────────────────────────────────────────── */
+
+export interface FarmlandStat {
   label: string;
   value: string | number;
   icon: string;
+}
+
+interface FarmlandStatCardProps extends FarmlandStat {
   className?: string;
 }
+
+/* ────────────────────────────────────────────────────────── */
+/* SINGLE CARD */
+/* ────────────────────────────────────────────────────────── */
 
 const FarmlandStatCard = ({
   label,
@@ -109,10 +120,16 @@ const FarmlandStatCard = ({
   </Card>
 );
 
+/* ────────────────────────────────────────────────────────── */
+/* GRID */
+/* ────────────────────────────────────────────────────────── */
+
 export const FarmlandStatsCards = ({
   className,
+  stats = FARMLAND_STATS,
 }: {
   className?: string;
+  stats?: FarmlandStat[];
 }) => (
   <div
     className={cn(
@@ -131,7 +148,7 @@ export const FarmlandStatsCards = ({
       className,
     )}
   >
-    {FARMLAND_STATS.map((stat) => (
+    {stats.map((stat) => (
       <FarmlandStatCard
         key={stat.label}
         label={stat.label}

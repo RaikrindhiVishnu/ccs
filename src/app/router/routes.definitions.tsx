@@ -23,6 +23,8 @@ import {
   SendPaymentLink,
   ProcessingFeeScreen,
   IODashboard,
+  Assignedfarmland,
+  AssignedFarmlandList,
 } from './routes.config';
 
 export const guestRoutes: RouteObject[] = [
@@ -51,6 +53,8 @@ export const authRoutes: RouteObject[] = [
       { path: '/role-manager/region-area',      element: <RegionAndArea /> },
       { path: '/role-manager/region-selection', element: <RegionSelection /> },
       { path: '/io/dashboard',                  element: <IODashboard /> },
+      { path: '/io/Assignedfarmland',                  element: <Assignedfarmland /> },
+      {path: '/io/assigned-farmland/list', element: <AssignedFarmlandList />,},
     ],
   },
 ];
