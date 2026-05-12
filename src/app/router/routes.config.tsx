@@ -71,3 +71,15 @@ export const RegionalOfficerLayout = lazy(
 export const FieldOfficerDashboard = lazy(
   () => import("../../features/field-officer/pages/FieldOfficerDashboard"),
 );
+export const DraftsPage = lazy(
+  () => import("../../features/field-officer/pages/DraftsPage"),
+);
+export const FieldOfficerLayout = lazy(
+  () => import("../../components/common/layouts/FieldOfficerLayout"),
+);
+export const RequestInfoPage = lazy(
+  () => import("../../features/field-officer/pages/RequestInfoPage"),
+);
+export const FarmlandAlertsPage = lazy(
+  () => import("../../features/field-officer/pages/FarmlandAlertsPage"),
+);

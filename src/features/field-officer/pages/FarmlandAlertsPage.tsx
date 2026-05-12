@@ -3,10 +3,10 @@ import DashboardStatsSection from "../components/common/DashboardStatsSection";
 import TopPerformersSection from "../components/common/TopPerformersSection";
 import SearchBar from "../components/common/SearchBar";
 import AddFarmlandButton from "../components/common/AddFarmlandButton";
-import FarmlandsTable from "../components/tables/FarmlandsTable";
+import FarmlandAlertsGrid from "../components/grids/FarmlandAlertsGrid";
 import icons from "../../../assets/dashboard/icons.png";
 
-export default function FieldOfficerDashboard() {
+export default function FarmlandAlertsPage() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -32,7 +32,7 @@ export default function FieldOfficerDashboard() {
         </>
       ) : (
         <div className="flex flex-col md:flex-row items-center justify-between w-full gap-4 mt-2">
-          <h2 className="text-[#1A1C1D] text-[2rem] font-bold">Farmlands</h2>
+          <h2 className="text-[#1A1C1D] text-[2rem] font-bold">Farmland Alerts</h2>
           
           <div className="flex items-center gap-4 w-full md:w-auto flex-1 md:max-w-2xl justify-end">
             <div className="flex-1 max-w-[500px] bg-white h-[52px] rounded-full px-6 flex items-center gap-3 shadow-sm border border-transparent focus-within:border-[#96C9ED] transition-all">
@@ -50,7 +50,7 @@ export default function FieldOfficerDashboard() {
         </div>
       )}
 
-      <FarmlandsTable isExpanded={isExpanded} onViewMore={() => setIsExpanded(true)} />
+      <FarmlandAlertsGrid isExpanded={isExpanded} onViewMore={() => setIsExpanded(true)} />
     </div>
   );
 }
