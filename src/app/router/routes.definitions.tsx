@@ -20,8 +20,9 @@ import {
   RegionSelection,
   ActiveVerifications,
   GeospatialAudit,
-  SendPaymentLink,   
-   ProcessingFeeScreen,
+  SendPaymentLink,
+  ProcessingFeeScreen,
+  IODashboard,
 } from './routes.config';
 
 export const guestRoutes: RouteObject[] = [
@@ -41,14 +42,15 @@ export const authRoutes: RouteObject[] = [
       { path: '/geospatial-audit',              element: <GeospatialAudit /> },
       { path: '/farmland-request',              element: <FarmlandRequest /> },
       { path: '/farmland-list',                 element: <FarmlandList /> },
-      { path: '/send-payment-link',             element: <SendPaymentLink /> },   // ← ADD
-      { path: '/processing-fee', element: <ProcessingFeeScreen /> },
+      { path: '/send-payment-link',             element: <SendPaymentLink /> },
+      { path: '/processing-fee',                element: <ProcessingFeeScreen /> },
       { path: '/role-manager/dashboard',        element: <RoleManagerDashboard /> },
       { path: '/role-manager/user-directory',   element: <UserDirectory /> },
       { path: '/role-manager/create',           element: <CreateRegionsAndAreas /> },
       { path: '/role-manager/create-roles',     element: <CreateRoles /> },
       { path: '/role-manager/region-area',      element: <RegionAndArea /> },
       { path: '/role-manager/region-selection', element: <RegionSelection /> },
+      { path: '/io/dashboard',                  element: <IODashboard /> },
     ],
   },
 ];
