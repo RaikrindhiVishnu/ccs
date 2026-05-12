@@ -86,11 +86,13 @@ export const NotificationHandler: React.FC = () => {
             return;
         
 
+
         const setupNotifications = async () => { // 1. Get FCM token
             const fcmToken = await requestForToken();
             if (! fcmToken) 
                 return;
             
+
 
             // 2. Get or generate a stable device ID
             let deviceId = localStorage.getItem('fcm_device_id');
