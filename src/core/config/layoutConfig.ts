@@ -3,7 +3,10 @@
 import dashboardIcon    from '@/assets/dashboard.svg';
 import farmlandReqIcon  from '@/assets/farmland-request.svg';
 import farmlandListIcon from '@/assets/farmland-list.svg';
-
+import io1 from '@/assets/io1.svg';
+import io2 from '@/assets/io2.svg';
+import io3 from '@/assets/io3.svg';
+import io4 from '@/assets/io4.svg';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 export type LayoutVariant =
@@ -48,6 +51,12 @@ export const MOCK_USERS: Record<
     name: 'Ram Varma',
     role: 'CCS',
   },
+  IO_OFFICER: {
+  email: 'io@glc.com',
+  password: 'io@123',
+  name: 'Arjun ',
+  role: 'IO',
+},
 };
 
 // ─── Master Layout Config ─────────────────────────────────────────────────────
@@ -83,15 +92,16 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     ],
   },
 
-  IO: {
-    layoutVariant: 'sidebar-intelligence-officer',
-    roleLabel: 'Intelligence Officer',
-    navItems: [
-      { label: 'Dashboard',   path: '/role-manager/dashboard', icon: 'LayoutDashboard' },
-      { label: 'Intelligence', path: '/intelligence',          icon: 'Shield'          },
-      { label: 'Reports',      path: '/reports',               icon: 'FileText'        },
-    ],
-  },
+IO: {
+  layoutVariant: 'sidebar-intelligence-officer',
+  roleLabel: 'Intelligence Officer',
+  navItems: [
+    { label: 'Dashboard',          path: '/io/dashboard',          icon: 'LayoutDashboard', iconImg: io1 },
+    { label: 'Assigned Farmlands', path: '/io/assigned-farmlands', icon: 'Shield',          iconImg: io2 },
+    { label: 'Requested info',     path: '/io/requested-info',     icon: 'FileText',        iconImg: io3 },
+    { label: 'Farmlands list',     path: '/io/farmlands-list',     icon: 'List',            iconImg: io4 },
+  ],
+},
 };
 
 // Fallback

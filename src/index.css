@@ -96,7 +96,36 @@
   --toggle-active: #4caf50;
   --avatar-fallback: #c0c0c0;
   --tag-pill-bg: #f3f4f5;
+   /* ─── PRIORITY DONUT ───────────────────────── */
 
+--priority-card-bg: #F9FCE9;
+
+--priority-high: #7A951C;
+--priority-under-investigation: #B8D327;
+--priority-resolved: #C8DE52;
+
+--priority-center-bg: rgba(61, 74, 13, 0.08);
+
+--priority-ring-border: rgba(0, 0, 0, 0.2);
+
+--priority-dashed-border: rgba(0, 0, 0, 0.1);
+/* ─── PERFORMANCE METRICS ─────────────────── */
+
+--performance-card-bg: #EBF5FB;
+
+--performance-grid: rgba(130, 130, 130, 0.1);
+
+--performance-axis: rgba(92, 92, 92, 0.5);
+
+--performance-line: #0F2F4C;
+
+--performance-area-start: #85BFE5;
+
+--performance-area-end: rgba(215, 235, 247, 0);
+
+--performance-approved: #94C7E9;
+
+--performance-pill-border: rgba(130, 130, 130, 0.4);
   /* ─── PROFILE / DETAIL PAGE ─────────────────────────────────── */
   --banner-from: #2a5c3f;
   --banner-via: #3a7d5a;

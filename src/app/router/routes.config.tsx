@@ -53,3 +53,6 @@ export const SendPaymentLink = lazy(     // ← ADD
 export const ProcessingFeeScreen = lazy(
   () => import("../../features/ccs/pages/ProcessingFeeScreen"),
 );
+export const IODashboard = lazy(
+  () => import("../../features/io/pages/Dashboard"),
+);
