@@ -12,11 +12,12 @@ import { Upload, FileText, ArrowLeft, User, Camera } from "lucide-react";
 interface AgentFormData {
     firstName: string;
     lastName: string;
-    age: string;
+    dob: string;
+    email: string;
     phone: string;
-    city: string;
-    district: string;
+    address: string;
     state: string;
+    city: string;
     pincode: string;
     region: string;
     area: string;
@@ -46,11 +47,12 @@ interface AgentFormProps {
 const emptyForm: AgentFormData = {
     firstName: "",
     lastName: "",
-    age: "",
+    dob: "",
+    email: "",
     phone: "",
-    city: "",
-    district: "",
+    address: "",
     state: "",
+    city: "",
     pincode: "",
     region: "",
     area: "",
@@ -148,6 +150,12 @@ export default function AgentForm({
                 <ArrowLeft size={16} strokeWidth={1.4} />
                 Go back to dashboard
             </button>
+            <Typography
+                variant="h3"
+                className="font-bold text-[clamp(20px,2vw,32px)] text-[color:var(--text-primary)] mb-6"
+            >
+                {isEdit ? "Edit Agent" : "Create Agent"}
+            </Typography>
 
             {/* ── Outer card ── */}
             <div
@@ -274,106 +282,121 @@ export default function AgentForm({
                     </div>
                 </div>
 
-                {/* ── REGION / AREA ASSIGNED ───────────────────────────────────── */}
-                <FormSection title="Region/Area Assigned">
+                {/* ── ENTER AGENT INFORMATION ──────────────────────────────────── */}
+                <FormSection title="Enter Agent Information">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
+                        <Input
+                            variant="form"
+                            label="First Name"
+                            placeholder="Enter First name"
+                            value={formData.firstName}
+                            onChange={(e) => handleChange("firstName", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="Last Name"
+                            placeholder="Enter Last Name"
+                            value={formData.lastName}
+                            onChange={(e) => handleChange("lastName", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="D.O.B."
+                            placeholder="Enter Age"
+                            value={formData.dob}
+                            onChange={(e) => handleChange("dob", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="Mail"
+                            placeholder="Enter Mail ID"
+                            value={formData.email}
+                            onChange={(e) => handleChange("email", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="Mobile Number"
+                            placeholder="Enter Mobile Number"
+                            value={formData.phone}
+                            onChange={(e) => handleChange("phone", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="Address"
+                            placeholder="Enter Address"
+                            value={formData.address}
+                            onChange={(e) => handleChange("address", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="State"
+                            placeholder="Enter State"
+                            value={formData.state}
+                            onChange={(e) => handleChange("state", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="City / Village"
+                            placeholder="Enter City / Village"
+                            value={formData.city}
+                            onChange={(e) => handleChange("city", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="Pin Code"
+                            placeholder="Enter Pin Code"
+                            value={formData.pincode}
+                            onChange={(e) => handleChange("pincode", e.target.value)}
+                        />
+                    </div>
+                </FormSection>
+
+                {/* ── SELECT STATE, REGION & AREA ──────────────────────────────── */}
+                <FormSection title="Select State, Region & Area">
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
                         <FormDropdown
                             label="State"
                             options={STATE_OPTIONS}
                             value={formData.state}
                             onChange={(v) => handleChange("state", v)}
-                            placeholder="Select State"
+                            placeholder="Andhra Pradesh"
                         />
-                        <FormDropdown
-                            label="Region"
-                            options={REGION_OPTIONS}
-                            value={formData.region}
-                            onChange={(v) => handleChange("region", v)}
-                            placeholder="Select Region"
-                        />
-                        <FormDropdown
-                            label="Area"
-                            options={AREA_OPTIONS}
-                            value={formData.area}
-                            onChange={(v) => handleChange("area", v)}
-                            placeholder="Select Area"
-                        />
+                        <div>
+                            <FormDropdown
+                                label="Region"
+                                options={REGION_OPTIONS}
+                                value={formData.region}
+                                onChange={(v) => handleChange("region", v)}
+                                placeholder="Godavari Region"
+                            />
+                            <div className="mt-3 space-y-2">
+                                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                                    RO : Jayanth kumar (GLC 0012)
+                                </p>
+                                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                                    IO : Jayanth kumar (GLC 0012)
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+                            <FormDropdown
+                                label="Area"
+                                options={AREA_OPTIONS}
+                                value={formData.area}
+                                onChange={(v) => handleChange("area", v)}
+                                placeholder="Tanuku Area"
+                            />
+                            <div className="mt-3">
+                                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                                    FO : Ram Verma (GLC 0019)
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </FormSection>
 
-                {/* ── ADDRESS + PERSONAL ───────────────────────────────────────── */}
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-[clamp(14px,1.5vw,20px)]">
-                    <FormSection title="Address Details">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(14px,1.5vw,20px)]">
-                            <Input
-                                variant="form"
-                                label="City"
-                                placeholder="Enter city"
-                                value={formData.city}
-                                onChange={(e) => handleChange("city", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="District"
-                                placeholder="Enter district"
-                                value={formData.district}
-                                onChange={(e) => handleChange("district", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="State"
-                                placeholder="Enter state"
-                                value={formData.state}
-                                onChange={(e) => handleChange("state", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="Pincode"
-                                placeholder="Enter pincode"
-                                value={formData.pincode}
-                                onChange={(e) => handleChange("pincode", e.target.value)}
-                            />
-                        </div>
-                    </FormSection>
-
-                    <FormSection title="Personal Details">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(14px,1.5vw,20px)]">
-                            <Input
-                                variant="form"
-                                label="First Name"
-                                placeholder="Enter first name"
-                                value={formData.firstName}
-                                onChange={(e) => handleChange("firstName", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="Last Name"
-                                placeholder="Enter last name"
-                                value={formData.lastName}
-                                onChange={(e) => handleChange("lastName", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="Age"
-                                placeholder="Enter age"
-                                type="number"
-                                value={formData.age}
-                                onChange={(e) => handleChange("age", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="Phone Number"
-                                placeholder="+91 XXXXX-XXXXX"
-                                type="tel"
-                                value={formData.phone}
-                                onChange={(e) => handleChange("phone", e.target.value)}
-                            />
-                        </div>
-                    </FormSection>
-                </div>
-
                 {/* ── BANK DETAILS ─────────────────────────────────────────────── */}
-                <FormSection title="Bank Details">
+                <FormSection title="Enter Bank Details">
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
                         <FormDropdown
                             label="Bank Name"
@@ -385,84 +408,76 @@ export default function AgentForm({
                         <Input
                             variant="form"
                             label="Account Number"
-                            placeholder="Enter account number"
+                            placeholder="Enter Account Number"
                             value={formData.accountNumber}
                             onChange={(e) => handleChange("accountNumber", e.target.value)}
                         />
                         <Input
                             variant="form"
                             label="IFSC Code"
-                            placeholder="e.g. HDFC0001234"
+                            placeholder="Enter IFSC Code"
                             value={formData.ifscCode}
                             onChange={(e) => handleChange("ifscCode", e.target.value)}
                         />
                     </div>
                 </FormSection>
 
-                {/* ── DOCUMENTS ────────────────────────────────────────────────── */}
-                <FormSection title="Documents">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-                        <div className="w-full max-w-[346px]">
-                            <UploadBox
-                                title="Aadhar Card"
-                                fileName={formData.aadharFileName}
-                                onFile={(file) =>
-                                    setFormData((p) => ({
-                                        ...p,
-                                        aadharFile: file,
-                                        aadharFileName: file?.name ?? "",
-                                    }))
-                                }
-                            />
-                        </div>
-                        <div className="w-full max-w-[346px]">
-                            <UploadBox
-                                title="Pan Card"
-                                fileName={formData.panFileName}
-                                onFile={(file) =>
-                                    setFormData((p) => ({
-                                        ...p,
-                                        panFile: file,
-                                        panFileName: file?.name ?? "",
-                                    }))
-                                }
-                            />
-                        </div>
+                {/* ── UPLOAD DOCUMENTS ─────────────────────────────────────────── */}
+                <FormSection title="Upload Documents">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-[clamp(14px,1.5vw,30px)]">
+                        <UploadBox
+                            title="Aadhar Card"
+                            fileName={formData.aadharFileName}
+                            onFile={(file) =>
+                                setFormData((p) => ({
+                                    ...p,
+                                    aadharFile: file,
+                                    aadharFileName: file?.name ?? "",
+                                }))
+                            }
+                        />
+                        <UploadBox
+                            title="Pan Card"
+                            fileName={formData.panFileName}
+                            onFile={(file) =>
+                                setFormData((p) => ({
+                                    ...p,
+                                    panFile: file,
+                                    panFileName: file?.name ?? "",
+                                }))
+                            }
+                        />
                     </div>
                 </FormSection>
 
                 {/* ── ACTION BUTTONS ───────────────────────────────────────────── */}
-                <div className="flex justify-end items-center gap-[clamp(12px,1vw,16px)]">
-                    <Button
-                        variant="outline-dark"
+                <div className="flex justify-end items-center gap-[clamp(12px,1vw,16px)] pt-4">
+                    <button
                         onClick={onCancel}
                         disabled={isLoading}
                         className="
-                            !h-[40px] !min-w-[101px] !px-[24px] !py-[8px]
-                            !font-[family-name:var(--font-inter)] !font-medium
-                            !text-[length:clamp(13px,0.9vw,16px)] !leading-[24px]
-                            !normal-case !tracking-normal !shadow-none
+                            text-[clamp(12px,0.9vw,16px)] font-medium text-[color:var(--text-primary)]
+                            px-6 py-2 hover:opacity-70 transition-opacity disabled:opacity-50
                         "
                     >
                         Cancel
-                    </Button>
+                    </button>
 
                     <Button
                         variant="primary"
                         onClick={handleSave}
                         loading={isLoading}
                         className="
-                            !h-[40px] !min-w-[155px]
+                            !h-[44px] !min-w-[180px]
                             !rounded-[100px]
                             !px-[32px] !py-[8px]
                             !font-[family-name:var(--font-inter)] !font-medium
-                            !text-[length:clamp(13px,0.9vw,16px)] !leading-[24px]
-                            !normal-case !tracking-normal
+                            !text-[length:clamp(13px,0.9vw,16px)]
                             !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
                             !shadow-none
                         "
                     >
-                        {isEdit ? "Update Profile" : "Save Profile"}
+                        {isEdit ? "Update Profile" : "Create Profile"}
                     </Button>
                 </div>
             </div>

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Typography } from "@/components/ui/typography";
 import arrowLeftIcon from "@/assets/arrow.svg";
@@ -17,6 +18,7 @@ interface RoleItem {
   badge: string;
   imageSrc: string;
   imageAlt: string;
+  onClick?: () => void;
 }
 
 const ROLES: RoleItem[] = [
@@ -100,14 +102,17 @@ const RoleCard: React.FC<RoleItem> = ({
   badge,
   imageSrc,
   imageAlt,
+  onClick,
 }) => (
   <div
+    onClick={onClick}
     className={cn(
       "relative flex flex-col w-full overflow-hidden",
       "bg-[var(--surface-card)]",
       "rounded-[32px] lg:rounded-[38px] xl:rounded-[46px] 2xl:rounded-[46px]",
       "shadow-[0px_0px_8.4px_rgba(0,0,0,0.06)]",
       "h-[280px] lg:h-[300px] xl:h-[331px] 2xl:h-[360px]",
+      "cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]",
     )}
   >
     <div
@@ -188,6 +193,7 @@ const RoleCard: React.FC<RoleItem> = ({
 
 
 const CreateRoles: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div
       className={cn(
@@ -197,7 +203,7 @@ const CreateRoles: React.FC = () => {
       )}
     >
 
-      <GoBackButton />
+      <GoBackButton onClick={() => navigate("/role-manager/user-directory")} />
 
       <Typography
         as="h1"
@@ -241,7 +247,11 @@ const CreateRoles: React.FC = () => {
         )}
       >
         {ROLES.map((role) => (
-          <RoleCard key={role.id} {...role} />
+          <RoleCard 
+            key={role.id} 
+            {...role} 
+            onClick={() => navigate("/role-manager/agent-create")}
+          />
         ))}
       </div>
     </div>
