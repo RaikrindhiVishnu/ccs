@@ -9,13 +9,15 @@ importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compa
 // Initialize the Firebase app in the service worker by passing in
 // your app's Firebase config object.
 // https://firebase.google.com/docs/web/setup#config-object
+const urlParams = new URLSearchParams(location.search);
+
 firebase.initializeApp({
-  apiKey: "AIzaSyBACAzGCbQ4GQJDf62XEIQniVRST3oZWQw",
-  authDomain: "glc-notifications.firebaseapp.com",
-  projectId: "glc-notifications",
-  storageBucket: "glc-notifications.firebasestorage.app",
-  messagingSenderId: "119590449854",
-  appId: "1:119590449854:web:32da005e29011ce9b864ef"
+  apiKey: urlParams.get('apiKey'),
+  authDomain: urlParams.get('authDomain'),
+  projectId: urlParams.get('projectId'),
+  storageBucket: urlParams.get('storageBucket'),
+  messagingSenderId: urlParams.get('messagingSenderId'),
+  appId: urlParams.get('appId')
 });
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
