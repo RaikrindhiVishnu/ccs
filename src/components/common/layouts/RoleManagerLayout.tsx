@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/core/hooks";
 import { logOut } from "@/features/auth/store/authSlice";
-import DashboardSidebar from "@/pages/Dashboard/Sidebar";
+import DashboardSidebar from "@/features/role-manager/components/layout/Sidebar";
 import { useRoleLayout } from "@/core/hooks/useRoleLayout";
 
 export const RoleManagerLayout = () => {

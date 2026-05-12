@@ -3,12 +3,16 @@
 import dashboardIcon    from '@/assets/dashboard.svg';
 import farmlandReqIcon  from '@/assets/farmland-request.svg';
 import farmlandListIcon from '@/assets/farmland-list.svg';
-
+import io1 from '@/assets/io1.svg';
+import io2 from '@/assets/io2.svg';
+import io3 from '@/assets/io3.svg';
+import io4 from '@/assets/io4.svg';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 export type LayoutVariant =
   | 'sidebar-role-manager'
   | 'sidebar-ccs-officer'
+  | 'sidebar-intelligence-officer'
   | 'header-only';
 
 export type NavItem = {
@@ -33,25 +37,31 @@ export const MOCK_USERS: Record<
     email: 'manager@glc.com',
     password: 'manager@123',
     name: 'Harish Kumar',
-    role: 'ROLE_MANAGER',
+    role: 'ROLEMNGR',
   },
   FIELD_OFFICER: {
     email: 'officer@glc.com',
     password: 'officer@123',
     name: 'Ravi Shankar',
-    role: 'FIELD_OFFICER',
+    role: 'FO',
   },
   CCS_OFFICER: {
     email: 'ccs@glc.com',
     password: 'ccs@123',
     name: 'Ram Varma',
-    role: 'CCS_OFFICER',
+    role: 'CCS',
   },
+  IO_OFFICER: {
+  email: 'io@glc.com',
+  password: 'io@123',
+  name: 'Arjun ',
+  role: 'IO',
+},
 };
 
 // ─── Master Layout Config ─────────────────────────────────────────────────────
 export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
-  ROLE_MANAGER: {
+  ROLEMNGR: {
     layoutVariant: 'sidebar-role-manager',
     roleLabel: 'Role Manager',
     navItems: [
@@ -61,7 +71,7 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     ],
   },
 
-  FIELD_OFFICER: {
+  FO: {
     layoutVariant: 'header-only',
     roleLabel: 'Field Officer',
     navItems: [
@@ -72,7 +82,7 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     ],
   },
 
-  CCS_OFFICER: {
+  CCS: {
     layoutVariant: 'sidebar-ccs-officer',
     roleLabel: 'CCS Officer',
     navItems: [
@@ -81,8 +91,19 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
       { label: 'Farmland List',    path: '/farmland-list',    icon: 'MapPin',          iconImg: farmlandListIcon },
     ],
   },
+
+IO: {
+  layoutVariant: 'sidebar-intelligence-officer',
+  roleLabel: 'Intelligence Officer',
+  navItems: [
+    { label: 'Dashboard',          path: '/io/dashboard',          icon: 'LayoutDashboard', iconImg: io1 },
+    { label: 'Assigned Farmlands', path: '/io/assigned-farmlands', icon: 'Shield',          iconImg: io2 },
+    { label: 'Requested info',     path: '/io/requested-info',     icon: 'FileText',        iconImg: io3 },
+    { label: 'Farmlands list',     path: '/io/farmlands-list',     icon: 'List',            iconImg: io4 },
+  ],
+},
 };
 
 // Fallback
 export const DEFAULT_LAYOUT_CONFIG: RoleLayoutConfig =
-  ROLE_LAYOUT_CONFIG.ROLE_MANAGER;
+  ROLE_LAYOUT_CONFIG.ROLEMNGR;

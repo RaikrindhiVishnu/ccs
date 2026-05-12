@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import AgentOnboardingVelocity from "@/pages/Dashboard/AgentOnboardingVelocity";
-import WorkforceStructure from "@/pages/Dashboard/WorkforceStructure";
+import AgentOnboardingVelocity from "@/features/role-manager/components/AgentOnboardingVelocity";
+import WorkforceStructure from "@/features/role-manager/components/WorkforceStructure";
 import { Typography } from "@/components/ui/typography";
 
 import { Button } from "@/components/ui/button";
