@@ -23,6 +23,9 @@ import {
   SendPaymentLink,
   ProcessingFeeScreen,
   IODashboard,
+  RegionalOfficerDashboard,
+  RegionalOfficerLayout,
+  FieldOfficerDashboard,
 } from './routes.config';
 
 export const guestRoutes: RouteObject[] = [
@@ -51,15 +54,22 @@ export const authRoutes: RouteObject[] = [
       { path: '/role-manager/region-area',      element: <RegionAndArea /> },
       { path: '/role-manager/region-selection', element: <RegionSelection /> },
       { path: '/io/dashboard',                  element: <IODashboard /> },
+      { path: '/field-officer/dashboard',       element: <FieldOfficerDashboard /> },
+    ],
+  },
+  {
+    element: <RegionalOfficerLayout />,
+    children: [
+      { path: '/regional-officer/dashboard', element: <RegionalOfficerDashboard /> },
     ],
   },
 ];
 
 export const publicRoutes: RouteObject[] = [
-  { path: '/design-system',                    element: <DesignSystem /> },
-  { path: '/role-manager/agent-create',        element: <AgentCreate /> },
-  { path: '/role-manager/agent-edit',          element: <AgentEdit /> },
-  { path: '/role-manager/profile',             element: <RoleManagerDetails /> },
-  { path: '/role-manager/agent-approvals',     element: <AgentApprovals /> },
-  { path: '/role-manager/agent-details',       element: <Agentdetailpage /> },
+  { path: '/design-system',                 element: <DesignSystem /> },
+  { path: '/role-manager/agent-create',     element: <AgentCreate /> },
+  { path: '/role-manager/agent-edit',       element: <AgentEdit /> },
+  { path: '/role-manager/profile',          element: <RoleManagerDetails /> },
+  { path: '/role-manager/agent-approvals',  element: <AgentApprovals /> },
+  { path: '/role-manager/agent-details',    element: <Agentdetailpage /> },
 ];

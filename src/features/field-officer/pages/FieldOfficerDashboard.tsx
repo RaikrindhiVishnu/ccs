@@ -40,7 +40,7 @@ const TABLE_DATA = [
   { agent: "Srikanth", id: "ALERT_05", time: "6th Oct - 12.53 PM", amount: "36 lacs", status: "Completed", statusColor: "bg-[#DFF5E5] text-[#00696B]", farmId: "GLCSOS 03", pubTime: "1st Oct - 04.13 PM", faceIdx: 4 },
 ];
 
-const DashboardHome = () => {
+export default function FieldOfficerDashboard() {
   return (
     <div className="flex flex-col gap-[clamp(1rem,3vh,2rem)] pb-10 w-full px-4">
       {/* Top Section: Stats and Performance */}
@@ -172,6 +172,4 @@ const DashboardHome = () => {
       </div>
     </div>
   );
-};
-
-export default DashboardHome;
+}

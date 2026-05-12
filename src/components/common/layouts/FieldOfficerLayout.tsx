@@ -26,7 +26,7 @@ export const FieldOfficerLayout = () => {
           
           {/* Logo */}
           <div className="w-[120px] h-[58px] flex-none">
-            <a href="/">
+            <a href="/field-officer/dashboard">
               <img src={glcLogo} alt="Green Land Capital" className="w-full h-full object-contain" />
             </a>
           </div>

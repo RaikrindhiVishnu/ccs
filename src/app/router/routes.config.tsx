@@ -47,12 +47,27 @@ export const ActiveVerifications = lazy(
 export const GeospatialAudit = lazy(
   () => import("../../features/ccs/pages/Geospatialauditscreen"),
 );
-export const SendPaymentLink = lazy(     // ← ADD
+export const SendPaymentLink = lazy(
   () => import("../../features/ccs/pages/payment"),
 );
 export const ProcessingFeeScreen = lazy(
   () => import("../../features/ccs/pages/ProcessingFeeScreen"),
 );
+
+// Intelligence Officer (from upstream)
 export const IODashboard = lazy(
   () => import("../../features/io/pages/Dashboard"),
+);
+
+// Regional Officer
+export const RegionalOfficerDashboard = lazy(
+  () => import("../../features/regional-officer/pages/RegionalOfficerDashboard"),
+);
+export const RegionalOfficerLayout = lazy(
+  () => import("../../components/common/layouts/Regionalofficerlayout"),
+);
+
+// Field Officer
+export const FieldOfficerDashboard = lazy(
+  () => import("../../features/field-officer/pages/FieldOfficerDashboard"),
 );
