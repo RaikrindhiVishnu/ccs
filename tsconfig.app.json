@@ -22,5 +22,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "firebase-messaging-sw.js"]
+  "include": ["src", "src/firebase-messaging-sw.js"]
 }
