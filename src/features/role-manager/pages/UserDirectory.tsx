@@ -33,7 +33,7 @@ const UserDirectory: React.FC = () => {
             variant="primary-sm"
             leftIcon={<Plus size={10} />}
             className="h-10 text-sm font-medium rounded-full"
-            onClick={() => navigate("/role-manager/agent-create")}
+            onClick={() => navigate("/role-manager/create-roles")}
           >
             Create roles
           </Button>

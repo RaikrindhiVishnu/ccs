@@ -46,20 +46,20 @@ export const authRoutes: RouteObject[] = [
       { path: '/processing-fee',                element: <ProcessingFeeScreen /> },
       { path: '/role-manager/dashboard',        element: <RoleManagerDashboard /> },
       { path: '/role-manager/user-directory',   element: <UserDirectory /> },
-      { path: '/role-manager/create',           element: <CreateRegionsAndAreas /> },
+      { path: '/role-manager/create-regions-and-areas',           element: <CreateRegionsAndAreas /> },
       { path: '/role-manager/create-roles',     element: <CreateRoles /> },
-      { path: '/role-manager/region-area',      element: <RegionAndArea /> },
-      { path: '/role-manager/region-selection', element: <RegionSelection /> },
+      { path: '/role-manager/region-area-dashboard',      element: <RegionAndArea /> },
+      { path: '/role-manager/region-creation', element: <RegionSelection /> },
       { path: '/io/dashboard',                  element: <IODashboard /> },
+      { path: '/role-manager/agent-create',     element: <AgentCreate /> },
+      { path: '/role-manager/agent-edit',       element: <AgentEdit /> },
+      { path: '/role-manager/profile',          element: <RoleManagerDetails /> },
+      { path: '/role-manager/agent-approvals',  element: <AgentApprovals /> },
+      { path: '/role-manager/agent-details',    element: <Agentdetailpage /> },
     ],
   },
 ];
 
 export const publicRoutes: RouteObject[] = [
   { path: '/design-system',                    element: <DesignSystem /> },
-  { path: '/role-manager/agent-create',        element: <AgentCreate /> },
-  { path: '/role-manager/agent-edit',          element: <AgentEdit /> },
-  { path: '/role-manager/profile',             element: <RoleManagerDetails /> },
-  { path: '/role-manager/agent-approvals',     element: <AgentApprovals /> },
-  { path: '/role-manager/agent-details',       element: <Agentdetailpage /> },
 ];
