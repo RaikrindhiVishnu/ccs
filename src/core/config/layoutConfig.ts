@@ -98,7 +98,7 @@ IO: {
   roleLabel: 'Intelligence Officer',
   navItems: [
     { label: 'Dashboard',          path: '/io/dashboard',          icon: 'LayoutDashboard', iconImg: io1 },
-    { label: 'Assigned Farmlands', path: '/io/assigned-farmlands', icon: 'Shield',          iconImg: io2 },
+    { label: 'Assigned Farmlands', path: '/io/Assignedfarmland', icon: 'Shield',          iconImg: io2 },
     { label: 'Requested info',     path: '/io/requested-info',     icon: 'FileText',        iconImg: io3 },
     { label: 'Farmlands list',     path: '/io/farmlands-list',     icon: 'List',            iconImg: io4 },
   ],
