@@ -111,7 +111,12 @@ const AssignedFarmland = () => {
 
         {/* CARDS */}
         <section className="w-full">
-          <AssignedFarmlandCards data={FARMLAND_CARD_DUMMY.slice(0, 3)} />
+                    <AssignedFarmlandCards
+            data={FARMLAND_CARD_DUMMY.slice(0, 3)}
+            onView={(id) =>
+                navigate(`/io/farmland-document/${id}`)
+            }
+            />
         </section>
 
         {/* VIEW MORE */}

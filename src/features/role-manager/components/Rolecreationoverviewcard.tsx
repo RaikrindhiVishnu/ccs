@@ -1,14 +1,13 @@
 import React, {
   useState,
-  useEffect,
   useRef,
-  useCallback,
   useMemo,
 } from "react";
 import { cn } from "@/lib/utils";
 import { WeekDropdown } from "@/components/ui/Dropdown";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
+import { useGetRoleCreationOverviewQuery } from "@/features/role-manager/api/agentApi";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -25,9 +24,6 @@ export interface RoleCreationOverviewCardProps {
   subtitle?: string;
   period?: string;
   onPeriodChange?: (period: string) => void;
-  data?: DayData[];
-  apiUrl?: string;
-  fetchOptions?: RequestInit;
   className?: string;
 }
 
@@ -50,15 +46,6 @@ const SERIES: {
   },
 ];
 
-const DEFAULT_DATA: DayData[] = [
-  { day: "Mo", ro: 6, io: 9, fo: 2, agents: 2 },
-  { day: "Tu", ro: 5, io: 10, fo: 4, agents: 3 },
-  { day: "We", ro: 8, io: 14, fo: 3, agents: 3 },
-  { day: "Th", ro: 7, io: 11, fo: 3, agents: 3 },
-  { day: "Fr", ro: 9, io: 12, fo: 5, agents: 4 },
-  { day: "Sa", ro: 4, io: 9, fo: 2, agents: 2 },
-  { day: "Su", ro: 5, io: 10, fo: 2, agents: 3 },
-];
 
 interface TooltipState {
   visible: boolean;
@@ -75,15 +62,9 @@ export function RoleCreationOverviewCard({
   subtitle = "Breakdown of role creation by role type",
   period: controlledPeriod,
   onPeriodChange,
-  data: propData,
-  apiUrl,
-  fetchOptions,
   className,
 }: RoleCreationOverviewCardProps) {
   const [internalPeriod, setInternalPeriod] = useState("Week");
-  const [apiData, setApiData] = useState<DayData[] | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState>({
     visible: false,
     x: 0,
@@ -93,30 +74,26 @@ export function RoleCreationOverviewCard({
   });
   const chartRef = useRef<HTMLDivElement>(null);
   const period = controlledPeriod ?? internalPeriod;
+ const { data: apiResponse, isLoading, error } =
+  useGetRoleCreationOverviewQuery({
+    startDate: "2024-01-01",
+    endDate: "2024-12-31",
+    offset: "0",
+  });
 
-  const fetchData = useCallback(async () => {
-    if (!apiUrl) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const url = new URL(apiUrl, window.location.href);
-      url.searchParams.set("period", period.toLowerCase());
-      const res = await fetch(url.toString(), fetchOptions);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      setApiData(await res.json());
-    } catch (err) {
-      setError((err as Error).message);
-      setApiData(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [apiUrl, period, fetchOptions]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const data: DayData[] = propData ?? apiData ?? DEFAULT_DATA;
+const transformedData: DayData[] =
+  apiResponse?.data?.map((item) => ({
+    day: new Date(item.assignmentDate)
+      .toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+    ro: item.totalRO,
+    io: item.totalIO,
+    fo: item.totalFO,
+    agents: item.totalAgents,
+  })) || [];
+const data: DayData[] = transformedData;
 
   const maxTotal = useMemo(
     () => Math.max(...data.map((d) => d.ro + d.io + d.fo + d.agents), 1),
@@ -235,7 +212,7 @@ export function RoleCreationOverviewCard({
       </div>
 
       {/* ── Chart */}
-      {loading ? (
+     {isLoading ? (
         <Typography
           variant="p"
           className="flex-1 flex items-center justify-center text-[color:var(--text-muted)] text-sm"
@@ -247,10 +224,17 @@ export function RoleCreationOverviewCard({
           variant="p"
           className="flex-1 flex items-center justify-center text-red-400 text-sm"
         >
-          {error}
+         Failed to load data
         </Typography>
-      ) : (
-        <div
+    ) : data.length === 0 ? (
+  <Typography
+    variant="p"
+    className="flex-1 flex items-center justify-center text-[color:var(--text-muted)] text-sm"
+  >
+    No data available
+  </Typography>
+) : (
+  <div
           ref={chartRef}
           className="relative flex gap-[clamp(0.1875rem,0.4vw,0.375rem)] flex-1 min-h-0"
         >
