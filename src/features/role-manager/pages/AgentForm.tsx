@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useAppSelector } from "@/core/hooks";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormDropdown } from "@/components/ui/Dropdown";
@@ -6,43 +7,9 @@ import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
 import SuccessIcon from "@/assets/sucess.svg";
 import { Upload, FileText, ArrowLeft, User, Camera } from "lucide-react";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface AgentFormData {
-    firstName: string;
-    lastName: string;
-    dob: string;
-    email: string;
-    phone: string;
-    address: string;
-    state: string;
-    city: string;
-    pincode: string;
-    region: string;
-    area: string;
-    bankName: string;
-    accountNumber: string;
-    ifscCode: string;
-    aadharFile?: File | null;
-    panFile?: File | null;
-    aadharFileName?: string;
-    panFileName?: string;
-    profileImage?: string;
-}
-
-interface AgentFormProps {
-    /** true  → Edit mode  (pre-fills data, shows "Update Profile") */
-    isEdit?: boolean;
-    /** Pass existing agent data when in edit mode */
-    initialData?: Partial<AgentFormData>;
-    /** Called with form payload on save — wire this to your RTK mutation */
-    onSave?: (data: AgentFormData) => void | Promise<void>;
-    /** Called when Cancel is clicked */
-    onCancel?: () => void;
-    /** Loading state (e.g. RTK mutation isLoading) */
-    isLoading?: boolean;
-}
+import { useCreateAgentMutation } from "../api/agentApi";
+import { uploadToPresignedUrl } from "@/core/utils/fileUpload";
+import type { AgentFormData, AgentFormProps } from "../types/agent";
 
 const emptyForm: AgentFormData = {
     firstName: "",
@@ -59,22 +26,17 @@ const emptyForm: AgentFormData = {
     bankName: "",
     accountNumber: "",
     ifscCode: "",
+    bankBranch: "",
+    panNumber: "",
     aadharFile: null,
+    aadharBackFile: null,
     panFile: null,
     aadharFileName: "",
+    aadharBackFileName: "",
     panFileName: "",
 };
 
 // ─── Dropdown option lists ────────────────────────────────────────────────────
-
-const STATE_OPTIONS = [
-    "Andhra Pradesh",
-    "Telangana",
-    "Maharashtra",
-    "Karnataka",
-    "Tamil Nadu",
-    "Kerala",
-];
 
 const REGION_OPTIONS = [
     "Godavari Region",
@@ -109,24 +71,75 @@ export default function AgentForm({
     onCancel,
     isLoading = false,
 }: AgentFormProps) {
+    // Get states from Redux store
+    const states = useAppSelector((state) => state.roleManager.states);
+    const stateOptions = states.map((s) => s.desc);
+
     // Initialise directly from initialData — no useEffect needed
     const [formData, setFormData] = useState<AgentFormData>(() => ({
         ...emptyForm,
         ...initialData,
     }));
 
+    const [createAgent, { isLoading: isSubmitting }] = useCreateAgentMutation();
+
     const handleChange = (key: keyof AgentFormData, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
     };
 
     const handleSave = async () => {
-        if (onSave) {
-            await onSave(formData);
-        } else {
-            localStorage.setItem("agent-data", JSON.stringify(formData));
-            alert(
-                isEdit ? "Profile Updated Successfully" : "Profile Saved Successfully",
-            );
+        try {
+            // 1. Upload Documents (Mock)
+            const [aadharFrontUrl, aadharBackUrl, panUrl] = await Promise.all([
+                formData.aadharFile ? uploadToPresignedUrl(formData.aadharFile) : Promise.resolve(""),
+                formData.aadharBackFile ? uploadToPresignedUrl(formData.aadharBackFile) : Promise.resolve(""),
+                formData.panFile ? uploadToPresignedUrl(formData.panFile) : Promise.resolve(""),
+            ]);
+
+            // 2. Construct API Payload
+            const payload = {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                countryCode: "+91", // Default
+                emailAddress: formData.email,
+                phoneNumber: formData.phone,
+                dob: formData.dob,
+                role_id: 1, // Hardcoded for Agent
+                address: {
+                    address: formData.address,
+                    state_id: 1, // Dummy ID
+                    city: formData.city,
+                    pincode: formData.pincode,
+                },
+                geo_assignments: {
+                    country_id: 1,
+                    state_id: 1,
+                    district_id: 1,
+                    mandal_id: 1,
+                    region_id: 1,
+                    areas_id: 1,
+                },
+                id_proof: {
+                    bank_account_name: `${formData.firstName} ${formData.lastName}`,
+                    bank_account_number: formData.accountNumber,
+                    ifsc_code: formData.ifscCode,
+                    branch: formData.bankBranch,
+                    bank_name: formData.bankName,
+                    id_proof_frontUrl: aadharFrontUrl,
+                    id_proof_backUrl: aadharBackUrl,
+                    pan_card_number: formData.panNumber,
+                    pan_card_url: panUrl,
+                },
+            };
+
+            // 3. Trigger API Call
+            await createAgent(payload).unwrap();
+
+            alert(isEdit ? "Profile Updated Successfully" : "Agent Created Successfully");
+            if (onCancel) onCancel();
+        } catch (err) {
+            console.error("Failed to save agent:", err);
+            alert("Error: " + (err as any)?.data?.message || "Something went wrong");
         }
     };
 
@@ -348,6 +361,13 @@ export default function AgentForm({
                             value={formData.pincode}
                             onChange={(e) => handleChange("pincode", e.target.value)}
                         />
+                        <Input
+                            variant="form"
+                            label="PAN Card Number"
+                            placeholder="Enter PAN Number"
+                            value={formData.panNumber}
+                            onChange={(e) => handleChange("panNumber", e.target.value)}
+                        />
                     </div>
                 </FormSection>
 
@@ -356,7 +376,7 @@ export default function AgentForm({
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
                         <FormDropdown
                             label="State"
-                            options={STATE_OPTIONS}
+                            options={stateOptions}
                             value={formData.state}
                             onChange={(v) => handleChange("state", v)}
                             placeholder="Andhra Pradesh"
@@ -419,20 +439,38 @@ export default function AgentForm({
                             value={formData.ifscCode}
                             onChange={(e) => handleChange("ifscCode", e.target.value)}
                         />
+                        <Input
+                            variant="form"
+                            label="Bank Branch"
+                            placeholder="Enter Bank Branch"
+                            value={formData.bankBranch}
+                            onChange={(e) => handleChange("bankBranch", e.target.value)}
+                        />
                     </div>
                 </FormSection>
 
                 {/* ── UPLOAD DOCUMENTS ─────────────────────────────────────────── */}
                 <FormSection title="Upload Documents">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-[clamp(14px,1.5vw,30px)]">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,30px)]">
                         <UploadBox
-                            title="Aadhar Card"
+                            title="Aadhar Card (Front)"
                             fileName={formData.aadharFileName}
                             onFile={(file) =>
                                 setFormData((p) => ({
                                     ...p,
                                     aadharFile: file,
                                     aadharFileName: file?.name ?? "",
+                                }))
+                            }
+                        />
+                        <UploadBox
+                            title="Aadhar Card (Back)"
+                            fileName={formData.aadharBackFileName}
+                            onFile={(file) =>
+                                setFormData((p) => ({
+                                    ...p,
+                                    aadharBackFile: file,
+                                    aadharBackFileName: file?.name ?? "",
                                 }))
                             }
                         />
@@ -466,7 +504,7 @@ export default function AgentForm({
                     <Button
                         variant="primary"
                         onClick={handleSave}
-                        loading={isLoading}
+                        loading={isLoading || isSubmitting}
                         className="
                             !h-[44px] !min-w-[180px]
                             !rounded-[100px]

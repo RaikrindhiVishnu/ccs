@@ -191,7 +191,6 @@ const RoleCard: React.FC<RoleItem> = ({
   </div>
 );
 
-
 const CreateRoles: React.FC = () => {
   const navigate = useNavigate();
   return (
@@ -202,7 +201,6 @@ const CreateRoles: React.FC = () => {
         "py-[38px] xl:py-[44px] [@media(min-width:1440px)]:py-[47px] 2xl:py-[52px] [@media(min-width:1920px)]:py-[60px]",
       )}
     >
-
       <GoBackButton onClick={() => navigate("/role-manager/user-directory")} />
 
       <Typography
