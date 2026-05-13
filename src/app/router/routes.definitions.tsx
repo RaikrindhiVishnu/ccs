@@ -23,6 +23,8 @@ import {
   SendPaymentLink,
   ProcessingFeeScreen,
   IODashboard,
+  Assignedfarmland,
+  AssignedFarmlandList,
 } from './routes.config';
 
 export const guestRoutes: RouteObject[] = [
@@ -51,6 +53,8 @@ export const authRoutes: RouteObject[] = [
       { path: '/role-manager/region-area-dashboard',      element: <RegionAndArea /> },
       { path: '/role-manager/region-creation', element: <RegionSelection /> },
       { path: '/io/dashboard',                  element: <IODashboard /> },
+      { path: '/io/Assignedfarmland',                  element: <Assignedfarmland /> },
+      {path: '/io/assigned-farmland/list', element: <AssignedFarmlandList />,},
       { path: '/role-manager/agent-create',     element: <AgentCreate /> },
       { path: '/role-manager/agent-edit',       element: <AgentEdit /> },
       { path: '/role-manager/profile',          element: <RoleManagerDetails /> },

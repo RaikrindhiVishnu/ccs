@@ -56,3 +56,9 @@ export const ProcessingFeeScreen = lazy(
 export const IODashboard = lazy(
   () => import("../../features/io/pages/Dashboard"),
 );
+export const Assignedfarmland = lazy(
+  () => import("../../features/io/pages/Assignedfarmland"),
+);
+export const AssignedFarmlandList = lazy(
+  () => import("../../features/io/components/AssignedFarmlandList"),
+);

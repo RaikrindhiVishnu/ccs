@@ -11,9 +11,7 @@ import {
 
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
-
 import { WeekDropdown } from "@/components/ui/Dropdown";
-
 import { PERFORMANCE_DATA } from "../data/PerformanceMetrics.dummy";
 
 /* ────────────────────────────────────────────────────────── */
@@ -24,15 +22,13 @@ const ActiveDot = () => (
   <div
     className="
       rounded-full
-
       border
-
       border-[var(--performance-pill-border)]
-
       bg-[var(--surface-card)]
-
-      w-[1rem]
-      h-[1rem]
+      w-[0.75rem]
+      h-[0.75rem]
+      xl:w-[1rem]
+      xl:h-[1rem]
     "
   />
 );
@@ -45,43 +41,34 @@ const ChartLegend = () => (
   <div
     className="
       flex items-center justify-end
-
-      gap-[1.75rem]
-
+      gap-[1rem]
+      xl:gap-[1.75rem]
       pt-[0.4rem]
-
       pr-[0.5rem]
     "
   >
     {/* APPROVED */}
-
-    <div className="flex items-center gap-[0.45rem]">
+    <div className="flex items-center gap-[0.35rem] xl:gap-[0.45rem]">
       <span
         className="
           rounded-full
-
           bg-[var(--performance-approved)]
-
-          w-[1rem]
-          h-[1rem]
-
+          w-[0.75rem]
+          h-[0.75rem]
           xl:w-[1.05rem]
           xl:h-[1.05rem]
         "
       />
-
       <Typography
         variant="span"
         className="
           font-bold
           font-[var(--font-sans)]
-
-          text-[0.72rem]
-          xl:text-[0.78rem]
-
           tracking-[0.01rem]
-
           text-[var(--text-primary)]
+          text-[0.65rem]
+          sm:text-[0.7rem]
+          xl:text-[0.78rem]
         "
       >
         Approved
@@ -89,21 +76,15 @@ const ChartLegend = () => (
     </div>
 
     {/* REJECTION */}
-
-    <div className="flex items-center gap-[0.45rem]">
+    <div className="flex items-center gap-[0.35rem] xl:gap-[0.45rem]">
       <span
         className="
           flex items-center justify-center
-
           rounded-full
-
           bg-[var(--surface-card)]
-
           border border-[var(--performance-pill-border)]
-
-          w-[1rem]
-          h-[1rem]
-
+          w-[0.75rem]
+          h-[0.75rem]
           xl:w-[1.05rem]
           xl:h-[1.05rem]
         "
@@ -111,26 +92,22 @@ const ChartLegend = () => (
         <span
           className="
             border-t border-dashed
-
             border-[var(--text-primary)]
-
-            w-[0.52rem]
+            w-[0.4rem]
+            xl:w-[0.52rem]
           "
         />
       </span>
-
       <Typography
         variant="span"
         className="
           font-bold
           font-[var(--font-sans)]
-
-          text-[0.72rem]
-          xl:text-[0.78rem]
-
           tracking-[0.01rem]
-
           text-[var(--text-primary)]
+          text-[0.65rem]
+          sm:text-[0.7rem]
+          xl:text-[0.78rem]
         "
       >
         Rejection
@@ -152,62 +129,41 @@ const CustomTooltip = ({
 }) => {
   if (!active || !payload?.length) return null;
 
-  const approved = payload.find(
-    (p) => p.dataKey === "approved",
-  )?.value;
-
-  const rejection = payload.find(
-    (p) => p.dataKey === "rejection",
-  )?.value;
+  const approved = payload.find((p) => p.dataKey === "approved")?.value;
+  const rejection = payload.find((p) => p.dataKey === "rejection")?.value;
 
   return (
-    <div
-      className="
-        flex items-center
-
-        gap-[0.35rem]
-      "
-    >
-      {/* REJECTION */}
-
+    <div className="flex items-center gap-[0.35rem]">
       <div
         className="
           rounded-full
-
           border border-[var(--performance-pill-border)]
-
           bg-[var(--surface-card)]
-
-          px-[0.7rem]
-          py-[0.22rem]
-
-          text-[0.82rem]
-
+          px-[0.5rem]
+          py-[0.18rem]
+          xl:px-[0.7rem]
+          xl:py-[0.22rem]
+          text-[0.72rem]
+          xl:text-[0.82rem]
           font-semibold
           font-[var(--font-sans)]
-
           text-[var(--text-primary)]
         "
       >
         {rejection}
       </div>
-
-      {/* APPROVED */}
-
       <div
         className="
           rounded-full
-
           bg-[var(--text-primary)]
-
-          px-[0.72rem]
-          py-[0.22rem]
-
-          text-[0.82rem]
-
+          px-[0.5rem]
+          py-[0.18rem]
+          xl:px-[0.72rem]
+          xl:py-[0.22rem]
+          text-[0.72rem]
+          xl:text-[0.82rem]
           font-semibold
           font-[var(--font-sans)]
-
           text-[var(--surface-card)]
         "
       >
@@ -225,50 +181,42 @@ export const PerformanceMetricsCard = () => {
   return (
     <Card
       className="
-        rounded-[1.75rem]
-
+        flex flex-col
+        h-full
+        rounded-[1.25rem]
+        xl:rounded-[1.75rem]
         border-0
-
         bg-[var(--performance-card-bg)]
-
         shadow-none
-
         w-full
-
-        min-h-[27rem]
-        xl:min-h-[29rem]
-        2xl:min-h-[30rem]
-
-        p-[1.2rem]
+        p-[1rem]
+        sm:p-[1.1rem]
         xl:p-[1.45rem]
         2xl:p-[1.65rem]
       "
     >
       {/* HEADER */}
-
       <div
         className="
           flex items-start justify-between
-
-          gap-[1rem]
+          gap-[0.75rem]
+          xl:gap-[1rem]
+          shrink-0
         "
       >
-        {/* LEFT */}
-
-        <div className="flex flex-col gap-[0.35rem]">
+        <div className="flex flex-col gap-[0.25rem] xl:gap-[0.35rem]">
           <Typography
             variant="span"
             className="
               font-medium
               font-[var(--font-sans)]
-
               leading-[110%]
-
-              text-[1.55rem]
+              text-[var(--text-primary)]
+              text-[1.1rem]
+              sm:text-[1.25rem]
+              lg:text-[1.35rem]
               xl:text-[1.68rem]
               2xl:text-[1.8rem]
-
-              text-[var(--text-primary)]
             "
           >
             Performance metrics
@@ -279,32 +227,29 @@ export const PerformanceMetricsCard = () => {
             className="
               font-semibold
               font-[var(--font-sans)]
-
-              text-[0.95rem]
-              xl:text-[1.05rem]
-
               text-[var(--text-secondary)]
+              text-[0.75rem]
+              sm:text-[0.82rem]
+              lg:text-[0.88rem]
+              xl:text-[1.05rem]
             "
           >
             Approval vs Rejection
           </Typography>
         </div>
 
-        {/* DROPDOWN */}
-
         <WeekDropdown />
       </div>
 
       {/* CHART */}
-
       <div
         className="
-          mt-[1.35rem]
-
-          h-[18rem]
-          xl:h-[20rem]
-          2xl:h-[21rem]
-
+          mt-[1rem]
+          xl:mt-[1.35rem]
+          flex-1
+          min-h-[12rem]
+          sm:min-h-[14rem]
+          xl:min-h-[16rem]
           w-full
         "
       >
@@ -318,8 +263,6 @@ export const PerformanceMetricsCard = () => {
               bottom: 0,
             }}
           >
-            {/* GRADIENT */}
-
             <defs>
               <linearGradient
                 id="approvedGradient"
@@ -333,7 +276,6 @@ export const PerformanceMetricsCard = () => {
                   stopColor="var(--performance-area-start)"
                   stopOpacity={0.95}
                 />
-
                 <stop
                   offset="100%"
                   stopColor="var(--performance-area-end)"
@@ -342,15 +284,11 @@ export const PerformanceMetricsCard = () => {
               </linearGradient>
             </defs>
 
-            {/* GRID */}
-
             <CartesianGrid
               vertical={false}
               stroke="var(--performance-grid)"
               strokeWidth={1}
             />
-
-            {/* X AXIS */}
 
             <XAxis
               dataKey="day"
@@ -358,12 +296,10 @@ export const PerformanceMetricsCard = () => {
               axisLine={false}
               tick={{
                 fill: "var(--performance-axis)",
-                fontSize: 14,
+                fontSize: 11,
                 fontFamily: "var(--font-sans)",
               }}
             />
-
-            {/* Y AXIS */}
 
             <YAxis
               tickLine={false}
@@ -371,19 +307,12 @@ export const PerformanceMetricsCard = () => {
               ticks={[0, 100, 200, 300, 400, 500]}
               tick={{
                 fill: "var(--performance-axis)",
-                fontSize: 14,
+                fontSize: 11,
                 fontFamily: "var(--font-sans)",
               }}
             />
 
-            {/* TOOLTIP */}
-
-            <Tooltip
-              cursor={false}
-              content={<CustomTooltip />}
-            />
-
-            {/* APPROVED AREA */}
+            <Tooltip cursor={false} content={<CustomTooltip />} />
 
             <Area
               type="monotone"
@@ -391,8 +320,6 @@ export const PerformanceMetricsCard = () => {
               stroke="none"
               fill="url(#approvedGradient)"
             />
-
-            {/* REJECTION LINE */}
 
             <Line
               type="monotone"
@@ -408,8 +335,9 @@ export const PerformanceMetricsCard = () => {
       </div>
 
       {/* FOOTER */}
-
-      <ChartLegend />
+      <div className="shrink-0">
+        <ChartLegend />
+      </div>
     </Card>
   );
 };
