@@ -1,13 +1,19 @@
 import React from "react";
 import { LayoutGrid, Search } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
-
 import { Input } from "@/components/ui/input";
 import bellIcon from "@/assets/bellicon.svg";
 import AgentOnboardingVelocity from "@/features/role-manager/components/AgentOnboardingVelocity";
 import RegionCreationVelocity from "@/features/role-manager/components/RegionCreationVelocity";
 import WorkforceStructure from "@/features/role-manager/components/WorkforceStructure";
 import RoleCreationOverviewCard from "@/features/role-manager/components/Rolecreationoverviewcard";
+import pako from 'pako';
+import { Buffer } from 'buffer';
+import geoJsonData from '../data/geoJsonApi.json';
+import { useDispatch } from "react-redux";
+import { useGetAllGeoMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { setGeoMasterData } from "@/features/role-manager/store/roleManagerSlice";
+import { useEffect, useCallback } from "react";
 
 // import RegionalCreationTargetVsActual from "@/pages/Dashboard/RegionalCreationTargetVsActual";
 // ─── Local Header Component (Copied for independence) ──────────────────────────
@@ -76,6 +82,49 @@ const RoleManagerHeader: React.FC = () => {
 
 // ─── Main Dashboard Component ──────────────────────────────────────────────────
 const RoleManagerDashboard: React.FC = () => {
+  const dispatch = useDispatch();
+  const { data: geoData } = useGetAllGeoMasterDataQuery();
+
+  useEffect(() => {
+    if (geoData) {
+      dispatch(setGeoMasterData(geoData));
+    }
+  }, [geoData, dispatch]);
+
+  const fetchAndDecodeGeoData = useCallback(async (base64Data: string) => {
+    try {
+      
+      // 1. Convert Base64 string to a binary Buffer
+      const binaryData = Buffer.from(base64Data, 'base64');
+      console.log("Binary data length:", binaryData.length);
+      
+      // 2. Decompress the data using Pako (Gunzip)
+      const decompressedData = pako.ungzip(binaryData);
+      
+      // 3. Convert to string and parse JSON
+      const decompressedString = new TextDecoder().decode(decompressedData);
+      const finalData = JSON.parse(decompressedString);
+      
+      console.log("Successfully Decoded GeoJSON Data:", finalData);
+      console.log("Data Keys:", Object.keys(finalData));
+      
+      return finalData;
+    } catch (error) {
+      console.error("Decoding failed:", error);
+    }
+  }, []);
+
+  // For testing purposes as requested by user
+  React.useEffect(() => {
+    if (geoJsonData && geoJsonData.data) {
+      console.log("Found local GeoJSON data, starting automatic decode...");
+      fetchAndDecodeGeoData(geoJsonData.data);
+    } else {
+      console.log("GeoData Decoder Ready. Call fetchAndDecodeGeoData(yourBase64String) to test.");
+    }
+  }, [fetchAndDecodeGeoData]);
+
+
   return (
     <div className="flex flex-col p-[clamp(6px,0.83vw,12px)] gap-[clamp(12px,1.5vw,24px)] box-border min-h-full">
       {/* Header section */}
