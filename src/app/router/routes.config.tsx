@@ -62,3 +62,6 @@ export const Assignedfarmland = lazy(
 export const AssignedFarmlandList = lazy(
   () => import("../../features/io/components/AssignedFarmlandList"),
 );
+export const Farmlanddocument = lazy(
+  () => import("../../features/io/components/Farmlanddocument"),
+);
