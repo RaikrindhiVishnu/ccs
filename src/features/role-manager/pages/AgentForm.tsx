@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useAppSelector } from "@/core/hooks";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormDropdown } from "@/components/ui/Dropdown";
@@ -6,73 +7,36 @@ import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
 import SuccessIcon from "@/assets/sucess.svg";
 import { Upload, FileText, ArrowLeft, User, Camera } from "lucide-react";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface AgentFormData {
-    firstName: string;
-    lastName: string;
-    age: string;
-    phone: string;
-    city: string;
-    district: string;
-    state: string;
-    pincode: string;
-    region: string;
-    area: string;
-    bankName: string;
-    accountNumber: string;
-    ifscCode: string;
-    aadharFile?: File | null;
-    panFile?: File | null;
-    aadharFileName?: string;
-    panFileName?: string;
-    profileImage?: string;
-}
-
-interface AgentFormProps {
-    /** true  → Edit mode  (pre-fills data, shows "Update Profile") */
-    isEdit?: boolean;
-    /** Pass existing agent data when in edit mode */
-    initialData?: Partial<AgentFormData>;
-    /** Called with form payload on save — wire this to your RTK mutation */
-    onSave?: (data: AgentFormData) => void | Promise<void>;
-    /** Called when Cancel is clicked */
-    onCancel?: () => void;
-    /** Loading state (e.g. RTK mutation isLoading) */
-    isLoading?: boolean;
-}
+import { useCreateAgentMutation } from "../api/agentApi";
+import { uploadToPresignedUrl } from "@/core/utils/fileUpload";
+import type { AgentFormData, AgentFormProps } from "../types/agent";
 
 const emptyForm: AgentFormData = {
     firstName: "",
     lastName: "",
-    age: "",
+    dob: "",
+    email: "",
     phone: "",
-    city: "",
-    district: "",
+    address: "",
     state: "",
+    city: "",
     pincode: "",
     region: "",
     area: "",
     bankName: "",
     accountNumber: "",
     ifscCode: "",
+    bankBranch: "",
+    panNumber: "",
     aadharFile: null,
+    aadharBackFile: null,
     panFile: null,
     aadharFileName: "",
+    aadharBackFileName: "",
     panFileName: "",
 };
 
 // ─── Dropdown option lists ────────────────────────────────────────────────────
-
-const STATE_OPTIONS = [
-    "Andhra Pradesh",
-    "Telangana",
-    "Maharashtra",
-    "Karnataka",
-    "Tamil Nadu",
-    "Kerala",
-];
 
 const REGION_OPTIONS = [
     "Godavari Region",
@@ -107,24 +71,75 @@ export default function AgentForm({
     onCancel,
     isLoading = false,
 }: AgentFormProps) {
+    // Get states from Redux store
+    const states = useAppSelector((state) => state.roleManager.states);
+    const stateOptions = states.map((s) => s.desc);
+
     // Initialise directly from initialData — no useEffect needed
     const [formData, setFormData] = useState<AgentFormData>(() => ({
         ...emptyForm,
         ...initialData,
     }));
 
+    const [createAgent, { isLoading: isSubmitting }] = useCreateAgentMutation();
+
     const handleChange = (key: keyof AgentFormData, value: string) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
     };
 
     const handleSave = async () => {
-        if (onSave) {
-            await onSave(formData);
-        } else {
-            localStorage.setItem("agent-data", JSON.stringify(formData));
-            alert(
-                isEdit ? "Profile Updated Successfully" : "Profile Saved Successfully",
-            );
+        try {
+            // 1. Upload Documents (Mock)
+            const [aadharFrontUrl, aadharBackUrl, panUrl] = await Promise.all([
+                formData.aadharFile ? uploadToPresignedUrl(formData.aadharFile) : Promise.resolve(""),
+                formData.aadharBackFile ? uploadToPresignedUrl(formData.aadharBackFile) : Promise.resolve(""),
+                formData.panFile ? uploadToPresignedUrl(formData.panFile) : Promise.resolve(""),
+            ]);
+
+            // 2. Construct API Payload
+            const payload = {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                countryCode: "+91", // Default
+                emailAddress: formData.email,
+                phoneNumber: formData.phone,
+                dob: formData.dob,
+                role_id: 1, // Hardcoded for Agent
+                address: {
+                    address: formData.address,
+                    state_id: 1, // Dummy ID
+                    city: formData.city,
+                    pincode: formData.pincode,
+                },
+                geo_assignments: {
+                    country_id: 1,
+                    state_id: 1,
+                    district_id: 1,
+                    mandal_id: 1,
+                    region_id: 1,
+                    areas_id: 1,
+                },
+                id_proof: {
+                    bank_account_name: `${formData.firstName} ${formData.lastName}`,
+                    bank_account_number: formData.accountNumber,
+                    ifsc_code: formData.ifscCode,
+                    branch: formData.bankBranch,
+                    bank_name: formData.bankName,
+                    id_proof_frontUrl: aadharFrontUrl,
+                    id_proof_backUrl: aadharBackUrl,
+                    pan_card_number: formData.panNumber,
+                    pan_card_url: panUrl,
+                },
+            };
+
+            // 3. Trigger API Call
+            await createAgent(payload).unwrap();
+
+            alert(isEdit ? "Profile Updated Successfully" : "Agent Created Successfully");
+            if (onCancel) onCancel();
+        } catch (err) {
+            console.error("Failed to save agent:", err);
+            alert("Error: " + (err as any)?.data?.message || "Something went wrong");
         }
     };
 
@@ -148,6 +163,12 @@ export default function AgentForm({
                 <ArrowLeft size={16} strokeWidth={1.4} />
                 Go back to dashboard
             </button>
+            <Typography
+                variant="h3"
+                className="font-bold text-[clamp(20px,2vw,32px)] text-[color:var(--text-primary)] mb-6"
+            >
+                {isEdit ? "Edit Agent" : "Create Agent"}
+            </Typography>
 
             {/* ── Outer card ── */}
             <div
@@ -274,106 +295,128 @@ export default function AgentForm({
                     </div>
                 </div>
 
-                {/* ── REGION / AREA ASSIGNED ───────────────────────────────────── */}
-                <FormSection title="Region/Area Assigned">
+                {/* ── ENTER AGENT INFORMATION ──────────────────────────────────── */}
+                <FormSection title="Enter Agent Information">
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
-                        <FormDropdown
+                        <Input
+                            variant="form"
+                            label="First Name"
+                            placeholder="Enter First name"
+                            value={formData.firstName}
+                            onChange={(e) => handleChange("firstName", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="Last Name"
+                            placeholder="Enter Last Name"
+                            value={formData.lastName}
+                            onChange={(e) => handleChange("lastName", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="D.O.B."
+                            placeholder="Enter Age"
+                            value={formData.dob}
+                            onChange={(e) => handleChange("dob", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="Mail"
+                            placeholder="Enter Mail ID"
+                            value={formData.email}
+                            onChange={(e) => handleChange("email", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="Mobile Number"
+                            placeholder="Enter Mobile Number"
+                            value={formData.phone}
+                            onChange={(e) => handleChange("phone", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="Address"
+                            placeholder="Enter Address"
+                            value={formData.address}
+                            onChange={(e) => handleChange("address", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
                             label="State"
-                            options={STATE_OPTIONS}
+                            placeholder="Enter State"
                             value={formData.state}
-                            onChange={(v) => handleChange("state", v)}
-                            placeholder="Select State"
+                            onChange={(e) => handleChange("state", e.target.value)}
                         />
-                        <FormDropdown
-                            label="Region"
-                            options={REGION_OPTIONS}
-                            value={formData.region}
-                            onChange={(v) => handleChange("region", v)}
-                            placeholder="Select Region"
+                        <Input
+                            variant="form"
+                            label="City / Village"
+                            placeholder="Enter City / Village"
+                            value={formData.city}
+                            onChange={(e) => handleChange("city", e.target.value)}
                         />
-                        <FormDropdown
-                            label="Area"
-                            options={AREA_OPTIONS}
-                            value={formData.area}
-                            onChange={(v) => handleChange("area", v)}
-                            placeholder="Select Area"
+                        <Input
+                            variant="form"
+                            label="Pin Code"
+                            placeholder="Enter Pin Code"
+                            value={formData.pincode}
+                            onChange={(e) => handleChange("pincode", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="PAN Card Number"
+                            placeholder="Enter PAN Number"
+                            value={formData.panNumber}
+                            onChange={(e) => handleChange("panNumber", e.target.value)}
                         />
                     </div>
                 </FormSection>
 
-                {/* ── ADDRESS + PERSONAL ───────────────────────────────────────── */}
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-[clamp(14px,1.5vw,20px)]">
-                    <FormSection title="Address Details">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(14px,1.5vw,20px)]">
-                            <Input
-                                variant="form"
-                                label="City"
-                                placeholder="Enter city"
-                                value={formData.city}
-                                onChange={(e) => handleChange("city", e.target.value)}
+                {/* ── SELECT STATE, REGION & AREA ──────────────────────────────── */}
+                <FormSection title="Select State, Region & Area">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
+                        <FormDropdown
+                            label="State"
+                            options={stateOptions}
+                            value={formData.state}
+                            onChange={(v) => handleChange("state", v)}
+                            placeholder="Andhra Pradesh"
+                        />
+                        <div>
+                            <FormDropdown
+                                label="Region"
+                                options={REGION_OPTIONS}
+                                value={formData.region}
+                                onChange={(v) => handleChange("region", v)}
+                                placeholder="Godavari Region"
                             />
-                            <Input
-                                variant="form"
-                                label="District"
-                                placeholder="Enter district"
-                                value={formData.district}
-                                onChange={(e) => handleChange("district", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="State"
-                                placeholder="Enter state"
-                                value={formData.state}
-                                onChange={(e) => handleChange("state", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="Pincode"
-                                placeholder="Enter pincode"
-                                value={formData.pincode}
-                                onChange={(e) => handleChange("pincode", e.target.value)}
-                            />
+                            <div className="mt-3 space-y-2">
+                                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                                    RO : Jayanth kumar (GLC 0012)
+                                </p>
+                                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                                    IO : Jayanth kumar (GLC 0012)
+                                </p>
+                            </div>
                         </div>
-                    </FormSection>
-
-                    <FormSection title="Personal Details">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(14px,1.5vw,20px)]">
-                            <Input
-                                variant="form"
-                                label="First Name"
-                                placeholder="Enter first name"
-                                value={formData.firstName}
-                                onChange={(e) => handleChange("firstName", e.target.value)}
+                        <div>
+                            <FormDropdown
+                                label="Area"
+                                options={AREA_OPTIONS}
+                                value={formData.area}
+                                onChange={(v) => handleChange("area", v)}
+                                placeholder="Tanuku Area"
                             />
-                            <Input
-                                variant="form"
-                                label="Last Name"
-                                placeholder="Enter last name"
-                                value={formData.lastName}
-                                onChange={(e) => handleChange("lastName", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="Age"
-                                placeholder="Enter age"
-                                type="number"
-                                value={formData.age}
-                                onChange={(e) => handleChange("age", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="Phone Number"
-                                placeholder="+91 XXXXX-XXXXX"
-                                type="tel"
-                                value={formData.phone}
-                                onChange={(e) => handleChange("phone", e.target.value)}
-                            />
+                            <div className="mt-3">
+                                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                                    FO : Ram Verma (GLC 0019)
+                                </p>
+                            </div>
                         </div>
-                    </FormSection>
-                </div>
+                    </div>
+                </FormSection>
 
                 {/* ── BANK DETAILS ─────────────────────────────────────────────── */}
-                <FormSection title="Bank Details">
+                <FormSection title="Enter Bank Details">
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
                         <FormDropdown
                             label="Bank Name"
@@ -385,84 +428,94 @@ export default function AgentForm({
                         <Input
                             variant="form"
                             label="Account Number"
-                            placeholder="Enter account number"
+                            placeholder="Enter Account Number"
                             value={formData.accountNumber}
                             onChange={(e) => handleChange("accountNumber", e.target.value)}
                         />
                         <Input
                             variant="form"
                             label="IFSC Code"
-                            placeholder="e.g. HDFC0001234"
+                            placeholder="Enter IFSC Code"
                             value={formData.ifscCode}
                             onChange={(e) => handleChange("ifscCode", e.target.value)}
+                        />
+                        <Input
+                            variant="form"
+                            label="Bank Branch"
+                            placeholder="Enter Bank Branch"
+                            value={formData.bankBranch}
+                            onChange={(e) => handleChange("bankBranch", e.target.value)}
                         />
                     </div>
                 </FormSection>
 
-                {/* ── DOCUMENTS ────────────────────────────────────────────────── */}
-                <FormSection title="Documents">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-                        <div className="w-full max-w-[346px]">
-                            <UploadBox
-                                title="Aadhar Card"
-                                fileName={formData.aadharFileName}
-                                onFile={(file) =>
-                                    setFormData((p) => ({
-                                        ...p,
-                                        aadharFile: file,
-                                        aadharFileName: file?.name ?? "",
-                                    }))
-                                }
-                            />
-                        </div>
-                        <div className="w-full max-w-[346px]">
-                            <UploadBox
-                                title="Pan Card"
-                                fileName={formData.panFileName}
-                                onFile={(file) =>
-                                    setFormData((p) => ({
-                                        ...p,
-                                        panFile: file,
-                                        panFileName: file?.name ?? "",
-                                    }))
-                                }
-                            />
-                        </div>
+                {/* ── UPLOAD DOCUMENTS ─────────────────────────────────────────── */}
+                <FormSection title="Upload Documents">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,30px)]">
+                        <UploadBox
+                            title="Aadhar Card (Front)"
+                            fileName={formData.aadharFileName}
+                            onFile={(file) =>
+                                setFormData((p) => ({
+                                    ...p,
+                                    aadharFile: file,
+                                    aadharFileName: file?.name ?? "",
+                                }))
+                            }
+                        />
+                        <UploadBox
+                            title="Aadhar Card (Back)"
+                            fileName={formData.aadharBackFileName}
+                            onFile={(file) =>
+                                setFormData((p) => ({
+                                    ...p,
+                                    aadharBackFile: file,
+                                    aadharBackFileName: file?.name ?? "",
+                                }))
+                            }
+                        />
+                        <UploadBox
+                            title="Pan Card"
+                            fileName={formData.panFileName}
+                            onFile={(file) =>
+                                setFormData((p) => ({
+                                    ...p,
+                                    panFile: file,
+                                    panFileName: file?.name ?? "",
+                                }))
+                            }
+                        />
                     </div>
                 </FormSection>
 
                 {/* ── ACTION BUTTONS ───────────────────────────────────────────── */}
-                <div className="flex justify-end items-center gap-[clamp(12px,1vw,16px)]">
-                    <Button
-                        variant="outline-dark"
+                <div className="flex justify-end items-center gap-[clamp(12px,1vw,16px)] pt-4">
+                    <button
                         onClick={onCancel}
                         disabled={isLoading}
                         className="
-                            !h-[40px] !min-w-[101px] !px-[24px] !py-[8px]
-                            !font-[family-name:var(--font-inter)] !font-medium
-                            !text-[length:clamp(13px,0.9vw,16px)] !leading-[24px]
-                            !normal-case !tracking-normal !shadow-none
+                            text-[clamp(12px,0.9vw,16px)] font-medium text-[color:var(--text-primary)]
+                            px-6 py-2 hover:opacity-70 transition-opacity disabled:opacity-50
                         "
                     >
                         Cancel
-                    </Button>
+                    </button>
 
                     <Button
                         variant="primary"
                         onClick={handleSave}
-                        loading={isLoading}
+                        loading={isLoading || isSubmitting}
                         className="
-                            !h-[40px] !min-w-[155px]
+                            !h-[44px] !min-w-[180px]
                             !rounded-[100px]
                             !px-[32px] !py-[8px]
                             !font-[family-name:var(--font-inter)] !font-medium
-                            !text-[length:clamp(13px,0.9vw,16px)] !leading-[24px]
-                            !normal-case !tracking-normal
+                            !text-[length:clamp(13px,0.9vw,16px)]
                             !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
                             !shadow-none
                         "
                     >
-                        {isEdit ? "Update Profile" : "Save Profile"}
+                        {isEdit ? "Update Profile" : "Create Profile"}
                     </Button>
                 </div>
             </div>
