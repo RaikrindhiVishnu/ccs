@@ -157,7 +157,7 @@ const CreateRegionsAndAreas: React.FC = () => {
         )}
       >
         {/* ── Back button ──────────────────────────────────── */}
-        <GoBackButton />
+        <GoBackButton onClick={() => {}} />
 
         {/* ── White container card ─────────────────────────── */}
         <Card

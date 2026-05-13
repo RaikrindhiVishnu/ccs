@@ -14,8 +14,8 @@ interface AuthState {
 
 const mutex = new Mutex();
 
-const baseQuery = fetchBaseQuery({
-  baseUrl: env.API_BASE_URL,
+export const createStandardBaseQuery = (baseUrl: string) => fetchBaseQuery({
+  baseUrl,
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as AuthState).auth.accessToken;
     if (token) {
@@ -25,50 +25,57 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (args, api, extraOptions) => {
-  await mutex.waitForUnlock();
-  let result = await baseQuery(args, api, extraOptions);
+export const createBaseQueryWithReauth = (baseUrl: string): BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> => {
+  const baseQuery = createStandardBaseQuery(baseUrl);
+  
+  return async (args, api, extraOptions) => {
+    await mutex.waitForUnlock();
+    let result = await baseQuery(args, api, extraOptions);
 
-  if (result.error && result.error.status === 401) {
-    if (!mutex.isLocked()) {
-      const release = await mutex.acquire();
-      try {
-        const refreshToken = (api.getState() as AuthState).auth.refreshToken;
+    if (result.error && result.error.status === 401) {
+      if (!mutex.isLocked()) {
+        const release = await mutex.acquire();
+        try {
+          const refreshToken = (api.getState() as AuthState).auth.refreshToken;
 
-        if (refreshToken) {
-          const refreshResult = await baseQuery(
-            {
-              url: '/auth/refreshToken',
-              method: 'POST',
-              body: { token: refreshToken },
-            },
-            api,
-            extraOptions
-          );
-
-          if (refreshResult.data) {
-            const data = refreshResult.data as LoginResponse;
-            api.dispatch(
-              updateTokens({
-                accessToken: data.token,
-                refreshToken: data.refreshToken,
-              })
+          if (refreshToken) {
+            const authBaseQuery = createStandardBaseQuery(env.AUTH_API_BASE_URL);
+            const refreshResult = await authBaseQuery(
+              {
+                url: '/auth/refreshToken',
+                method: 'POST',
+                body: { token: refreshToken },
+              },
+              api,
+              extraOptions
             );
-            result = await baseQuery(args, api, extraOptions);
+
+            if (refreshResult.data) {
+              const data = refreshResult.data as LoginResponse;
+              api.dispatch(
+                updateTokens({
+                  accessToken: data.token,
+                  refreshToken: data.refreshToken,
+                })
+              );
+              result = await baseQuery(args, api, extraOptions);
+            } else {
+              api.dispatch(logOut());
+            }
           } else {
             api.dispatch(logOut());
           }
-        } else {
-          api.dispatch(logOut());
+        } finally {
+          release();
         }
-      } finally {
-        release();
+      } else {
+        await mutex.waitForUnlock();
+        result = await baseQuery(args, api, extraOptions);
       }
-    } else {
-      await mutex.waitForUnlock();
-      result = await baseQuery(args, api, extraOptions);
     }
-  }
 
-  return result;
+    return result;
+  };
 };
+
+export const baseQueryWithReauth = createBaseQueryWithReauth(env.AUTH_API_BASE_URL);

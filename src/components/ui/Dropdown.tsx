@@ -39,7 +39,7 @@ function DropdownMenu({
         "absolute top-full z-50 mt-1 overflow-hidden",
         "bg-[color:var(--surface-card)]",
         "border border-[color:var(--border)]",
-        "rounded-[var(--radius-dropdown)]",
+        "rounded-xl",
         "shadow-[var(--shadow-card)]",
         "min-w-full",
         align === "right" ? "right-0" : "left-0",
@@ -418,7 +418,7 @@ export function SquareDropdown({
           "px-[clamp(14px,1.5vw,26px)]",
           "bg-[color:var(--surface-card)]",
           "border border-[color:var(--text-muted-strong)]",
-          "rounded-[8px]",
+          "rounded-xl",
           "hover:border-[color:var(--brand-500)]",
         )}
       >
@@ -548,7 +548,7 @@ export function CheckboxDropdown({
           "px-[clamp(14px,1.5vw,26px)]",
           "bg-[color:var(--surface-card)]",
           "border border-[color:var(--text-muted-strong)]",
-          "rounded-[8px]",
+          "rounded-xl",
           "hover:border-[color:var(--brand-500)]",
         )}
       >
@@ -580,7 +580,7 @@ export function CheckboxDropdown({
                 "w-full outline-none transition-colors duration-150",
                 "bg-[color:var(--input)]",
                 "border border-[color:var(--border)]",
-                "rounded-[8px]",
+                "rounded-xl",
                 "text-[color:var(--text-primary)]",
                 "text-[length:clamp(11px,0.75vw,14px)]",
                 "font-[family-name:var(--font-sans)]",
@@ -688,7 +688,7 @@ export function FormDropdown({
           "flex items-center w-full bg-[color:var(--surface-card)] cursor-pointer",
           "h-[clamp(36px,2.9vw,40px)]",
           "border border-[color:var(--border-default)]",
-          "rounded-[var(--radius-dropdown)]",
+          "rounded-xl",
           "px-[clamp(10px,0.9vw,14px)]",
           "transition-colors duration-150",
           "hover:border-[color:var(--brand-500)]",
