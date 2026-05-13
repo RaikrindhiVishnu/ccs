@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
@@ -318,6 +319,7 @@ const AgentRow = ({
 export const AgentApprovalsPage = ({
   agents = [],
 }: AgentApprovalsPageProps) => {
+  const navigate = useNavigate();
   const agentList = agents.length > 0 ? agents : fallbackAgents;
 
   const [visibleCount, setVisibleCount] = React.useState(5);
@@ -328,10 +330,11 @@ export const AgentApprovalsPage = ({
 
   const handleViewProfile = (id: string) => {
     console.log("View profile:", id);
+    navigate("/role-manager/agent-details");
   };
 
   const handleCreateAgent = () => {
-    console.log("Create agent");
+    navigate("/role-manager/agent-create");
   };
 
   return (
