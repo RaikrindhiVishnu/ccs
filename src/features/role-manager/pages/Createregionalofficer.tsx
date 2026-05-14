@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormDropdown } from "@/components/ui/Dropdown";
 import { Typography } from "@/components/ui/typography";
+import { useCreateRegionalOfficerMutation } from "@/features/role-manager/api/agentApi";
 
 const BACK_ROUTE = "/role-manager/create-roles" as const;
 
@@ -25,19 +26,28 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 // ─── Text Input ───────────────────────────────────────────────────────────────
-
 interface TextFieldProps {
   label: string;
   placeholder: string;
   type?: string;
+  value: string;
+  onChange: (value: string) => void;
 }
 
-function TextField({ label, placeholder, type = "text" }: TextFieldProps) {
+function TextField({
+  label,
+  placeholder,
+  type = "text",
+  value,
+  onChange,
+}: TextFieldProps) {
   return (
     <div className="flex flex-col gap-[clamp(0.375rem,0.5vw,0.625rem)]">
       <FieldLabel>{label}</FieldLabel>
       <input
         type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="w-full h-[clamp(2rem,2.78vw,2.5rem)] px-[clamp(0.625rem,0.97vw,0.875rem)] bg-[color:var(--surface-card)] border border-[color:var(--border-default)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] font-[family-name:var(--font-inter)] font-normal text-[clamp(0.6875rem,0.83vw,0.875rem)] text-[color:var(--text-primary)] placeholder:text-[color:var(--text-muted)] outline-none transition-colors duration-150 focus:border-[color:var(--brand-500)]"
       />
@@ -111,7 +121,7 @@ function DocUploadField({ label }: { label: string }) {
         h-[1rem]
         stroke-[1.75]
       "
-            />
+        />
         <Typography
           as="span"
           variant="span"
@@ -211,7 +221,59 @@ export default function CreateregionalOfficer() {
   const navigate = useNavigate();
   const [state, setState] = useState("");
   const [region, setRegion] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    dob: "",
+    email: "",
+    mobile: "",
+    state: "",
+    address: "",
+    city: "",
+    pincode: "",
+  });
+  const [createRegionalOfficer, { isLoading }] =
+    useCreateRegionalOfficerMutation();
+  const handleCreateRegionalOfficer = async () => {
+    try {
+      const payload = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        countryCode: "+91",
+        emailAddress: formData.email,
+        phoneNumber: formData.mobile,
 
+        dob: formData.dob,
+        role_id: 1,
+
+        address: {
+          address: formData.address,
+          state_id: 1,
+          city: formData.city,
+          pincode: formData.pincode,
+        },
+
+        geo_assignments: {
+          country_id: 1,
+          state_id: 1,
+          region_id: 1,
+        },
+
+        id_proof: {
+          id_proof_frontUrl: "front.png",
+          id_proof_backUrl: "back.png",
+          pan_card_number: "ABCDE1234F",
+          pan_card_url: "pan.png",
+        },
+      };
+
+      const response = await createRegionalOfficer(payload).unwrap();
+
+      console.log("Regional Officer Created:", response);
+    } catch (err) {
+      console.error("Create Failed:", err);
+    }
+  };
   return (
     <div className="min-h-screen bg-[color:var(--surface-page)] rounded-[2rem] px-[clamp(1.5rem,6.81vw,6.8125rem)] py-[clamp(1.5rem,2.64vw,2.375rem)]">
       {/* ── Back Button → /role-manager/create-roles ── */}
@@ -243,26 +305,108 @@ export default function CreateregionalOfficer() {
           {/* ── Section 1 ── */}
           <SectionPanel title="Enter Regional Officer Information">
             <div className="grid grid-cols-3 gap-x-[clamp(1rem,2.7vw,2.4375rem)] gap-y-[clamp(0.75rem,1.67vw,1.5rem)]">
-              <TextField label="First Name" placeholder="Enter First name" />
-              <TextField label="Last Name" placeholder="Enter Last Name" />
-              <TextField label="Age" placeholder="Enter Age" type="number" />
+              <TextField
+                label="First Name"
+                placeholder="Enter First name"
+                value={formData.firstName}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    firstName: value,
+                  }))
+                }
+              />
+              <TextField
+                label="Last Name"
+                placeholder="Enter Last Name"
+                value={formData.lastName}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    lastName: value,
+                  }))
+                }
+              />
+              <TextField
+                label="DOB"
+                placeholder="Select DOB"
+                type="date"
+                value={formData.dob}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    dob: value,
+                  }))
+                }
+              />
               <TextField
                 label="Mail"
                 placeholder="Enter Mail ID"
                 type="email"
+                value={formData.email}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    email: value,
+                  }))
+                }
               />
               <TextField
                 label="Mobile Number"
                 placeholder="Enter Mobile Number"
                 type="tel"
+                value={formData.mobile}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    mobile: value,
+                  }))
+                }
               />
-              <TextField label="Address" placeholder="Enter Address" />
-              <TextField label="State" placeholder="Enter State" />
+              <TextField
+                label="Address"
+                placeholder="Enter Address"
+                value={formData.address}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    address: value,
+                  }))
+                }
+              />
+              <TextField
+                label="State"
+                placeholder="Enter State"
+                value={formData.state}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    state: value,
+                  }))
+                }
+              />
               <TextField
                 label="City / Village"
                 placeholder="Enter City / Village"
+                value={formData.city}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    city: value,
+                  }))
+                }
               />
-              <TextField label="Pin Code" placeholder="Enter Pin Code" />
+              <TextField
+                label="Pin Code"
+                placeholder="Enter Pin Code"
+                value={formData.pincode}
+                onChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    pincode: value,
+                  }))
+                }
+              />
             </div>
             <div className="mt-[clamp(0.75rem,1.67vw,1.5rem)] w-[calc(33.333%-clamp(0.667rem,1.8vw,1.625rem))]">
               <UploadPictureField />
@@ -333,6 +477,8 @@ export default function CreateregionalOfficer() {
 
             <Button
               variant="gradient-blue"
+              onClick={handleCreateRegionalOfficer}
+              disabled={isLoading}
               className={cn(
                 "w-[10.5625rem]",
                 "h-[2.5rem]",
@@ -347,7 +493,7 @@ export default function CreateregionalOfficer() {
                 "shrink-0 whitespace-nowrap",
               )}
             >
-              Create Profile
+              {isLoading ? "Creating..." : "Create Profile"}
             </Button>
           </div>
         </CardContent>
