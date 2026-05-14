@@ -1,4 +1,5 @@
 import { roleManagerApi } from "./roleManagerApi";
+
 import type {
   CreateAgentRequest,
   AgentOnboardingVelocityRequest,
@@ -13,25 +14,34 @@ export const agentApi = roleManagerApi.injectEndpoints({
   endpoints: (builder) => ({
     createAgent: builder.mutation<any, CreateAgentRequest>({
       query: (body) => ({
-        url: "/agents/createAgent",
+        url: "/agent/createAgent",
         method: "POST",
         body,
       }),
     }),
-    createRegionalOfficer: builder.mutation<any, CreateRegionalOfficerRequest>({
+
+    createRegionalOfficer: builder.mutation<
+      any,
+      CreateRegionalOfficerRequest
+    >({
       query: (body) => ({
         url: "/regionalOfficer/createRegionalOfficer",
         method: "POST",
         body,
       }),
     }),
-    createFieldOfficer: builder.mutation<any, CreateFieldOfficerRequest>({
+
+    createFieldOfficer: builder.mutation<
+      any,
+      CreateFieldOfficerRequest
+    >({
       query: (body) => ({
         url: "/feildOfficer/createFieldOfficer",
         method: "POST",
         body,
       }),
     }),
+
     getAgentOnboardingVelocity: builder.query<
       AgentOnboardingVelocityResponse,
       AgentOnboardingVelocityRequest
@@ -42,6 +52,7 @@ export const agentApi = roleManagerApi.injectEndpoints({
         body,
       }),
     }),
+
     getRegionCreationVelocity: builder.query<
       RegionCreationVelocityResponse,
       AgentOnboardingVelocityRequest
@@ -52,6 +63,7 @@ export const agentApi = roleManagerApi.injectEndpoints({
         body,
       }),
     }),
+
     getRoleCreationOverview: builder.query<
       RoleCreationOverviewResponse,
       AgentOnboardingVelocityRequest
@@ -67,9 +79,9 @@ export const agentApi = roleManagerApi.injectEndpoints({
 
 export const {
   useCreateAgentMutation,
+  useCreateRegionalOfficerMutation,
+  useCreateFieldOfficerMutation,
   useGetAgentOnboardingVelocityQuery,
   useGetRegionCreationVelocityQuery,
   useGetRoleCreationOverviewQuery,
-  useCreateRegionalOfficerMutation,
-  useCreateFieldOfficerMutation,
 } = agentApi;

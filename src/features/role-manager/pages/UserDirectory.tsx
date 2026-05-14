@@ -1,4 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
+import {
+  useGetRegionOfficerDetailsMutation,
+  useGetFieldOfficerDetailsMutation,
+  useGetAgentDetailsMutation,
+} from "../api/userDirectoryApi";
 import { useNavigate } from "react-router-dom";
 import AgentOnboardingVelocity from "@/features/role-manager/components/AgentOnboardingVelocity";
 import WorkforceStructure from "@/features/role-manager/components/WorkforceStructure";
@@ -11,6 +16,32 @@ import { RoleFlow } from "../components/RoleFlow";
 
 const UserDirectory: React.FC = () => {
   const navigate = useNavigate();
+
+  const [
+    getRegionOfficerDetails,
+    { data: regionOfficerData },
+  ] = useGetRegionOfficerDetailsMutation();
+
+  const [
+    getFieldOfficerDetails,
+    { data: fieldOfficerData },
+  ] = useGetFieldOfficerDetailsMutation();
+
+  const [
+    getAgentDetails,
+    { data: agentData },
+  ] = useGetAgentDetailsMutation();
+
+  useEffect(() => {
+    getRegionOfficerDetails();
+    getFieldOfficerDetails();
+    getAgentDetails();
+  }, []);
+
+  console.log(regionOfficerData);
+  console.log(fieldOfficerData);
+  console.log(agentData);
+
   return (
     <div className="flex flex-col py-16 px-4 gap-6 box-border min-h-full bg-( --surface-page)">
       {/* Graphs Section */}
@@ -72,7 +103,11 @@ const UserDirectory: React.FC = () => {
 
         {/* Role Flow Diagram Section */}
         <div className="mt-4">
-          <RoleFlow />
+          <RoleFlow
+            regionOfficerData={regionOfficerData}
+            fieldOfficerData={fieldOfficerData}
+            agentData={agentData}
+          />
         </div>
       </div>
     </div>
