@@ -74,4 +74,43 @@ export interface CreateAgentRequest {
         pan_card_number: string;
         pan_card_url: string;
     };
+    
+}
+
+export interface AgentOnboardingVelocityRequest {
+    startDate: string;
+    endDate: string;
+   offset: string;
+}
+
+export interface AgentOnboardingVelocityItem {
+    onboardingDate: string;
+    totalAgents: number;
+}
+
+export interface AgentOnboardingVelocityResponse {
+    success: boolean;
+    data: AgentOnboardingVelocityItem[];
+}
+
+export interface RegionCreationVelocityItem {
+    creationDate: string;
+    totalRegions: number;
+}
+
+export interface RegionCreationVelocityResponse {
+    success: boolean;
+    data: RegionCreationVelocityItem[];
+}
+export interface RoleCreationOverviewItem {
+    assignmentDate: string;
+    totalRO: number;
+    totalIO: number;
+    totalFO: number;
+    totalAgents: number;
+}
+
+export interface RoleCreationOverviewResponse {
+    success: boolean;
+    data: RoleCreationOverviewItem[];
 }
