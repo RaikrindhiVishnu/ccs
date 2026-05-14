@@ -29,12 +29,12 @@ export const userDirectoryApi = roleManagerApi.injectEndpoints({
         }),
 
         // 3. Agent Details
-        getAgentDetails: builder.mutation<any, void>({
-            query: () => ({
+        getAgentDetails: builder.mutation<any, number>({
+            query: (fieldOfficerId) => ({
                 url: "/userDirectory/agentDetails",
                 method: "POST",
                 body: {
-                    field_officer_id: 46,
+                    field_officer_id: fieldOfficerId,
                     offset: "0",
                     limit: 200,
                 },
