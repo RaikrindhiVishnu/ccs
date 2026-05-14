@@ -1,6 +1,7 @@
 import React from "react";
 import { WeekDropdown } from "@/components/ui/Dropdown";
 import { useGetRegionCreationVelocityQuery } from "@/features/role-manager/api/agentApi";
+import DateRangePicker from "@/components/ui/DateRangePicker";
 
 import {
   AreaChart,
@@ -51,12 +52,23 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const RegionCreationVelocity: React.FC = () => {
-  const { data: apiData, isLoading, error } =
-    useGetRegionCreationVelocityQuery({
-      startDate: "2024-01-01",
-      endDate: "2024-12-31",
-      offset: "0",
-    });
+  const [fromDate, setFromDate] = React.useState<Date>(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 7);
+    return date;
+  });
+
+  const [toDate, setToDate] = React.useState<Date>(() => new Date());
+  const {
+    data: apiData,
+    isLoading,
+    error,
+  } = useGetRegionCreationVelocityQuery({
+    startDate: fromDate ? fromDate.toISOString().split("T")[0] : "",
+
+    endDate: toDate ? toDate.toISOString().split("T")[0] : "",
+    offset: "0",
+  });
 
   const transformedData =
     apiData?.data?.map((item) => ({
@@ -70,21 +82,15 @@ const RegionCreationVelocity: React.FC = () => {
   const chartData = transformedData;
 
   const PEAK_VAL =
-    chartData.length > 0
-      ? Math.max(...chartData.map((item) => item.value))
-      : 0;
+    chartData.length > 0 ? Math.max(...chartData.map((item) => item.value)) : 0;
 
-  const peakItem = chartData.find(
-    (item) => item.value === PEAK_VAL
-  );
+  const peakItem = chartData.find((item) => item.value === PEAK_VAL);
 
   return (
     <div className="card p-[clamp(12px,2vw,24px)_clamp(16px,2.5vw,32px)] w-full flex-1 min-h-0 box-border flex flex-col overflow-hidden">
-      
       {/* Header */}
       <div className="flex justify-between items-start mb-[clamp(12px,2vh,24px)] shrink-0">
         <div className="flex flex-col gap-[clamp(4px,0.8vh,8px)]">
-          
           <div className="font-sans font-medium text-[clamp(14px,1.5vw,20px)] leading-tight text-[var(--text-primary)]">
             Region Creation Velocity
           </div>
@@ -94,34 +100,39 @@ const RegionCreationVelocity: React.FC = () => {
           </div>
         </div>
 
-        <WeekDropdown />
+        {/* <WeekDropdown /> */}
+        <DateRangePicker
+          from={fromDate}
+          to={toDate}
+          onFromChange={(date) => {
+            if (date) setFromDate(date);
+          }}
+          onToChange={(date) => {
+            if (date) setToDate(date);
+          }}
+        />
       </div>
 
       {/* Chart */}
       <div className="flex-1 min-h-0 w-full relative">
-
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
             Loading...
           </div>
-
         ) : error ? (
           <div className="flex items-center justify-center h-full text-red-500">
             Failed to load data
           </div>
-
         ) : chartData.length === 0 ? (
           <div className="flex items-center justify-center h-full text-[14px] text-black/60">
             No data available
           </div>
-
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={chartData}
               margin={{ top: 30, right: 10, left: -25, bottom: 0 }}
             >
-              
               <defs>
                 <linearGradient id="rcvGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop
@@ -161,9 +172,7 @@ const RegionCreationVelocity: React.FC = () => {
                       y={y + 12}
                       textAnchor="middle"
                       className={`font-sans text-[clamp(9px,0.7vw,11px)] fill-[var(--text-primary)] ${
-                        index === 3
-                          ? "opacity-100 font-semibold"
-                          : "opacity-50"
+                        index === 3 ? "opacity-100 font-semibold" : "opacity-50"
                       }`}
                     >
                       {payload.value}
@@ -233,11 +242,9 @@ const RegionCreationVelocity: React.FC = () => {
                   );
                 }}
               />
-
             </AreaChart>
           </ResponsiveContainer>
         )}
-
       </div>
     </div>
   );
