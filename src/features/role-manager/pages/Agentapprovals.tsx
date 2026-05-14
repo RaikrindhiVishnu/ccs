@@ -6,6 +6,7 @@ import { Typography } from "@/components/ui/typography";
 
 import { Plus } from "lucide-react";
 import location from "@/assets/location.svg";
+import { useGetAllAgentsMutation } from "@/features/role-manager/api/getagents";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -18,77 +19,6 @@ interface Agent {
   initials?: string;
 }
 
-interface AgentApprovalsPageProps {
-  agents?: Agent[];
-}
-
-// ─── Fallback Mock Data ──────────────────────────────────────────────────────
-
-const fallbackAgents: Agent[] = [
-  {
-    id: "1",
-    name: "Aarav Sharma",
-    location: "Mumbai, Maharashtra",
-    status: "Pending Review",
-    initials: "AS",
-  },
-  {
-    id: "2",
-    name: "Ananthu",
-    location: "Bengaluru, Karnataka",
-    status: "Pending Review",
-    initials: "AN",
-  },
-  {
-    id: "3",
-    name: "Vikram Kumar",
-    location: "Delhi, NCR",
-    status: "Pending Review",
-    initials: "VK",
-  },
-  {
-    id: "4",
-    name: "Sunil Varma",
-    location: "Delhi, NCR",
-    status: "Approved",
-    initials: "SV",
-  },
-  {
-    id: "5",
-    name: "Sandeep Bhukya",
-    location: "Bengaluru, Karnataka",
-    status: "Rejected",
-    initials: "SB",
-  },
-  {
-    id: "6",
-    name: "Sandeep Bhukya",
-    location: "Bengaluru, Karnataka",
-    status: "Rejected",
-    initials: "SB",
-  },
-  {
-    id: "7",
-    name: "Sandeep Bhukya",
-    location: "Bengaluru, Karnataka",
-    status: "Rejected",
-    initials: "SB",
-  },
-  {
-    id: "8",
-    name: "Sandeep Bhukya",
-    location: "Bengaluru, Karnataka",
-    status: "Rejected",
-    initials: "SB",
-  },
-  {
-    id: "9",
-    name: "Sandeep Bhukya",
-    location: "Bengaluru, Karnataka",
-    status: "Rejected",
-    initials: "SB",
-  },
-];
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
 
@@ -316,11 +246,57 @@ const AgentRow = ({
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export const AgentApprovalsPage = ({
-  agents = [],
-}: AgentApprovalsPageProps) => {
+export const AgentApprovalsPage = () => {
   const navigate = useNavigate();
-  const agentList = agents.length > 0 ? agents : fallbackAgents;
+const [getAllAgents, { isLoading }] = useGetAllAgentsMutation();
+
+const [agentList, setAgentList] = React.useState<Agent[]>([]);
+
+React.useEffect(() => {
+  fetchPendingAgents();
+}, []);
+
+const fetchPendingAgents = async () => {
+  try {
+   const response = await getAllAgents({
+  is_verified: 0,
+ 
+}).unwrap();
+
+    console.log("Pending Agents:", response);
+
+    const apiAgents = response?.data || [];
+
+    const formattedAgents: Agent[] = apiAgents.map((item: any) => ({
+  id: item.id?.toString() || "",
+name:
+  item.name ||
+  item.full_name ||
+  `${item.first_name || ""} ${item.last_name || ""}`.trim(),
+
+  location:
+    item.location ||
+    item.city ||
+    item.address ||
+    "Location Not Available",
+
+  status: "Pending Review",
+
+  avatarUrl: item.avatar || item.profile_image || "",
+
+  initials:
+    `${item.first_name || ""} ${item.last_name || ""}`
+      ?.split(" ")
+      ?.map((word: string) => word[0])
+      ?.join("")
+      ?.toUpperCase() || "NA",
+}));
+
+    setAgentList(formattedAgents);
+  } catch (error) {
+    console.log("Error fetching pending agents:", error);
+  }
+};
 
   const [visibleCount, setVisibleCount] = React.useState(5);
 
@@ -328,12 +304,12 @@ export const AgentApprovalsPage = ({
 
   const hasMore = visibleCount < agentList.length;
 
-  const handleViewProfile = (id: string) => {
-    console.log("View profile:", id);
-    navigate("/role-manager/agent-details");
-  };
+ const handleViewProfile = (id: string) => {
+  console.log("View profile:", id);
+  navigate(`/role-manager/agent-details/${id}`);
+};
 
-  const handleCreateAgent = () => {
+  const handleCreateAgent = () => { 
     navigate("/role-manager/agent-create");
   };
 

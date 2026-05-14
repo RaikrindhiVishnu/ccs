@@ -71,13 +71,13 @@ export const authRoutes: RouteObject[] = [
       },
       { path: "/role-manager/agent-create", element: <AgentCreate /> },
       { path: "/role-manager/field-officer-create", element: <CreateFieldOfficer /> },
-    { path: "/role-manager/intellegence-officer-create", element: <CreateintellegenceOfficer /> },
-     { path: "/role-manager/regional-officer-create", element: <CreateregionalOfficer /> },
+      { path: "/role-manager/intellegence-officer-create", element: <CreateintellegenceOfficer /> },
+      { path: "/role-manager/regional-officer-create", element: <CreateregionalOfficer /> },
       { path: "/role-manager/agent-edit", element: <AgentEdit /> },
       { path: "/role-manager/profile", element: <RoleManagerDetails /> },
       { path: "/role-manager/agent-approvals", element: <AgentApprovals /> },
-      { path: "/role-manager/agent-details", element: <Agentdetailpage /> },
-    ],
+      { path: "/role-manager/agent-details/:id", element: <Agentdetailpage /> },   
+ ],
   },
 ];
 
