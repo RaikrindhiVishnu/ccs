@@ -65,3 +65,12 @@ export const AssignedFarmlandList = lazy(
 export const Farmlanddocument = lazy(
   () => import("../../features/io/components/Farmlanddocument"),
 );
+export const CreateFieldOfficer = lazy(
+  () => import("../../features/role-manager/pages/Createfieldofficer"),
+);
+export const CreateintellegenceOfficer = lazy(
+  () => import("../../features/role-manager/pages/Createintelligenceofficer"),
+);
+export const CreateregionalOfficer = lazy(
+  () => import("../../features/role-manager/pages/Createregionalofficer"),
+);
