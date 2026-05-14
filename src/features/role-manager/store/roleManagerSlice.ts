@@ -2,6 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { GeoMasterData } from "../types/masterDataTypes";
 
 interface RoleManagerState extends GeoMasterData {
+  regions: any[];
   isLoading: boolean;
   error: string | null;
 }
@@ -11,6 +12,7 @@ const initialState: RoleManagerState = {
   states: [],
   districts: [],
   mandals: [],
+  regions: [],
   isLoading: false,
   error: null,
 };
@@ -31,8 +33,11 @@ const roleManagerSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
+    setRegions: (state, action: PayloadAction<any[]>) => {
+      state.regions = action.payload;
+    },
   },
 });
 
-export const { setGeoMasterData, setLoading, setError } = roleManagerSlice.actions;
+export const { setGeoMasterData, setLoading, setError, setRegions } = roleManagerSlice.actions;
 export default roleManagerSlice.reducer;

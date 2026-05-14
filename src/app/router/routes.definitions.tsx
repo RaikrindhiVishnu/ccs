@@ -74,7 +74,7 @@ export const authRoutes: RouteObject[] = [
     { path: "/role-manager/intellegence-officer-create", element: <CreateintellegenceOfficer /> },
      { path: "/role-manager/regional-officer-create", element: <CreateregionalOfficer /> },
       { path: "/role-manager/agent-edit", element: <AgentEdit /> },
-      { path: "/role-manager/profile", element: <RoleManagerDetails /> },
+      { path: "/role-manager/profile/:id", element: <RoleManagerDetails /> },
       { path: "/role-manager/agent-approvals", element: <AgentApprovals /> },
       { path: "/role-manager/agent-details", element: <Agentdetailpage /> },
     ],

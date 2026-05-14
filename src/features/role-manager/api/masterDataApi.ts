@@ -19,7 +19,14 @@ export const masterDataApi = roleManagerApi.injectEndpoints({
         };
       },
     }),
+    getAllRegionsByStateId: builder.mutation<any, { state_id: string | number }>({
+      query: (body) => ({
+        url: "master/get_all_regions_by_state_id",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useGetAllGeoMasterDataQuery } = masterDataApi;
+export const { useGetAllGeoMasterDataQuery, useGetAllRegionsByStateIdMutation } = masterDataApi;
