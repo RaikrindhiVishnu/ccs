@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Typography } from "@/components/ui/typography";
+import { useGetAgentDetailsMutation } from "../api/userDirectoryApi";
 
 import { FlowCard } from "./FlowCard";
 import { FlowItem } from "./FlowItem";
@@ -47,7 +48,9 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
   // 2. Map Field Officers
   const fieldOfficers = Array.isArray(fieldOfficerData?.data)
     ? fieldOfficerData.data.map((fo: any, index: number) => ({
+      ...fo,
       id: `${fo.id}-${index}`,
+      originalId: fo.id,
       name: `${fo.first_name || ""} ${fo.last_name || ""}`.trim(),
       role: "Field Officer" as const,
       roleId: `FO-${fo.role_id || "000"}`,
@@ -59,6 +62,24 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
   const [selectedFO, setSelectedFO] = useState<UserRole | null>(null);
   const [searchFO, setSearchFO] = useState("");
   const [searchAgent, setSearchAgent] = useState("");
+  const [getAgentDetails] = useGetAgentDetailsMutation();
+  const [localAgents, setLocalAgents] = useState<any[]>([]);
+  const [selectedFieldOfficerIndex, setSelectedFieldOfficerIndex] = useState(0);
+
+  const handleFieldOfficerClick = async (officer: any, index: number) => {
+    setSelectedFO(officer);
+    setSelectedFieldOfficerIndex(index);
+    console.log(officer);
+    try {
+      const targetId = officer.role_id;
+      console.log("Using ID for Agent Details:", targetId);
+      const response = await getAgentDetails(targetId).unwrap();
+      console.log(response);
+      setLocalAgents(response?.data || []);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const filteredFOs = fieldOfficers.filter(
     (fo: any) =>
@@ -67,8 +88,9 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
   );
 
   // 3. Map Agents
-  const rawAgents = Array.isArray(agentData?.data)
-    ? agentData.data.map((ag: any, index: number) => ({
+  const agentsToMap = selectedFO ? localAgents : (agentData?.data || []);
+  const rawAgents = Array.isArray(agentsToMap)
+    ? agentsToMap.map((ag: any, index: number) => ({
       id: `${ag.id}-${index}`,
       name: `${ag.first_name || ""} ${ag.last_name || ""}`.trim(),
       role: "Agent" as const,
@@ -84,10 +106,11 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
       ag.roleId.toLowerCase().includes(searchAgent.toLowerCase()),
   );
 
-  const selectedIndex = filteredFOs.findIndex((fo: any) => fo.id === selectedFO?.id);
-  const actualIndex = selectedIndex !== -1 ? selectedIndex : 0;
+  const actualIndex = selectedFieldOfficerIndex;
   const foCount = filteredFOs.length;
 
+  // Each card is roughly 72px tall plus gap. The SVG viewbox is 320. 
+  // Let's pass the exact starting pixel calculation if needed or just a better percentage
   const foOffset = foCount > 0 ? (actualIndex + 0.5) / foCount : 0.5;
 
   return (
@@ -130,12 +153,12 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
           }
         >
           <div className="flex flex-col gap-2 mt-2">
-            {filteredFOs.map((fo) => (
+            {filteredFOs.map((fo, index) => (
               <FlowItem
                 key={fo.id}
                 {...fo}
-                active={selectedFO?.id === fo.id}
-                onClick={() => setSelectedFO(fo)}
+                active={selectedFieldOfficerIndex === index}
+                onClick={() => handleFieldOfficerClick(fo, index)}
                 onEdit={() => navigate("/role-manager/agent-edit")}
                 onView={() => navigate("/role-manager/profile")}
               />

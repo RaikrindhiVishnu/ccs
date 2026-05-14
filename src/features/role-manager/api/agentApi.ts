@@ -9,19 +9,11 @@ import type {
 
 export const agentApi = roleManagerApi.injectEndpoints({
     endpoints: (builder) => ({
-        createAgent: builder.mutation<any, CreateAgentRequest>({
-            query: (body) => ({
-                url: "/agents/createAgent",
-                method: "POST",
-                body,
-            }),
-        }),
-  endpoints: (builder) => ({
-    createAgent: builder.mutation<any, CreateAgentRequest>({
-      query: (body) => ({
-        url: "/agent/createAgent",
-        method: "POST",
-        body,
+      createAgent: builder.mutation<any, CreateAgentRequest>({
+        query: (body) => ({
+          url: "/agent/createAgent",
+          method: "POST",
+          body,
       }),
     }),
     getAgentOnboardingVelocity: builder.query<
