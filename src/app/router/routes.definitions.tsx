@@ -26,6 +26,9 @@ import {
   Assignedfarmland,
   AssignedFarmlandList,
     Farmlanddocument,
+      CreateFieldOfficer,
+       CreateintellegenceOfficer,
+       CreateregionalOfficer,
 } from './routes.config';
 
 export const guestRoutes: RouteObject[] = [
@@ -67,6 +70,9 @@ export const authRoutes: RouteObject[] = [
         element: <Farmlanddocument />,
       },
       { path: "/role-manager/agent-create", element: <AgentCreate /> },
+      { path: "/role-manager/field-officer-create", element: <CreateFieldOfficer /> },
+    { path: "/role-manager/intellegence-officer-create", element: <CreateintellegenceOfficer /> },
+     { path: "/role-manager/regional-officer-create", element: <CreateregionalOfficer /> },
       { path: "/role-manager/agent-edit", element: <AgentEdit /> },
       { path: "/role-manager/profile", element: <RoleManagerDetails /> },
       { path: "/role-manager/agent-approvals", element: <AgentApprovals /> },
