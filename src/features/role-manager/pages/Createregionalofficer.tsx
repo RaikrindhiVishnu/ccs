@@ -17,6 +17,8 @@ import {
 } from "@/components/validations/RegionalofficerSchema";
 import { RHFTextField } from "@/components/form/RHFTextField";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
+import { getRoleId } from "@/features/role-manager/utils/getRoleId";
+import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 
 const BACK_ROUTE = "/role-manager/create-roles" as const;
 
@@ -187,6 +189,12 @@ const REGIONS = ["North", "South", "East", "West", "Central", "North-East"];
 export default function CreateRegionalOfficer() {
   const navigate = useNavigate();
   const [createRegionalOfficer, { isLoading }] = useCreateRegionalOfficerMutation();
+  const { data: masterData } =
+  useGetAllMasterDataQuery();
+   const regionalOfficerRoleId = getRoleId(
+    masterData?.data?.userRolesResult || [],
+    "RO"
+  );
   const { control, handleSubmit } = useForm<RegionalOfficerFormValues>({
     resolver: zodResolver(regionalOfficerSchema),
     defaultValues: {
@@ -218,7 +226,7 @@ export default function CreateRegionalOfficer() {
         emailAddress: values.email,
         phoneNumber: values.mobile,
         dob: values.dob,
-        role_id: 3,
+       role_id: regionalOfficerRoleId,
         address: {
           address: values.address,
           state_id: 1,

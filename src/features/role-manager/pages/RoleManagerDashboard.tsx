@@ -11,8 +11,10 @@ import pako from 'pako';
 import { Buffer } from 'buffer';
 import geoJsonData from '../data/geoJsonApi.json';
 import { useDispatch } from "react-redux";
-import { useGetAllGeoMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
-import { setGeoMasterData } from "@/features/role-manager/store/roleManagerSlice";
+import {
+  useGetAllGeoMasterDataQuery,
+  useGetAllMasterDataQuery,
+} from "@/features/role-manager/api/masterDataApi";import { setGeoMasterData } from "@/features/role-manager/store/roleManagerSlice";
 import { useEffect, useCallback } from "react";
 
 // import RegionalCreationTargetVsActual from "@/pages/Dashboard/RegionalCreationTargetVsActual";
@@ -84,7 +86,8 @@ const RoleManagerHeader: React.FC = () => {
 const RoleManagerDashboard: React.FC = () => {
   const dispatch = useDispatch();
   const { data: geoData } = useGetAllGeoMasterDataQuery();
-
+  const { data: masterData } = useGetAllMasterDataQuery();
+  console.log(masterData);
   useEffect(() => {
     if (geoData) {
       dispatch(setGeoMasterData(geoData));

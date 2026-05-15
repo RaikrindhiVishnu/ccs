@@ -15,7 +15,8 @@ import { RHFTextField } from "@/components/form/RHFTextField";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { toast } from "sonner";
 import { useState } from "react";                        // kept only for profileImage
-
+import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 // ─── Dropdown option lists ────────────────────────────────────────────────────
 
 const REGION_OPTIONS = [
@@ -66,6 +67,12 @@ export default function AgentForm({
     const [profileImage, setProfileImage] = useState<string | null>(null);
 
     const [createAgent, { isLoading: isSubmitting }] = useCreateAgentMutation();
+    const { data: masterData } =
+  useGetAllMasterDataQuery();
+  const agentRoleId = getRoleId(
+  masterData?.data?.userRolesResult || [],
+  "AGENT"
+);
 
     const { control, handleSubmit, watch } = useForm<AgentFormValues>({
         resolver: zodResolver(agentSchema),
@@ -107,7 +114,7 @@ export default function AgentForm({
                 emailAddress: values.email,
                 phoneNumber: values.phone,
                 dob: values.dob,
-                role_id: 1,
+                role_id: agentRoleId,
                 address: {
                     address: values.address,
                     state_id: 1,
