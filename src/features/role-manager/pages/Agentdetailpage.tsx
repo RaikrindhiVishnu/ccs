@@ -5,6 +5,9 @@ import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
 import { ArrowLeft } from "lucide-react";
 
+import { useNavigate, useParams } from "react-router-dom";
+import { useGetAgentByIdQuery } from "@/features/role-manager/api/getagents";
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface AgentDetail {
@@ -25,30 +28,12 @@ interface AgentDetail {
   aadhaarImageUrl?: string;
   panImageUrl?: string;
 }
-
 interface AgentDetailPageProps {
-  agent?: AgentDetail;
-  onBack?: () => void;
   onDismiss?: () => void;
   onApprove?: () => void;
 }
 
-// ─── Mock Data ────────────────────────────────────────────────────────────────
 
-const agentData: AgentDetail = {
-  id: "1",
-  name: "Aarav Sharma",
-  applicationId: "GLC-992-IND",
-  status: "Pending Review",
-  initials: "AS",
-  email: "ramkishore@gmail.com",
-  phone: "+91 934-2848-293",
-  dateOfBirth: "14 August 1992",
-  operatingTerritory: "Tanuka, West Godavari, Andhra Pradesh, 534211",
-  bankName: "HDFC Bank",
-  accountNumber: "12345678910",
-  ifscCode: "HDFC12345678",
-};
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
 
@@ -483,11 +468,77 @@ const ProfileHeaderCard = ({ agent }: { agent: AgentDetail }) => (
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export const AgentDetailPage = ({
-  agent = agentData,
-  onBack,
   onDismiss,
   onApprove,
 }: AgentDetailPageProps) => {
+  const navigate = useNavigate();
+
+  const { id } = useParams();
+
+const { data, isLoading, error } = useGetAgentByIdQuery(id, {
+  skip: !id,
+});
+console.log("Agent ID:", id);
+console.log("Agent Detail Response:", data);
+console.log("Agent Detail Error:", error);
+const apiData = data;
+  const agent: AgentDetail = {
+    id: apiData?.id?.toString() || "",
+
+name:
+  apiData?.name ||
+  apiData?.full_name ||
+  `${apiData?.first_name || ""} ${apiData?.last_name || ""}`.trim(),
+
+    applicationId: apiData?.application_id || "N/A",
+
+    status: "Pending Review",
+
+    initials:
+      `${apiData?.first_name || ""} ${apiData?.last_name || ""}`
+        ?.split(" ")
+        ?.map((word: string) => word[0])
+        ?.join("")
+        ?.toUpperCase() || "NA",
+
+    avatarUrl: apiData?.avatar || apiData?.profile_image || "",
+
+    bannerUrl: "",
+
+    email: apiData?.email || "N/A",
+
+    phone: apiData?.phone || "N/A",
+
+    dateOfBirth: apiData?.date_of_birth || "N/A",
+
+    operatingTerritory:
+      apiData?.operating_territory ||
+      apiData?.address ||
+      apiData?.city ||
+      "N/A",
+
+    bankName: apiData?.bank_name || "N/A",
+
+    accountNumber: apiData?.account_number || "N/A",
+
+    ifscCode: apiData?.ifsc_code || "N/A",
+
+    aadhaarImageUrl: apiData?.aadhaar_image || "",
+
+    panImageUrl: apiData?.pan_image || "",
+  };
+
+  const onBack = () => {
+    navigate(-1);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-10 text-center text-lg">
+        Loading Agent Details...
+      </div>
+    );
+  }
   return (
     <main
       className="
