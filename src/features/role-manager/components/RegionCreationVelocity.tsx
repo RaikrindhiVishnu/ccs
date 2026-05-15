@@ -52,21 +52,19 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const RegionCreationVelocity: React.FC = () => {
-  const [fromDate, setFromDate] = React.useState<Date>(() => {
-    const date = new Date();
-    date.setDate(date.getDate() - 7);
-    return date;
-  });
-
-  const [toDate, setToDate] = React.useState<Date>(() => new Date());
+const [dateRange, setDateRange] = React.useState<{ from: Date; to: Date }>(() => {
+  const to = new Date();
+  const from = new Date();
+  from.setDate(from.getDate() - 6);
+  return { from, to };
+});
   const {
     data: apiData,
     isLoading,
     error,
   } = useGetRegionCreationVelocityQuery({
-    startDate: fromDate ? fromDate.toISOString().split("T")[0] : "",
-
-    endDate: toDate ? toDate.toISOString().split("T")[0] : "",
+startDate: dateRange.from.toISOString().split("T")[0],
+endDate: dateRange.to.toISOString().split("T")[0],
     offset: "0",
   });
 
@@ -101,16 +99,13 @@ const RegionCreationVelocity: React.FC = () => {
         </div>
 
         {/* <WeekDropdown /> */}
-        <DateRangePicker
-          from={fromDate}
-          to={toDate}
-          onFromChange={(date) => {
-            if (date) setFromDate(date);
-          }}
-          onToChange={(date) => {
-            if (date) setToDate(date);
-          }}
-        />
+       <DateRangePicker
+  from={dateRange.from}
+  to={dateRange.to}
+  onRangeChange={(range) => {
+    if (range) setDateRange(range);
+  }}
+/>
       </div>
 
       {/* Chart */}
