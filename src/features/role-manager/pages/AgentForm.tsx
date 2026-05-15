@@ -1,5 +1,4 @@
 import { useRef } from "react";                          // removed useState for files
-import { useAppSelector } from "@/core/hooks";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
@@ -17,7 +16,7 @@ import type { Control } from "react-hook-form";          // type-only import
 import { zodResolver } from "@hookform/resolvers/zod";
 import { agentSchema, type AgentFormValues } from "@/components/validations/agentSchema";
 import { RHFTextField } from "@/components/form/RHFTextField";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";                        // kept only for profileImage
@@ -69,9 +68,7 @@ export default function AgentForm({
 }: AgentFormProps) {
     const location = useLocation();
     console.log("AgentForm Location State:", location.state);
-    const { roleType: locRoleType, userId: locUserId } = location.state || {};
-    const states = useAppSelector((state) => state.roleManager.states);
-    const stateOptions = states.map((s) => s.desc);
+    const { userId: locUserId } = location.state || {};
 
     const [profileImage, setProfileImage] = useState<string | null>(null);
 
@@ -85,7 +82,7 @@ export default function AgentForm({
     const [roleIdState, setRoleIdState] = useState(1);
     const [selectedRegionId, setSelectedRegionId] = useState(1);
 
-    const { control, handleSubmit, watch, reset } = useForm<AgentFormValues>({
+    const { control, handleSubmit, watch } = useForm<AgentFormValues>({
         resolver: zodResolver(agentSchema),
         defaultValues: {
             firstName: initialData?.firstName ?? (initialData as any)?.first_name ?? "",
