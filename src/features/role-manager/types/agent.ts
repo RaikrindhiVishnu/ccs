@@ -114,3 +114,63 @@ export interface RoleCreationOverviewResponse {
     success: boolean;
     data: RoleCreationOverviewItem[];
 }
+
+export interface CreateRegionalOfficerRequest {
+  firstName: string;
+  lastName: string;
+  countryCode: string;
+  emailAddress: string;
+  phoneNumber: string;
+  dob: string;
+  role_id: number;
+
+  address: {
+    address: string;
+    state_id: number;
+    city: string;
+    pincode: string;
+  };
+
+  geo_assignments: {
+    country_id: number;
+    state_id: number;
+    region_id: number;
+  };
+
+  id_proof: {
+    id_proof_frontUrl: string;
+    id_proof_backUrl: string;
+    pan_card_number: string;
+    pan_card_url: string;
+  };
+}
+export interface CreateFieldOfficerRequest {
+  firstName: string;
+  lastName: string;
+  countryCode: string;
+  emailAddress: string;
+  phoneNumber: string;
+  dob: string;
+  role_id: number;
+
+  address: {
+    address: string;
+    state_id: number;
+    city: string;
+    pincode: string;
+  };
+
+  geo_assignments: {
+    country_id: number;
+    state_id: number;
+    region_id: number;
+    areas_id: number;
+  };
+
+  id_proof: {
+    id_proof_frontUrl: string;
+    id_proof_backUrl: string;
+    pan_card_number: string;
+    pan_card_url: string;
+  };
+}

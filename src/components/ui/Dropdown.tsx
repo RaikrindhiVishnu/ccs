@@ -36,7 +36,8 @@ function DropdownMenu({
   return (
     <div
       className={cn(
-        "absolute top-full z-50 mt-1 overflow-hidden",
+        "absolute top-full z-50 mt-1",
+        "max-h-[14rem] overflow-y-auto",
         "bg-[color:var(--surface-card)]",
         "border border-[color:var(--border)]",
         "rounded-xl",
@@ -446,7 +447,11 @@ export function SquareDropdown({
                   onClick={(e) => removeChip(val, e)}
                   className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity flex items-center"
                 >
-                  <svg viewBox="0 0 8 8" fill="none" className="w-[8px] h-[8px]">
+                  <svg
+                    viewBox="0 0 8 8"
+                    fill="none"
+                    className="w-[8px] h-[8px]"
+                  >
                     <path
                       d="M1 1L7 7M7 1L1 7"
                       stroke="white"
