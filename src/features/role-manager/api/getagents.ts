@@ -38,7 +38,7 @@ export const getAgentsApi = roleManagerApi.injectEndpoints({
     url: `agents/getAgentById/${id}`,
     method: "GET",
   }),
-  providesTags: ["Agents"],
+  providesTags: ["Agent"],
 }),
   }),
 });
