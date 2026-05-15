@@ -1,9 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Typography } from "@/components/ui/typography";
 import { Input } from "@/components/ui/input";
 import role from "@/assets/role profile.svg";
 import SuccessIcon from "@/assets/sucess.svg";
 import { ArrowLeft, User } from "lucide-react";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
+import {
+  useGetAgentByIdMutation,
+  useGetFieldOfficerByIdMutation,
+  useGetRegionalOfficerByIdMutation,
+} from "../api/roleManagerApi";
 
 interface RoleManagerData {
   firstName: string;
@@ -69,7 +75,7 @@ interface FieldProps {
 
 function Field({ label, value }: FieldProps) {
   return (
-    <Input variant="form" label={label} value={value} onChange={() => {}} />
+    <Input variant="form" label={label} value={value} readOnly />
   );
 }
 
@@ -77,7 +83,60 @@ export default function RoleManagerDetails({
   data,
   onBack,
 }: RoleManagerDetailsProps) {
-  const profile = data ?? {
+  const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { roleType } = location.state || {};
+
+  const [getAgentById] = useGetAgentByIdMutation();
+  const [getFieldOfficerById] = useGetFieldOfficerByIdMutation();
+  const [getRegionalOfficerById] = useGetRegionalOfficerByIdMutation();
+
+  const [profileData, setProfileData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!roleType || !id || profileData) return;
+      console.log("ID:", id);
+      console.log("ROLE:", roleType);
+
+      if (roleType === "IO") return; // No API for Intelligence Officer yet
+
+      setIsLoading(true);
+      try {
+        console.log("API CALL STARTED");
+        let response;
+        if (roleType === "AG") {
+          response = await getAgentById(Number(id)).unwrap();
+        } else if (roleType === "FO") {
+          response = await getFieldOfficerById(Number(id)).unwrap();
+        } else if (roleType === "RO") {
+          response = await getRegionalOfficerById(Number(id)).unwrap();
+        }
+        console.log("API RESPONSE:", response);
+        setProfileData(response?.data);
+      } catch (error) {
+        console.error("API ERROR:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [id, roleType]);
+
+  const profile = profileData ? {
+    firstName: profileData.first_name || "",
+    lastName: profileData.last_name || "",
+    age: profileData.age || "N/A",
+    phone: profileData.phone_number || profileData.phone || "",
+    email: profileData.email_address || profileData.email || "",
+    role: roleType === "AG" ? "Agent" : roleType === "FO" ? "Field Officer" : roleType === "RO" ? "Regional Officer" : "Intelligence Officer",
+    profileImage: profileData.profile_url,
+    notificationsEnabled: true,
+    smsEnabled: true,
+  } : (data ?? {
     firstName: "Sravan",
     lastName: "Kumar",
     age: "32",
@@ -86,6 +145,14 @@ export default function RoleManagerDetails({
     role: "Role Manager",
     notificationsEnabled: true,
     smsEnabled: true,
+  });
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigate(-1);
+    }
   };
 
   return (
@@ -101,7 +168,7 @@ export default function RoleManagerDetails({
       {/* Go Back */}
       <button
         type="button"
-        onClick={onBack}
+        onClick={handleBack}
         className="
           flex items-center gap-2
           px-5 py-3

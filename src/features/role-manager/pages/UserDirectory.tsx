@@ -4,6 +4,9 @@ import {
   useGetFieldOfficerDetailsMutation,
   useGetAgentDetailsMutation,
 } from "../api/userDirectoryApi";
+import { useDispatch, useSelector } from "react-redux";
+import { setRegions } from "../store/roleManagerSlice";
+import { useGetAllRegionsByStateIdMutation } from "../api/masterDataApi";
 import { useNavigate } from "react-router-dom";
 import AgentOnboardingVelocity from "@/features/role-manager/components/AgentOnboardingVelocity";
 import WorkforceStructure from "@/features/role-manager/components/WorkforceStructure";
@@ -16,6 +19,23 @@ import { RoleFlow } from "../components/RoleFlow";
 
 const UserDirectory: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const states = useSelector((state: any) => state.roleManager.states);
+  const regions = useSelector((state: any) => state.roleManager.regions);
+  const [getRegionsByStateId] = useGetAllRegionsByStateIdMutation();
+
+  const handleStateChange = async (value: string) => {
+    const selectedState = states.find((s: any) => s.state_name === value);
+    // Default to id "1" if states aren't loaded in Redux yet but user clicks
+    const stateId = selectedState?.id?.toString() || "1";
+
+    try {
+      const response = await getRegionsByStateId({ state_id: stateId }).unwrap();
+      dispatch(setRegions(response?.data || []));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const [
     getRegionOfficerDetails,
@@ -35,12 +55,12 @@ const UserDirectory: React.FC = () => {
   useEffect(() => {
     getRegionOfficerDetails();
     getFieldOfficerDetails();
-    getAgentDetails();
+    getAgentDetails(5);
   }, []);
 
-  console.log(regionOfficerData);
-  console.log(fieldOfficerData);
-  console.log(agentData);
+  // console.log(regionOfficerData);
+  // console.log(fieldOfficerData);
+  // console.log(agentData);
 
   return (
     <div className="flex flex-col py-16 px-4 gap-6 box-border min-h-full bg-( --surface-page)">
@@ -80,23 +100,23 @@ const UserDirectory: React.FC = () => {
           {/* Right Side: Dropdowns */}
           <div className="flex gap-2">
             <PillDropdown
-              options={[
+              options={states?.length > 0 ? states.map((s: any) => s.state_name) : [
                 "Andhra Pradesh",
                 "Telangana",
                 "Karnataka",
                 "Tamil Nadu",
               ]}
               defaultValue="Andhra Pradesh"
-              // className="min-w-[180px]"
+              onChange={handleStateChange}
             />
             <PillDropdown
-              options={[
+              options={regions?.length > 0 ? regions.map((r: any) => r.region_name) : [
                 "Vizag Zone",
                 "Vijayawada Zone",
                 "Guntur Zone",
                 "Kurnool Zone",
               ]}
-              defaultValue="Vizag Zone"
+              defaultValue={regions?.length > 0 ? regions[0].region_name : "Vizag Zone"}
             />
           </div>
         </div>
