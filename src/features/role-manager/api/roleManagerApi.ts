@@ -11,5 +11,33 @@ export const roleManagerApi = createApi({
     reducerPath: "roleManagerApi",
     baseQuery: createBaseQueryWithReauth(env.ROLE_MANAGER_API_BASE_URL),
     tagTypes: ["Agent", "Region", "Area"],
-    endpoints: () => ({}),
+    endpoints: (builder) => ({
+        getRegionalOfficerById: builder.mutation<any, number>({
+            query: (userId) => ({
+                url: `/regionalOfficer/getRegionalOfficerById/${userId}`,
+                method: "POST",
+            }),
+        }),
+        getFieldOfficerById: builder.mutation<any, number>({
+            query: (userId) => ({
+                url: `/feildOfficer/getFieldOfficerById/${userId}`,
+                method: "POST",
+            }),
+        }),
+        getAgentById: builder.mutation<any, number>({
+            query: (userId) => ({
+                url: "/agent/get_agent_details_by_user_id",
+                method: "POST",
+                body: {
+                    user_id: userId,
+                },
+            }),
+        }),
+    }),
 });
+
+export const {
+    useGetRegionalOfficerByIdMutation,
+    useGetFieldOfficerByIdMutation,
+    useGetAgentByIdMutation,
+} = roleManagerApi;

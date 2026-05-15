@@ -22,12 +22,22 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
   agentData,
 }) => {
   const navigate = useNavigate();
+  const handleView = (item: any, roleType: string) => {
+    const userId = item.originalId || item.id;
+    navigate(`/role-manager/profile/${userId}`, {
+      state: {
+        roleType,
+        userId: userId,
+      },
+    });
+  };
 
   // 1. Map Region & Intelligence Officers
   const roAndIo = regionOfficerData?.data && !Array.isArray(regionOfficerData.data)
     ? [
       {
         id: String(regionOfficerData.data.regional_officer_id),
+        originalId: regionOfficerData.data.regional_officer_id,
         name: `${regionOfficerData.data.regional_officer_first_name || ""} ${regionOfficerData.data.regional_officer_last_name || ""}`.trim(),
         role: "Regional Officer" as const,
         roleId: "RO",
@@ -36,6 +46,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
       },
       {
         id: String(regionOfficerData.data.intelligence_officer_id),
+        originalId: regionOfficerData.data.intelligence_officer_id,
         name: `${regionOfficerData.data.intelligence_officer_first_name || ""} ${regionOfficerData.data.intelligence_officer_last_name || ""}`.trim(),
         role: "Intelligence Officer" as const,
         roleId: "IO",
@@ -91,7 +102,9 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
   const agentsToMap = selectedFO ? localAgents : (agentData?.data || []);
   const rawAgents = Array.isArray(agentsToMap)
     ? agentsToMap.map((ag: any, index: number) => ({
+      ...ag,
       id: `${ag.id}-${index}`,
+      originalId: ag.id,
       name: `${ag.first_name || ""} ${ag.last_name || ""}`.trim(),
       role: "Agent" as const,
       roleId: `AG-${ag.role_id || "000"}`,
@@ -126,7 +139,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                   variant="detailed"
                   active={idx === 0}
                   onEdit={() => navigate("/role-manager/agent-edit")}
-                  onView={() => navigate("/role-manager/profile")}
+                  onView={() => handleView(role, role.roleId === "RO" ? "RO" : "IO")}
                 />
                 {idx < roAndIo.length - 1 && (
                   <div className="h-px bg-gray-100 w-full" />
@@ -160,7 +173,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                 active={selectedFieldOfficerIndex === index}
                 onClick={() => handleFieldOfficerClick(fo, index)}
                 onEdit={() => navigate("/role-manager/agent-edit")}
-                onView={() => navigate("/role-manager/profile")}
+                onView={() => handleView(fo, "FO")}
               />
             ))}
           </div>
@@ -189,7 +202,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                   key={ag.id}
                   {...ag}
                   onEdit={() => navigate("/role-manager/agent-edit")}
-                  onView={() => navigate("/role-manager/profile")}
+                  onView={() => handleView(ag, "AG")}
                 />
               ))
             ) : (
