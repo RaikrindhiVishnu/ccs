@@ -43,16 +43,6 @@ const BANK_OPTIONS = [
     "Canara Bank",
 ];
 
-const INDIAN_STATES = [
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
-  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
-  "Andaman & Nicobar", "Chandigarh", "Delhi", "Jammu & Kashmir", "Ladakh",
-  "Lakshadweep", "Puducherry",
-];
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function AgentForm({
@@ -308,7 +298,7 @@ export default function AgentForm({
                 {/* ── SELECT STATE, REGION & AREA ── */}
                 <FormSection title="Select State, Region & Area">
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
-                        <RHFDropdown name="state" control={control} label="State" options={INDIAN_STATES} placeholder="Andhra Pradesh" />
+                        <RHFDropdown name="state" control={control} label="State" options={stateOptions} placeholder="Andhra Pradesh" />
                         <div>
                             <RHFDropdown name="region" control={control} label="Region" options={REGION_OPTIONS} placeholder="Godavari Region" />
                             <div className="mt-3 space-y-2">

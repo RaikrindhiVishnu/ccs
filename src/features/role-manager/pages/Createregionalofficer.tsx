@@ -11,6 +11,7 @@ import { useForm, Controller } from "react-hook-form";  // added Controller
 import type { Control } from "react-hook-form";         // type-only import
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAppSelector } from "@/core/hooks";
 import {
   regionalOfficerSchema,
   type RegionalOfficerFormValues,
@@ -170,17 +171,7 @@ function SectionPanel({ title, children }: { title: string; children: React.Reac
   );
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
 
-const INDIAN_STATES = [
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
-  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
-  "Andaman & Nicobar", "Chandigarh", "Delhi", "Jammu & Kashmir", "Ladakh",
-  "Lakshadweep", "Puducherry",
-];
 
 const REGIONS = ["North", "South", "East", "West", "Central", "North-East"];
 
@@ -188,6 +179,13 @@ const REGIONS = ["North", "South", "East", "West", "Central", "North-East"];
 
 export default function CreateRegionalOfficer() {
   const navigate = useNavigate();
+  const states = useAppSelector(
+  (state) => state.roleManager.states
+);
+
+const stateOptions = states.map(
+  (item) => item.desc
+);
   const [createRegionalOfficer, { isLoading }] = useCreateRegionalOfficerMutation();
   const { data: masterData } =
   useGetAllMasterDataQuery();
@@ -303,7 +301,7 @@ export default function CreateRegionalOfficer() {
           {/* ── Section 2 ── */}
           <SectionPanel title="Select State, Region">
             <div className="grid grid-cols-2 gap-x-[clamp(1rem,2.7vw,2.4375rem)] max-w-[66%]">
-              <RHFDropdown name="state" control={control} label="State" placeholder="Select State" options={INDIAN_STATES} containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]" className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]" />
+              <RHFDropdown name="state" control={control} label="State" placeholder="Select State" options={stateOptions} containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]" className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]" />
               <RHFDropdown name="region" control={control} label="Region" placeholder="Select Region" options={REGIONS} containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]" className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]" />
             </div>
           </SectionPanel>

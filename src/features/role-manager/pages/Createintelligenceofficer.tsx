@@ -23,6 +23,7 @@ import {
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
+import { useSelector } from "react-redux";
 const BACK_ROUTE = "/role-manager/create-roles" as const;
 
 // ─── Field Label ──────────────────────────────────────────────────────────────
@@ -173,23 +174,18 @@ function SectionPanel({ title, children }: { title: string; children: React.Reac
   );
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const INDIAN_STATES = [
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
-  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
-  "Andaman & Nicobar", "Chandigarh", "Delhi", "Jammu & Kashmir", "Ladakh",
-  "Lakshadweep", "Puducherry",
-];
 
 const REGIONS = ["North", "South", "East", "West", "Central", "North-East"];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CreateIntelligenceOfficer() {
+  const states = useSelector(
+  (state: any) => state.roleManager.states
+);
+const stateOptions = states.map(
+  (item: any) => item.desc
+);
   const navigate = useNavigate();
 const [createRegionalOfficer, { isLoading }] =
   useCreateRegionalOfficerMutation();
@@ -333,7 +329,7 @@ const [createRegionalOfficer, { isLoading }] =
                 control={control}
                 label="State"
                 placeholder="Select State"
-                options={INDIAN_STATES}
+                options={stateOptions}
                 containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
                 className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
               />
