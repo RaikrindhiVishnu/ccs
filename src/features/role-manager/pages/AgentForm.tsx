@@ -19,8 +19,9 @@ import { RHFTextField } from "@/components/form/RHFTextField";
 import { useLocation } from "react-router-dom";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";                        // kept only for profileImage
-
+import { useState, useEffect } from "react";                        // kept only for profileImage                       // kept only for profileImage
+import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 // ─── Dropdown option lists ────────────────────────────────────────────────────
 
 const REGION_OPTIONS = [
@@ -81,6 +82,12 @@ export default function AgentForm({
     const [addressState, setAddressState] = useState("");
     const [roleIdState, setRoleIdState] = useState(1);
     const [selectedRegionId, setSelectedRegionId] = useState(1);
+    const { data: masterData } =
+  useGetAllMasterDataQuery();
+  const agentRoleId = getRoleId(
+  masterData?.data?.userRolesResult || [],
+  "AGENT"
+);
 
     const { control, handleSubmit, watch } = useForm<AgentFormValues>({
         resolver: zodResolver(agentSchema),
@@ -245,6 +252,42 @@ export default function AgentForm({
                 await createAgent(payload).unwrap();
             }
 
+            const payload = {
+                firstName: values.firstName,
+                lastName: values.lastName,
+                countryCode: "+91",
+                emailAddress: values.email,
+                phoneNumber: values.phone,
+                dob: values.dob,
+                role_id: agentRoleId,
+                address: {
+                    address: values.address,
+                    state_id: 1,
+                    city: values.city,
+                    pincode: values.pincode,
+                },
+                geo_assignments: {
+                    country_id: 1,
+                    state_id: 1,
+                    district_id: 1,
+                    mandal_id: 1,
+                    region_id: 1,
+                    areas_id: 1,
+                },
+                id_proof: {
+                    bank_account_name: `${values.firstName} ${values.lastName}`,
+                    bank_account_number: values.accountNumber,
+                    ifsc_code: values.ifscCode,
+                    branch: values.bankBranch,
+                    bank_name: values.bankName,
+                    id_proof_frontUrl: "front.png",
+                    id_proof_backUrl: "back.png",
+                    pan_card_number: values.panNumber,
+                    pan_card_url: "pan.png",
+                },
+            };
+
+            await createAgent(payload).unwrap();
             toast.success(isEdit ? "Profile Updated Successfully" : "Agent Created Successfully");
             if (onCancel) onCancel();
         } catch (err) {
