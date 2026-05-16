@@ -1,13 +1,13 @@
-import { useRef } from "react";                          // removed useState for files
-import { useNavigate } from "react-router-dom";
+import { useRef, useEffect } from "react"; // removed useState for files
+import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { BackButton } from "@/components/ui/BackButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { ImageUp, FileImage } from "lucide-react";
-import { useForm, Controller } from "react-hook-form";   // added Controller
-import type { Control } from "react-hook-form";          // type-only import
+import { useForm, Controller } from "react-hook-form"; // added Controller
+import type { Control } from "react-hook-form"; // type-only import
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   intelligenceOfficerSchema,
@@ -18,7 +18,9 @@ import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { toast } from "sonner";
 import {
   useCreateRegionalOfficerMutation,
+  useUpdateRegionalOfficerMutation,
 } from "@/features/role-manager/api/agentApi";
+import { useGetRegionalOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
 
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 
@@ -42,7 +44,11 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 
 // ─── Upload Picture (RHF-controlled) ─────────────────────────────────────────
 
-function UploadPictureField({ control }: { control: Control<IntelligenceOfficerFormValues> }) {
+function UploadPictureField({
+  control,
+}: {
+  control: Control<IntelligenceOfficerFormValues>;
+}) {
   const ref = useRef<HTMLInputElement>(null);
 
   return (
@@ -59,7 +65,7 @@ function UploadPictureField({ control }: { control: Control<IntelligenceOfficerF
               "flex items-center justify-between w-full h-[clamp(2rem,2.78vw,2.5rem)] px-[clamp(0.625rem,0.97vw,0.875rem)] bg-[color:var(--surface-card)] border rounded-[clamp(0.5rem,0.83vw,0.75rem)] cursor-pointer transition-colors duration-150",
               fieldState.error
                 ? "border-red-500"
-                : "border-[color:var(--border-default)] hover:border-[color:var(--brand-500)]"
+                : "border-[color:var(--border-default)] hover:border-[color:var(--brand-500)]",
             )}
           >
             <span className="flex-1 text-left truncate mr-2 font-[family-name:var(--font-inter)] font-normal text-[clamp(0.6875rem,0.83vw,0.875rem)] text-[color:var(--text-muted)]">
@@ -118,7 +124,7 @@ function DocUploadField({
               "flex flex-col items-center justify-center gap-[clamp(0.375rem,0.56vw,0.5rem)] h-[clamp(5rem,8.89vw,8rem)] bg-[color:var(--surface-page)] border-2 border-dashed rounded-[clamp(0.5rem,0.83vw,0.75rem)] cursor-pointer transition-colors duration-200",
               fieldState.error
                 ? "border-red-500 bg-red-50/30"
-                : "border-[color:var(--border-default)] hover:border-[color:var(--brand-500)] hover:bg-[color:var(--brand-tint)]"
+                : "border-[color:var(--border-default)] hover:border-[color:var(--brand-500)] hover:bg-[color:var(--brand-tint)]",
             )}
           >
             <FileImage className="shrink-0 text-[var(--text-primary)] w-[1rem] h-[1rem] stroke-[1.75]" />
@@ -159,7 +165,13 @@ function DocUploadField({
 
 // ─── Section Panel ────────────────────────────────────────────────────────────
 
-function SectionPanel({ title, children }: { title: string; children: React.ReactNode }) {
+function SectionPanel({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <Card className="rounded-[clamp(1rem,1.67vw,1.5rem)] shadow-[0px_0px_6px_rgba(0,0,0,0.12)] border-none">
       <CardHeader className="px-[clamp(1.25rem,1.875vw,1.875rem)] pt-[clamp(1.25rem,2.08vw,2rem)] pb-[clamp(1rem,2.08vw,2rem)]">
@@ -174,105 +186,126 @@ function SectionPanel({ title, children }: { title: string; children: React.Reac
   );
 }
 
-
 const REGIONS = ["North", "South", "East", "West", "Central", "North-East"];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CreateIntelligenceOfficer() {
-  const states = useSelector(
-  (state: any) => state.roleManager.states
-);
-const stateOptions = states.map(
-  (item: any) => item.desc
-);
+  const states = useSelector((state: any) => state.roleManager.states);
+  const stateOptions = states.map((item: any) => item.desc);
   const navigate = useNavigate();
-const [createRegionalOfficer, { isLoading }] =
-  useCreateRegionalOfficerMutation();
-  const { data: masterData } =
-  useGetAllMasterDataQuery();
+  const location = useLocation();
+
+  const userId = location.state?.userId;
+
+  const isEditMode = !!userId;
+  const [getRegionalOfficerById, { data: regionalOfficerData }] =
+    useGetRegionalOfficerByIdMutation();
+  const [createRegionalOfficer, { isLoading }] =
+    useCreateRegionalOfficerMutation();
+
+  const [updateRegionalOfficer] = useUpdateRegionalOfficerMutation();
+  const { data: masterData } = useGetAllMasterDataQuery();
   const intelligenceOfficerRoleId = getRoleId(
-  masterData?.data?.userRolesResult || [],
-  "IO"
-);
-  const { control, handleSubmit } = useForm<IntelligenceOfficerFormValues>({
-    resolver: zodResolver(intelligenceOfficerSchema),
-    defaultValues: {
-      firstName:    "",
-      lastName:     "",
-      dob:          "",
-      email:        "",
-      mobile:       "",
-      address:      "",
-      addressState: "",
-      city:         "",
-      pincode:      "",
-      state:        "",
-      region:       "",
-      // ── file fields ──
-      profilePicture: undefined,
-      aadharFront:    undefined,
-      aadharBack:     undefined,
-      panCard:        undefined,
-    },
-  });
-
- const handleCreate = async (
-  values: IntelligenceOfficerFormValues
-) => {
-  try {
-    const payload = {
-      firstName: values.firstName,
-      lastName: values.lastName,
-      countryCode: "+91",
-      emailAddress: values.email,
-      phoneNumber: values.mobile,
-      dob: values.dob,
-
-      role_id: intelligenceOfficerRoleId,
-
-      address: {
-        address: values.address,
-        state_id: 1,
-        city: values.city,
-        pincode: values.pincode,
+    masterData?.data?.userRolesResult || [],
+    "IO",
+  );
+  const { control, handleSubmit, reset } =
+    useForm<IntelligenceOfficerFormValues>({
+      resolver: zodResolver(intelligenceOfficerSchema),
+      defaultValues: {
+        firstName: "",
+        lastName: "",
+        dob: "",
+        email: "",
+        mobile: "",
+        address: "",
+        addressState: "",
+        city: "",
+        pincode: "",
+        state: "",
+        region: "",
+        // ── file fields ──
+        profilePicture: undefined,
+        aadharFront: undefined,
+        aadharBack: undefined,
+        panCard: undefined,
       },
+    });
+  const fetchedRef = useRef(false);
 
-      geo_assignments: {
-        country_id: 1,
-        state_id: 1,
-        region_id: 1,
-      },
+  useEffect(() => {
+    if (userId && !fetchedRef.current) {
+      fetchedRef.current = true;
+      getRegionalOfficerById(userId);
+    }
+  }, [userId, getRegionalOfficerById]);
+  useEffect(() => {
+    if (regionalOfficerData?.data) {
+      const data = regionalOfficerData.data;
 
-      id_proof: {
-        id_proof_frontUrl:
-          values.aadharFront?.name || "",
+      reset({
+        firstName: data.firstName || "",
+        lastName: data.lastName || "",
+        dob: data.dob || "",
+        email: data.emailAddress || "",
+        mobile: data.phoneNumber || "",
+        address: data.address?.address || "",
+        city: data.address?.city || "",
+        pincode: data.address?.pincode || "",
+      });
+    }
+  }, [regionalOfficerData, reset]);
+  const handleCreate = async (values: IntelligenceOfficerFormValues) => {
+    try {
+      const payload = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        countryCode: "+91",
+        emailAddress: values.email,
+        phoneNumber: values.mobile,
+        dob: values.dob,
 
-        id_proof_backUrl:
-          values.aadharBack?.name || "",
+        role_id: intelligenceOfficerRoleId,
 
-        pan_card_number: "ABCDE1234F",
+        address: {
+          address: values.address,
+          state_id: 1,
+          city: values.city,
+          pincode: values.pincode,
+        },
 
-        pan_card_url:
-          values.panCard?.name || "",
-      },
-    };
+        geo_assignments: {
+          country_id: 1,
+          state_id: 1,
+          region_id: 1,
+        },
 
-    await createRegionalOfficer(payload).unwrap();
+        id_proof: {
+          id_proof_frontUrl: values.aadharFront?.name || "",
 
-    toast.success(
-      "Intelligence Officer created successfully"
-    );
+          id_proof_backUrl: values.aadharBack?.name || "",
 
-    navigate("/role-manager/create-roles");
+          pan_card_number: "ABCDE1234F",
 
-  } catch (err: any) {
-    toast.error(
-      err?.data?.message ||
-      "Something went wrong"
-    );
-  }
-};
+          pan_card_url: values.panCard?.name || "",
+        },
+      };
+
+      isEditMode
+        ? await updateRegionalOfficer({
+            ...payload,
+            userId,
+          }).unwrap()
+        : await createRegionalOfficer(payload).unwrap();
+
+      toast.success("Intelligence Officer created successfully");
+
+      navigate("/role-manager/create-roles");
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Something went wrong");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[color:var(--surface-page)] rounded-[2rem] px-[clamp(1.5rem,6.81vw,6.8125rem)] py-[clamp(1.5rem,2.64vw,2.375rem)]">
@@ -296,7 +329,9 @@ const [createRegionalOfficer, { isLoading }] =
           "mb-6 xl:mb-8",
         )}
       >
-        Create Intelligence Officer
+        {isEditMode
+          ? "Edit Intelligence Officer"
+          : "Create Intelligence Officer"}
       </Typography>
 
       {/* ── Outer white card ── */}
@@ -305,15 +340,71 @@ const [createRegionalOfficer, { isLoading }] =
           {/* ── Section 1 ── */}
           <SectionPanel title="Enter Intelligence Officer Information">
             <div className="grid grid-cols-3 gap-x-[clamp(1rem,2.7vw,2.4375rem)] gap-y-[clamp(0.75rem,1.67vw,1.5rem)]">
-              <RHFTextField name="firstName"    control={control} label="First Name"     placeholder="Enter First name"       maxLength={30} />
-              <RHFTextField name="lastName"     control={control} label="Last Name"      placeholder="Enter Last Name"        maxLength={30} />
-              <RHFTextField name="dob"          control={control} label="DOB"            placeholder="Select DOB"             type="date" />
-              <RHFTextField name="email"        control={control} label="Mail"           placeholder="Enter Mail ID"          type="email" maxLength={100} />
-              <RHFTextField name="mobile"       control={control} label="Mobile Number"  placeholder="Enter Mobile Number"    type="tel"   maxLength={10} />
-              <RHFTextField name="address"      control={control} label="Address"        placeholder="Enter Address"          maxLength={150} />
-              <RHFTextField name="addressState" control={control} label="State"          placeholder="Enter State"            maxLength={50} />
-              <RHFTextField name="city"         control={control} label="City / Village" placeholder="Enter City / Village"   maxLength={50} />
-              <RHFTextField name="pincode"      control={control} label="Pin Code"       placeholder="Enter Pin Code"         maxLength={6} />
+              <RHFTextField
+                name="firstName"
+                control={control}
+                label="First Name"
+                placeholder="Enter First name"
+                maxLength={30}
+              />
+              <RHFTextField
+                name="lastName"
+                control={control}
+                label="Last Name"
+                placeholder="Enter Last Name"
+                maxLength={30}
+              />
+              <RHFTextField
+                name="dob"
+                control={control}
+                label="DOB"
+                placeholder="Select DOB"
+                type="date"
+              />
+              <RHFTextField
+                name="email"
+                control={control}
+                label="Mail"
+                placeholder="Enter Mail ID"
+                type="email"
+                maxLength={100}
+              />
+              <RHFTextField
+                name="mobile"
+                control={control}
+                label="Mobile Number"
+                placeholder="Enter Mobile Number"
+                type="tel"
+                maxLength={10}
+              />
+              <RHFTextField
+                name="address"
+                control={control}
+                label="Address"
+                placeholder="Enter Address"
+                maxLength={150}
+              />
+              <RHFTextField
+                name="addressState"
+                control={control}
+                label="State"
+                placeholder="Enter State"
+                maxLength={50}
+              />
+              <RHFTextField
+                name="city"
+                control={control}
+                label="City / Village"
+                placeholder="Enter City / Village"
+                maxLength={50}
+              />
+              <RHFTextField
+                name="pincode"
+                control={control}
+                label="Pin Code"
+                placeholder="Enter Pin Code"
+                maxLength={6}
+              />
             </div>
             {/* ── only change: pass control ── */}
             <div className="mt-[clamp(0.75rem,1.67vw,1.5rem)] w-[calc(33.333%-clamp(0.667rem,1.8vw,1.625rem))]">
@@ -348,26 +439,76 @@ const [createRegionalOfficer, { isLoading }] =
           {/* ── Section 3 ── only change: pass name + control ── */}
           <SectionPanel title="Upload Documents">
             <div className="grid grid-cols-3 gap-x-[clamp(1rem,2.7vw,2.4375rem)] gap-y-[clamp(0.75rem,1.67vw,1.5rem)]">
-              <DocUploadField label="Aadhar Card Front" name="aadharFront" control={control} />
-              <DocUploadField label="Aadhar Card Back"  name="aadharBack"  control={control} />
-              <DocUploadField label="Pan Card"          name="panCard"     control={control} />
+              <DocUploadField
+                label="Aadhar Card Front"
+                name="aadharFront"
+                control={control}
+              />
+              <DocUploadField
+                label="Aadhar Card Back"
+                name="aadharBack"
+                control={control}
+              />
+              <DocUploadField
+                label="Pan Card"
+                name="panCard"
+                control={control}
+              />
             </div>
           </SectionPanel>
 
           {/* ── Action Row ── */}
-          <div className={cn("flex items-center justify-end", "gap-[0.875rem]", "mt-2")}>
+          <div
+            className={cn(
+              "flex items-center justify-end",
+              "gap-[0.875rem]",
+              "mt-2",
+            )}
+          >
             <Button
               onClick={() => navigate("/role-manager/create-roles")}
-              className={cn("w-[6.4375rem]", "h-[2.5rem]", "px-6 py-2", "rounded-[0.375rem]", "bg-transparent", "shadow-none", "border-0", "!font-normal", "text-[1rem]", "leading-6", "text-[var(--text-primary)]", "shrink-0 whitespace-nowrap", "hover:bg-[var(--chart-bg)]")}
+              className={cn(
+                "w-[6.4375rem]",
+                "h-[2.5rem]",
+                "px-6 py-2",
+                "rounded-[0.375rem]",
+                "bg-transparent",
+                "shadow-none",
+                "border-0",
+                "!font-normal",
+                "text-[1rem]",
+                "leading-6",
+                "text-[var(--text-primary)]",
+                "shrink-0 whitespace-nowrap",
+                "hover:bg-[var(--chart-bg)]",
+              )}
             >
               Cancel
             </Button>
             <Button
               variant="gradient-blue"
               onClick={handleSubmit(handleCreate)}
-              className={cn("w-[10.5625rem]", "h-[2.5rem]", "px-8 py-2", "bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)]", "rounded-[6.25rem]", "font-medium", "text-[1rem]", "leading-6", "text-white", "shadow-none", "shrink-0 whitespace-nowrap")}
+              className={cn(
+                "w-[10.5625rem]",
+                "h-[2.5rem]",
+                "px-8 py-2",
+                "bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)]",
+                "rounded-[6.25rem]",
+                "font-medium",
+                "text-[1rem]",
+                "leading-6",
+                "text-white",
+                "shadow-none",
+                "shrink-0 whitespace-nowrap",
+              )}
             >
-              Create Profile
+              {isLoading
+                ? isEditMode
+                  ? "Updating..."
+                  : "Creating..."
+                : isEditMode
+                  ? "Update Profile"
+                  : "Create Profile"}
             </Button>
           </div>
         </CardContent>

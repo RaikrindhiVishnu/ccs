@@ -74,3 +74,14 @@ export const CreateintellegenceOfficer = lazy(
 export const CreateregionalOfficer = lazy(
   () => import("../../features/role-manager/pages/Createregionalofficer"),
 );
+export const EditFieldOfficer = lazy(
+  () => import("../../features/role-manager/pages/Createfieldofficer"),
+);
+
+export const EditIntelligenceOfficer = lazy(
+  () => import("../../features/role-manager/pages/Createintelligenceofficer"),
+);
+
+export const EditRegionalOfficer = lazy(
+  () => import("../../features/role-manager/pages/Createregionalofficer"),
+);

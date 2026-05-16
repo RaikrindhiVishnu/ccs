@@ -22,76 +22,132 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
   agentData,
 }) => {
   const navigate = useNavigate();
+
   const handleView = (item: any, roleType: string) => {
     const userId = item.originalId || item.id;
+
     navigate(`/role-manager/profile/${userId}`, {
       state: {
         roleType,
-        userId: userId,
+        userId,
       },
     });
   };
 
-  // 1. Map Region & Intelligence Officers
-  const roAndIo = regionOfficerData?.data && !Array.isArray(regionOfficerData.data)
-    ? [
-      {
-        id: String(regionOfficerData.data.regional_officer_id),
-        originalId: regionOfficerData.data.regional_officer_id,
-        first_name: regionOfficerData.data.regional_officer_first_name,
-        last_name: regionOfficerData.data.regional_officer_last_name,
-        phone: regionOfficerData.data.regional_officer_phone,
-        name: `${regionOfficerData.data.regional_officer_first_name || ""} ${regionOfficerData.data.regional_officer_last_name || ""}`.trim(),
-        role: "Regional Officer" as const,
-        roleId: "RO",
-        contact: regionOfficerData.data.regional_officer_phone,
-        avatar: "https://i.pravatar.cc/150?u=ro",
-      },
-      {
-        id: String(regionOfficerData.data.intelligence_officer_id),
-        originalId: regionOfficerData.data.intelligence_officer_id,
-        first_name: regionOfficerData.data.intelligence_officer_first_name,
-        last_name: regionOfficerData.data.intelligence_officer_last_name,
-        phone: regionOfficerData.data.intelligence_officer_phone,
-        name: `${regionOfficerData.data.intelligence_officer_first_name || ""} ${regionOfficerData.data.intelligence_officer_last_name || ""}`.trim(),
-        role: "Intelligence Officer" as const,
-        roleId: "IO",
-        contact: regionOfficerData.data.intelligence_officer_phone,
-        avatar: "https://i.pravatar.cc/150?u=io",
-      },
-    ].filter(item => item.name) // Only show if they have a name
-    : [];
+  // ─────────────────────────────────────────────────────────────
+  // RO & IO
+  // ─────────────────────────────────────────────────────────────
 
-  // 2. Map Field Officers
+  const roAndIo =
+    regionOfficerData?.data &&
+    !Array.isArray(regionOfficerData.data)
+      ? [
+          {
+            id: String(regionOfficerData.data.regional_officer_id),
+            originalId: regionOfficerData.data.regional_officer_id,
+            first_name:
+              regionOfficerData.data.regional_officer_first_name,
+            last_name:
+              regionOfficerData.data.regional_officer_last_name,
+            phone: regionOfficerData.data.regional_officer_phone,
+            name: `${
+              regionOfficerData.data
+                .regional_officer_first_name || ""
+            } ${
+              regionOfficerData.data
+                .regional_officer_last_name || ""
+            }`.trim(),
+            role: "Regional Officer" as const,
+            roleId: "RO",
+            contact:
+              regionOfficerData.data.regional_officer_phone,
+            avatar: "https://i.pravatar.cc/150?u=ro",
+          },
+          {
+            id: String(
+              regionOfficerData.data.intelligence_officer_id
+            ),
+            originalId:
+              regionOfficerData.data.intelligence_officer_id,
+            first_name:
+              regionOfficerData.data
+                .intelligence_officer_first_name,
+            last_name:
+              regionOfficerData.data
+                .intelligence_officer_last_name,
+            phone:
+              regionOfficerData.data
+                .intelligence_officer_phone,
+            name: `${
+              regionOfficerData.data
+                .intelligence_officer_first_name || ""
+            } ${
+              regionOfficerData.data
+                .intelligence_officer_last_name || ""
+            }`.trim(),
+            role: "Intelligence Officer" as const,
+            roleId: "IO",
+            contact:
+              regionOfficerData.data
+                .intelligence_officer_phone,
+            avatar: "https://i.pravatar.cc/150?u=io",
+          },
+        ].filter((item) => item.name)
+      : [];
+
+  // ─────────────────────────────────────────────────────────────
+  // FIELD OFFICERS
+  // ─────────────────────────────────────────────────────────────
+
   const fieldOfficers = Array.isArray(fieldOfficerData?.data)
-    ? fieldOfficerData.data.map((fo: any, index: number) => ({
-      ...fo,
-      id: `${fo.id}-${index}`,
-      originalId: fo.id,
-      name: `${fo.first_name || ""} ${fo.last_name || ""}`.trim(),
-      role: "Field Officer" as const,
-      roleId: `FO-${fo.role_id || "000"}`,
-      contact: fo.phone,
-      avatar: `https://i.pravatar.cc/150?u=fo${fo.id}`,
-    }))
+    ? fieldOfficerData.data.map(
+        (fo: any, index: number) => ({
+          ...fo,
+          id: `${fo.id}-${index}`,
+          originalId: fo.id,
+          name: `${fo.first_name || ""} ${
+            fo.last_name || ""
+          }`.trim(),
+          role: "Field Officer" as const,
+          roleId: `FO-${fo.role_id || "000"}`,
+          contact: fo.phone,
+          avatar: `https://i.pravatar.cc/150?u=fo${fo.id}`,
+        })
+      )
     : [];
 
-  const [selectedFO, setSelectedFO] = useState<UserRole | null>(null);
+  const [selectedFO, setSelectedFO] =
+    useState<UserRole | null>(null);
+
   const [searchFO, setSearchFO] = useState("");
   const [searchAgent, setSearchAgent] = useState("");
-  const [getAgentDetails] = useGetAgentDetailsMutation();
-  const [localAgents, setLocalAgents] = useState<any[]>([]);
-  const [selectedFieldOfficerIndex, setSelectedFieldOfficerIndex] = useState(0);
 
-  const handleFieldOfficerClick = async (officer: any, index: number) => {
+  const [getAgentDetails] =
+    useGetAgentDetailsMutation();
+
+  const [localAgents, setLocalAgents] = useState<any[]>(
+    []
+  );
+
+  const [
+    selectedFieldOfficerIndex,
+    setSelectedFieldOfficerIndex,
+  ] = useState(0);
+
+  const handleFieldOfficerClick = async (
+    officer: any,
+    index: number
+  ) => {
     setSelectedFO(officer);
     setSelectedFieldOfficerIndex(index);
-    console.log(officer);
+
     try {
       const targetId = officer.role_id;
-      console.log("Using ID for Agent Details:", targetId);
-      const response = await getAgentDetails(targetId).unwrap();
-      console.log(response);
+
+      const response = await getAgentDetails(
+        targetId
+      ).unwrap();
+
       setLocalAgents(response?.data || []);
     } catch (error) {
       console.log(error);
@@ -100,41 +156,62 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
 
   const filteredFOs = fieldOfficers.filter(
     (fo: any) =>
-      fo.name.toLowerCase().includes(searchFO.toLowerCase()) ||
-      fo.roleId.toLowerCase().includes(searchFO.toLowerCase()),
+      fo.name
+        .toLowerCase()
+        .includes(searchFO.toLowerCase()) ||
+      fo.roleId
+        .toLowerCase()
+        .includes(searchFO.toLowerCase())
   );
 
-  // 3. Map Agents
-  const agentsToMap = selectedFO ? localAgents : (agentData?.data || []);
+  // ─────────────────────────────────────────────────────────────
+  // AGENTS
+  // ─────────────────────────────────────────────────────────────
+
+  const agentsToMap = selectedFO
+    ? localAgents
+    : agentData?.data || [];
+
   const rawAgents = Array.isArray(agentsToMap)
-    ? agentsToMap.map((ag: any, index: number) => ({
-      ...ag,
-      id: `${ag.id}-${index}`,
-      originalId: ag.id,
-      name: `${ag.first_name || ""} ${ag.last_name || ""}`.trim(),
-      role: "Agent" as const,
-      roleId: `AG-${ag.role_id || "000"}`,
-      contact: ag.phone,
-      avatar: `https://i.pravatar.cc/150?u=ag${ag.id}`,
-    }))
+    ? agentsToMap.map(
+        (ag: any, index: number) => ({
+          ...ag,
+          id: `${ag.id}-${index}`,
+          originalId: ag.id,
+          name: `${ag.first_name || ""} ${
+            ag.last_name || ""
+          }`.trim(),
+          role: "Agent" as const,
+          roleId: `AG-${ag.role_id || "000"}`,
+          contact: ag.phone,
+          avatar: `https://i.pravatar.cc/150?u=ag${ag.id}`,
+        })
+      )
     : [];
 
   const filteredAgents = rawAgents.filter(
     (ag: any) =>
-      ag.name.toLowerCase().includes(searchAgent.toLowerCase()) ||
-      ag.roleId.toLowerCase().includes(searchAgent.toLowerCase()),
+      ag.name
+        .toLowerCase()
+        .includes(searchAgent.toLowerCase()) ||
+      ag.roleId
+        .toLowerCase()
+        .includes(searchAgent.toLowerCase())
   );
 
   const actualIndex = selectedFieldOfficerIndex;
+
   const foCount = filteredFOs.length;
 
-  // Each card is roughly 72px tall plus gap. The SVG viewbox is 320. 
-  // Let's pass the exact starting pixel calculation if needed or just a better percentage
-  const foOffset = foCount > 0 ? (actualIndex + 0.5) / foCount : 0.5;
+  const foOffset =
+    foCount > 0
+      ? (actualIndex + 0.5) / foCount
+      : 0.5;
 
   return (
     <div className="flex flex-row items-start gap-0 w-full overflow-x-auto pb-6">
-      {/* Level 1: RO & IO */}
+      {/* ───────────────────────── RO & IO ───────────────────────── */}
+
       <div className="flex items-center w-1/3">
         <FlowCard>
           <div className="flex flex-col gap-4">
@@ -145,22 +222,29 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                   variant="detailed"
                   active={idx === 0}
                   onEdit={() =>
-                    navigate("/role-manager/agent-edit", {
-                      state: {
-                        initialData: role,
-                        roleType: role.roleId === "IO" ? "RO" : role.roleId,
-                        actualRoleType: role.roleId,
-                        userId: role.originalId,
-                      },
-                    })
+                    navigate(
+                      role.roleId === "IO"
+                        ? "/role-manager/edit-intelligence-officer"
+                        : "/role-manager/edit-regional-officer",
+                      {
+                        state: {
+                          initialData: role,
+                          roleType: role.roleId,
+                          userId: role.originalId,
+                        },
+                      }
+                    )
                   }
                   onView={() =>
                     handleView(
                       role,
-                      role.roleId === "IO" ? "RO" : role.roleId
+                      role.roleId === "IO"
+                        ? "IO"
+                        : "RO"
                     )
                   }
                 />
+
                 {idx < roAndIo.length - 1 && (
                   <div className="h-px bg-gray-100 w-full" />
                 )}
@@ -168,17 +252,24 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
             ))}
           </div>
         </FlowCard>
-        <FlowConnector type="branch" startOffset={0.5} />
+
+        <FlowConnector
+          type="branch"
+          startOffset={0.5}
+        />
       </div>
 
-      {/* Level 2: Field Officers */}
+      {/* ───────────────────── FIELD OFFICERS ───────────────────── */}
+
       <div className="flex items-center w-1/3">
         <FlowCard
           header={
             <Input
               placeholder="Search Field Officer"
               value={searchFO}
-              onChange={(e) => setSearchFO(e.target.value)}
+              onChange={(e) =>
+                setSearchFO(e.target.value)
+              }
               icon={<Search size={16} />}
               wrapperClassName="border border-[var(--border-subtle)] rounded-full h-10 text-sm"
               variant="white"
@@ -190,25 +281,49 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
               <FlowItem
                 key={fo.id}
                 {...fo}
-                active={selectedFieldOfficerIndex === index}
-                onClick={() => handleFieldOfficerClick(fo, index)}
-                onEdit={() => navigate("/role-manager/agent-edit", { state: { initialData: fo, roleType: "FO", userId: fo.originalId } })}
-                onView={() => handleView(fo, "FO")}
+                active={
+                  selectedFieldOfficerIndex === index
+                }
+                onClick={() =>
+                  handleFieldOfficerClick(fo, index)
+                }
+                onEdit={() =>
+                  navigate(
+                    "/role-manager/edit-field-officer",
+                    {
+                      state: {
+                        initialData: fo,
+                        roleType: "FO",
+                        userId: fo.originalId,
+                      },
+                    }
+                  )
+                }
+                onView={() =>
+                  handleView(fo, "FO")
+                }
               />
             ))}
           </div>
         </FlowCard>
-        <FlowConnector type="branch" startOffset={foOffset} />
+
+        <FlowConnector
+          type="branch"
+          startOffset={foOffset}
+        />
       </div>
 
-      {/* Level 3: Agents */}
+      {/* ───────────────────────── AGENTS ───────────────────────── */}
+
       <div className="flex items-center w-1/3">
         <FlowCard
           header={
             <Input
               placeholder="Search Agents"
               value={searchAgent}
-              onChange={(e) => setSearchAgent(e.target.value)}
+              onChange={(e) =>
+                setSearchAgent(e.target.value)
+              }
               icon={<Search size={16} />}
               wrapperClassName="border border-[var(--border-subtle)] rounded-full h-10 text-sm"
               variant="white"
@@ -221,13 +336,29 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                 <FlowItem
                   key={ag.id}
                   {...ag}
-                  onEdit={() => navigate("/role-manager/agent-edit", { state: { initialData: ag, roleType: "AG", userId: ag.originalId } })}
-                  onView={() => handleView(ag, "AG")}
+                  onEdit={() =>
+                    navigate(
+                      "/role-manager/agent-edit",
+                      {
+                        state: {
+                          initialData: ag,
+                          roleType: "AG",
+                          userId: ag.originalId,
+                        },
+                      }
+                    )
+                  }
+                  onView={() =>
+                    handleView(ag, "AG")
+                  }
                 />
               ))
             ) : (
               <div className="flex flex-col items-center justify-center h-40 opacity-40">
-                <Typography variant="p" className="text-sm">
+                <Typography
+                  variant="p"
+                  className="text-sm"
+                >
                   No agents found
                 </Typography>
               </div>
