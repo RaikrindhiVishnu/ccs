@@ -8,6 +8,9 @@ import type {
   RoleCreationOverviewResponse,
   CreateRegionalOfficerRequest,
   CreateFieldOfficerRequest,
+  UpdateAgentRequest,
+  UpdateFieldOfficerRequest,
+  UpdateRegionalOfficerRequest,
 } from "../types/agent";
 
 export const agentApi = roleManagerApi.injectEndpoints({
@@ -74,6 +77,30 @@ export const agentApi = roleManagerApi.injectEndpoints({
         body,
       }),
     }),
+
+    updateAgentDetails: builder.mutation<any, UpdateAgentRequest>({
+      query: (body) => ({
+        url: "/agents/updateAgent",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    updateFieldOfficer: builder.mutation<any, UpdateFieldOfficerRequest>({
+      query: (body) => ({
+        url: "/feildOfficer/updateFieldOfficer",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    updateRegionalOfficer: builder.mutation<any, UpdateRegionalOfficerRequest>({
+      query: (body) => ({
+        url: "/regionalOfficer/updateRegionalOfficer",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -84,4 +111,7 @@ export const {
   useGetAgentOnboardingVelocityQuery,
   useGetRegionCreationVelocityQuery,
   useGetRoleCreationOverviewQuery,
+  useUpdateAgentDetailsMutation,
+  useUpdateFieldOfficerMutation,
+  useUpdateRegionalOfficerMutation,
 } = agentApi;
