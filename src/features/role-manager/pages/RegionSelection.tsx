@@ -1,8 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import pako from "pako";
+import { Buffer } from "buffer";
 import { Maximize2 } from "lucide-react";
 import StateDetailMap from "../components/StateDetailMap";
+import { useGetCountryByIdQuery, useGetStatesByCountryIdQuery } from "../api/regionSelectionApi";
 
 // Helper to calculate bounds for a GeoJSON feature
 const getFeatureBounds = (feature: any): maplibregl.LngLatBoundsLike => {
@@ -28,6 +31,51 @@ const RegionSelection: React.FC = () => {
   const map = useRef<maplibregl.Map | null>(null);
   const [isZoomed, setIsZooming] = useState(false);
   const [selectedState, setSelectedState] = useState<any | null>(null);
+  const [mapLoaded, setMapLoaded] = useState(0); // Counter to trigger data re-application
+
+  const { data: countryData } = useGetCountryByIdQuery({ country_id: 1 });
+  const { data: statesData } = useGetStatesByCountryIdQuery({ country_id: 1 });
+
+
+  useEffect(() => {
+    if (map.current && statesData) {
+      try {
+        let finalData = null;
+
+        // 1. Check if the root object is the FeatureCollection
+        if (statesData.type === "FeatureCollection") {
+          finalData = statesData;
+        }
+        // 2. Check if it's wrapped in a .data property
+        else if (statesData.data?.type === "FeatureCollection") {
+          finalData = statesData.data;
+        }
+        // 3. Fallback: Check if it's a compressed string
+        else if (typeof statesData.data === "string") {
+          const binaryData = Buffer.from(statesData.data, "base64");
+          const decompressedData = pako.ungzip(binaryData);
+          const decompressedString = new TextDecoder().decode(decompressedData);
+          finalData = JSON.parse(decompressedString);
+        } else if (statesData.data?.geo_json_data) {
+          const rawData = statesData.data.geo_json_data;
+          const binaryData = Buffer.from(rawData, "base64");
+          const decompressedData = pako.ungzip(binaryData);
+          const decompressedString = new TextDecoder().decode(decompressedData);
+          finalData = JSON.parse(decompressedString);
+        } else if (statesData.data) {
+          finalData = statesData.data;
+        }
+
+        const source = map.current.getSource("india-states") as maplibregl.GeoJSONSource;
+        if (source && finalData) {
+          source.setData(finalData);
+          console.log("🏙️ States Source Updated:", finalData);
+        }
+      } catch (err) {
+        console.error("Error updating map with states data:", err);
+      }
+    }
+  }, [statesData, mapLoaded]);
 
   const resetView = () => {
     map.current?.flyTo({
@@ -90,9 +138,10 @@ const RegionSelection: React.FC = () => {
         if (!map.current?.getSource(indiaSourceId)) {
           map.current?.addSource(indiaSourceId, {
             type: "geojson",
-            data: "https://raw.githubusercontent.com/datta07/INDIAN-SHAPEFILES/master/INDIA/INDIA_STATES.geojson",
+            data: { type: "FeatureCollection", features: [] },
           });
 
+          // Layer 1: Base India Fill
           map.current?.addLayer({
             id: "india-fill",
             type: "fill",
@@ -103,13 +152,31 @@ const RegionSelection: React.FC = () => {
             },
           });
 
+          // Layer 2: Internal State Borders (Middle)
+          const statesSourceId = "india-states";
+          map.current?.addSource(statesSourceId, {
+            type: "geojson",
+            data: { type: "FeatureCollection", features: [] },
+          });
+
+          map.current?.addLayer({
+            id: "states-border-line",
+            type: "line",
+            source: statesSourceId,
+            paint: {
+              "line-color": "#475569", // Darker Slate-600 for prominent state lines
+              "line-width": 1.5,
+            },
+          });
+
+          // Layer 3: Main Country Outer Border (Top)
           map.current?.addLayer({
             id: "india-border-line",
             type: "line",
             source: indiaSourceId,
             paint: {
-              "line-color": "#B7B9BF",
-              "line-width": 1,
+              "line-color": "#94a3b8", // Lighter Slate-400 for outer boundary
+              "line-width": 1.2,
               "line-opacity": 1,
             },
           });
@@ -138,6 +205,9 @@ const RegionSelection: React.FC = () => {
 
         map.current?.resize();
 
+        // Signal that map is ready for data
+        setMapLoaded((prev) => prev + 1);
+
         map.current?.flyTo({
           center: [78.9629, 20.5937],
           zoom: 3.5,
@@ -161,6 +231,46 @@ const RegionSelection: React.FC = () => {
       }
     };
   }, [selectedState]);
+
+  useEffect(() => {
+    if (map.current && countryData) {
+      try {
+        let finalData = null;
+
+        // 1. Check if the root object is the FeatureCollection (matches screenshot)
+        if (countryData.type === "FeatureCollection") {
+          finalData = countryData;
+        }
+        // 2. Check if it's wrapped in a .data property
+        else if (countryData.data?.type === "FeatureCollection") {
+          finalData = countryData.data;
+        }
+        // 3. Fallback: Check if it's a compressed string (like other master APIs)
+        else if (typeof countryData.data === "string") {
+          const binaryData = Buffer.from(countryData.data, "base64");
+          const decompressedData = pako.ungzip(binaryData);
+          const decompressedString = new TextDecoder().decode(decompressedData);
+          finalData = JSON.parse(decompressedString);
+        } else if (countryData.data?.geo_json_data) {
+          const rawData = countryData.data.geo_json_data;
+          const binaryData = Buffer.from(rawData, "base64");
+          const decompressedData = pako.ungzip(binaryData);
+          const decompressedString = new TextDecoder().decode(decompressedData);
+          finalData = JSON.parse(decompressedString);
+        } else if (countryData.data) {
+          finalData = countryData.data;
+        }
+
+        const source = map.current.getSource("india-border") as maplibregl.GeoJSONSource;
+        if (source && finalData) {
+          source.setData(finalData);
+          console.log("🗺️ Map Source Updated with API Data:", finalData);
+        }
+      } catch (err) {
+        console.error("Error updating map data from API:", err);
+      }
+    }
+  }, [countryData, mapLoaded]);
 
   if (selectedState) {
     return (
