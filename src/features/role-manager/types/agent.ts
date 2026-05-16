@@ -181,7 +181,6 @@ export interface UpdateFieldOfficerRequest {
   phoneNumber: string;
   dob: string;
   role_id: number;
-  roleId: number;
   address: {
     address: string;
     state_id: number;
@@ -191,7 +190,6 @@ export interface UpdateFieldOfficerRequest {
   geo_assignments: {
     state_id: number;
     region_id: number;
-    regionId: number;
   };
 }
 
@@ -203,17 +201,17 @@ export interface UpdateRegionalOfficerRequest {
   phoneNumber: string;
   dob: string;
   role_id: number;
-  roleId: number;
+
   address: {
     address: string;
     state_id: number;
     city: string;
     pincode: string;
   };
+
   geo_assignments: {
     state_id: number;
     region_id: number;
-    regionId: number;
   };
 }
 export interface CreateFieldOfficerRequest {
