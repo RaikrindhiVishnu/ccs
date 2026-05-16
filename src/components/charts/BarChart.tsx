@@ -6,6 +6,7 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
+  Tooltip,
 } from "recharts";
 
 export interface BarDataItem {
@@ -17,11 +18,9 @@ interface Props {
   data: BarDataItem[];
   activeLabel?: string;
   yMax?: number;
+  tooltipLabel?: string;
 }
 
-// ─────────────────────────────────────────────
-//  Types
-// ─────────────────────────────────────────────
 interface CustomBarProps {
   x?: number;
   y?: number;
@@ -30,12 +29,33 @@ interface CustomBarProps {
   value?: number;
   label?: string;
   activeLabel?: string;
-  index?: number; // ← add this
+  index?: number;
 }
 
-// ─────────────────────────────────────────────
-//  CustomBar — outside component
-// ─────────────────────────────────────────────
+// ── CustomTooltip ─────────────────────────────
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{ value: number; payload: BarDataItem }>;
+  tooltipLabel?: string;
+}
+
+const CustomTooltip = ({ active, payload, tooltipLabel = "Value" }: TooltipProps) => {
+  if (active && payload && payload.length) {
+    const item = payload[0].payload;
+    return (
+      <div className="bg-[var(--surface-card)] border border-[var(--border-soft)] rounded-xl px-3 py-2 shadow-[var(--shadow-dropdown)]">
+        <p className="font-bold text-xs text-[var(--text-primary)] mb-0.5 font-[var(--font-sans)]">
+          {item.label}
+        </p>
+        <p className="font-semibold text-[11px] text-[var(--brand-500)] m-0 font-[var(--font-sans)]">
+          {tooltipLabel}: {payload[0].value}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 const CustomBar = ({
   x = 0,
   y = 0,
@@ -46,7 +66,6 @@ const CustomBar = ({
   activeLabel = "",
 }: CustomBarProps) => {
   const isActive = label === activeLabel;
-
   const thinLineWidth = 1.4;
   const centerX = x + width / 2;
 
@@ -58,27 +77,21 @@ const CustomBar = ({
       <g>
         {/* Value Badge */}
         <foreignObject x={centerX - 23} y={y - 45} width={46} height={28}>
-          <div className="flex justify-center items-center rounded-[24px] border border-[rgba(0,0,0,0.24)] bg-[rgba(0,0,0,0.08)] h-7 w-11.5 shadow-none">
-            <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] text-[#000000] leading-none">
+          <div className="flex justify-center items-center rounded-3xl border border-[var(--border)] bg-[var(--tooltip-bg)] h-7">
+            <span className="font-[var(--font-sans)] font-semibold text-sm text-[var(--text-primary)] leading-none">
               {value}
             </span>
           </div>
         </foreignObject>
 
         {/* Top Dot */}
-        <circle cx={centerX} cy={y - 5.5} r={5.5} fill="#2780C4" />
+        <circle cx={centerX} cy={y - 5.5} r={5.5} fill="var(--brand-500)" />
 
         {/* Capsule Bar with Gradient */}
         <defs>
-          <linearGradient
-            id="activeCapsuleGradient"
-            x1="0"
-            y1="0"
-            x2="0"
-            y2="1"
-          >
-            <stop offset="0%" stopColor="rgba(223, 232, 200, 0)" />
-            <stop offset="100%" stopColor="rgba(124, 171, 218, 0.77)" />
+          <linearGradient id="activeCapsuleGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--chart-gradient-from)" />
+            <stop offset="100%" stopColor="var(--chart-gradient-to)" />
           </linearGradient>
         </defs>
         <rect
@@ -96,19 +109,14 @@ const CustomBar = ({
           y1={y}
           x2={centerX}
           y2={y + height}
-          stroke="#2780C4"
+          stroke="var(--brand-500)"
           strokeWidth={1.26}
         />
 
         {/* Active Day label circle */}
-        <foreignObject
-          x={centerX - 18}
-          y={y + height - 2}
-          width={36}
-          height={36}
-        >
-          <div className="w-[36px] h-[36px] bg-[#2780C4] rounded-full flex justify-center items-center shadow-sm">
-            <span className="font-['Plus_Jakarta_Sans'] font-medium text-[10.7px] text-white">
+        <foreignObject x={centerX - 18} y={y + height - 2} width={36} height={36}>
+          <div className="w-9 h-9 bg-[var(--brand-500)] rounded-full flex justify-center items-center shadow-[var(--shadow-card-sm)]">
+            <span className="font-[var(--font-sans)] font-medium text-[10.7px] text-white">
               {label}
             </span>
           </div>
@@ -120,22 +128,22 @@ const CustomBar = ({
   return (
     <g>
       {/* Top Dot */}
-      <circle cx={centerX} cy={y - 4} r={5.5} fill="#2780C4" />
+      <circle cx={centerX} cy={y - 4} r={5.5} fill="var(--brand-500)" />
 
-      {/* Thin line (Inactive) */}
+      {/* Thin line */}
       <rect
         x={centerX - thinLineWidth / 2}
         y={y}
         width={thinLineWidth}
         height={height}
-        fill="#2C2C2C"
+        fill="var(--text-primary)"
         opacity={0.16}
       />
 
       {/* Inactive Day label circle */}
       <foreignObject x={centerX - 20} y={y + height - 2} width={40} height={40}>
-        <div className="w-10 h-10 bg-[#F2F2F2] rounded-full flex justify-center items-center">
-          <span className="font-['Plus_Jakarta_Sans'] font-medium text-[12px] text-[#000000]">
+        <div className="w-10 h-10 bg-[var(--surface-page)] rounded-full flex justify-center items-center">
+          <span className="font-[var(--font-sans)] font-medium text-xs text-[var(--text-primary)]">
             {label}
           </span>
         </div>
@@ -144,10 +152,13 @@ const CustomBar = ({
   );
 };
 
-// ─────────────────────────────────────────────
-//  Main component
-// ─────────────────────────────────────────────
-const BarChart: React.FC<Props> = ({ data, activeLabel, yMax: yMaxProp }) => {
+// ── Main Component ────────────────────────────
+const BarChart: React.FC<Props> = ({
+  data,
+  activeLabel,
+  yMax: yMaxProp,
+  tooltipLabel = "Value",
+}) => {
   const domainMax = yMaxProp ?? 300;
   const activeLbl = activeLabel ?? "We";
 
@@ -162,7 +173,7 @@ const BarChart: React.FC<Props> = ({ data, activeLabel, yMax: yMaxProp }) => {
           <CartesianGrid
             vertical={false}
             strokeDasharray="1 1"
-            stroke="#2C2C2C"
+            stroke="var(--text-primary)"
             strokeOpacity={0.1}
           />
           <XAxis dataKey="label" hide axisLine={false} tickLine={false} />
@@ -173,12 +184,18 @@ const BarChart: React.FC<Props> = ({ data, activeLabel, yMax: yMaxProp }) => {
             axisLine={false}
             tickLine={false}
             tick={{
-              fill: "#000000",
+              fill: "var(--text-primary)",
               fontSize: 12,
               opacity: 0.5,
-              fontFamily: "Plus Jakarta Sans",
+              fontFamily: "var(--font-sans)",
             }}
           />
+
+          <Tooltip
+            content={<CustomTooltip tooltipLabel={tooltipLabel} />}
+            cursor={false}
+          />
+
           <Bar
             dataKey="value"
             shape={(props: unknown) => {

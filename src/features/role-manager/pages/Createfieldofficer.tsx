@@ -18,7 +18,8 @@ import {
 } from "@/components/validations/officerSchema";
 import { RHFTextField } from "@/components/form/RHFTextField";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
-
+import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 const BACK_ROUTE = "/role-manager/create-roles" as const;
 
 // ─── Field Label ──────────────────────────────────────────────────────────────
@@ -194,6 +195,12 @@ const REGIONS = ["North", "South", "East", "West", "Central", "North-East"];
 const CreateFieldOfficer = () => {
   const navigate = useNavigate();
   const [createFieldOfficer, { isLoading }] = useCreateFieldOfficerMutation();
+  const { data: masterData } =
+  useGetAllMasterDataQuery();
+  const fieldOfficerRoleId = getRoleId(
+  masterData?.data?.userRolesResult || [],
+  "FO"
+);
   const { control, handleSubmit } = useForm<OfficerFormValues>({
     resolver: zodResolver(officerSchema),
     defaultValues: {
@@ -224,7 +231,7 @@ const CreateFieldOfficer = () => {
         emailAddress: values.email,
         phoneNumber: values.mobile,
         dob: values.dob,
-        role_id: 3,
+        role_id: fieldOfficerRoleId,
         address: {
           address: values.address,
           state_id: 1,

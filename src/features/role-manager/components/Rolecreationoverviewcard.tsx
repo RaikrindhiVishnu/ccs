@@ -8,7 +8,7 @@ import { WeekDropdown } from "@/components/ui/Dropdown";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { useGetRoleCreationOverviewQuery } from "@/features/role-manager/api/agentApi";
-
+import DateRangePicker from "@/components/ui/DateRangePicker";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface DayData {
@@ -22,14 +22,11 @@ export interface DayData {
 export interface RoleCreationOverviewCardProps {
   title?: string;
   subtitle?: string;
-  period?: string;
-  onPeriodChange?: (period: string) => void;
   className?: string;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const PERIOD_OPTIONS = ["Week", "Month", "Quarter", "Year"];
 
 const SERIES: {
   key: keyof Omit<DayData, "day">;
@@ -60,11 +57,16 @@ interface TooltipState {
 export function RoleCreationOverviewCard({
   title = "Role Creation Overview",
   subtitle = "Breakdown of role creation by role type",
-  period: controlledPeriod,
-  onPeriodChange,
   className,
-}: RoleCreationOverviewCardProps) {
-  const [internalPeriod, setInternalPeriod] = useState("Week");
+}:
+
+RoleCreationOverviewCardProps) {
+    const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>(() => {
+    const to = new Date();
+    const from = new Date();
+    from.setDate(from.getDate() - 6);
+    return { from, to };
+  });
   const [tooltip, setTooltip] = useState<TooltipState>({
     visible: false,
     x: 0,
@@ -73,13 +75,11 @@ export function RoleCreationOverviewCard({
     values: [],
   });
   const chartRef = useRef<HTMLDivElement>(null);
-  const period = controlledPeriod ?? internalPeriod;
- const { data: apiResponse, isLoading, error } =
-  useGetRoleCreationOverviewQuery({
-    startDate: "2024-01-01",
-    endDate: "2024-12-31",
-    offset: "0",
-  });
+const { data: apiResponse, isLoading, error } = useGetRoleCreationOverviewQuery({
+  startDate: dateRange.from.toISOString().split("T")[0],
+  endDate: dateRange.to.toISOString().split("T")[0],
+  offset: "0",
+});
 
 const transformedData: DayData[] =
   apiResponse?.data?.map((item) => ({
@@ -99,17 +99,21 @@ const data: DayData[] = transformedData;
     () => Math.max(...data.map((d) => d.ro + d.io + d.fo + d.agents), 1),
     [data],
   );
-  const yMax = Math.ceil(maxTotal / 5) * 5;
-  const yTicks = useMemo(() => {
-    const t: number[] = [];
-    for (let v = 0; v <= yMax; v += 5) t.push(v);
-    return t.reverse();
-  }, [yMax]);
+const yMax = useMemo(() => {
+  const niceSteps = [1, 2, 5, 10, 25, 50, 100, 200, 250, 500, 1000];
+  const rawStep = maxTotal / 5;
+  const step = niceSteps.find((s) => s >= rawStep) ?? 1000;
+  return step * 6; // always 6 intervals = 7 ticks (0 to top)
+}, [maxTotal]);
 
-  const handlePeriodChange = (val: string) => {
-    setInternalPeriod(val);
-    onPeriodChange?.(val);
-  };
+const yTicks = useMemo(() => {
+  const step = yMax / 6;
+  const t: number[] = [];
+  for (let i = 0; i <= 6; i++) t.push(Math.round(i * step));
+  return t.reverse();
+}, [yMax]);
+
+
 
   const showTooltip = (e: React.MouseEvent<HTMLDivElement>, day: DayData) => {
     const rect = chartRef.current?.getBoundingClientRect();
@@ -157,12 +161,13 @@ const data: DayData[] = transformedData;
           {title}
         </Typography>
 
-        <WeekDropdown
-          options={PERIOD_OPTIONS}
-          defaultValue="Week"
-          value={period}
-          onChange={handlePeriodChange}
-        />
+       <DateRangePicker
+  from={dateRange.from}
+  to={dateRange.to}
+  onRangeChange={(range) => {
+    if (range) setDateRange(range);
+  }}
+/>
       </div>
 
       {/* ── Subtitle ────────────────────────────────────────── */}
