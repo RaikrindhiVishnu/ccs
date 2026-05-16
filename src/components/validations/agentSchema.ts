@@ -30,10 +30,10 @@ export const agentSchema = z.object({
   bankBranch: z.string().min(1, "Bank Branch is required"),
 
   // ── File fields ──────────────────────────────────────────
-  profilePicture: fileSchema(ACCEPTED_IMAGE_TYPES, "Profile picture"),
-  aadharFront: fileSchema(ACCEPTED_DOC_TYPES, "Aadhar Front"),
-  aadharBack: fileSchema(ACCEPTED_DOC_TYPES, "Aadhar Back"),
-  panCard: fileSchema(ACCEPTED_DOC_TYPES, "PAN Card"),
+  profilePicture: fileSchema(ACCEPTED_IMAGE_TYPES, "Profile picture").optional(),
+  aadharFront: fileSchema(ACCEPTED_DOC_TYPES, "Aadhar Front").optional(),
+  aadharBack: fileSchema(ACCEPTED_DOC_TYPES, "Aadhar Back").optional(),
+  panCard: fileSchema(ACCEPTED_DOC_TYPES, "PAN Card").optional(),
 });
 
 export type AgentFormValues = z.infer<typeof agentSchema>;

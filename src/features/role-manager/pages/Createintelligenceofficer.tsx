@@ -16,7 +16,13 @@ import {
 import { RHFTextField } from "@/components/form/RHFTextField";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { toast } from "sonner";
+import {
+  useCreateRegionalOfficerMutation,
+} from "@/features/role-manager/api/agentApi";
 
+import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+
+import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 const BACK_ROUTE = "/role-manager/create-roles" as const;
 
 // ─── Field Label ──────────────────────────────────────────────────────────────
@@ -185,7 +191,14 @@ const REGIONS = ["North", "South", "East", "West", "Central", "North-East"];
 
 export default function CreateIntelligenceOfficer() {
   const navigate = useNavigate();
-
+const [createRegionalOfficer, { isLoading }] =
+  useCreateRegionalOfficerMutation();
+  const { data: masterData } =
+  useGetAllMasterDataQuery();
+  const intelligenceOfficerRoleId = getRoleId(
+  masterData?.data?.userRolesResult || [],
+  "IO"
+);
   const { control, handleSubmit } = useForm<IntelligenceOfficerFormValues>({
     resolver: zodResolver(intelligenceOfficerSchema),
     defaultValues: {
@@ -208,14 +221,62 @@ export default function CreateIntelligenceOfficer() {
     },
   });
 
-  const handleCreate = async (values: IntelligenceOfficerFormValues) => {
-    try {
-      console.log("Submit values:", values);
-      toast.success("Intelligence Officer created successfully");
-    } catch (err: any) {
-      toast.error(err?.data?.message || "Something went wrong");
-    }
-  };
+ const handleCreate = async (
+  values: IntelligenceOfficerFormValues
+) => {
+  try {
+    const payload = {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      countryCode: "+91",
+      emailAddress: values.email,
+      phoneNumber: values.mobile,
+      dob: values.dob,
+
+      role_id: intelligenceOfficerRoleId,
+
+      address: {
+        address: values.address,
+        state_id: 1,
+        city: values.city,
+        pincode: values.pincode,
+      },
+
+      geo_assignments: {
+        country_id: 1,
+        state_id: 1,
+        region_id: 1,
+      },
+
+      id_proof: {
+        id_proof_frontUrl:
+          values.aadharFront?.name || "",
+
+        id_proof_backUrl:
+          values.aadharBack?.name || "",
+
+        pan_card_number: "ABCDE1234F",
+
+        pan_card_url:
+          values.panCard?.name || "",
+      },
+    };
+
+    await createRegionalOfficer(payload).unwrap();
+
+    toast.success(
+      "Intelligence Officer created successfully"
+    );
+
+    navigate("/role-manager/create-roles");
+
+  } catch (err: any) {
+    toast.error(
+      err?.data?.message ||
+      "Something went wrong"
+    );
+  }
+};
 
   return (
     <div className="min-h-screen bg-[color:var(--surface-page)] rounded-[2rem] px-[clamp(1.5rem,6.81vw,6.8125rem)] py-[clamp(1.5rem,2.64vw,2.375rem)]">

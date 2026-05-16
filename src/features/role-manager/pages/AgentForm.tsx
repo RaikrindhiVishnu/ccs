@@ -1,21 +1,27 @@
 import { useRef } from "react";                          // removed useState for files
-import { useAppSelector } from "@/core/hooks";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
 import SuccessIcon from "@/assets/sucess.svg";
 import { Upload, FileText, ArrowLeft, User, Camera } from "lucide-react";
-import { useCreateAgentMutation } from "../api/agentApi";
-import type { AgentFormProps } from "../types/agent";
+import {
+    useCreateAgentMutation,
+    useUpdateAgentDetailsMutation,
+    useUpdateFieldOfficerMutation,
+    useUpdateRegionalOfficerMutation
+} from "../api/agentApi";
+import type { AgentFormProps, UpdateAgentRequest } from "../types/agent";
 import { useForm, Controller } from "react-hook-form";   // added Controller
 import type { Control } from "react-hook-form";          // type-only import
 import { zodResolver } from "@hookform/resolvers/zod";
 import { agentSchema, type AgentFormValues } from "@/components/validations/agentSchema";
 import { RHFTextField } from "@/components/form/RHFTextField";
+import { useLocation } from "react-router-dom";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { toast } from "sonner";
-import { useState } from "react";                        // kept only for profileImage
-
+import { useState, useEffect } from "react";                        // kept only for profileImage                       // kept only for profileImage
+import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 // ─── Dropdown option lists ────────────────────────────────────────────────────
 
 const REGION_OPTIONS = [
@@ -59,34 +65,50 @@ export default function AgentForm({
     initialData,
     onCancel,
     isLoading = false,
+    roleType,
 }: AgentFormProps) {
-    const states = useAppSelector((state) => state.roleManager.states);
-    const stateOptions = states.map((s) => s.desc);
+    const location = useLocation();
+    console.log("AgentForm Location State:", location.state);
+    const { userId: locUserId } = location.state || {};
 
     const [profileImage, setProfileImage] = useState<string | null>(null);
 
     const [createAgent, { isLoading: isSubmitting }] = useCreateAgentMutation();
+    const [updateAgent] = useUpdateAgentDetailsMutation();
+    const [updateFieldOfficer] = useUpdateFieldOfficerMutation();
+    const [updateRegionalOfficer] = useUpdateRegionalOfficerMutation();
+
+    const [dobState, setDobState] = useState("");
+    const [addressState, setAddressState] = useState("");
+    const [roleIdState, setRoleIdState] = useState(1);
+    const [selectedRegionId, setSelectedRegionId] = useState(1);
+    const { data: masterData } =
+  useGetAllMasterDataQuery();
+  const agentRoleId = getRoleId(
+  masterData?.data?.userRolesResult || [],
+  "AGENT"
+);
 
     const { control, handleSubmit, watch } = useForm<AgentFormValues>({
         resolver: zodResolver(agentSchema),
         defaultValues: {
-            firstName: initialData?.firstName ?? "",
-            lastName: initialData?.lastName ?? "",
+            firstName: initialData?.firstName ?? (initialData as any)?.first_name ?? "",
+            lastName: initialData?.lastName ?? (initialData as any)?.last_name ?? "",
             dob: initialData?.dob ?? "",
-            email: initialData?.email ?? "",
-            phone: initialData?.phone ?? "",
-            address: initialData?.address ?? "",
-            addressState: initialData?.state ?? "",
-            city: initialData?.city ?? "",
-            pincode: initialData?.pincode ?? "",
-            panNumber: initialData?.panNumber ?? "",
-            state: initialData?.state ?? "",
-            region: initialData?.region ?? "",
-            area: initialData?.area ?? "",
-            bankName: initialData?.bankName ?? "",
-            accountNumber: initialData?.accountNumber ?? "",
-            ifscCode: initialData?.ifscCode ?? "",
-            bankBranch: initialData?.bankBranch ?? "",
+            email: initialData?.email ?? (initialData as any)?.emailAddress ?? "",
+            phone: initialData?.phone ?? (initialData as any)?.phoneNumber ?? (initialData as any)?.contact ?? (initialData as any)?.phone ?? "",
+            address: initialData?.address ?? (initialData as any)?.address?.address ?? "",
+            addressState: initialData?.state ?? (initialData as any)?.address?.state ?? "",
+            city: initialData?.city ?? (initialData as any)?.address?.city ?? "",
+            pincode: initialData?.pincode ?? (initialData as any)?.address?.pincode ?? "",
+            panNumber: initialData?.panNumber ?? (initialData as any)?.id_proof?.pan_card_number ?? "",
+            state: initialData?.state ?? (initialData as any)?.geo_assignments?.state_id ?? "",
+            region: initialData?.region ?? (initialData as any)?.geo_assignments?.region_id ?? "",
+            area: initialData?.area ?? (initialData as any)?.geo_assignments?.areas_id ?? "",
+            bankName: initialData?.bankName ?? (initialData as any)?.id_proof?.bank_name ?? "",
+            accountNumber: initialData?.accountNumber ?? (initialData as any)?.id_proof?.bank_account_number ?? "",
+            ifscCode: initialData?.ifscCode ?? (initialData as any)?.id_proof?.ifsc_code ?? "",
+            bankBranch: initialData?.bankBranch ?? (initialData as any)?.id_proof?.branch ?? "",
             // ── file fields ──
             profilePicture: undefined,
             aadharFront: undefined,
@@ -98,8 +120,138 @@ export default function AgentForm({
     const firstName = watch("firstName");
     const lastName = watch("lastName");
 
+    useEffect(() => {
+        if (isEdit && initialData) {
+            setDobState(initialData.dob || (initialData as any).dob || "");
+            setAddressState(initialData.address || (initialData as any).address?.address || (initialData as any).address || "");
+            setRoleIdState((initialData as any).role_id || 1);
+            setSelectedRegionId((initialData as any).geo_assignments?.region_id || 1);
+        }
+    }, [isEdit, initialData]);
+
     const handleSave = async (values: AgentFormValues) => {
+        console.log("SAVE CLICKED", values);
+        console.log("ROLE TYPE:", roleType);
         try {
+            if (isEdit) {
+                const userId = locUserId || (initialData as any)?.originalId || (initialData as any)?.id || 1;
+                console.log("USER ID for update:", userId);
+                
+                if (roleType === "AG") {
+                    const payload: UpdateAgentRequest = {
+                        userId: Number(userId),
+                        firstName: values.firstName || "",
+                        lastName: values.lastName || "",
+                        emailAddress: values.email || "",
+                        phoneNumber: values.phone || "",
+                        dob: values.dob || dobState || "",
+                        role_id: Number(roleIdState || 1),
+                        address: {
+                            address: values.address || addressState || "",
+                            state_id: Number(values.state) || 1, //Currently using a fallback hardcoded state_id value (1).
+                            city: values.city || "",
+                            pincode: values.pincode || "",
+                        },
+                        geo_assignments: {
+                            state_id: Number(values.state) || 1,
+                            region_id: Number(values.region || selectedRegionId || 1),
+                            areas_id: Number(values.area || 1),
+                        },
+                    };
+                    console.log("FINAL PAYLOAD (AG):", JSON.stringify(payload, null, 2));
+                    await updateAgent(payload).unwrap();
+                } else if (roleType === "FO") {
+                    const payload = {
+                        userId: Number(userId),
+                        firstName: values.firstName || "",
+                        lastName: values.lastName || "",
+                        emailAddress: values.email || "",
+                        phoneNumber: values.phone || "",
+                        dob: values.dob || dobState || "",
+                        role_id: roleIdState || 1,
+                        roleId: roleIdState || 1,
+                        address: {
+                            address: values.address || addressState || "",
+                            state_id: Number(values.state) || 1,
+                            city: values.city || "",
+                            pincode: values.pincode || "",
+                        },
+                        geo_assignments: {
+                            state_id: Number(values.state) || 1,
+                            region_id: selectedRegionId || 1,
+                            regionId: selectedRegionId || 1,
+                        },
+                    };
+                    console.log("FINAL PAYLOAD (FO):", JSON.stringify(payload, null, 2));
+                    await updateFieldOfficer(payload).unwrap();
+                } else if (roleType === "RO") {
+                    const payload = {
+                        userId: Number(userId),
+                        firstName: values.firstName || "",
+                        lastName: values.lastName || "",
+                        emailAddress: values.email || "",
+                        phoneNumber: values.phone || "",
+                        dob: values.dob || dobState || "",
+                        role_id: roleIdState || 1,
+                        roleId: roleIdState || 1,
+                        address: {
+                            address: values.address || addressState || "",
+                            state_id: Number(values.state) || 1,
+                            city: values.city || "",
+                            pincode: values.pincode || "",
+                        },
+                        geo_assignments: {
+                            state_id: Number(values.state) || 1,
+                            region_id: selectedRegionId || 1,
+                            regionId: selectedRegionId || 1,
+                        },
+                    };
+                    console.log("FINAL PAYLOAD (RO):", JSON.stringify(payload, null, 2));
+                    await updateRegionalOfficer(payload).unwrap();
+                } else {
+                    // Default fallback
+                    toast.error("Unknown role type for update");
+                    return;
+                }
+            } else {
+                const payload = {
+                    firstName: values.firstName,
+                    lastName: values.lastName,
+                    countryCode: "+91",
+                    emailAddress: values.email,
+                    phoneNumber: values.phone,
+                    dob: values.dob,
+                    role_id: 1,
+                    address: {
+                        address: values.address,
+                        state_id: 1,
+                        city: values.city,
+                        pincode: values.pincode,
+                    },
+                    geo_assignments: {
+                        country_id: 1,
+                        state_id: 1,
+                        district_id: 1,
+                        mandal_id: 1,
+                        region_id: 1,
+                        areas_id: 1,
+                    },
+                    id_proof: {
+                        bank_account_name: `${values.firstName} ${values.lastName}`,
+                        bank_account_number: values.accountNumber,
+                        ifsc_code: values.ifscCode,
+                        branch: values.bankBranch,
+                        bank_name: values.bankName,
+                        id_proof_frontUrl: "front.png",
+                        id_proof_backUrl: "back.png",
+                        pan_card_number: values.panNumber,
+                        pan_card_url: "pan.png",
+                    },
+                };
+
+                await createAgent(payload).unwrap();
+            }
+
             const payload = {
                 firstName: values.firstName,
                 lastName: values.lastName,
@@ -107,7 +259,7 @@ export default function AgentForm({
                 emailAddress: values.email,
                 phoneNumber: values.phone,
                 dob: values.dob,
-                role_id: 1,
+                role_id: agentRoleId,
                 address: {
                     address: values.address,
                     state_id: 1,
@@ -139,7 +291,7 @@ export default function AgentForm({
             toast.success(isEdit ? "Profile Updated Successfully" : "Agent Created Successfully");
             if (onCancel) onCancel();
         } catch (err) {
-            console.error("Failed to save agent:", err);
+            console.error("Failed to save:", err);
             toast.error((err as any)?.data?.message || "Something went wrong");
         }
     };
@@ -351,7 +503,13 @@ export default function AgentForm({
                     </button>
                     <Button
                         variant="primary"
-                        onClick={handleSubmit(handleSave, (errors) => console.log("Validation errors:", errors))}
+                        onClick={handleSubmit(
+                            handleSave, 
+                            (errors) => {
+                                console.log("Validation errors:", errors);
+                                toast.error("Please fix validation errors before saving.");
+                            }
+                        )}
                         loading={isLoading || isSubmitting}
                         className="
                             !h-[44px] !min-w-[180px]
