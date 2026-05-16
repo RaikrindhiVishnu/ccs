@@ -6,7 +6,7 @@ import SuccessIcon from "@/assets/sucess.svg";
 import { ArrowLeft, User } from "lucide-react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import {
-  useGetAgentByIdMutation,
+  
   useGetFieldOfficerByIdMutation,
   useGetRegionalOfficerByIdMutation,
 } from "../api/roleManagerApi";
