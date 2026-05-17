@@ -6,7 +6,7 @@ import { Typography } from "@/components/ui/typography";
 
 import { Plus } from "lucide-react";
 import location from "@/assets/location.svg";
-import { useGetAllAgentsMutation } from "@/features/role-manager/api/getagents";
+import { useGetAllAgentsMutation } from "@/features/role-manager/api/roleManagerApi";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
