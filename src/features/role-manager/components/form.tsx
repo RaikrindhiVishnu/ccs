@@ -60,7 +60,7 @@ if (!message.trim()) {
 
       const response = await sendIssueMail(payload).unwrap();
 
-      console.log("Mail Response:", response);
+
 
       alert("Mail sent successfully");
 

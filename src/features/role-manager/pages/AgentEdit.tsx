@@ -3,7 +3,7 @@ import AgentForm from "./AgentForm";
 
 export default function AgentEdit() {
   const location = useLocation();
-  console.log("AgentEdit Location State:", location.state);
+
   const { initialData, roleType } = location.state || {};
 
   // Fallback to localStorage if state is empty

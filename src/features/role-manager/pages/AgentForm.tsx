@@ -63,7 +63,7 @@ export default function AgentForm({
 
   const stateOptions = states.map((item: any) => item.desc);
   const location = useLocation();
-  console.log("AgentForm Location State:", location.state);
+
   const { userId: locUserId } = location.state || {};
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -158,8 +158,7 @@ export default function AgentForm({
   }, [isEdit, initialData]);
 
   const handleSave = async (values: AgentFormValues) => {
-    console.log("SAVE CLICKED", values);
-    console.log("ROLE TYPE:", roleType);
+
 
     try {
       if (isEdit) {
@@ -169,7 +168,7 @@ export default function AgentForm({
           (initialData as any)?.id ||
           1;
 
-        console.log("USER ID for update:", userId);
+
 
         if (roleType === "AG") {
           const payload: UpdateAgentRequest = {
@@ -195,7 +194,7 @@ export default function AgentForm({
             },
           };
 
-          console.log("FINAL PAYLOAD (AG):", JSON.stringify(payload, null, 2));
+
 
           await updateAgentDetails(payload).unwrap();
         } else {
@@ -603,7 +602,7 @@ export default function AgentForm({
           <Button
             variant="primary"
             onClick={handleSubmit(handleSave, (errors) => {
-              console.log("Validation errors:", errors);
+
               toast.error("Please fix validation errors before saving.");
             })}
             loading={isLoading || isSubmitting}

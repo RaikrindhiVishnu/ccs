@@ -421,13 +421,11 @@ const {
   skip: !userId,
 });
 
-console.log("Route ID:", id);
-console.log("Agent Detail Response:", data);
-console.log("Agent Detail Error:", error);
+
 
 const apiData = data?.data;
 
-console.log("API DATA:", apiData);
+
 
 const agent: AgentDetail = {
   id: apiData?.id?.toString() || "",

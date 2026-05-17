@@ -58,9 +58,7 @@ const UserDirectory: React.FC = () => {
     getAgentDetails(5);
   }, []);
 
-  // console.log(regionOfficerData);
-  // console.log(fieldOfficerData);
-  // console.log(agentData);
+
 
   return (
     <div className="flex flex-col py-16 px-4 gap-6 box-border min-h-full bg-( --surface-page)">

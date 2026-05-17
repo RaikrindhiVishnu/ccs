@@ -261,10 +261,10 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
                   }
                 });
                 
-                console.log("📍 District Selection Toggled:", districtData);
+
               }
             });
-            console.log("📂 Districts loaded from GitHub fallback for:", stateName);
+
           }
         } catch (err) {
           console.error("Fallback Districts failed:", err);
@@ -363,7 +363,7 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
             const source = map.current.getSource("districts-source") as maplibregl.GeoJSONSource;
             source.setData(finalData);
           }
-          console.log("📍 Districts Rendered for State ID:", stateId);
+
         }
       } catch (err) {
         console.error("Error rendering districts:", err);

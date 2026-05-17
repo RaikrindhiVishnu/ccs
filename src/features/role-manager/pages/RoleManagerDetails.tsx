@@ -99,14 +99,13 @@ export default function RoleManagerDetails({
   useEffect(() => {
     const fetchProfile = async () => {
       if (!roleType || !id || profileData) return;
-      console.log("ID:", id);
-      console.log("ROLE:", roleType);
+
 
       if (roleType === "IO") return; // No API for Intelligence Officer yet
 
       setIsLoading(true);
       try {
-        console.log("API CALL STARTED");
+
         let response;
         if (roleType === "AG") {
           response = await getAgentDetailsByUserId(Number(id)).unwrap();
@@ -115,7 +114,7 @@ export default function RoleManagerDetails({
         } else if (roleType === "RO") {
           response = await getRegionalOfficerById(Number(id)).unwrap();
         }
-        console.log("API RESPONSE:", response);
+
         setProfileData(response?.data);
       } catch (error) {
         console.error("API ERROR:", error);

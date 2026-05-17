@@ -83,7 +83,7 @@ const RegionSelection: React.FC = () => {
         const source = map.current.getSource("india-states") as maplibregl.GeoJSONSource;
         if (source && finalData) {
           source.setData(finalData);
-          console.log("🏙️ States Source Updated:", finalData);
+
         }
       } catch (err) {
         console.error("Error updating map with states data:", err);
@@ -345,7 +345,7 @@ const RegionSelection: React.FC = () => {
         const source = map.current.getSource("india-border") as maplibregl.GeoJSONSource;
         if (source && finalData) {
           source.setData(finalData);
-          console.log("🗺️ Map Source Updated with API Data:", finalData);
+
         }
       } catch (err) {
         console.error("Error updating map data from API:", err);
