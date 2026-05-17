@@ -19,7 +19,32 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
         body,
       }),
     }),
+    getDistrictsByStateId: builder.query<any, { state_id: number }>({
+      query: (body) => ({
+        url: "master/get_districts_by_state_id",
+        method: "POST",
+        body,
+      }),
+    }),
+    createRegion: builder.mutation<any, {
+      regionName: string;
+      regionCode: string;
+      regionalOfficerId: number;
+      inteligenceOfficerId: number;
+      district_ids: number[];
+    }>({
+      query: (body) => ({
+        url: "region/create_region",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useGetCountryByIdQuery, useGetStatesByCountryIdQuery } = regionSelectionApi;
+export const { 
+  useGetCountryByIdQuery, 
+  useGetStatesByCountryIdQuery,
+  useGetDistrictsByStateIdQuery,
+  useCreateRegionMutation
+} = regionSelectionApi;

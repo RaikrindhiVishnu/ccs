@@ -3,9 +3,15 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import pako from "pako";
 import { Buffer } from "buffer";
-import { Maximize2 } from "lucide-react";
-import StateDetailMap from "../components/StateDetailMap";
-import { useGetCountryByIdQuery, useGetStatesByCountryIdQuery } from "../api/regionSelectionApi";
+import { Maximize2, ChevronLeft, Plus, X, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { 
+  useGetCountryByIdQuery, 
+  useGetStatesByCountryIdQuery,
+  useCreateRegionMutation 
+} from "../api/regionSelectionApi";
 
 // Helper to calculate bounds for a GeoJSON feature
 const getFeatureBounds = (feature: any): maplibregl.LngLatBoundsLike => {
@@ -31,10 +37,18 @@ const RegionSelection: React.FC = () => {
   const map = useRef<maplibregl.Map | null>(null);
   const [isZoomed, setIsZooming] = useState(false);
   const [selectedState, setSelectedState] = useState<any | null>(null);
-  const [mapLoaded, setMapLoaded] = useState(0); // Counter to trigger data re-application
+  const [mapLoaded, setMapLoaded] = useState(0);
+  
+  // New States for Region Creation
+  const [selectedDistricts, setSelectedDistricts] = useState<any[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [regionName, setRegionName] = useState("");
+  const [regionCode, setRegionCode] = useState("");
+  const [districtsLoading, setDistrictsLoading] = useState(false);
 
   const { data: countryData } = useGetCountryByIdQuery({ country_id: 1 });
   const { data: statesData } = useGetStatesByCountryIdQuery({ country_id: 1 });
+  const [createRegion, { isLoading: isCreating }] = useCreateRegionMutation();
 
 
   useEffect(() => {
@@ -85,6 +99,14 @@ const RegionSelection: React.FC = () => {
       essential: true,
     });
     setIsZooming(false);
+    setSelectedState(null);
+    setSelectedDistricts([]);
+    
+    // Clear district data from map
+    if (map.current?.getSource("districts-source")) {
+      const source = map.current.getSource("districts-source") as maplibregl.GeoJSONSource;
+      source.setData({ type: "FeatureCollection", features: [] });
+    }
   };
 
   useEffect(() => {
@@ -159,6 +181,16 @@ const RegionSelection: React.FC = () => {
             data: { type: "FeatureCollection", features: [] },
           });
 
+          // Add States Fill for interaction
+          map.current?.addLayer({
+            id: "states-fill",
+            type: "fill",
+            source: statesSourceId,
+            paint: {
+              "fill-color": "transparent",
+            },
+          });
+
           map.current?.addLayer({
             id: "states-border-line",
             type: "line",
@@ -181,25 +213,67 @@ const RegionSelection: React.FC = () => {
             },
           });
 
-          // Updated Click Handler: Set selected state for separate view
-          map.current?.on("click", "india-fill", (e) => {
-            if (e.features && e.features.length > 0) {
+          // Updated Click Handler: Only trigger on actual states
+          map.current?.on("click", "states-fill", (e) => {
+            if (e.features && e.features.length > 0 && !selectedState) {
               const feature = e.features[0];
-              // Store only the serializable parts of the feature
               setSelectedState({
                 type: "Feature",
                 geometry: feature.geometry,
                 properties: feature.properties,
               });
+
+              // Fit bounds to the clicked state
+              const bounds = getFeatureBounds(feature);
+              map.current?.fitBounds(bounds, {
+                padding: 100,
+                duration: 1200,
+              });
+              setIsZooming(true);
             }
           });
 
-          map.current?.on("mouseenter", "india-fill", () => {
-            if (map.current) map.current.getCanvas().style.cursor = "pointer";
+          // District Click Handler (Multi-select)
+          map.current?.on("click", "districts-fill", (e) => {
+            if (e.features && e.features.length > 0) {
+              const districtFeature = e.features[0];
+              const districtData = districtFeature.properties;
+              const dtCode = districtData.dtcode11 || districtData.dtcode || districtFeature.id;
+
+              setSelectedDistricts((prev) => {
+                const isAlreadySelected = prev.find((d) => (d.dtcode11 || d.dtcode || d.id) === dtCode);
+                
+                if (isAlreadySelected) {
+                  map.current?.setFeatureState(
+                    { source: "districts-source", id: districtFeature.id },
+                    { selected: false }
+                  );
+                  return prev.filter((d) => (d.dtcode11 || d.dtcode || d.id) !== dtCode);
+                } else {
+                  map.current?.setFeatureState(
+                    { source: "districts-source", id: districtFeature.id },
+                    { selected: true }
+                  );
+                  return [...prev, { ...districtData, id: districtFeature.id }];
+                }
+              });
+            }
           });
 
-          map.current?.on("mouseleave", "india-fill", () => {
-            if (map.current) map.current.getCanvas().style.cursor = "";
+          map.current?.on("mouseenter", "states-fill", () => {
+            if (map.current && !selectedState) map.current.getCanvas().style.cursor = "pointer";
+          });
+
+          map.current?.on("mouseleave", "states-fill", () => {
+            if (map.current && !selectedState) map.current.getCanvas().style.cursor = "";
+          });
+
+          map.current?.on("mouseenter", "districts-fill", () => {
+            if (map.current && selectedState) map.current.getCanvas().style.cursor = "pointer";
+          });
+
+          map.current?.on("mouseleave", "districts-fill", () => {
+            if (map.current && selectedState) map.current.getCanvas().style.cursor = "";
           });
         }
 
@@ -230,6 +304,13 @@ const RegionSelection: React.FC = () => {
         map.current = null;
       }
     };
+  }, []);
+
+  // Handle Zoom Out transition when returning to India view
+  useEffect(() => {
+    if (!selectedState && mapLoaded > 0 && isZoomed) {
+      resetView();
+    }
   }, [selectedState]);
 
   useEffect(() => {
@@ -272,40 +353,265 @@ const RegionSelection: React.FC = () => {
     }
   }, [countryData, mapLoaded]);
 
-  if (selectedState) {
-    return (
-      <StateDetailMap
-        feature={selectedState}
-        onBack={() => setSelectedState(null)}
-      />
-    );
-  }
+  // Effect to fetch and render districts when a state is selected
+  useEffect(() => {
+    if (map.current && selectedState) {
+      const stateName = (selectedState.properties?.STNAME || selectedState.properties?.name || "").toUpperCase();
+      const encodedStateName = encodeURIComponent(stateName);
+      
+      const fetchDistricts = async () => {
+        setDistrictsLoading(true);
+        try {
+          const url = `https://raw.githubusercontent.com/datta07/INDIAN-SHAPEFILES/master/STATES/${encodedStateName}/${encodedStateName}_DISTRICTS.geojson`;
+          const response = await fetch(url);
+          if (!response.ok) throw new Error("Districts not found");
+          const data = await response.json();
+
+          if (!map.current?.getSource("districts-source")) {
+            map.current?.addSource("districts-source", {
+              type: "geojson",
+              data: data,
+              generateId: true,
+            });
+
+            map.current?.addLayer({
+              id: "districts-fill",
+              type: "fill",
+              source: "districts-source",
+              paint: {
+                "fill-color": "#3b82f6",
+                "fill-opacity": [
+                  "case",
+                  ["boolean", ["feature-state", "selected"], false],
+                  0.35,
+                  ["boolean", ["feature-state", "hover"], false],
+                  0.15,
+                  0,
+                ],
+              },
+            }, "states-border-line");
+
+            map.current?.addLayer({
+              id: "districts-line",
+              type: "line",
+              source: "districts-source",
+              paint: {
+                "line-color": "#3b82f6",
+                "line-width": 0.8,
+                "line-dasharray": [2, 1],
+                "line-opacity": 0.6,
+              },
+            }, "states-border-line");
+          } else {
+            const source = map.current.getSource("districts-source") as maplibregl.GeoJSONSource;
+            source.setData(data);
+          }
+          
+          // Hover effect for districts
+          let hoveredDistrictId: any = null;
+          map.current?.on("mousemove", "districts-fill", (e) => {
+            if (e.features && e.features.length > 0) {
+              const newId = e.features[0].id;
+              if (hoveredDistrictId !== null) {
+                map.current?.setFeatureState({ source: "districts-source", id: hoveredDistrictId }, { hover: false });
+              }
+              hoveredDistrictId = (newId !== undefined && newId !== null) ? newId : null;
+              if (hoveredDistrictId !== null) {
+                map.current?.setFeatureState({ source: "districts-source", id: hoveredDistrictId }, { hover: true });
+              }
+            }
+          });
+
+          map.current?.on("mouseleave", "districts-fill", () => {
+            if (hoveredDistrictId !== null) {
+              map.current?.setFeatureState({ source: "districts-source", id: hoveredDistrictId }, { hover: false });
+            }
+            hoveredDistrictId = null;
+          });
+
+        } catch (err) {
+          console.error("Failed to load districts:", err);
+        } finally {
+          setDistrictsLoading(false);
+        }
+      };
+
+      fetchDistricts();
+    } else if (map.current && !selectedState) {
+      // Fade states back in
+      if (map.current.isStyleLoaded()) {
+        map.current.setPaintProperty("states-fill", "fill-opacity", 1);
+      }
+    }
+  }, [selectedState, mapLoaded]);
+
+  const handleCreateRegion = async () => {
+    if (!regionName || !regionCode) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    try {
+      const districtIds = selectedDistricts.map(d => Number(d.dtcode11 || d.dtcode));
+      
+      await createRegion({
+        regionName,
+        regionCode,
+        regionalOfficerId: 1,
+        inteligenceOfficerId: 2,
+        district_ids: districtIds
+      }).unwrap();
+
+      toast.success("Region created successfully!");
+      
+      selectedDistricts.forEach(d => {
+        if (d.id !== undefined) {
+          map.current?.setFeatureState({ source: "districts-source", id: d.id }, { selected: false });
+        }
+      });
+      setSelectedDistricts([]);
+      setIsModalOpen(false);
+      setRegionName("");
+      setRegionCode("");
+    } catch (err) {
+      console.error("Failed to create region:", err);
+      toast.error("Failed to create region");
+    }
+  };
 
   return (
-    <div className="flex flex-col h-full p-8 gap-6 overflow-hidden bg-slate-50/50">
-      <div className="flex-1 relative rounded-[2rem] overflow-hidden border border-(--border) shadow-sm bg-slate-100">
-        <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
-
-        {/* Simple UI Overlays */}
-        <div className="absolute bottom-8 left-8 flex flex-col gap-4 pointer-events-none">
-          {/* <div className="bg-white/80 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/50 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-700 pointer-events-auto">
-            <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em]">Region Selector</span>
-            <p className="text-base font-black text-slate-800 tracking-tight">India Interactive Map</p>
-          </div> */}
-
-          {isZoomed && (
+    <div className="flex flex-col h-full w-full overflow-hidden bg-slate-50/50 relative">
+      {/* Dynamic Header */}
+      <div className="absolute top-8 left-8 right-8 z-20 flex items-center justify-between pointer-events-none">
+        <div className="flex items-center gap-4 pointer-events-auto">
+          {selectedState ? (
             <button
-              onClick={resetView}
-              className="bg-slate-900/90 backdrop-blur-xl px-4 py-2 rounded-xl border border-slate-700 shadow-2xl flex items-center gap-2 text-white hover:bg-slate-800 transition-all active:scale-95 pointer-events-auto w-fit"
+              onClick={() => setSelectedState(null)}
+              className="p-3 rounded-2xl bg-white border border-slate-200 shadow-xl hover:bg-slate-50 transition-all active:scale-95 group"
             >
-              <Maximize2 className="w-4 h-4" />
-              <span className="text-xs font-bold uppercase tracking-wider">
-                Reset View
-              </span>
+              <ChevronLeft className="w-5 h-5 text-slate-600 group-hover:-translate-x-0.5 transition-transform" />
             </button>
+          ) : (
+            <div className="bg-white/90 backdrop-blur-xl px-6 py-3 rounded-3xl border border-white/50 shadow-2xl">
+              <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] block mb-0.5">Selection Mode</span>
+              <p className="text-lg font-black text-slate-800 tracking-tight">Regional Dashboard</p>
+            </div>
+          )}
+
+          {selectedState && (
+            <div className="bg-white/90 backdrop-blur-xl px-6 py-3 rounded-[1.5rem] border border-white/50 shadow-2xl animate-in slide-in-from-left-4 duration-500">
+              <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] block mb-0.5">Viewing State</span>
+              <p className="text-lg font-black text-slate-800 tracking-tight uppercase">
+                {(selectedState.properties?.STNAME || selectedState.properties?.name || "")}
+              </p>
+            </div>
           )}
         </div>
+
+        {selectedDistricts.length > 0 && (
+          <Button 
+            onClick={() => setIsModalOpen(true)}
+            className="pointer-events-auto rounded-2xl bg-slate-900 text-white px-8 py-7 shadow-2xl hover:bg-slate-800 transition-all flex items-center gap-4 animate-in fade-in slide-in-from-right-4 duration-300"
+          >
+            <Plus className="w-5 h-5" />
+            <div className="flex flex-col items-start">
+              <span className="text-xs font-bold uppercase tracking-wider">Create Region</span>
+              <span className="text-[10px] opacity-70">{selectedDistricts.length} Districts Selected</span>
+            </div>
+          </Button>
+        )}
       </div>
+
+      {/* Main Map Container */}
+      <div className="flex-1 flex flex-col min-h-0 w-full relative">
+        <div className="flex-1 m-8 mt-24 relative rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-2xl bg-white">
+          <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
+          
+          {districtsLoading && (
+            <div className="absolute inset-0 z-10 bg-white/40 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-300">
+              <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+            </div>
+          )}
+
+          {/* Map Overlay Controls */}
+          <div className="absolute bottom-8 right-8 flex flex-col gap-3 pointer-events-none">
+            {isZoomed && (
+              <button
+                onClick={resetView}
+                className="pointer-events-auto bg-white/90 backdrop-blur-xl p-4 rounded-2xl border border-slate-200 shadow-xl hover:bg-slate-50 transition-all active:scale-95 group"
+                title="Reset View"
+              >
+                <Maximize2 className="w-5 h-5 text-slate-600 group-hover:scale-110 transition-transform" />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Custom Creation Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300"
+            onClick={() => setIsModalOpen(false)}
+          />
+          <div className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-8">
+            <button 
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 transition-colors"
+            >
+              <X className="w-5 h-5 text-slate-400" />
+            </button>
+
+            <div className="flex flex-col gap-1 mb-8">
+              <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em]">Region Setup</span>
+              <p className="text-2xl font-black text-slate-800 tracking-tight">Create New Region</p>
+            </div>
+
+            <div className="flex flex-col gap-6 mb-8">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Region Name</label>
+                <Input
+                  placeholder="e.g. South Andhra Hub"
+                  value={regionName}
+                  onChange={(e) => setRegionName(e.target.value)}
+                  className="rounded-2xl border-slate-200 h-14 px-5 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Region Code</label>
+                <Input
+                  placeholder="e.g. SAH-01"
+                  value={regionCode}
+                  onChange={(e) => setRegionCode(e.target.value)}
+                  className="rounded-2xl border-slate-200 h-14 px-5 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Linked Districts</span>
+                <div className="flex flex-wrap gap-2">
+                  {selectedDistricts.map((d, i) => (
+                    <div key={i} className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-[10px] font-bold shadow-sm">
+                      {d.dtname || d.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <Button 
+              disabled={isCreating}
+              onClick={handleCreateRegion}
+              className="w-full rounded-2xl bg-slate-900 py-7 text-white font-bold uppercase tracking-widest text-xs hover:bg-slate-800 transition-all active:scale-95 shadow-xl"
+            >
+              {isCreating && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+              Save Region Configuration
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
