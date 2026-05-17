@@ -7,6 +7,7 @@ import { ArrowLeft, User } from "lucide-react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import {
   
+  useGetAgentDetailsByUserIdMutation,
   useGetFieldOfficerByIdMutation,
   useGetRegionalOfficerByIdMutation,
 } from "../api/roleManagerApi";
@@ -88,7 +89,7 @@ export default function RoleManagerDetails({
   const navigate = useNavigate();
   const { roleType } = location.state || {};
 
-  const [getAgentById] = useGetAgentByIdMutation();
+  const [getAgentDetailsByUserId] = useGetAgentDetailsByUserIdMutation();
   const [getFieldOfficerById] = useGetFieldOfficerByIdMutation();
   const [getRegionalOfficerById] = useGetRegionalOfficerByIdMutation();
 
@@ -108,7 +109,7 @@ export default function RoleManagerDetails({
         console.log("API CALL STARTED");
         let response;
         if (roleType === "AG") {
-          response = await getAgentById(Number(id)).unwrap();
+          response = await getAgentDetailsByUserId(Number(id)).unwrap();
         } else if (roleType === "FO") {
           response = await getFieldOfficerById(Number(id)).unwrap();
         } else if (roleType === "RO") {

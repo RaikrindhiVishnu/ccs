@@ -6,7 +6,7 @@ import Bannar from "@/assets/Bannar.svg";
 import {ArrowLeft} from "lucide-react";
 
 import {useNavigate, useParams} from "react-router-dom";
-import { useGetAgentByIdQuery } from "@/features/role-manager/api/getagents";
+import { useGetAgentByIdQuery } from "@/features/role-manager/api/roleManagerApi";
 import RaiseIssueForm from "@/features/role-manager/components/form";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
