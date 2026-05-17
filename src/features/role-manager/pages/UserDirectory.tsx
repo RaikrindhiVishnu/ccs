@@ -22,43 +22,103 @@ const UserDirectory: React.FC = () => {
   const dispatch = useDispatch();
   const states = useSelector((state: any) => state.roleManager.states);
   const regions = useSelector((state: any) => state.roleManager.regions);
-  const [getRegionsByStateId] = useGetAllRegionsByStateIdMutation();
+  
+  const [selectedStateId, setSelectedStateId] = React.useState<string>("");
+  const [selectedRegionId, setSelectedRegionId] = React.useState<string>("");
+  const [isWorkforceLoading, setIsWorkforceLoading] = React.useState<boolean>(false);
 
-  const handleStateChange = async (value: string) => {
-    const selectedState = states.find((s: any) => s.state_name === value);
-    // Default to id "1" if states aren't loaded in Redux yet but user clicks
-    const stateId = selectedState?.id?.toString() || "1";
+  const [
+    getRegionsByStateId,
+    { isLoading: isRegionsLoading }
+  ] = useGetAllRegionsByStateIdMutation();
 
+  const [
+    getRegionOfficerDetails,
+    { data: regionOfficerData, isLoading: isRegionLoading },
+  ] = useGetRegionOfficerDetailsMutation();
+
+  const [
+    getFieldOfficerDetails,
+    { data: fieldOfficerData, isLoading: isFieldLoading },
+  ] = useGetFieldOfficerDetailsMutation();
+
+  const [
+    getAgentDetails,
+    { data: agentData, isLoading: isAgentLoading },
+  ] = useGetAgentDetailsMutation();
+
+  const loadWorkforceHierarchy = async (stateId: string, regionId: string) => {
+    if (!stateId || !regionId) return;
+    setIsWorkforceLoading(true);
+    try {
+      // 1. Fetch Regional Officer & Intelligence Officer details
+      const regionOfficerRes = await getRegionOfficerDetails({
+        state_id: stateId,
+        region_id: regionId,
+      }).unwrap();
+
+      const regionalOfficerId = regionOfficerRes?.data?.regional_officer_id;
+      const intelligenceOfficerId = regionOfficerRes?.data?.intelligence_officer_id;
+
+      // 2. Fetch Field Officers under these regional/intelligence officers (pass 0 if null/undefined)
+      const fieldOfficerRes = await getFieldOfficerDetails({
+        regional_officer_id: regionalOfficerId || 0,
+        intelligence_officer_id: intelligenceOfficerId || 0,
+      }).unwrap();
+
+      const fieldOfficersList = fieldOfficerRes?.data || [];
+      
+      // 3. Fetch Agents under the first Field Officer automatically
+      if (fieldOfficersList.length > 0) {
+        const firstFieldOfficer = fieldOfficersList[0];
+        await getAgentDetails(firstFieldOfficer.role_id || firstFieldOfficer.id).unwrap();
+      } else {
+        // Fetch with 0 to safely clear/reset the agent list
+        await getAgentDetails(0).unwrap();
+      }
+    } catch (error) {
+      console.error("Error loading workforce hierarchy:", error);
+    } finally {
+      setIsWorkforceLoading(false);
+    }
+  };
+
+  const handleStateChange = async (stateId: string) => {
+    if (!stateId) return;
+    setSelectedStateId(stateId);
     try {
       const response = await getRegionsByStateId({ state_id: stateId }).unwrap();
-      dispatch(setRegions(response?.data || []));
+      const fetchedRegions = response?.data || [];
+      dispatch(setRegions(fetchedRegions));
+      
+      if (fetchedRegions.length > 0) {
+        const firstRegionId = fetchedRegions[0].id.toString();
+        setSelectedRegionId(firstRegionId);
+        await loadWorkforceHierarchy(stateId, firstRegionId);
+      } else {
+        setSelectedRegionId("");
+        await loadWorkforceHierarchy(stateId, "0");
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const [
-    getRegionOfficerDetails,
-    { data: regionOfficerData },
-  ] = useGetRegionOfficerDetailsMutation();
-
-  const [
-    getFieldOfficerDetails,
-    { data: fieldOfficerData },
-  ] = useGetFieldOfficerDetailsMutation();
-
-  const [
-    getAgentDetails,
-    { data: agentData },
-  ] = useGetAgentDetailsMutation();
+  const handleRegionChange = async (regionId: string) => {
+    if (!regionId) return;
+    setSelectedRegionId(regionId);
+    await loadWorkforceHierarchy(selectedStateId, regionId);
+  };
 
   useEffect(() => {
-    getRegionOfficerDetails();
-    getFieldOfficerDetails();
-    getAgentDetails(5);
-  }, []);
+    if (states && states.length > 0) {
+      const firstStateId = states[0].id.toString();
+      setSelectedStateId(firstStateId);
+      handleStateChange(firstStateId);
+    }
+  }, [states]);
 
-
+  const isUpdating = isRegionsLoading || isWorkforceLoading || isRegionLoading || isFieldLoading || isAgentLoading;
 
   return (
     <div className="flex flex-col py-16 px-4 gap-6 box-border min-h-full bg-( --surface-page)">
@@ -96,31 +156,30 @@ const UserDirectory: React.FC = () => {
           </div>
 
           {/* Right Side: Dropdowns */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <PillDropdown
-              options={states?.length > 0 ? states.map((s: any) => s.state_name) : [
-                "Andhra Pradesh",
-                "Telangana",
-                "Karnataka",
-                "Tamil Nadu",
-              ]}
-              defaultValue="Andhra Pradesh"
+              options={states?.length > 0 ? states.map((s: any) => ({ label: s.desc, value: s.id.toString() })) : []}
+              value={selectedStateId}
               onChange={handleStateChange}
             />
             <PillDropdown
-              options={regions?.length > 0 ? regions.map((r: any) => r.region_name) : [
-                "Vizag Zone",
-                "Vijayawada Zone",
-                "Guntur Zone",
-                "Kurnool Zone",
-              ]}
-              defaultValue={regions?.length > 0 ? regions[0].region_name : "Vizag Zone"}
+              options={regions?.length > 0 ? regions.map((r: any) => ({ label: r.region_name || r.desc, value: r.id.toString() })) : []}
+              value={selectedRegionId}
+              onChange={handleRegionChange}
             />
           </div>
         </div>
 
         {/* Role Flow Diagram Section */}
-        <div className="mt-4">
+        <div className="mt-4 relative min-h-[300px]">
+          {isUpdating && (
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-xs flex items-center justify-center z-50 rounded-3xl">
+              <div className="flex flex-col items-center gap-3">
+                <div className="h-8 w-8 animate-spin rounded-full border-3 border-[color:var(--brand-500)] border-t-transparent"></div>
+                <p className="text-xs font-semibold text-[color:var(--brand-500)]">Updating Workforce...</p>
+              </div>
+            </div>
+          )}
           <RoleFlow
             regionOfficerData={regionOfficerData}
             fieldOfficerData={fieldOfficerData}

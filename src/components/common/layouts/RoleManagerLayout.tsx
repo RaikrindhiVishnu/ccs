@@ -1,13 +1,25 @@
+import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/core/hooks";
 import { logOut } from "@/features/auth/store/authSlice";
 import DashboardSidebar from "@/features/role-manager/components/layout/Sidebar";
 import { useRoleLayout } from "@/core/hooks/useRoleLayout";
+import { useGetAllGeoMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { setGeoMasterData } from "@/features/role-manager/store/roleManagerSlice";
 
 export const RoleManagerLayout = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { navItems } = useRoleLayout();
+
+  // Load geo master data centrally for all role manager pages
+  const { data: geoData } = useGetAllGeoMasterDataQuery();
+
+  useEffect(() => {
+    if (geoData) {
+      dispatch(setGeoMasterData(geoData));
+    }
+  }, [geoData, dispatch]);
 
   const handleLogout = () => {
     dispatch(logOut());

@@ -128,7 +128,7 @@ function useOutsideClick(cb: () => void) {
 }
 
 export interface PillDropdownProps {
-  options?: string[];
+  options?: string[] | { label: string; value: string }[];
   defaultValue?: string;
   value?: string;
   onChange?: (value: string) => void;
@@ -136,16 +136,23 @@ export interface PillDropdownProps {
 }
 
 export function PillDropdown({
-  options = ["January", "February", "March"],
+  options = [],
   defaultValue,
   value,
   onChange,
   className,
 }: PillDropdownProps) {
+  const normalized = options.map((o) =>
+    typeof o === "string" ? { label: o, value: o } : o,
+  );
+
   const [open, setOpen] = useState(false);
-  const [internal, setInternal] = useState(defaultValue ?? options[0]);
+  const [internal, setInternal] = useState(defaultValue ?? normalized[0]?.value ?? "");
   const ref = useOutsideClick(() => setOpen(false));
   const selected = value ?? internal;
+
+  const selectedLabel =
+    normalized.find((o) => o.value === selected)?.label ?? selected;
 
   const pick = (val: string) => {
     setInternal(val);
@@ -171,7 +178,7 @@ export function PillDropdown({
           "hover:bg-[color:var(--brand-tint)]",
         )}
       >
-        <span className="flex-1 text-left whitespace-nowrap">{selected}</span>
+        <span className="flex-1 text-left whitespace-nowrap">{selectedLabel}</span>
         <ChevronDown
           className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         />
@@ -179,14 +186,14 @@ export function PillDropdown({
 
       {open && (
         <DropdownMenu>
-          {options.map((opt) => (
+          {normalized.map((opt) => (
             <MenuItem
-              key={opt}
-              active={selected === opt}
-              onClick={() => pick(opt)}
+              key={opt.value}
+              active={selected === opt.value}
+              onClick={() => pick(opt.value)}
               fontClass="font-[family-name:var(--font-inter)]"
             >
-              {opt}
+              {opt.label}
             </MenuItem>
           ))}
         </DropdownMenu>

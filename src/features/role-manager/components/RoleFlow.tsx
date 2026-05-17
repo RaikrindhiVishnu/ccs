@@ -61,7 +61,11 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
             roleId: "RO",
             contact:
               regionOfficerData.data.regional_officer_phone,
-            avatar: "https://i.pravatar.cc/150?u=ro",
+            avatar:
+              regionOfficerData.data.regional_officer_avatar ||
+              regionOfficerData.data.avatar ||
+              regionOfficerData.data.profile_image ||
+              "",
           },
           {
             id: String(
@@ -90,7 +94,11 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
             contact:
               regionOfficerData.data
                 .intelligence_officer_phone,
-            avatar: "https://i.pravatar.cc/150?u=io",
+            avatar:
+              regionOfficerData.data.intelligence_officer_avatar ||
+              regionOfficerData.data.avatar ||
+              regionOfficerData.data.profile_image ||
+              "",
           },
         ].filter((item) => item.name)
       : [];
@@ -111,7 +119,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
           role: "Field Officer" as const,
           roleId: `FO-${fo.role_id || "000"}`,
           contact: fo.phone,
-          avatar: `https://i.pravatar.cc/150?u=fo${fo.id}`,
+          avatar: fo.avatar || fo.profile_image || fo.image || "",
         })
       )
     : [];
@@ -184,7 +192,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
           role: "Agent" as const,
           roleId: `AG-${ag.role_id || "000"}`,
           contact: ag.phone,
-          avatar: `https://i.pravatar.cc/150?u=ag${ag.id}`,
+          avatar: ag.avatar || ag.profile_image || ag.image || "",
         })
       )
     : [];
