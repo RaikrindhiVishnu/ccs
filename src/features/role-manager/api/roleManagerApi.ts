@@ -44,8 +44,11 @@ export const roleManagerApi = createApi({
     }),
     getFieldOfficerById: builder.mutation<any, string | number>({
       query: (userId) => ({
-        url: `/feildOfficer/getFieldOfficerById/${userId}`,
+        url: "/feildOfficer/getFieldOfficerById",
         method: "POST",
+        body: {
+          userId,
+        },
       }),
     }),
   }),

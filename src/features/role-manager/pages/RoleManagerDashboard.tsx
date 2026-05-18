@@ -118,10 +118,9 @@ const RoleManagerDashboard: React.FC = () => {
 
   // For testing purposes as requested by user
   React.useEffect(() => {
-    const geoDataObj = geoJsonData as { success?: boolean; data?: string };
-    if (geoDataObj && geoDataObj.data) {
+    if (geoJsonData && geoJsonData.data) {
 
-      fetchAndDecodeGeoData(geoDataObj.data);
+      fetchAndDecodeGeoData(geoJsonData.data);
     } else {
 
     }

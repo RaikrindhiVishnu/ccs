@@ -322,9 +322,9 @@ const CreateFieldOfficer = () => {
 
       const response = isEditMode
         ? await updateFieldOfficer({
-            ...payload,
-            userId,
-          }).unwrap()
+          ...payload,
+          userId,
+        }).unwrap()
         : await createFieldOfficer(payload).unwrap();
       toast.success(response?.message || "Field Officer created successfully");
       navigate(fromPath);
@@ -361,8 +361,8 @@ const CreateFieldOfficer = () => {
         {isViewMode
           ? "View Field Officer Profile"
           : isEditMode
-          ? "Edit Field Officer"
-          : "Create Field Officer"}
+            ? "Edit Field Officer"
+            : "Create Field Officer"}
       </Typography>
 
       {/* ── Outer white card ── */}

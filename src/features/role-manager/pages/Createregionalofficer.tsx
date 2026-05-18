@@ -334,9 +334,9 @@ export default function CreateRegionalOfficer() {
 
       const response = isEditMode
         ? await updateRegionalOfficer({
-            ...payload,
-            userId,
-          }).unwrap()
+          ...payload,
+          userId,
+        }).unwrap()
         : await createRegionalOfficer(payload).unwrap();
       toast.success(response?.message || "Regional Officer created successfully");
       navigate(fromPath);
@@ -373,8 +373,8 @@ export default function CreateRegionalOfficer() {
         {isViewMode
           ? "View Regional Officer Profile"
           : isEditMode
-          ? "Edit Regional Officer"
-          : "Create Regional Officer"}
+            ? "Edit Regional Officer"
+            : "Create Regional Officer"}
       </Typography>
 
       <Card className="rounded-[clamp(1.75rem,3.19vw,2.875rem)] shadow-none border-none px-[clamp(1.5rem,3.47vw,3.125rem)] py-[clamp(1.5rem,3.4vw,3.0625rem)]">

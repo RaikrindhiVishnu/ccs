@@ -481,18 +481,6 @@ const BackButton = React.forwardRef<HTMLButtonElement, BackButtonProps>(
 
 BackButton.displayName = "BackButton"
 
-// ─── IconBtn ──────────────────────────────────────────────────────────────────
-
-function IconBtn({ children }: { children: React.ReactNode }) {
-  return (
-    <button
-      type="button"
-      className="flex h-[1.5rem] w-[1.5rem] items-center justify-center rounded-full bg-[var(--queue-bg)] transition-colors hover:bg-[#d5d7d9] active:bg-[#c5c7c9] lg:h-[1.625rem] lg:w-[1.625rem]"
-    >
-      {children}
-    </button>
-  );
-}
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 

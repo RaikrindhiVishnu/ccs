@@ -58,7 +58,7 @@ if (!message.trim()) {
   return;
 }
 
-      const response = await sendIssueMail(payload).unwrap();
+      await sendIssueMail(payload).unwrap();
 
 
 

@@ -248,7 +248,7 @@ const AgentRow = ({
 
 export const AgentApprovalsPage = () => {
   const navigate = useNavigate();
-const [getAllAgents, { isLoading }] = useGetAllAgentsMutation();
+const [getAllAgents] = useGetAllAgentsMutation();
 
 const [agentList, setAgentList] = React.useState<Agent[]>([]);
 

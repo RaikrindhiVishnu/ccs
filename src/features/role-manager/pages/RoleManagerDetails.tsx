@@ -92,6 +92,7 @@ export default function RoleManagerDetails({
   const [profileData, setProfileData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+
   useEffect(() => {
     const fetchProfile = async () => {
       if (!roleType || !id || profileData) return;
@@ -112,8 +113,6 @@ export default function RoleManagerDetails({
         setProfileData(response?.data);
       } catch (error) {
         console.error("API ERROR:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
