@@ -2,7 +2,7 @@ import { roleManagerApi } from "./roleManagerApi";
 
 export interface GetAgentsRequest {
   is_verified: number;
-  
+
 }
 
 export interface AgentResponse {
@@ -33,17 +33,9 @@ export const getAgentsApi = roleManagerApi.injectEndpoints({
       }),
     }),
 
-    getAgentById: builder.query({
-  query: (id) => ({
-    url: `agents/getAgentById/${id}`,
-    method: "GET",
-  }),
-  providesTags: ["Agent"],
-}),
   }),
 });
 
 export const {
   useGetAllAgentsMutation,
-  useGetAgentByIdQuery,
 } = getAgentsApi;

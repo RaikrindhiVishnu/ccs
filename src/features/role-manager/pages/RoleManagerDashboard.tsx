@@ -14,7 +14,7 @@ import { useDispatch } from "react-redux";
 import {
   useGetAllGeoMasterDataQuery,
   useGetAllMasterDataQuery,
-} from "@/features/role-manager/api/masterDataApi";import { setGeoMasterData } from "@/features/role-manager/store/roleManagerSlice";
+} from "@/features/role-manager/api/masterDataApi"; import { setGeoMasterData } from "@/features/role-manager/store/roleManagerSlice";
 import { useEffect, useCallback } from "react";
 
 // import RegionalCreationTargetVsActual from "@/pages/Dashboard/RegionalCreationTargetVsActual";
@@ -96,20 +96,20 @@ const RoleManagerDashboard: React.FC = () => {
 
   const fetchAndDecodeGeoData = useCallback(async (base64Data: string) => {
     try {
-      
+
       // 1. Convert Base64 string to a binary Buffer
       const binaryData = Buffer.from(base64Data, 'base64');
 
-      
+
       // 2. Decompress the data using Pako (Gunzip)
       const decompressedData = pako.ungzip(binaryData);
-      
+
       // 3. Convert to string and parse JSON
       const decompressedString = new TextDecoder().decode(decompressedData);
       const finalData = JSON.parse(decompressedString);
-      
 
-      
+
+
       return finalData;
     } catch (error) {
       console.error("Decoding failed:", error);
@@ -118,9 +118,10 @@ const RoleManagerDashboard: React.FC = () => {
 
   // For testing purposes as requested by user
   React.useEffect(() => {
-    if (geoJsonData && geoJsonData.data) {
+    const geoDataObj = geoJsonData as { success?: boolean; data?: string };
+    if (geoDataObj && geoDataObj.data) {
 
-      fetchAndDecodeGeoData(geoJsonData.data);
+      fetchAndDecodeGeoData(geoDataObj.data);
     } else {
 
     }

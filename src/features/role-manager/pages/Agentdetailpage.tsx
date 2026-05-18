@@ -1,12 +1,12 @@
 import * as React from "react";
-import {cn} from "@/lib/utils";
-import {Typography} from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
+import { Typography } from "@/components/ui/typography";
 
 import Bannar from "@/assets/Bannar.svg";
-import {ArrowLeft} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
-import {useNavigate, useParams} from "react-router-dom";
-import { useGetAgentByIdQuery } from "@/features/role-manager/api/roleManagerApi";
+import { useNavigate, useParams } from "react-router-dom";
+import { useGetAgentByIdMutation } from "@/features/role-manager/api/roleManagerApi";
 import RaiseIssueForm from "@/features/role-manager/components/form";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -37,7 +37,7 @@ interface AgentDetailPageProps {
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
 
-const StatusBadge = ({status} : {
+const StatusBadge = ({ status }: {
     status: AgentDetail["status"]
 }) => {
     const config = {
@@ -66,11 +66,11 @@ const StatusBadge = ({status} : {
         }>
             <span className={
                 cn("w-2 h-2 rounded-full shrink-0", c.dot)
-            }/>
+            } />
             <span className={
                 cn("font-medium leading-none", "font-[family-name:var(--font-sans)]", "text-[0.6875rem]", "lg:text-[0.75rem]", "xl:text-[0.8125rem]", "2xl:text-[0.875rem]",
-                // 11px→0.6875rem | 12px→0.75rem | 13px→0.8125rem | 14px→0.875rem
-                c.text,)
+                    // 11px→0.6875rem | 12px→0.75rem | 13px→0.8125rem | 14px→0.875rem
+                    c.text,)
             }>
                 {status} </span>
         </div>
@@ -79,14 +79,14 @@ const StatusBadge = ({status} : {
 
 // ─── Info Field ───────────────────────────────────────────────────────────────
 
-const InfoField = ({label, value, className} : {
+const InfoField = ({ label, value, className }: {
     label: string;
     value: string;
     className?: string;
 }) => (
     <div className={
         cn("flex flex-col", "gap-1.5", "lg:gap-[0.5rem]", "xl:gap-[0.625rem]",
-        // 6px→0.375rem | 8px→0.5rem | 10px→0.625rem
+            // 6px→0.375rem | 8px→0.5rem | 10px→0.625rem
             className,)
     }>
         <span className="
@@ -99,7 +99,7 @@ const InfoField = ({label, value, className} : {
                         xl:text-[0.875rem]
                         2xl:text-[1rem]
                       "
-            // 12px→0.75rem | 13px→0.8125rem | 14px→0.875rem | 16px→1rem
+        // 12px→0.75rem | 13px→0.8125rem | 14px→0.875rem | 16px→1rem
         >
             {label} </span>
         <span className="
@@ -111,7 +111,7 @@ const InfoField = ({label, value, className} : {
                         xl:text-[0.8125rem]
                         2xl:text-[0.875rem]
                       "
-            // 12px→0.75rem | 13px→0.8125rem | 13px→0.8125rem | 14px→0.875rem
+        // 12px→0.75rem | 13px→0.8125rem | 13px→0.8125rem | 14px→0.875rem
         >
             {value} </span>
     </div>
@@ -119,20 +119,20 @@ const InfoField = ({label, value, className} : {
 
 // ─── Section Card ─────────────────────────────────────────────────────────────
 
-const SectionCard = ({title, children, className} : {
+const SectionCard = ({ title, children, className }: {
     title: string;
     children: React.ReactNode;
     className?: string;
 }) => (
     <div className={
         cn("bg-[color:var(--surface-card)]", "rounded-[1rem]", "lg:rounded-[1.25rem]", "xl:rounded-[1.5rem]",
-        // 16px→1rem | 20px→1.25rem | 24px→1.5rem
+            // 16px→1rem | 20px→1.25rem | 24px→1.5rem
             "shadow-[0px_0px_6px_rgba(0,0,0,0.12)]", "px-[1.25rem]", "lg:px-[1.5rem]", "xl:px-[1.875rem]",
-        // 20px→1.25rem | 24px→1.5rem | 30px→1.875rem
+            // 20px→1.25rem | 24px→1.5rem | 30px→1.875rem
             "pt-[1.125rem]", "lg:pt-[1.25rem]", "xl:pt-[1.5rem]",
-        // 18px→1.125rem | 20px→1.25rem | 24px→1.5rem
+            // 18px→1.125rem | 20px→1.25rem | 24px→1.5rem
             "pb-[1.25rem]", "lg:pb-[1.5rem]", "xl:pb-[1.75rem]",
-        // 20px→1.25rem | 24px→1.5rem | 28px→1.75rem
+            // 20px→1.25rem | 24px→1.5rem | 28px→1.75rem
             className,)
     }>
         <Typography variant="h3" className="
@@ -148,8 +148,8 @@ const SectionCard = ({title, children, className} : {
                         xl:!text-[1.25rem]
                         2xl:!text-[1.5rem]
                       "
-            // mb: 20px→1.25rem | 24px→1.5rem | 28px→1.75rem
-            // text: 16px→1rem | 18px→1.125rem | 20px→1.25rem | 24px→1.5rem
+        // mb: 20px→1.25rem | 24px→1.5rem | 28px→1.75rem
+        // text: 16px→1rem | 18px→1.125rem | 20px→1.25rem | 24px→1.5rem
         >
             {title} </Typography>
         {children} </div>
@@ -157,7 +157,7 @@ const SectionCard = ({title, children, className} : {
 
 // ─── Document Card ────────────────────────────────────────────────────────────
 
-const DocumentCard = ({label, imageUrl} : {
+const DocumentCard = ({ label, imageUrl }: {
     label: string;
     imageUrl?: string;
 }) => (
@@ -166,7 +166,7 @@ const DocumentCard = ({label, imageUrl} : {
                   gap-[0.5rem]
                   lg:gap-[0.625rem]
                 "
-        // 8px→0.5rem | 10px→0.625rem
+    // 8px→0.5rem | 10px→0.625rem
     >
         <span className="
                         font-medium
@@ -177,7 +177,7 @@ const DocumentCard = ({label, imageUrl} : {
                         xl:text-[0.875rem]
                         2xl:text-[1rem]
                       "
-            // 12px→0.75rem | 13px→0.8125rem | 14px→0.875rem | 16px→1rem
+        // 12px→0.75rem | 13px→0.8125rem | 14px→0.875rem | 16px→1rem
         >
             {label} </span>
         <div className="
@@ -192,13 +192,13 @@ const DocumentCard = ({label, imageUrl} : {
                         w-full
                         aspect-[323/197]
                       "
-            // 12px→0.75rem | 14px→0.875rem | 18px→1.125rem
+        // 12px→0.75rem | 14px→0.875rem | 18px→1.125rem
         >
             {
-            imageUrl ? (
-                <img src={imageUrl}
-                    alt={label}
-                    className="
+                imageUrl ? (
+                    <img src={imageUrl}
+                        alt={label}
+                        className="
                                     w-[75%]
                                     h-[80%]
                                     object-cover
@@ -206,9 +206,9 @@ const DocumentCard = ({label, imageUrl} : {
                                     shadow-[0px_4px_4px_rgba(0,0,0,0.25)]
                                   "
                     // 4px→0.25rem
-                />
-            ) : (
-                <div className="
+                    />
+                ) : (
+                    <div className="
                                     w-[75%]
                                     h-[78%]
                                     rounded-[0.375rem]
@@ -219,21 +219,21 @@ const DocumentCard = ({label, imageUrl} : {
                                     to-[color:var(--document-placeholder-to)]
                                   "
                     // 6px→0.375rem
-                >
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="opacity-30">
-                        <rect x="2" y="4" width="20" height="16" rx="2" stroke="var(--text-secondary)" strokeWidth="1.5"/>
-                        <path d="M2 9h20" stroke="var(--text-secondary)" strokeWidth="1.5"/>
-                        <circle cx="6" cy="13" r="1" fill="var(--text-secondary)"/>
-                    </svg>
-                </div>
-            )
-        } </div>
+                    >
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="opacity-30">
+                            <rect x="2" y="4" width="20" height="16" rx="2" stroke="var(--text-secondary)" strokeWidth="1.5" />
+                            <path d="M2 9h20" stroke="var(--text-secondary)" strokeWidth="1.5" />
+                            <circle cx="6" cy="13" r="1" fill="var(--text-secondary)" />
+                        </svg>
+                    </div>
+                )
+            } </div>
     </div>
 );
 
 // ─── Back Button ──────────────────────────────────────────────────────────────
 
-const BackButton = ({onClick} : {
+const BackButton = ({ onClick }: {
     onClick?: () => void
 }) => (
     <button onClick={onClick}
@@ -250,17 +250,17 @@ const BackButton = ({onClick} : {
                   hover:opacity-80
                   transition-opacity
                 "
-        // clamp: 24px→1.5rem, 38px→2.375rem | 12px→0.75rem, 16px→1rem
+    // clamp: 24px→1.5rem, 38px→2.375rem | 12px→0.75rem, 16px→1rem
     >
         <ArrowLeft size={16}
-            strokeWidth={1.4}/>
+            strokeWidth={1.4} />
         Go Back to Dashboard
     </button>
 );
 
 // ─── Profile Header ───────────────────────────────────────────────────────────
 
-const ProfileHeaderCard = ({agent} : {
+const ProfileHeaderCard = ({ agent }: {
     agent: AgentDetail
 }) => (
     <div className="
@@ -272,14 +272,14 @@ const ProfileHeaderCard = ({agent} : {
                   overflow-hidden
                   relative
                 "
-        // 16px→1rem | 20px→1.25rem | 24px→1.5rem
+    // 16px→1rem | 20px→1.25rem | 24px→1.5rem
     >
         {/* Banner */}
         <div className="h-[clamp(5rem,12vw,8.75rem)] overflow-hidden">
             {/* 80px→5rem | 140px→8.75rem */}
             <img src={Bannar}
                 alt="Banner"
-                className="w-full h-full object-cover"/>
+                className="w-full h-full object-cover" />
         </div>
 
         {/* Content */}
@@ -300,7 +300,7 @@ const ProfileHeaderCard = ({agent} : {
                               lg:gap-[1rem]
                               xl:gap-[1.25rem]
                             "
-                // 14px→0.875rem | 16px→1rem | 20px→1.25rem
+            // 14px→0.875rem | 16px→1rem | 20px→1.25rem
             >
                 {/* Avatar */}
                 <div className="
@@ -326,16 +326,16 @@ const ProfileHeaderCard = ({agent} : {
                                     2xl:h-[8.125rem]
                                   ">
                     {
-                    agent.avatarUrl ? (
-                        <img src={
+                        agent.avatarUrl ? (
+                            <img src={
                                 agent.avatarUrl
                             }
-                            alt={
-                                agent.name
-                            }
-                            className="w-full h-full object-cover"/>
-                    ) : (
-                        <span className="
+                                alt={
+                                    agent.name
+                                }
+                                className="w-full h-full object-cover" />
+                        ) : (
+                            <span className="
                                                 font-bold
                                                 text-white
                                                 font-[family-name:var(--font-heading)]
@@ -345,12 +345,12 @@ const ProfileHeaderCard = ({agent} : {
                                                 2xl:text-[2rem]
                                               "
                             // 20px→1.25rem | 24px→1.5rem | 28px→1.75rem | 32px→2rem
-                        >
-                            {
-                            agent.initials
-                        } </span>
-                    )
-                } </div>
+                            >
+                                {
+                                    agent.initials
+                                } </span>
+                        )
+                    } </div>
 
                 {/* Info */}
                 <div className="
@@ -359,7 +359,7 @@ const ProfileHeaderCard = ({agent} : {
                                     lg:gap-[0.375rem]
                                     pb-[0.125rem]
                                   "
-                    // 4px→0.25rem | 6px→0.375rem | 2px→0.125rem
+                // 4px→0.25rem | 6px→0.375rem | 2px→0.125rem
                 >
                     <Typography variant="h3" className="
                                           font-bold
@@ -371,11 +371,11 @@ const ProfileHeaderCard = ({agent} : {
                                           xl:!text-[1.25rem]
                                           2xl:!text-[1.5rem]
                                         "
-                        // 16px→1rem | 18px→1.125rem | 20px→1.25rem | 24px→1.5rem
+                    // 16px→1rem | 18px→1.125rem | 20px→1.25rem | 24px→1.5rem
                     >
                         {
-                        agent.name
-                    } </Typography>
+                            agent.name
+                        } </Typography>
                     <span className="
                                           font-medium
                                           leading-none
@@ -387,8 +387,8 @@ const ProfileHeaderCard = ({agent} : {
                                           2xl:text-[1rem]
                                         ">
                         Application ID : {
-                        agent.applicationId
-                    } </span>
+                            agent.applicationId
+                        } </span>
                 </div>
             </div>
 
@@ -397,7 +397,7 @@ const ProfileHeaderCard = ({agent} : {
                 {/* 2px→0.125rem */}
                 <StatusBadge status={
                     agent.status
-                }/>
+                } />
             </div>
         </div>
     </div>
@@ -405,89 +405,87 @@ const ProfileHeaderCard = ({agent} : {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) => {
+export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) => {
     const navigate = useNavigate();
     const [showIssueForm, setShowIssueForm] = React.useState(false);
 
-   const { id } = useParams();
+    const { id } = useParams();
 
-const userId = Number(id);
+    const userId = Number(id);
 
-const {
-  data,
-  isLoading,
-  error,
-} = useGetAgentByIdQuery(userId, {
-  skip: !userId,
-});
+    const [getAgentById, { data, isLoading, error }] = useGetAgentByIdMutation();
 
-
-
-const apiData = data?.data;
+    React.useEffect(() => {
+        if (userId) {
+            getAgentById(userId);
+        }
+    }, [userId, getAgentById]);
 
 
 
-const agent: AgentDetail = {
-  id: apiData?.id?.toString() || "",
+    const apiData = data?.data;
 
-  name:
-    apiData?.name ||
-    apiData?.full_name ||
-    `${apiData?.first_name || ""} ${
-      apiData?.last_name || ""
-    }`.trim() ||
-    "No Name",
 
-  applicationId: apiData?.id?.toString() || "N/A",
 
-  status: "Pending Review",
+    const agent: AgentDetail = {
+        id: apiData?.id?.toString() || "",
 
-  initials:
-    `${apiData?.first_name || ""} ${
-      apiData?.last_name || ""
-    }`
-      .split(" ")
-      .map((word: string) => word[0])
-      .join("")
-      .toUpperCase() || "NA",
+        name:
+            apiData?.name ||
+            apiData?.full_name ||
+            `${apiData?.first_name || ""} ${apiData?.last_name || ""
+                }`.trim() ||
+            "No Name",
 
-  avatarUrl:
-    apiData?.avatar ||
-    apiData?.profile_image ||
-    "",
+        applicationId: apiData?.id?.toString() || "N/A",
 
-  bannerUrl: "",
+        status: "Pending Review",
 
-  email: apiData?.email || "N/A",
+        initials:
+            `${apiData?.first_name || ""} ${apiData?.last_name || ""
+                }`
+                .split(" ")
+                .map((word: string) => word[0])
+                .join("")
+                .toUpperCase() || "NA",
 
-  phone: apiData?.phone || "N/A",
+        avatarUrl:
+            apiData?.avatar ||
+            apiData?.profile_image ||
+            "",
 
-  dateOfBirth: apiData?.dob
-    ? new Date(apiData.dob).toLocaleDateString()
-    : "N/A",
+        bannerUrl: "",
 
-  operatingTerritory:
-    [
-      apiData?.address,
-      apiData?.city,
-      apiData?.pincode,
-    ]
-      .filter(Boolean)
-      .join(", ") || "N/A",
+        email: apiData?.email || "N/A",
 
-  bankName: apiData?.bank_name || "N/A",
+        phone: apiData?.phone || "N/A",
 
-  accountNumber:
-    apiData?.account_number || "N/A",
+        dateOfBirth: apiData?.dob
+            ? new Date(apiData.dob).toLocaleDateString()
+            : "N/A",
 
-  ifscCode: apiData?.ifsc_code || "N/A",
+        operatingTerritory:
+            [
+                apiData?.address,
+                apiData?.city,
+                apiData?.pincode,
+            ]
+                .filter(Boolean)
+                .join(", ") || "N/A",
 
-  aadhaarImageUrl:
-    apiData?.id_proof_front_url || "",
+        bankName: apiData?.bank_name || "N/A",
 
-  panImageUrl:
-    apiData?.pan_card_url || "",
-};
+        accountNumber:
+            apiData?.account_number || "N/A",
+
+        ifscCode: apiData?.ifsc_code || "N/A",
+
+        aadhaarImageUrl:
+            apiData?.id_proof_front_url || "",
+
+        panImageUrl:
+            apiData?.pan_card_url || "",
+    };
 
     const onBack = () => {
         navigate(-1);
@@ -524,9 +522,9 @@ const agent: AgentDetail = {
                                     lg:mb-[1.5rem]
                                     xl:mb-[1.75rem]
                                   "
-                    // 20px→1.25rem | 24px→1.5rem | 28px→1.75rem
+                // 20px→1.25rem | 24px→1.5rem | 28px→1.75rem
                 >
-                    <BackButton onClick={onBack}/>
+                    <BackButton onClick={onBack} />
                 </div>
 
                 <div className="
@@ -548,7 +546,7 @@ const agent: AgentDetail = {
                                     lg:gap-[1.125rem]
                                     xl:gap-[1.25rem]
                                   ">
-                    <ProfileHeaderCard agent={agent}/>
+                    <ProfileHeaderCard agent={agent} />
 
                     <SectionCard title="Info">
                         <div className="
@@ -565,20 +563,20 @@ const agent: AgentDetail = {
                             <InfoField label="Email"
                                 value={
                                     agent.email
-                                }/>
+                                } />
                             <InfoField label="Phone number"
                                 value={
                                     agent.phone
-                                }/>
+                                } />
                             <InfoField label="Date Of Birth"
                                 value={
                                     agent.dateOfBirth
-                                }/>
+                                } />
                             <InfoField label="Operating Territory"
                                 value={
                                     agent.operatingTerritory
                                 }
-                                className="col-span-2 xl:col-span-3"/>
+                                className="col-span-2 xl:col-span-3" />
                         </div>
                     </SectionCard>
 
@@ -596,15 +594,15 @@ const agent: AgentDetail = {
                             <InfoField label="Bank Name"
                                 value={
                                     agent.bankName
-                                }/>
+                                } />
                             <InfoField label="Account Number"
                                 value={
                                     agent.accountNumber
-                                }/>
+                                } />
                             <InfoField label="IFSC Code"
                                 value={
                                     agent.ifscCode
-                                }/>
+                                } />
                         </div>
                     </SectionCard>
 
@@ -619,11 +617,11 @@ const agent: AgentDetail = {
                             <DocumentCard label="Aadhaar card"
                                 imageUrl={
                                     agent.aadhaarImageUrl
-                                }/>
+                                } />
                             <DocumentCard label="Pan card"
                                 imageUrl={
                                     agent.panImageUrl
-                                }/>
+                                } />
                         </div>
                     </SectionCard>
 
@@ -653,8 +651,8 @@ const agent: AgentDetail = {
                         </button>
 
                         <button onClick={
-                                () => setShowIssueForm(true)
-                            }
+                            () => setShowIssueForm(true)
+                        }
                             className="
                                                 font-medium
                                                 font-[family-name:'Inter',sans-serif]
@@ -679,8 +677,8 @@ const agent: AgentDetail = {
                 </div>
             </div>
             {
-            showIssueForm && (
-                <div className="
+                showIssueForm && (
+                    <div className="
                               fixed
                               inset-0
                               z-50
@@ -691,12 +689,12 @@ const agent: AgentDetail = {
                               backdrop-blur-[2px]
                               p-4
                             ">
-                    <RaiseIssueForm onClose={
-                        () => setShowIssueForm(false)
-                    }/>
-                </div>
-            )
-        } </main>
+                        <RaiseIssueForm onClose={
+                            () => setShowIssueForm(false)
+                        } />
+                    </div>
+                )
+            } </main>
     );
 };
 

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Typography } from "@/components/ui/typography";
-import { useGetAgentDetailsMutation } from "../api/userDirectoryApi";
+import { useLazyGetAgentDetailsQuery } from "../api/userDirectoryApi";
 
 import { FlowCard } from "./FlowCard";
 import { FlowItem } from "./FlowItem";
@@ -27,7 +27,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
     const userId = item.originalId || item.id;
     let path = "";
     if (roleType === "IO") path = "/role-manager/edit-intelligence-officer";
-    else if (roleType === "RO") path = "/role-manager/edit-regional-officer";
+    else if (roleType === "RO") path = `/role-manager/edit-regional-officer/${userId}`;
     else if (roleType === "FO") path = "/role-manager/edit-field-officer";
     else if (roleType === "AG") path = "/role-manager/agent-edit";
 
@@ -65,6 +65,9 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
               regionOfficerData.data
                 .regional_officer_last_name || ""
             }`.trim(),
+            email: regionOfficerData.data.regional_officer_email,
+            state: regionOfficerData.data.state_id,
+            region: regionOfficerData.data.region_name || regionOfficerData.data.region_id,
             role: "Regional Officer" as const,
             roleId: "RO",
             contact:
@@ -139,7 +142,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
   const [searchAgent, setSearchAgent] = useState("");
 
   const [getAgentDetails] =
-    useGetAgentDetailsMutation();
+    useLazyGetAgentDetailsQuery();
 
   const [localAgents, setLocalAgents] = useState<any[]>(
     []
@@ -241,7 +244,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                     navigate(
                       role.roleId === "IO"
                         ? "/role-manager/edit-intelligence-officer"
-                        : "/role-manager/edit-regional-officer",
+                        : `/role-manager/edit-regional-officer/${role.originalId}`,
                       {
                         state: {
                           initialData: role,
