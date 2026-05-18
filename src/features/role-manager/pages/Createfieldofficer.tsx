@@ -25,6 +25,7 @@ import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
+import { uploadUserDocument } from "@/core/utils/fileUpload";
 const BACK_ROUTE = "/role-manager/create-roles" as const;
 
 // ─── Field Label ──────────────────────────────────────────────────────────────
@@ -266,6 +267,51 @@ const CreateFieldOfficer = () => {
   const stateOptions = states.map((item: any) => item.desc);
   const handleCreateFieldOfficer = async (values: OfficerFormValues) => {
     try {
+      // Default placeholders or existing string URLs (if in edit mode)
+      let aadharFrontKey = typeof values.aadharFront === "string" ? values.aadharFront : "front.png";
+      let aadharBackKey = typeof values.aadharBack === "string" ? values.aadharBack : "back.png";
+      let panCardKey = typeof values.panCard === "string" ? values.panCard : "pan.png";
+
+      // 1. Track files that need to be uploaded and run concurrently
+      const uploadPromises: Promise<any>[] = [];
+      const uploadFields: ("aadharFront" | "aadharBack" | "panCard")[] = [];
+
+      if (values.aadharFront instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.aadharFront, values.email, "aadhar_front"));
+        uploadFields.push("aadharFront");
+      }
+      if (values.aadharBack instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.aadharBack, values.email, "aadhar_back"));
+        uploadFields.push("aadharBack");
+      }
+      if (values.panCard instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.panCard, values.email, "pan"));
+        uploadFields.push("panCard");
+      }
+
+      // 2. Perform concurrent uploads if there are new files
+      if (uploadPromises.length > 0) {
+        const uploadToastId = toast.loading("Uploading documents, please wait...");
+        try {
+          const uploadResults = await Promise.all(uploadPromises);
+          
+          // Map results back to correct keys
+          uploadResults.forEach((res, index) => {
+            const field = uploadFields[index];
+            if (field === "aadharFront") aadharFrontKey = res.key;
+            if (field === "aadharBack") aadharBackKey = res.key;
+            if (field === "panCard") panCardKey = res.key;
+          });
+          
+          toast.dismiss(uploadToastId);
+        } catch (uploadError) {
+          toast.dismiss(uploadToastId);
+          toast.error("Document upload failed. Please try again.");
+          return; // Stop submission
+        }
+      }
+
+      // 3. Assemble backend creation payload using S3 keys
       const payload = {
         firstName: values.firstName,
         lastName: values.lastName,
@@ -287,10 +333,10 @@ const CreateFieldOfficer = () => {
           areas_id: 1,
         },
         id_proof: {
-          id_proof_frontUrl: "front.png",
-          id_proof_backUrl: "back.png",
+          id_proof_frontUrl: aadharFrontKey,
+          id_proof_backUrl: aadharBackKey,
           pan_card_number: "ABCDE1234F",
-          pan_card_url: "pan.png",
+          pan_card_url: panCardKey,
         },
       };
 
