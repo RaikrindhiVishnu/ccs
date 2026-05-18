@@ -1,15 +1,57 @@
-/**
- * Utility to simulate uploading a file to an AWS S3 presigned URL.
- * In a real implementation, this would perform a PUT request to the provided URL.
- */
-export async function uploadToPresignedUrl(file: File): Promise<string> {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+import { env } from "../config/env";
 
-    // Mock S3 URL return
-    // In production, this would be the final URL after a successful PUT request
-    const mockUrl = `https://glc-documents.s3.ap-south-1.amazonaws.com/agents/${Date.now()}-${file.name.replace(/\s+/g, "_")}`;
-    
-    console.log(`[Mock Upload] Success: ${file.name} -> ${mockUrl}`);
-    return mockUrl;
+export type DocType = 'aadhar_front' | 'aadhar_back' | 'pan';
+
+export interface UploadResult {
+  url: string;      
+  cleanUrl: string;
+  key: string;
+}
+
+const UPLOAD_API_ENDPOINT = `${env.AUTH_API_BASE_URL}/s3/uploadFile`;
+export function getS3KeyForUserDoc(email: string, docType: DocType, filename: string): string {
+  const cleanEmail = email.trim().toLowerCase();
+  const cleanFilename = filename.trim().replace(/\s+/g, '_');
+  return `users/${cleanEmail}/documents/${docType}/${cleanFilename}`;
+}
+
+export async function uploadFile(file: File, key: string): Promise<UploadResult> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('key', key);
+
+  try {
+    const response = await fetch(UPLOAD_API_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Accept': '*/*',
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Upload failed with status: ${response.status}`);
+    }
+
+    const data = await response.json().catch(() => ({}));
+    const returnedUrl = data.url;
+    if (!returnedUrl) {
+      throw new Error("No URL returned in API response");
+    }
+    const cleanUrl = returnedUrl.split('?')[0];
+    const returnedKey = data.key || key;
+    return {
+      url: returnedUrl,
+      cleanUrl,
+      key: returnedKey,
+    };
+  } catch (error) {
+    console.error('[File Upload] Error during upload:', error);
+    throw error;
+  }
+}
+
+export async function uploadUserDocument(file: File, email: string, docType: DocType): Promise<UploadResult> {
+  const key = getS3KeyForUserDoc(email, docType, file.name);
+  return uploadFile(file, key);
 }
