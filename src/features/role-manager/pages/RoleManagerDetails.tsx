@@ -90,7 +90,7 @@ export default function RoleManagerDetails({
   const [getRegionOfficerDetails] = useLazyRegionOfficerDetailsQuery();
 
   const [profileData, setProfileData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -112,8 +112,6 @@ export default function RoleManagerDetails({
         setProfileData(response?.data);
       } catch (error) {
         console.error("API ERROR:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
 

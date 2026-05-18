@@ -86,7 +86,7 @@ const RoleManagerHeader: React.FC = () => {
 const RoleManagerDashboard: React.FC = () => {
   const dispatch = useDispatch();
   const { data: geoData } = useGetAllGeoMasterDataQuery();
-  const { data: masterData } = useGetAllMasterDataQuery();
+
 
   useEffect(() => {
     if (geoData) {

@@ -173,8 +173,12 @@ export const IntelligenceOfficerLayout = () => {
     navigate("/login", { replace: true });
   };
 
-  const initials = user?.name
-    ? user.name
+  const fullName = user
+    ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Intelligence Officer'
+    : 'Intelligence Officer';
+
+  const initials = fullName
+    ? fullName
         .split(" ")
         .map((n: string) => n[0])
         .join("")
@@ -379,10 +383,10 @@ export const IntelligenceOfficerLayout = () => {
           2xl:w-[3.25rem] 2xl:h-[3.25rem]
         "
       >
-        {user?.avatarUrl ? (
+        {(user as any)?.avatarUrl ? (
           <img
-            src={user.avatarUrl}
-            alt={user.name}
+            src={(user as any).avatarUrl}
+            alt={fullName}
             className="w-full h-full rounded-full object-cover"
           />
         ) : (

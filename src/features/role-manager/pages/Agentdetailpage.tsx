@@ -31,7 +31,6 @@ interface AgentDetail {
 }
 interface AgentDetailPageProps {
     onDismiss?: () => void;
-    onApprove?: () => void;
 }
 
 
