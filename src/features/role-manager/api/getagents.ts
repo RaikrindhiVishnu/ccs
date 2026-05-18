@@ -33,17 +33,31 @@ export const getAgentsApi = roleManagerApi.injectEndpoints({
       }),
     }),
 
-    getAgentById: builder.query({
-  query: (id) => ({
-    url: `agents/getAgentById/${id}`,
-    method: "GET",
-  }),
-  providesTags: ["Agent"],
-}),
+    getAgentById: builder.query<
+      GetAgentByIdResponse,
+      number
+    >({
+      query: (userId) => ({
+        url: "agents/getAgentById",
+        method: "POST",
+        body: {
+          userId,
+        },
+      }),
+    }),
+
+    updateAgentVerification: builder.mutation<any, any>({
+      query: (body) => ({
+        url: "agents/updateAgent",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
 export const {
   useGetAllAgentsMutation,
   useGetAgentByIdQuery,
+  useUpdateAgentVerificationMutation,
 } = getAgentsApi;
