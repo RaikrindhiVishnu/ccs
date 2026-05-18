@@ -28,10 +28,14 @@ export const CcsOfficerLayout = () => {
     navigate('/login', { replace: true });
   };
 
-  const initials = user?.name
-    ? user.name
+  const fullName = user
+    ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'CCS Officer'
+    : 'CCS Officer';
+
+  const initials = fullName
+    ? fullName
         .split(' ')
-        .map((n) => n[0])
+        .map((n: string) => n[0])
         .join('')
         .slice(0, 2)
         .toUpperCase()
@@ -94,7 +98,7 @@ export const CcsOfficerLayout = () => {
             {initials}
           </div>
           <p className="text-center leading-tight text-xs xl:text-sm font-semibold text-[var(--text-heading)]">
-            {user?.name ?? 'User'}
+            {fullName}
           </p>
           <button
             onClick={handleLogout}

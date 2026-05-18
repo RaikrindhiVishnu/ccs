@@ -1,0 +1,50 @@
+import { roleManagerApi } from "./roleManagerApi";
+
+/**
+ * API endpoints for region selection and map data.
+ */
+export const regionSelectionApi = roleManagerApi.injectEndpoints({
+  endpoints: (builder) => ({
+    getCountryById: builder.query<any, { country_id: number }>({
+      query: (body) => ({
+        url: "master/get_country_by_id",
+        method: "POST",
+        body,
+      }),
+    }),
+    getStatesByCountryId: builder.query<any, { country_id: number }>({
+      query: (body) => ({
+        url: "master/get_states_by_country_id",
+        method: "POST",
+        body,
+      }),
+    }),
+    getDistrictsByStateId: builder.query<any, { state_id: number }>({
+      query: (body) => ({
+        url: "master/get_districts_by_state_id",
+        method: "POST",
+        body,
+      }),
+    }),
+    createRegion: builder.mutation<any, {
+      regionName: string;
+      regionCode: string;
+      regionalOfficerId: number;
+      inteligenceOfficerId: number;
+      district_ids: number[];
+    }>({
+      query: (body) => ({
+        url: "region/create_region",
+        method: "POST",
+        body,
+      }),
+    }),
+  }),
+});
+
+export const { 
+  useGetCountryByIdQuery, 
+  useGetStatesByCountryIdQuery,
+  useGetDistrictsByStateIdQuery,
+  useCreateRegionMutation
+} = regionSelectionApi;

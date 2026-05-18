@@ -25,7 +25,7 @@ interface Agent {
 
 export const AgentApprovalsPage = () => {
   const navigate = useNavigate();
-const [getAllAgents, { isLoading }] = useGetAllAgentsMutation();
+const [getAllAgents] = useGetAllAgentsMutation();
 
 const [agentList, setAgentList] = React.useState<Agent[]>([]);
 
@@ -40,7 +40,7 @@ const fetchPendingAgents = async () => {
  
 }).unwrap();
 
-    console.log("Pending Agents:", response);
+
 
     const apiAgents = response?.data || [];
 
@@ -71,7 +71,7 @@ name:
 
     setAgentList(formattedAgents);
   } catch (error) {
-    console.log("Error fetching pending agents:", error);
+
   }
 };
 
@@ -82,7 +82,7 @@ name:
   const hasMore = visibleCount < agentList.length;
 
  const handleViewProfile = (id: string) => {
-  console.log("View profile:", id);
+
   navigate(`/role-manager/agent-details/${id}`);
 };
 

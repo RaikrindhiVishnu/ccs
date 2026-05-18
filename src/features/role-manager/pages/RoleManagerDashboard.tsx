@@ -11,7 +11,9 @@ import pako from 'pako';
 import { Buffer } from 'buffer';
 import geoJsonData from '../data/geoJsonApi.json';
 import { useDispatch } from "react-redux";
-import { useGetAllGeoMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import {
+  useGetAllGeoMasterDataQuery,
+} from "@/features/role-manager/api/masterDataApi";
 import { setGeoMasterData } from "@/features/role-manager/store/roleManagerSlice";
 import { useEffect, useCallback } from "react";
 
@@ -85,6 +87,7 @@ const RoleManagerDashboard: React.FC = () => {
   const dispatch = useDispatch();
   const { data: geoData } = useGetAllGeoMasterDataQuery();
 
+
   useEffect(() => {
     if (geoData) {
       dispatch(setGeoMasterData(geoData));
@@ -96,7 +99,7 @@ const RoleManagerDashboard: React.FC = () => {
       
       // 1. Convert Base64 string to a binary Buffer
       const binaryData = Buffer.from(base64Data, 'base64');
-      console.log("Binary data length:", binaryData.length);
+
       
       // 2. Decompress the data using Pako (Gunzip)
       const decompressedData = pako.ungzip(binaryData);
@@ -105,8 +108,7 @@ const RoleManagerDashboard: React.FC = () => {
       const decompressedString = new TextDecoder().decode(decompressedData);
       const finalData = JSON.parse(decompressedString);
       
-      console.log("Successfully Decoded GeoJSON Data:", finalData);
-      console.log("Data Keys:", Object.keys(finalData));
+
       
       return finalData;
     } catch (error) {
@@ -117,10 +119,10 @@ const RoleManagerDashboard: React.FC = () => {
   // For testing purposes as requested by user
   React.useEffect(() => {
     if (geoJsonData && geoJsonData.data) {
-      console.log("Found local GeoJSON data, starting automatic decode...");
+
       fetchAndDecodeGeoData(geoJsonData.data);
     } else {
-      console.log("GeoData Decoder Ready. Call fetchAndDecodeGeoData(yourBase64String) to test.");
+
     }
   }, [fetchAndDecodeGeoData]);
 

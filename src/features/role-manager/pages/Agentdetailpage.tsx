@@ -37,14 +37,13 @@ interface AgentDetail {
 }
 interface AgentDetailPageProps {
     onDismiss?: () => void;
-    onApprove?: () => void;
 }
 
 
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) => {
+export const AgentDetailPage = ({onDismiss} : AgentDetailPageProps) => {
     const navigate = useNavigate();
     const [showIssueForm, setShowIssueForm] = React.useState(false);
 
@@ -60,14 +59,18 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
     });
 
     const [updateAgentVerification, { isLoading: isUpdating }] = useUpdateAgentVerificationMutation();
+    const {
+          data,
+          isLoading,
+           } = useGetAgentByIdQuery(userId, {
+          skip: !userId,
+         });
 
-console.log("Route ID:", id);
-console.log("Agent Detail Response:", data);
-console.log("Agent Detail Error:", error);
+
 
 const apiData = data?.data;
 
-console.log("API DATA:", apiData);
+
 
 const agent: AgentDetail = {
   id: apiData?.id?.toString() || "",

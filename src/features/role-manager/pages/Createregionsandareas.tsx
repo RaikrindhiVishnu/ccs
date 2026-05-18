@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
@@ -51,6 +52,7 @@ interface InfoCardProps {
   description: string;
   imageSrc: string;
   imageAlt: string;
+  onClick?: () => void;
 }
 
 const InfoCard: React.FC<InfoCardProps> = ({
@@ -58,15 +60,20 @@ const InfoCard: React.FC<InfoCardProps> = ({
   description,
   imageSrc,
   imageAlt,
+  onClick,
 }) => {
   return (
     <div
+      onClick={onClick}
       className={cn(
         "relative flex flex-col",
         "bg-[var(--surface-card)] rounded-[1.5rem]",
         "shadow-[0px_0px_8.4px_rgba(0,0,0,0.06)]",
         "w-full overflow-hidden",
         "h-[20rem] lg:h-[21.25rem] xl:h-[23.75rem] 2xl:h-[26rem]",
+        "cursor-pointer transition-all duration-200",
+        "hover:shadow-[0px_4px_12px_rgba(0,0,0,0.1)] hover:scale-[1.02]",
+        "active:scale-[0.98]",
       )}
     >
       {/* ── Title + Description ──────────────────────────────── */}
@@ -136,6 +143,12 @@ const InfoCard: React.FC<InfoCardProps> = ({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 const CreateRegionsAndAreas: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleNavigateToCreation = () => {
+    navigate("/role-manager/region-creation");
+  };
+
   return (
     <div
       className={cn(
@@ -157,7 +170,7 @@ const CreateRegionsAndAreas: React.FC = () => {
         )}
       >
         {/* ── Back button ──────────────────────────────────── */}
-        <GoBackButton onClick={() => {}} />
+        <GoBackButton onClick={() => navigate("/role-manager/region-area-dashboard")} />
 
         {/* ── White container card ─────────────────────────── */}
         <Card
@@ -211,6 +224,7 @@ const CreateRegionsAndAreas: React.FC = () => {
               description="A broad strategic territory managed by the Regional Officer, comprising multiple operational clusters."
               imageSrc={regionImg}
               imageAlt="Region illustration"
+              onClick={handleNavigateToCreation}
             />
 
             <InfoCard
@@ -218,6 +232,7 @@ const CreateRegionsAndAreas: React.FC = () => {
               description="A specific locality or zone within a Region where daily land sourcing operations take place."
               imageSrc={areasImg}
               imageAlt="Area illustration"
+              onClick={handleNavigateToCreation}
             />
           </div>
         </Card>

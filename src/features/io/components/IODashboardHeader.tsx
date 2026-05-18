@@ -8,6 +8,8 @@ interface IODashboardHeaderProps {
   searchPlaceholder?: string;
   titleClassName?: string;
   searchWrapperClassName?: string;
+  searchValue?: string;
+  onSearchChange?: (val: string) => void;
 }
 
 export const IODashboardHeader = ({
@@ -16,6 +18,8 @@ export const IODashboardHeader = ({
   searchPlaceholder = "Search...",
   titleClassName,
   searchWrapperClassName,
+  searchValue,
+  onSearchChange,
 }: IODashboardHeaderProps) => {
   return (
     <section
@@ -90,6 +94,8 @@ export const IODashboardHeader = ({
         <Input
           variant="white"
           placeholder={searchPlaceholder}
+          value={searchValue}
+          onChange={(e) => onSearchChange?.(e.target.value)}
           icon={
             <Search
               className="

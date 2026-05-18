@@ -37,6 +37,10 @@ export interface AgentFormProps {
     onCancel?: () => void;
     /** Loading state (e.g. RTK mutation isLoading) */
     isLoading?: boolean;
+    /** Role type (AG, FO, RO, etc.) */
+    roleType?: string;
+    isViewMode?: boolean;
+    from?: string;
 }
 
 // ─── API Types ───────────────────────────────────────────────────────────────
@@ -142,6 +146,74 @@ export interface CreateRegionalOfficerRequest {
     id_proof_backUrl: string;
     pan_card_number: string;
     pan_card_url: string;
+  };
+}
+
+export interface UpdateAgentRequest {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  phoneNumber: string;
+  dob: string;
+  role_id: number;
+  isVerified?: number;
+  address: {
+    address: string;
+    state_id: number;
+    city: string;
+    pincode: string;
+  };
+  geo_assignments: {
+    country_id?: number;
+    state_id?: number;
+    district_id?: number;
+    mandal_id?: number;
+    region_id: number;
+    areas_id: number;
+  };
+  id_proof?: any;
+}
+
+export interface UpdateFieldOfficerRequest {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  phoneNumber: string;
+  dob: string;
+  role_id: number;
+  address: {
+    address: string;
+    state_id: number;
+    city: string;
+    pincode: string;
+  };
+  geo_assignments: {
+    state_id: number;
+    region_id: number;
+  };
+}
+
+export interface UpdateRegionalOfficerRequest {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  phoneNumber: string;
+  dob: string;
+  role_id: number;
+
+  address: {
+    address: string;
+    state_id: number;
+    city: string;
+    pincode: string;
+  };
+
+  geo_assignments: {
+    state_id: number;
+    region_id: number;
   };
 }
 export interface CreateFieldOfficerRequest {

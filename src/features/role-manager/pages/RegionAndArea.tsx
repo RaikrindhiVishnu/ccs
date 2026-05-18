@@ -1,9 +1,12 @@
-import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import RegionCreationVelocity from "@/features/role-manager/components/RegionCreationVelocity";
 import RoleCreationOverviewCard from "@/features/role-manager/components/Rolecreationoverviewcard";
 
 const RegionAndArea: React.FC = () => {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col p-[clamp(0.375rem,0.83vw,0.75rem)] pt-[clamp(0.75rem,1.5vw,1.5rem)] gap-[clamp(0.75rem,1.5vw,1.5rem)] box-border min-h-full">
       {/* Charts Grid */}
@@ -29,10 +32,18 @@ const RegionAndArea: React.FC = () => {
         <div className="flex items-center justify-between px-[clamp(0.75rem,1.5vw,1.5rem)] py-[clamp(0.625rem,1.2vw,1.125rem)] border-b border-[var(--border)]">
           <Typography
             variant="h2"
-            className="text-[clamp(0.875rem,1.1vw,1.125rem)] font-semibold text-[var(--text-primary)]"
+            className="text-2xl font-semibold text-[var(--text-primary)]"
           >
             Regions &amp; Area Data
           </Typography>
+          <Button
+            variant="primary"
+            onClick={() => navigate("/role-manager/create-regions-and-areas")}
+            className="rounded-full h-6 px-3  flex items-center gap-1.5 text-xl  font-medium"
+          >
+            <Plus className="w-3 h-3" />
+            Create Region & Area
+          </Button>
         </div>
 
         {/* Empty State Body */}
