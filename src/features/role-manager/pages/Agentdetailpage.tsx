@@ -2,7 +2,7 @@ import * as React from "react";
 import {cn} from "@/lib/utils";
 
 import {useNavigate, useParams} from "react-router-dom";
-import { useGetAgentByIdQuery, useUpdateAgentVerificationMutation } from "@/features/role-manager/api/getagents";
+import { useGetAgentProfileQuery, useUpdateAgentVerificationMutation } from "@/features/role-manager/api/getagents";
 import RaiseIssueForm from "@/features/role-manager/components/form";
 import { toast } from "sonner";
 
@@ -48,19 +48,18 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
     const navigate = useNavigate();
     const [showIssueForm, setShowIssueForm] = React.useState(false);
 
-   const { id } = useParams();
+    const { id } = useParams();
+    const userId = id ? Number(id) : NaN;
 
-const userId = Number(id);
+    const {
+      data,
+      isLoading,
+      error,
+    } = useGetAgentProfileQuery(userId, {
+      skip: isNaN(userId),
+    });
 
-const {
-  data,
-  isLoading,
-  error,
-} = useGetAgentByIdQuery(userId, {
-  skip: !userId,
-});
-
-const [updateAgentVerification, { isLoading: isUpdating }] = useUpdateAgentVerificationMutation();
+    const [updateAgentVerification, { isLoading: isUpdating }] = useUpdateAgentVerificationMutation();
 
 console.log("Route ID:", id);
 console.log("Agent Detail Response:", data);
@@ -147,7 +146,7 @@ const agent: AgentDetail = {
     const handleApprove = async () => {
         try {
             const payload = {
-                userId: userId || 0,
+                userId: apiData?.id || userId || 0,
                 firstName: apiData?.first_name || apiData?.name?.split(" ")[0] || "string",
                 lastName: apiData?.last_name || apiData?.name?.split(" ").slice(1).join(" ") || "string",
                 countryCode: apiData?.countryCode || "+91",
