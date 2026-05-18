@@ -39,6 +39,8 @@ export interface AgentFormProps {
     isLoading?: boolean;
     /** Role type (AG, FO, RO, etc.) */
     roleType?: string;
+    isViewMode?: boolean;
+    from?: string;
 }
 
 // ─── API Types ───────────────────────────────────────────────────────────────

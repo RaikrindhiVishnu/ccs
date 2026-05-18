@@ -46,8 +46,10 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 
 function UploadPictureField({
   control,
+  disabled = false,
 }: {
   control: Control<IntelligenceOfficerFormValues>;
+  disabled?: boolean;
 }) {
   const ref = useRef<HTMLInputElement>(null);
 
@@ -60,12 +62,14 @@ function UploadPictureField({
           <FieldLabel>Upload Picture</FieldLabel>
           <button
             type="button"
-            onClick={() => ref.current?.click()}
+            onClick={() => !disabled && ref.current?.click()}
+            disabled={disabled}
             className={cn(
-              "flex items-center justify-between w-full h-[clamp(2rem,2.78vw,2.5rem)] px-[clamp(0.625rem,0.97vw,0.875rem)] bg-[color:var(--surface-card)] border rounded-[clamp(0.5rem,0.83vw,0.75rem)] cursor-pointer transition-colors duration-150",
-              fieldState.error
-                ? "border-red-500"
-                : "border-[color:var(--border-default)] hover:border-[color:var(--brand-500)]",
+              "flex items-center justify-between w-full h-[clamp(2rem,2.78vw,2.5rem)] px-[clamp(0.625rem,0.97vw,0.875rem)] bg-[color:var(--surface-card)] border rounded-[clamp(0.5rem,0.83vw,0.75rem)] transition-colors duration-150",
+              disabled
+                ? "opacity-60 cursor-not-allowed border-gray-200"
+                : "cursor-pointer border-[color:var(--border-default)] hover:border-[color:var(--brand-500)]",
+              fieldState.error && "border-red-500",
             )}
           >
             <span className="flex-1 text-left truncate mr-2 font-[family-name:var(--font-inter)] font-normal text-[clamp(0.6875rem,0.83vw,0.875rem)] text-[color:var(--text-muted)]">
@@ -75,6 +79,7 @@ function UploadPictureField({
             <input
               ref={ref}
               type="file"
+              disabled={disabled}
               accept="image/jpeg,image/png,image/webp"
               className="hidden"
               onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
@@ -97,10 +102,12 @@ function DocUploadField({
   label,
   name,
   control,
+  disabled = false,
 }: {
   label: string;
   name: "aadharFront" | "aadharBack" | "panCard";
   control: Control<IntelligenceOfficerFormValues>;
+  disabled?: boolean;
 }) {
   const ref = useRef<HTMLInputElement>(null);
 
@@ -119,12 +126,14 @@ function DocUploadField({
           </Typography>
           <button
             type="button"
-            onClick={() => ref.current?.click()}
+            onClick={() => !disabled && ref.current?.click()}
+            disabled={disabled}
             className={cn(
-              "flex flex-col items-center justify-center gap-[clamp(0.375rem,0.56vw,0.5rem)] h-[clamp(5rem,8.89vw,8rem)] bg-[color:var(--surface-page)] border-2 border-dashed rounded-[clamp(0.5rem,0.83vw,0.75rem)] cursor-pointer transition-colors duration-200",
-              fieldState.error
-                ? "border-red-500 bg-red-50/30"
-                : "border-[color:var(--border-default)] hover:border-[color:var(--brand-500)] hover:bg-[color:var(--brand-tint)]",
+              "flex flex-col items-center justify-center gap-[clamp(0.375rem,0.56vw,0.5rem)] h-[clamp(5rem,8.89vw,8rem)] bg-[color:var(--surface-page)] border-2 border-dashed rounded-[clamp(0.5rem,0.83vw,0.75rem)] transition-colors duration-200",
+              disabled
+                ? "opacity-60 cursor-not-allowed border-gray-200"
+                : "cursor-pointer border-[color:var(--border-default)] hover:border-[color:var(--brand-500)] hover:bg-[color:var(--brand-tint)]",
+              fieldState.error && "border-red-500 bg-red-50/30",
             )}
           >
             <FileImage className="shrink-0 text-[var(--text-primary)] w-[1rem] h-[1rem] stroke-[1.75]" />
@@ -147,6 +156,7 @@ function DocUploadField({
             <input
               ref={ref}
               type="file"
+              disabled={disabled}
               accept=".jpg,.jpeg,.png,.pdf"
               className="hidden"
               onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
@@ -197,6 +207,8 @@ export default function CreateIntelligenceOfficer() {
   const location = useLocation();
 
   const userId = location.state?.userId;
+  const isViewMode = location.state?.isViewMode || false;
+  const fromPath = location.state?.from || BACK_ROUTE;
 
   const isEditMode = !!userId;
   const [getRegionalOfficerById, { data: regionalOfficerData }] =
@@ -301,7 +313,7 @@ export default function CreateIntelligenceOfficer() {
 
       toast.success("Intelligence Officer created successfully");
 
-      navigate("/role-manager/create-roles");
+      navigate(fromPath);
     } catch (err: any) {
       toast.error(err?.data?.message || "Something went wrong");
     }
@@ -309,11 +321,11 @@ export default function CreateIntelligenceOfficer() {
 
   return (
     <div className="min-h-screen bg-[color:var(--surface-page)] rounded-[2rem] px-[clamp(1.5rem,6.81vw,6.8125rem)] py-[clamp(1.5rem,2.64vw,2.375rem)]">
-      {/* ── Back Button → /role-manager/create-roles ── */}
+      {/* ── Back Button ── */}
       <BackButton
         variant="light"
         label="Go back to dashboard"
-        onClick={() => navigate(BACK_ROUTE)}
+        onClick={() => navigate(fromPath)}
         className="w-[clamp(11.25rem,16.67vw,15rem)] h-[clamp(2.5rem,3.61vw,3.25rem)] text-[clamp(0.8125rem,1vw,1rem)] px-[clamp(0.875rem,1.39vw,1.25rem)] gap-[clamp(0.375rem,0.56vw,0.5rem)]"
       />
 
@@ -329,7 +341,9 @@ export default function CreateIntelligenceOfficer() {
           "mb-6 xl:mb-8",
         )}
       >
-        {isEditMode
+        {isViewMode
+          ? "View Intelligence Officer Profile"
+          : isEditMode
           ? "Edit Intelligence Officer"
           : "Create Intelligence Officer"}
       </Typography>
@@ -346,6 +360,7 @@ export default function CreateIntelligenceOfficer() {
                 label="First Name"
                 placeholder="Enter First name"
                 maxLength={30}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="lastName"
@@ -353,6 +368,7 @@ export default function CreateIntelligenceOfficer() {
                 label="Last Name"
                 placeholder="Enter Last Name"
                 maxLength={30}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="dob"
@@ -360,6 +376,7 @@ export default function CreateIntelligenceOfficer() {
                 label="DOB"
                 placeholder="Select DOB"
                 type="date"
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="email"
@@ -368,6 +385,7 @@ export default function CreateIntelligenceOfficer() {
                 placeholder="Enter Mail ID"
                 type="email"
                 maxLength={100}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="mobile"
@@ -376,6 +394,7 @@ export default function CreateIntelligenceOfficer() {
                 placeholder="Enter Mobile Number"
                 type="tel"
                 maxLength={10}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="address"
@@ -383,6 +402,7 @@ export default function CreateIntelligenceOfficer() {
                 label="Address"
                 placeholder="Enter Address"
                 maxLength={150}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="addressState"
@@ -390,6 +410,7 @@ export default function CreateIntelligenceOfficer() {
                 label="State"
                 placeholder="Enter State"
                 maxLength={50}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="city"
@@ -397,6 +418,7 @@ export default function CreateIntelligenceOfficer() {
                 label="City / Village"
                 placeholder="Enter City / Village"
                 maxLength={50}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="pincode"
@@ -404,11 +426,12 @@ export default function CreateIntelligenceOfficer() {
                 label="Pin Code"
                 placeholder="Enter Pin Code"
                 maxLength={6}
+                disabled={isViewMode}
               />
             </div>
             {/* ── only change: pass control ── */}
             <div className="mt-[clamp(0.75rem,1.67vw,1.5rem)] w-[calc(33.333%-clamp(0.667rem,1.8vw,1.625rem))]">
-              <UploadPictureField control={control} />
+              <UploadPictureField control={control} disabled={isViewMode} />
             </div>
           </SectionPanel>
 
@@ -423,6 +446,7 @@ export default function CreateIntelligenceOfficer() {
                 options={stateOptions}
                 containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
                 className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
+                disabled={isViewMode}
               />
               <RHFDropdown
                 name="region"
@@ -432,6 +456,7 @@ export default function CreateIntelligenceOfficer() {
                 options={REGIONS}
                 containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
                 className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
+                disabled={isViewMode}
               />
             </div>
           </SectionPanel>
@@ -443,16 +468,19 @@ export default function CreateIntelligenceOfficer() {
                 label="Aadhar Card Front"
                 name="aadharFront"
                 control={control}
+                disabled={isViewMode}
               />
               <DocUploadField
                 label="Aadhar Card Back"
                 name="aadharBack"
                 control={control}
+                disabled={isViewMode}
               />
               <DocUploadField
                 label="Pan Card"
                 name="panCard"
                 control={control}
+                disabled={isViewMode}
               />
             </div>
           </SectionPanel>
@@ -465,51 +493,75 @@ export default function CreateIntelligenceOfficer() {
               "mt-2",
             )}
           >
-            <Button
-              onClick={() => navigate("/role-manager/create-roles")}
-              className={cn(
-                "w-[6.4375rem]",
-                "h-[2.5rem]",
-                "px-6 py-2",
-                "rounded-[0.375rem]",
-                "bg-transparent",
-                "shadow-none",
-                "border-0",
-                "!font-normal",
-                "text-[1rem]",
-                "leading-6",
-                "text-[var(--text-primary)]",
-                "shrink-0 whitespace-nowrap",
-                "hover:bg-[var(--chart-bg)]",
-              )}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="gradient-blue"
-              onClick={handleSubmit(handleCreate)}
-              className={cn(
-                "w-[10.5625rem]",
-                "h-[2.5rem]",
-                "px-8 py-2",
-                "bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)]",
-                "rounded-[6.25rem]",
-                "font-medium",
-                "text-[1rem]",
-                "leading-6",
-                "text-white",
-                "shadow-none",
-                "shrink-0 whitespace-nowrap",
-              )}
-            >
-              {isLoading
-                ? isEditMode
-                  ? "Updating..."
-                  : "Creating..."
-                : isEditMode
-                  ? "Update Profile"
-                  : "Create Profile"}
-            </Button>
+            {isViewMode ? (
+              <Button
+                onClick={() => navigate(fromPath)}
+                className={cn(
+                  "w-[10.5625rem]",
+                  "h-[2.5rem]",
+                  "px-8 py-2",
+                  "bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)]",
+                  "rounded-[6.25rem]",
+                  "font-medium",
+                  "text-[1rem]",
+                  "leading-6",
+                  "text-white",
+                  "shadow-none",
+                  "shrink-0 whitespace-nowrap",
+                )}
+              >
+                Go Back
+              </Button>
+            ) : (
+              <>
+                <Button
+                  onClick={() => navigate(fromPath)}
+                  className={cn(
+                    "w-[6.4375rem]",
+                    "h-[2.5rem]",
+                    "px-6 py-2",
+                    "rounded-[0.375rem]",
+                    "bg-transparent",
+                    "shadow-none",
+                    "border-0",
+                    "!font-normal",
+                    "text-[1rem]",
+                    "leading-6",
+                    "text-[var(--text-primary)]",
+                    "shrink-0 whitespace-nowrap",
+                    "hover:bg-[var(--chart-bg)]",
+                  )}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="gradient-blue"
+                  onClick={handleSubmit(handleCreate)}
+                  disabled={isLoading}
+                  className={cn(
+                    "w-[10.5625rem]",
+                    "h-[2.5rem]",
+                    "px-8 py-2",
+                    "bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)]",
+                    "rounded-[6.25rem]",
+                    "font-medium",
+                    "text-[1rem]",
+                    "leading-6",
+                    "text-white",
+                    "shadow-none",
+                    "shrink-0 whitespace-nowrap",
+                  )}
+                >
+                  {isLoading
+                    ? isEditMode
+                      ? "Updating..."
+                      : "Creating..."
+                    : isEditMode
+                      ? "Update Profile"
+                      : "Create Profile"}
+                </Button>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>

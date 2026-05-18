@@ -11,8 +11,9 @@ interface RHFTextFieldProps<T extends FieldValues> {
 
   label: string;
   placeholder: string;
-maxLength?: number;
+  maxLength?: number;
   type?: string;
+  disabled?: boolean;
 }
 
 export function RHFTextField<T extends FieldValues>({
@@ -21,7 +22,8 @@ export function RHFTextField<T extends FieldValues>({
   label,
   placeholder,
   type = "text",
-    maxLength,
+  maxLength,
+  disabled = false,
 }: RHFTextFieldProps<T>) {
   return (
     <Controller
@@ -37,7 +39,8 @@ export function RHFTextField<T extends FieldValues>({
             {...field}
             type={type}
             placeholder={placeholder}
-              maxLength={maxLength}
+            maxLength={maxLength}
+            disabled={disabled}
             max={
               type === "date"
                 ? new Date().toISOString().split("T")[0]
@@ -56,6 +59,8 @@ export function RHFTextField<T extends FieldValues>({
               outline-none
               transition-colors
               duration-150
+              disabled:opacity-60
+              disabled:cursor-not-allowed
             "
             style={{
               borderColor: fieldState.error

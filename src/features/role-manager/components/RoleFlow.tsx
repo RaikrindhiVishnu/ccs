@@ -25,11 +25,19 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
 
   const handleView = (item: any, roleType: string) => {
     const userId = item.originalId || item.id;
+    let path = "";
+    if (roleType === "IO") path = "/role-manager/edit-intelligence-officer";
+    else if (roleType === "RO") path = "/role-manager/edit-regional-officer";
+    else if (roleType === "FO") path = "/role-manager/edit-field-officer";
+    else if (roleType === "AG") path = "/role-manager/agent-edit";
 
-    navigate(`/role-manager/profile/${userId}`, {
+    navigate(path, {
       state: {
+        initialData: item,
         roleType,
         userId,
+        from: "/role-manager/user-directory",
+        isViewMode: true,
       },
     });
   };
@@ -239,6 +247,8 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                           initialData: role,
                           roleType: role.roleId,
                           userId: role.originalId,
+                          from: "/role-manager/user-directory",
+                          isViewMode: false,
                         },
                       }
                     )
@@ -303,6 +313,8 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                         initialData: fo,
                         roleType: "FO",
                         userId: fo.originalId,
+                        from: "/role-manager/user-directory",
+                        isViewMode: false,
                       },
                     }
                   )
@@ -352,6 +364,8 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                           initialData: ag,
                           roleType: "AG",
                           userId: ag.originalId,
+                          from: "/role-manager/user-directory",
+                          isViewMode: false,
                         },
                       }
                     )
