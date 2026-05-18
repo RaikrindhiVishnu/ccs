@@ -58,12 +58,14 @@ export default function AgentForm({
   onCancel,
   isLoading = false,
   roleType,
+  isViewMode = false,
+  from,
 }: AgentFormProps) {
   const states = useSelector((state: any) => state.roleManager.states);
 
   const stateOptions = states.map((item: any) => item.desc);
   const location = useLocation();
-  console.log("AgentForm Location State:", location.state);
+
   const { userId: locUserId } = location.state || {};
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -158,8 +160,7 @@ export default function AgentForm({
   }, [isEdit, initialData]);
 
   const handleSave = async (values: AgentFormValues) => {
-    console.log("SAVE CLICKED", values);
-    console.log("ROLE TYPE:", roleType);
+
 
     try {
       if (isEdit) {
@@ -169,7 +170,7 @@ export default function AgentForm({
           (initialData as any)?.id ||
           1;
 
-        console.log("USER ID for update:", userId);
+
 
         if (roleType === "AG") {
           const payload: UpdateAgentRequest = {
@@ -195,7 +196,7 @@ export default function AgentForm({
             },
           };
 
-          console.log("FINAL PAYLOAD (AG):", JSON.stringify(payload, null, 2));
+
 
           await updateAgentDetails(payload).unwrap();
         } else {
@@ -286,7 +287,11 @@ export default function AgentForm({
         variant="h3"
         className="font-bold text-[clamp(20px,2vw,32px)] text-[color:var(--text-primary)] mb-6"
       >
-        {isEdit ? "Edit Agent" : "Create Agent"}
+        {isViewMode
+          ? "View Agent Profile"
+          : isEdit
+          ? "Edit Agent"
+          : "Create Agent"}
       </Typography>
 
       {/* ── Outer card ── */}
@@ -353,33 +358,35 @@ export default function AgentForm({
                           />
                         )}
                       </div>
-                      <label
-                        className="
-                                                    absolute bottom-1 right-1
-                                                    w-[32px] h-[32px]
-                                                    rounded-full bg-[color:var(--surface-card)]
-                                                    border border-[color:var(--border)]
-                                                    flex items-center justify-center
-                                                    shadow-sm cursor-pointer hover:opacity-80
-                                                "
-                      >
-                        <Camera
-                          size={16}
-                          strokeWidth={1.8}
-                          className="text-[color:var(--label-color)]"
-                        />
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/png,image/webp"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (!file) return;
-                            field.onChange(file);
-                            setProfileImage(URL.createObjectURL(file));
-                          }}
-                        />
-                      </label>
+                      {!isViewMode && (
+                        <label
+                          className="
+                                                      absolute bottom-1 right-1
+                                                      w-[32px] h-[32px]
+                                                      rounded-full bg-[color:var(--surface-card)]
+                                                      border border-[color:var(--border)]
+                                                      flex items-center justify-center
+                                                      shadow-sm cursor-pointer hover:opacity-80
+                                                  "
+                        >
+                          <Camera
+                            size={16}
+                            strokeWidth={1.8}
+                            className="text-[color:var(--label-color)]"
+                          />
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              field.onChange(file);
+                              setProfileImage(URL.createObjectURL(file));
+                            }}
+                          />
+                        </label>
+                      )}
                       {fieldState.error && (
                         <span className="absolute -bottom-5 left-0 text-red-500 text-[0.7rem] whitespace-nowrap">
                           {fieldState.error.message}
@@ -424,6 +431,7 @@ export default function AgentForm({
               label="First Name"
               placeholder="Enter First name"
               maxLength={30}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="lastName"
@@ -431,6 +439,7 @@ export default function AgentForm({
               label="Last Name"
               placeholder="Enter Last Name"
               maxLength={30}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="dob"
@@ -438,6 +447,7 @@ export default function AgentForm({
               label="D.O.B."
               placeholder="Enter Age"
               type="date"
+              disabled={isViewMode}
             />
             <RHFTextField
               name="email"
@@ -446,6 +456,7 @@ export default function AgentForm({
               placeholder="Enter Mail ID"
               type="email"
               maxLength={150}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="phone"
@@ -454,6 +465,7 @@ export default function AgentForm({
               placeholder="Enter Mobile Number"
               type="tel"
               maxLength={10}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="address"
@@ -461,6 +473,7 @@ export default function AgentForm({
               label="Address"
               placeholder="Enter Address"
               maxLength={150}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="addressState"
@@ -468,6 +481,7 @@ export default function AgentForm({
               label="State"
               placeholder="Enter State"
               maxLength={30}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="city"
@@ -475,6 +489,7 @@ export default function AgentForm({
               label="City / Village"
               placeholder="Enter City / Village"
               maxLength={30}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="pincode"
@@ -482,6 +497,7 @@ export default function AgentForm({
               label="Pin Code"
               placeholder="Enter Pin Code"
               maxLength={6}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="panNumber"
@@ -489,6 +505,7 @@ export default function AgentForm({
               label="PAN Card Number"
               placeholder="Enter PAN Number"
               maxLength={30}
+              disabled={isViewMode}
             />
           </div>
         </FormSection>
@@ -502,6 +519,7 @@ export default function AgentForm({
               label="State"
               options={stateOptions}
               placeholder="Andhra Pradesh"
+              disabled={isViewMode}
             />
             <div>
               <RHFDropdown
@@ -510,6 +528,7 @@ export default function AgentForm({
                 label="Region"
                 options={REGION_OPTIONS}
                 placeholder="Godavari Region"
+                disabled={isViewMode}
               />
               <div className="mt-3 space-y-2">
                 <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
@@ -527,6 +546,7 @@ export default function AgentForm({
                 label="Area"
                 options={AREA_OPTIONS}
                 placeholder="Tanuku Area"
+                disabled={isViewMode}
               />
               <div className="mt-3">
                 <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
@@ -546,6 +566,7 @@ export default function AgentForm({
               label="Bank Name"
               options={BANK_OPTIONS}
               placeholder="Select Bank"
+              disabled={isViewMode}
             />
             <RHFTextField
               name="accountNumber"
@@ -553,6 +574,7 @@ export default function AgentForm({
               label="Account Number"
               placeholder="Enter Account Number"
               maxLength={30}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="ifscCode"
@@ -560,6 +582,7 @@ export default function AgentForm({
               label="IFSC Code"
               placeholder="Enter IFSC Code"
               maxLength={30}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="bankBranch"
@@ -567,6 +590,7 @@ export default function AgentForm({
               label="Bank Branch"
               placeholder="Enter Bank Branch"
               maxLength={30}
+              disabled={isViewMode}
             />
           </div>
         </FormSection>
@@ -578,47 +602,73 @@ export default function AgentForm({
               name="aadharFront"
               title="Aadhar Card (Front)"
               control={control}
+              disabled={isViewMode}
             />
             <UploadBox
               name="aadharBack"
               title="Aadhar Card (Back)"
               control={control}
+              disabled={isViewMode}
             />
-            <UploadBox name="panCard" title="Pan Card" control={control} />
+            <UploadBox
+              name="panCard"
+              title="Pan Card"
+              control={control}
+              disabled={isViewMode}
+            />
           </div>
         </FormSection>
 
         {/* ── ACTION BUTTONS ── */}
         <div className="flex justify-end items-center gap-[clamp(12px,1vw,16px)] pt-4">
-          <button
-            onClick={onCancel}
-            disabled={isLoading}
-            className="
-                            text-[clamp(12px,0.9vw,16px)] font-medium text-[color:var(--text-primary)]
-                            px-6 py-2 hover:opacity-70 transition-opacity disabled:opacity-50
-                        "
-          >
-            Cancel
-          </button>
-          <Button
-            variant="primary"
-            onClick={handleSubmit(handleSave, (errors) => {
-              console.log("Validation errors:", errors);
-              toast.error("Please fix validation errors before saving.");
-            })}
-            loading={isLoading || isSubmitting}
-            className="
-                            !h-[44px] !min-w-[180px]
-                            !rounded-[100px]
-                            !px-[32px] !py-[8px]
-                            !font-[family-name:var(--font-inter)] !font-medium
-                            !text-[length:clamp(13px,0.9vw,16px)]
-                            !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
-                            !shadow-none
-                        "
-          >
-            {isEdit ? "Update Profile" : "Create Profile"}
-          </Button>
+          {isViewMode ? (
+            <Button
+              variant="primary"
+              onClick={onCancel}
+              className="
+                              !h-[44px] !min-w-[180px]
+                              !rounded-[100px]
+                              !px-[32px] !py-[8px]
+                              !font-[family-name:var(--font-inter)] !font-medium
+                              !text-[length:clamp(13px,0.9vw,16px)]
+                              !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
+                              !shadow-none
+                          "
+            >
+              Go Back
+            </Button>
+          ) : (
+            <>
+              <button
+                onClick={onCancel}
+                disabled={isLoading}
+                className="
+                                text-[clamp(12px,0.9vw,16px)] font-medium text-[color:var(--text-primary)]
+                                px-6 py-2 hover:opacity-70 transition-opacity disabled:opacity-50
+                            "
+              >
+                Cancel
+              </button>
+              <Button
+                variant="primary"
+                onClick={handleSubmit(handleSave, (errors) => {
+                  toast.error("Please fix validation errors before saving.");
+                })}
+                loading={isLoading || isSubmitting}
+                className="
+                                !h-[44px] !min-w-[180px]
+                                !rounded-[100px]
+                                !px-[32px] !py-[8px]
+                                !font-[family-name:var(--font-inter)] !font-medium
+                                !text-[length:clamp(13px,0.9vw,16px)]
+                                !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
+                                !shadow-none
+                            "
+              >
+                {isEdit ? "Update Profile" : "Create Profile"}
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -662,10 +712,12 @@ function UploadBox({
   title,
   name,
   control,
+  disabled = false,
 }: {
   title: string;
   name: "aadharFront" | "aadharBack" | "panCard";
   control: Control<AgentFormValues>;
+  disabled?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -679,13 +731,18 @@ function UploadBox({
             {title}
           </p>
           <div
-            onClick={() => inputRef.current?.click()}
+            onClick={() => !disabled && inputRef.current?.click()}
             className={`
                             flex flex-col items-center justify-center gap-2
                             h-[clamp(100px,9vw,128px)]
                             border-2 border-dashed rounded-[var(--radius-dropdown)]
-                            cursor-pointer bg-[color:var(--input)]
-                            hover:brightness-95 transition-colors
+                            bg-[color:var(--input)]
+                            transition-colors
+                            ${
+                              disabled
+                                ? "opacity-60 cursor-not-allowed border-gray-200"
+                                : "cursor-pointer hover:brightness-95"
+                            }
                             ${
                               fieldState.error
                                 ? "border-red-500 bg-red-50/30"
@@ -723,6 +780,7 @@ function UploadBox({
           <input
             ref={inputRef}
             type="file"
+            disabled={disabled}
             accept=".pdf,.jpg,.jpeg,.png"
             className="hidden"
             onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}

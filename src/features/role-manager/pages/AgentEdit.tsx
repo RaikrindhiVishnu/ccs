@@ -1,10 +1,11 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AgentForm from "./AgentForm";
 
 export default function AgentEdit() {
   const location = useLocation();
-  console.log("AgentEdit Location State:", location.state);
-  const { initialData, roleType } = location.state || {};
+  const navigate = useNavigate();
+
+  const { initialData, roleType, from, isViewMode } = location.state || {};
 
   // Fallback to localStorage if state is empty
   const savedData = localStorage.getItem("agent-data");
@@ -15,6 +16,9 @@ export default function AgentEdit() {
       isEdit
       initialData={parsedData}
       roleType={roleType}
+      isViewMode={isViewMode}
+      from={from}
+      onCancel={() => navigate(from || "/role-manager/create-roles")}
     />
   );
 }

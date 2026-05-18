@@ -28,20 +28,54 @@ export const FlowItem: React.FC<FlowItemProps> = ({
   onEdit,
   onView,
 }) => {
+  const [imgError, setImgError] = React.useState(false);
+
+  const getInitials = (fullName: string) => {
+    if (!fullName) return "?";
+    const parts = fullName.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return fullName.slice(0, 2).toUpperCase();
+  };
+
+  const showInitials = !avatar || imgError;
+  const initials = getInitials(name);
+
+  const renderAvatar = (sizeClass: string) => {
+    if (showInitials) {
+      return (
+        <div
+          className={cn(
+            "rounded-full flex items-center justify-center font-bold uppercase shrink-0",
+            "bg-[color:var(--brand-tint)] text-[color:var(--brand-500)] border border-[color:var(--brand-200)]",
+            sizeClass
+          )}
+        >
+          {initials}
+        </div>
+      );
+    }
+
+    return (
+      <img
+        src={avatar}
+        alt={name}
+        onError={() => setImgError(true)}
+        className={cn("rounded-full object-cover shrink-0", sizeClass)}
+      />
+    );
+  };
+
   if (variant === "detailed") {
     return (
       <div
         className={cn(
           "flex flex-col gap-4 p-4 rounded-2xl transition-all relative",
-          // active ? "bg-(--tag-pill-bg)" : "hover:bg-(--brand-tint)"
         )}
       >
         <div className="flex justify-between items-start">
-          <img
-            src={avatar}
-            alt={name}
-            className="w-12 h-12 rounded-full object-cover border border-(--border)"
-          />
+          {renderAvatar("w-12 h-12 text-base")}
           <div className="flex gap-2">
             <Edit2
               size={16}
@@ -93,11 +127,7 @@ export const FlowItem: React.FC<FlowItemProps> = ({
       )}
     >
       <div className="flex items-center gap-3">
-        <img
-          src={avatar}
-          alt={name}
-          className="w-10 h-10 rounded-full object-cover"
-        />
+        {renderAvatar("w-10 h-10 text-xs")}
         <div className="flex flex-col">
           <Typography
             variant="p"
