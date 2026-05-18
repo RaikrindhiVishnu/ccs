@@ -1,5 +1,4 @@
 import React from "react";
-import { WeekDropdown } from "@/components/ui/Dropdown";
 import { useGetRegionCreationVelocityQuery } from "@/features/role-manager/api/agentApi";
 import DateRangePicker from "@/components/ui/DateRangePicker";
 

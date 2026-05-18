@@ -94,7 +94,7 @@ export default function RoleManagerDetails({
   const [getRegionalOfficerById] = useGetRegionalOfficerByIdMutation();
 
   const [profileData, setProfileData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -103,7 +103,7 @@ export default function RoleManagerDetails({
 
       if (roleType === "IO") return; // No API for Intelligence Officer yet
 
-      setIsLoading(true);
+
       try {
 
         let response;
@@ -118,8 +118,6 @@ export default function RoleManagerDetails({
         setProfileData(response?.data);
       } catch (error) {
         console.error("API ERROR:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
