@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { useSendIssueMailMutation } from "@/features/auth/api/authApi";
 
 interface RaiseIssueFormProps {
+  agentEmail?: string;
   onClose?: () => void;
 }
 
@@ -14,11 +15,12 @@ const issueOptions = [
 ];
 
 export const RaiseIssueForm = ({
+  agentEmail,
   onClose,
 }: RaiseIssueFormProps) => {
   const [selectedIssue, setSelectedIssue] = React.useState("");
   const [message, setMessage] = React.useState("");
-  const [toMail, setToMail] = React.useState("");
+  const [toMail, setToMail] = React.useState(agentEmail || "");
 const [subject, setSubject] = React.useState("");
 
   const [sendIssueMail, { isLoading }] =

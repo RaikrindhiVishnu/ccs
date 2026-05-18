@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import pako from "pako";
-import { Buffer } from "buffer";
 import { Maximize2, ChevronLeft, Plus, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +8,10 @@ import { toast } from "sonner";
 import { 
   useGetCountryByIdQuery, 
   useGetStatesByCountryIdQuery,
+  useGetDistrictsByStateIdQuery,
   useCreateRegionMutation 
 } from "../api/regionSelectionApi";
+import { decompressGeoJSON } from "../utils/utils";
 
 // Helper to calculate bounds for a GeoJSON feature
 const getFeatureBounds = (feature: any): maplibregl.LngLatBoundsLike => {
@@ -44,46 +44,36 @@ const RegionSelection: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [regionName, setRegionName] = useState("");
   const [regionCode, setRegionCode] = useState("");
-  const [districtsLoading, setDistrictsLoading] = useState(false);
 
   const { data: countryData } = useGetCountryByIdQuery({ country_id: 1 });
   const { data: statesData } = useGetStatesByCountryIdQuery({ country_id: 1 });
   const [createRegion, { isLoading: isCreating }] = useCreateRegionMutation();
+  
+  const [activeStateId, setActiveStateId] = useState<number | null>(null);
+  
+  const { data: apiDistrictsData, isFetching: isDistrictsFetching } = useGetDistrictsByStateIdQuery(
+    { state_id: activeStateId! },
+    { skip: activeStateId === null }
+  );
+
+  const districtsLoading = isDistrictsFetching;
+
+  useEffect(() => {
+    if (apiDistrictsData) {
+      console.log("Raw Response from useGetDistrictsByStateIdQuery:", apiDistrictsData);
+      const decompressedDistricts = decompressGeoJSON(apiDistrictsData);
+      console.log("Response from useGetDistrictsByStateIdQuery (decompressed GeoJSON):", decompressedDistricts);
+    }
+  }, [apiDistrictsData]);
 
 
   useEffect(() => {
     if (map.current && statesData) {
       try {
-        let finalData = null;
-
-        // 1. Check if the root object is the FeatureCollection
-        if (statesData.type === "FeatureCollection") {
-          finalData = statesData;
-        }
-        // 2. Check if it's wrapped in a .data property
-        else if (statesData.data?.type === "FeatureCollection") {
-          finalData = statesData.data;
-        }
-        // 3. Fallback: Check if it's a compressed string
-        else if (typeof statesData.data === "string") {
-          const binaryData = Buffer.from(statesData.data, "base64");
-          const decompressedData = pako.ungzip(binaryData);
-          const decompressedString = new TextDecoder().decode(decompressedData);
-          finalData = JSON.parse(decompressedString);
-        } else if (statesData.data?.geo_json_data) {
-          const rawData = statesData.data.geo_json_data;
-          const binaryData = Buffer.from(rawData, "base64");
-          const decompressedData = pako.ungzip(binaryData);
-          const decompressedString = new TextDecoder().decode(decompressedData);
-          finalData = JSON.parse(decompressedString);
-        } else if (statesData.data) {
-          finalData = statesData.data;
-        }
-
+        const finalData = decompressGeoJSON(statesData);
         const source = map.current.getSource("india-states") as maplibregl.GeoJSONSource;
         if (source && finalData) {
           source.setData(finalData);
-
         }
       } catch (err) {
         console.error("Error updating map with states data:", err);
@@ -101,6 +91,7 @@ const RegionSelection: React.FC = () => {
     setIsZooming(false);
     setSelectedState(null);
     setSelectedDistricts([]);
+    setActiveStateId(null);
     
     // Clear district data from map
     if (map.current?.getSource("districts-source")) {
@@ -230,6 +221,11 @@ const RegionSelection: React.FC = () => {
                 duration: 1200,
               });
               setIsZooming(true);
+
+              const stateId = Number(
+                feature.properties?.id
+              );
+              setActiveStateId(stateId);
             }
           });
 
@@ -238,17 +234,17 @@ const RegionSelection: React.FC = () => {
             if (e.features && e.features.length > 0) {
               const districtFeature = e.features[0];
               const districtData = districtFeature.properties;
-              const dtCode = districtData.dtcode11 || districtData.dtcode || districtFeature.id;
+              const dtCode = districtData.id || districtData.dtcode11 || districtData.dtcode || districtFeature.id;
 
               setSelectedDistricts((prev) => {
-                const isAlreadySelected = prev.find((d) => (d.dtcode11 || d.dtcode || d.id) === dtCode);
+                const isAlreadySelected = prev.find((d) => (d.id || d.dtcode11 || d.dtcode || d.id) === dtCode);
                 
                 if (isAlreadySelected) {
                   map.current?.setFeatureState(
                     { source: "districts-source", id: districtFeature.id },
                     { selected: false }
                   );
-                  return prev.filter((d) => (d.dtcode11 || d.dtcode || d.id) !== dtCode);
+                  return prev.filter((d) => (d.id || d.dtcode11 || d.dtcode || d.id) !== dtCode);
                 } else {
                   map.current?.setFeatureState(
                     { source: "districts-source", id: districtFeature.id },
@@ -316,32 +312,7 @@ const RegionSelection: React.FC = () => {
   useEffect(() => {
     if (map.current && countryData) {
       try {
-        let finalData = null;
-
-        // 1. Check if the root object is the FeatureCollection (matches screenshot)
-        if (countryData.type === "FeatureCollection") {
-          finalData = countryData;
-        }
-        // 2. Check if it's wrapped in a .data property
-        else if (countryData.data?.type === "FeatureCollection") {
-          finalData = countryData.data;
-        }
-        // 3. Fallback: Check if it's a compressed string (like other master APIs)
-        else if (typeof countryData.data === "string") {
-          const binaryData = Buffer.from(countryData.data, "base64");
-          const decompressedData = pako.ungzip(binaryData);
-          const decompressedString = new TextDecoder().decode(decompressedData);
-          finalData = JSON.parse(decompressedString);
-        } else if (countryData.data?.geo_json_data) {
-          const rawData = countryData.data.geo_json_data;
-          const binaryData = Buffer.from(rawData, "base64");
-          const decompressedData = pako.ungzip(binaryData);
-          const decompressedString = new TextDecoder().decode(decompressedData);
-          finalData = JSON.parse(decompressedString);
-        } else if (countryData.data) {
-          finalData = countryData.data;
-        }
-
+        const finalData = decompressGeoJSON(countryData);
         const source = map.current.getSource("india-border") as maplibregl.GeoJSONSource;
         if (source && finalData) {
           source.setData(finalData);
@@ -353,59 +324,48 @@ const RegionSelection: React.FC = () => {
     }
   }, [countryData, mapLoaded]);
 
-  // Effect to fetch and render districts when a state is selected
+  // Effect to render districts from API response when a state is selected
   useEffect(() => {
-    if (map.current && selectedState) {
-      const stateName = (selectedState.properties?.STNAME || selectedState.properties?.name || "").toUpperCase();
-      const encodedStateName = encodeURIComponent(stateName);
-      
-      const fetchDistricts = async () => {
-        setDistrictsLoading(true);
-        try {
-          const url = `https://raw.githubusercontent.com/datta07/INDIAN-SHAPEFILES/master/STATES/${encodedStateName}/${encodedStateName}_DISTRICTS.geojson`;
-          const response = await fetch(url);
-          if (!response.ok) throw new Error("Districts not found");
-          const data = await response.json();
+    if (map.current && apiDistrictsData && selectedState) {
+      try {
+        const finalData = decompressGeoJSON(apiDistrictsData);
+        if (!finalData) return;
 
-          if (!map.current?.getSource("districts-source")) {
-            map.current?.addSource("districts-source", {
-              type: "geojson",
-              data: data,
-              generateId: true,
-            });
+        if (!map.current?.getSource("districts-source")) {
+          map.current?.addSource("districts-source", {
+            type: "geojson",
+            data: finalData,
+            generateId: true,
+          });
 
-            map.current?.addLayer({
-              id: "districts-fill",
-              type: "fill",
-              source: "districts-source",
-              paint: {
-                "fill-color": "#3b82f6",
-                "fill-opacity": [
-                  "case",
-                  ["boolean", ["feature-state", "selected"], false],
-                  0.35,
-                  ["boolean", ["feature-state", "hover"], false],
-                  0.15,
-                  0,
-                ],
-              },
-            }, "states-border-line");
+          map.current?.addLayer({
+            id: "districts-fill",
+            type: "fill",
+            source: "districts-source",
+            paint: {
+              "fill-color": "#3b82f6",
+              "fill-opacity": [
+                "case",
+                ["boolean", ["feature-state", "selected"], false],
+                0.35,
+                ["boolean", ["feature-state", "hover"], false],
+                0.15,
+                0,
+              ],
+            },
+          }, "states-border-line");
 
-            map.current?.addLayer({
-              id: "districts-line",
-              type: "line",
-              source: "districts-source",
-              paint: {
-                "line-color": "#3b82f6",
-                "line-width": 0.8,
-                "line-dasharray": [2, 1],
-                "line-opacity": 0.6,
-              },
-            }, "states-border-line");
-          } else {
-            const source = map.current.getSource("districts-source") as maplibregl.GeoJSONSource;
-            source.setData(data);
-          }
+          map.current?.addLayer({
+            id: "districts-line",
+            type: "line",
+            source: "districts-source",
+            paint: {
+              "line-color": "#3b82f6",
+              "line-width": 0.8,
+              "line-dasharray": [2, 1],
+              "line-opacity": 0.6,
+            },
+          }, "states-border-line");
           
           // Hover effect for districts
           let hoveredDistrictId: any = null;
@@ -428,22 +388,20 @@ const RegionSelection: React.FC = () => {
             }
             hoveredDistrictId = null;
           });
-
-        } catch (err) {
-          console.error("Failed to load districts:", err);
-        } finally {
-          setDistrictsLoading(false);
+        } else {
+          const source = map.current.getSource("districts-source") as maplibregl.GeoJSONSource;
+          source.setData(finalData);
         }
-      };
-
-      fetchDistricts();
+      } catch (err) {
+        console.error("Failed to render districts from API:", err);
+      }
     } else if (map.current && !selectedState) {
       // Fade states back in
       if (map.current.isStyleLoaded()) {
         map.current.setPaintProperty("states-fill", "fill-opacity", 1);
       }
     }
-  }, [selectedState, mapLoaded]);
+  }, [apiDistrictsData, selectedState, mapLoaded]);
 
   const handleCreateRegion = async () => {
     if (!regionName || !regionCode) {
@@ -452,7 +410,7 @@ const RegionSelection: React.FC = () => {
     }
 
     try {
-      const districtIds = selectedDistricts.map(d => Number(d.dtcode11 || d.dtcode));
+      const districtIds = selectedDistricts.map(d => Number(d.id || d.dtcode11 || d.dtcode || d.code));
       
       await createRegion({
         regionName,
