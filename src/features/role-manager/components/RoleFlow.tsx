@@ -295,7 +295,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
           }
         >
           <div className="flex flex-col gap-2 mt-2">
-            {filteredFOs.map((fo, index) => (
+            {filteredFOs.map((fo: any, index: number) => (
               <FlowItem
                 key={fo.id}
                 {...fo}

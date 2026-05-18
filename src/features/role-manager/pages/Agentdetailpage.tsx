@@ -31,7 +31,6 @@ interface AgentDetail {
 }
 interface AgentDetailPageProps {
     onDismiss?: () => void;
-    onApprove?: () => void;
 }
 
 
@@ -405,7 +404,7 @@ const ProfileHeaderCard = ({agent} : {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) => {
+export const AgentDetailPage = ({onDismiss} : AgentDetailPageProps) => {
     const navigate = useNavigate();
     const [showIssueForm, setShowIssueForm] = React.useState(false);
 
@@ -416,7 +415,6 @@ const userId = Number(id);
 const {
   data,
   isLoading,
-  error,
 } = useGetAgentByIdQuery(userId, {
   skip: !userId,
 });

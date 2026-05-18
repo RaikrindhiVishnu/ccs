@@ -11,7 +11,15 @@ const LoginPage = () => {
     // Simulate API call
     setTimeout(() => {
       dispatch(setCredentials({
-        user: { id: '1', email: 'user@example.com', name: 'John Doe', role: 'admin' },
+        user: {
+          id: 1,
+          login_id: 'john_doe',
+          first_name: 'John',
+          last_name: 'Doe',
+          role_id: 1,
+          role: 'ADMIN',
+          is_first_login: 0
+        },
         accessToken: 'fake-access-token',
         refreshToken: 'fake-refresh-token'
       }));

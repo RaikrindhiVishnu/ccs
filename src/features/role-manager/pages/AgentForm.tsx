@@ -59,7 +59,6 @@ export default function AgentForm({
   isLoading = false,
   roleType,
   isViewMode = false,
-  from,
 }: AgentFormProps) {
   const states = useSelector((state: any) => state.roleManager.states);
 
@@ -651,7 +650,7 @@ export default function AgentForm({
               </button>
               <Button
                 variant="primary"
-                onClick={handleSubmit(handleSave, (errors) => {
+                onClick={handleSubmit(handleSave, () => {
                   toast.error("Please fix validation errors before saving.");
                 })}
                 loading={isLoading || isSubmitting}

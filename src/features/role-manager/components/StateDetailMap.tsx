@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import pako from "pako";
 import { Buffer } from "buffer";
-import { useGetDistrictsByStateIdQuery, useCreateRegionMutation } from "../api/regionSelectionApi";
+import { useCreateRegionMutation } from "../api/regionSelectionApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -59,7 +59,7 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
 
   // TEMPORARY: Commented out failing API
   // const { data: districtsData } = useGetDistrictsByStateIdQuery({ state_id: stateId });
-  const districtsData = null; // Placeholder for now
+  const districtsData: any = null; // Placeholder for now
 
   useEffect(() => {
     if (!mapContainer.current) return;

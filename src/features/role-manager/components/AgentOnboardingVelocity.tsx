@@ -1,6 +1,5 @@
 import React from "react";
 import BarChart from "@/components/charts/BarChart";
-import type { BarDataItem } from "@/components/charts/BarChart";
 import { useGetAgentOnboardingVelocityQuery } from "@/features/role-manager/api/agentApi";
 import DateRangePicker from "@/components/ui/DateRangePicker";
 
