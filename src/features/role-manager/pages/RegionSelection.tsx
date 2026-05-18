@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { decompressGeoJSON } from "../utils/utils";
 import { Maximize2, ChevronLeft, Plus, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,6 @@ import {
   useGetDistrictsByStateIdQuery,
   useCreateRegionMutation 
 } from "../api/regionSelectionApi";
-import { decompressGeoJSON } from "../utils/utils";
 
 // Helper to calculate bounds for a GeoJSON feature
 const getFeatureBounds = (feature: any): maplibregl.LngLatBoundsLike => {
@@ -44,27 +44,21 @@ const RegionSelection: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [regionName, setRegionName] = useState("");
   const [regionCode, setRegionCode] = useState("");
-
   const { data: countryData } = useGetCountryByIdQuery({ country_id: 1 });
   const { data: statesData } = useGetStatesByCountryIdQuery({ country_id: 1 });
   const [createRegion, { isLoading: isCreating }] = useCreateRegionMutation();
-  
-  const [activeStateId, setActiveStateId] = useState<number | null>(null);
-  
-  const { data: apiDistrictsData, isFetching: isDistrictsFetching } = useGetDistrictsByStateIdQuery(
-    { state_id: activeStateId! },
-    { skip: activeStateId === null }
+
+  const selectedStateId = selectedState?.properties?.id;
+  const { data: districtsData, isFetching: districtsLoading } = useGetDistrictsByStateIdQuery(
+    { state_id: selectedStateId },
+    { skip: !selectedStateId }
   );
 
-  const districtsLoading = isDistrictsFetching;
-
   useEffect(() => {
-    if (apiDistrictsData) {
-      console.log("Raw Response from useGetDistrictsByStateIdQuery:", apiDistrictsData);
-      const decompressedDistricts = decompressGeoJSON(apiDistrictsData);
-      console.log("Response from useGetDistrictsByStateIdQuery (decompressed GeoJSON):", decompressedDistricts);
+    if (districtsData) {
+      console.log("Districts API Response for State ID:", selectedStateId, districtsData);
     }
-  }, [apiDistrictsData]);
+  }, [districtsData, selectedStateId]);
 
 
   useEffect(() => {
@@ -91,7 +85,6 @@ const RegionSelection: React.FC = () => {
     setIsZooming(false);
     setSelectedState(null);
     setSelectedDistricts([]);
-    setActiveStateId(null);
     
     // Clear district data from map
     if (map.current?.getSource("districts-source")) {
@@ -221,11 +214,6 @@ const RegionSelection: React.FC = () => {
                 duration: 1200,
               });
               setIsZooming(true);
-
-              const stateId = Number(
-                feature.properties?.id
-              );
-              setActiveStateId(stateId);
             }
           });
 
@@ -237,20 +225,20 @@ const RegionSelection: React.FC = () => {
               const dtCode = districtData.id || districtData.dtcode11 || districtData.dtcode || districtFeature.id;
 
               setSelectedDistricts((prev) => {
-                const isAlreadySelected = prev.find((d) => (d.id || d.dtcode11 || d.dtcode || d.id) === dtCode);
+                const isAlreadySelected = prev.find((d) => (d.id || d.dtcode11 || d.dtcode || d.featureId) === dtCode);
                 
                 if (isAlreadySelected) {
                   map.current?.setFeatureState(
                     { source: "districts-source", id: districtFeature.id },
                     { selected: false }
                   );
-                  return prev.filter((d) => (d.id || d.dtcode11 || d.dtcode || d.id) !== dtCode);
+                  return prev.filter((d) => (d.id || d.dtcode11 || d.dtcode || d.featureId) !== dtCode);
                 } else {
                   map.current?.setFeatureState(
                     { source: "districts-source", id: districtFeature.id },
                     { selected: true }
                   );
-                  return [...prev, { ...districtData, id: districtFeature.id }];
+                  return [...prev, { ...districtData, featureId: districtFeature.id }];
                 }
               });
             }
@@ -316,7 +304,6 @@ const RegionSelection: React.FC = () => {
         const source = map.current.getSource("india-border") as maplibregl.GeoJSONSource;
         if (source && finalData) {
           source.setData(finalData);
-
         }
       } catch (err) {
         console.error("Error updating map data from API:", err);
@@ -324,48 +311,52 @@ const RegionSelection: React.FC = () => {
     }
   }, [countryData, mapLoaded]);
 
-  // Effect to render districts from API response when a state is selected
+  // Effect to process and render districts when a state is selected and districtsData is fetched from API
   useEffect(() => {
-    if (map.current && apiDistrictsData && selectedState) {
+    if (map.current && selectedState && districtsData) {
       try {
-        const finalData = decompressGeoJSON(apiDistrictsData);
-        if (!finalData) return;
+        const finalData = decompressGeoJSON(districtsData);
 
-        if (!map.current?.getSource("districts-source")) {
-          map.current?.addSource("districts-source", {
-            type: "geojson",
-            data: finalData,
-            generateId: true,
-          });
+        if (finalData) {
+          if (!map.current?.getSource("districts-source")) {
+            map.current?.addSource("districts-source", {
+              type: "geojson",
+              data: finalData,
+              generateId: true,
+            });
 
-          map.current?.addLayer({
-            id: "districts-fill",
-            type: "fill",
-            source: "districts-source",
-            paint: {
-              "fill-color": "#3b82f6",
-              "fill-opacity": [
-                "case",
-                ["boolean", ["feature-state", "selected"], false],
-                0.35,
-                ["boolean", ["feature-state", "hover"], false],
-                0.15,
-                0,
-              ],
-            },
-          }, "states-border-line");
+            map.current?.addLayer({
+              id: "districts-fill",
+              type: "fill",
+              source: "districts-source",
+              paint: {
+                "fill-color": "#3b82f6",
+                "fill-opacity": [
+                  "case",
+                  ["boolean", ["feature-state", "selected"], false],
+                  0.35,
+                  ["boolean", ["feature-state", "hover"], false],
+                  0.15,
+                  0,
+                ],
+              },
+            }, "states-border-line");
 
-          map.current?.addLayer({
-            id: "districts-line",
-            type: "line",
-            source: "districts-source",
-            paint: {
-              "line-color": "#3b82f6",
-              "line-width": 0.8,
-              "line-dasharray": [2, 1],
-              "line-opacity": 0.6,
-            },
-          }, "states-border-line");
+            map.current?.addLayer({
+              id: "districts-line",
+              type: "line",
+              source: "districts-source",
+              paint: {
+                "line-color": "#3b82f6",
+                "line-width": 0.8,
+                "line-dasharray": [2, 1],
+                "line-opacity": 0.6,
+              },
+            }, "states-border-line");
+          } else {
+            const source = map.current.getSource("districts-source") as maplibregl.GeoJSONSource;
+            source.setData(finalData);
+          }
           
           // Hover effect for districts
           let hoveredDistrictId: any = null;
@@ -388,9 +379,6 @@ const RegionSelection: React.FC = () => {
             }
             hoveredDistrictId = null;
           });
-        } else {
-          const source = map.current.getSource("districts-source") as maplibregl.GeoJSONSource;
-          source.setData(finalData);
         }
       } catch (err) {
         console.error("Failed to render districts from API:", err);
@@ -401,7 +389,7 @@ const RegionSelection: React.FC = () => {
         map.current.setPaintProperty("states-fill", "fill-opacity", 1);
       }
     }
-  }, [apiDistrictsData, selectedState, mapLoaded]);
+  }, [selectedState, districtsData, mapLoaded]);
 
   const handleCreateRegion = async () => {
     if (!regionName || !regionCode) {
@@ -410,21 +398,23 @@ const RegionSelection: React.FC = () => {
     }
 
     try {
-      const districtIds = selectedDistricts.map(d => Number(d.id || d.dtcode11 || d.dtcode || d.code));
+      const districtIds = selectedDistricts.map(d => Number(d.id || d.dtcode11 || d.dtcode));
       
       await createRegion({
         regionName,
         regionCode,
         regionalOfficerId: 1,
         inteligenceOfficerId: 2,
-        district_ids: districtIds
+        district_ids: districtIds,
+        stateId: Number(selectedStateId)
       }).unwrap();
 
       toast.success("Region created successfully!");
       
       selectedDistricts.forEach(d => {
-        if (d.id !== undefined) {
-          map.current?.setFeatureState({ source: "districts-source", id: d.id }, { selected: false });
+        const featId = d.featureId !== undefined ? d.featureId : d.id;
+        if (featId !== undefined) {
+          map.current?.setFeatureState({ source: "districts-source", id: featId }, { selected: false });
         }
       });
       setSelectedDistricts([]);
