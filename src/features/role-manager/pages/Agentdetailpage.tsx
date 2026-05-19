@@ -1,8 +1,12 @@
 import * as React from "react";
-import {cn} from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { Typography } from "@/components/ui/typography";
 
-import {useNavigate, useParams} from "react-router-dom";
-import { useGetAgentProfileQuery, useUpdateAgentVerificationMutation } from "@/features/role-manager/api/getagents";
+import Bannar from "@/assets/Bannar.svg";
+import { ArrowLeft } from "lucide-react";
+
+import { useNavigate, useParams } from "react-router-dom";
+import { useGetAgentByIdMutation } from "@/features/role-manager/api/roleManagerApi";
 import RaiseIssueForm from "@/features/role-manager/components/form";
 import { toast } from "sonner";
 
@@ -40,6 +44,373 @@ interface AgentDetailPageProps {
 }
 
 
+// ─── Status Badge ─────────────────────────────────────────────────────────────
+
+const StatusBadge = ({ status }: {
+    status: AgentDetail["status"]
+}) => {
+    const config = {
+        "Pending Review": {
+            dot: "bg-[color:var(--brand-500)]",
+            text: "text-[color:var(--brand-500)]",
+            bg: "bg-[color:var(--status-pending-bg)]"
+        },
+        Approved: {
+            dot: "bg-[color:var(--status-success)]",
+            text: "text-[color:var(--status-success)]",
+            bg: "bg-[color:var(--status-success-soft)]"
+        },
+        Rejected: {
+            dot: "bg-[color:var(--status-danger)]",
+            text: "text-[color:var(--status-danger)]",
+            bg: "bg-[color:var(--status-danger-soft)]"
+        }
+    };
+
+    const c = config[status];
+
+    return (
+        <div className={
+            cn("inline-flex items-center gap-2", "px-3 py-1.5", "rounded-full", c.bg,)
+        }>
+            <span className={
+                cn("w-2 h-2 rounded-full shrink-0", c.dot)
+            } />
+            <span className={
+                cn("font-medium leading-none", "font-[family-name:var(--font-sans)]", "text-[0.6875rem]", "lg:text-[0.75rem]", "xl:text-[0.8125rem]", "2xl:text-[0.875rem]",
+                    // 11px→0.6875rem | 12px→0.75rem | 13px→0.8125rem | 14px→0.875rem
+                    c.text,)
+            }>
+                {status} </span>
+        </div>
+    );
+};
+
+// ─── Info Field ───────────────────────────────────────────────────────────────
+
+const InfoField = ({ label, value, className }: {
+    label: string;
+    value: string;
+    className?: string;
+}) => (
+    <div className={
+        cn("flex flex-col", "gap-1.5", "lg:gap-[0.5rem]", "xl:gap-[0.625rem]",
+            // 6px→0.375rem | 8px→0.5rem | 10px→0.625rem
+            className,)
+    }>
+        <span className="
+                        font-medium
+                        leading-none
+                        font-[family-name:var(--font-sans)]
+                        text-[color:var(--label-color)]
+                        text-[0.75rem]
+                        lg:text-[0.8125rem]
+                        xl:text-[0.875rem]
+                        2xl:text-[1rem]
+                      "
+        // 12px→0.75rem | 13px→0.8125rem | 14px→0.875rem | 16px→1rem
+        >
+            {label} </span>
+        <span className="
+                        leading-snug
+                        font-[family-name:'Inter',sans-serif]
+                        text-[color:var(--profile-text)]
+                        text-[0.75rem]
+                        lg:text-[0.8125rem]
+                        xl:text-[0.8125rem]
+                        2xl:text-[0.875rem]
+                      "
+        // 12px→0.75rem | 13px→0.8125rem | 13px→0.8125rem | 14px→0.875rem
+        >
+            {value} </span>
+    </div>
+);
+
+// ─── Section Card ─────────────────────────────────────────────────────────────
+
+const SectionCard = ({ title, children, className }: {
+    title: string;
+    children: React.ReactNode;
+    className?: string;
+}) => (
+    <div className={
+        cn("bg-[color:var(--surface-card)]", "rounded-[1rem]", "lg:rounded-[1.25rem]", "xl:rounded-[1.5rem]",
+            // 16px→1rem | 20px→1.25rem | 24px→1.5rem
+            "shadow-[0px_0px_6px_rgba(0,0,0,0.12)]", "px-[1.25rem]", "lg:px-[1.5rem]", "xl:px-[1.875rem]",
+            // 20px→1.25rem | 24px→1.5rem | 30px→1.875rem
+            "pt-[1.125rem]", "lg:pt-[1.25rem]", "xl:pt-[1.5rem]",
+            // 18px→1.125rem | 20px→1.25rem | 24px→1.5rem
+            "pb-[1.25rem]", "lg:pb-[1.5rem]", "xl:pb-[1.75rem]",
+            // 20px→1.25rem | 24px→1.5rem | 28px→1.75rem
+            className,)
+    }>
+        <Typography variant="h3" className="
+                        font-semibold
+                        leading-none
+                        font-[family-name:var(--font-sans)]
+                        text-[color:var(--text-subtle)]
+                        mb-[1.25rem]
+                        lg:mb-[1.5rem]
+                        xl:mb-[1.75rem]
+                        !text-[1rem]
+                        lg:!text-[1.125rem]
+                        xl:!text-[1.25rem]
+                        2xl:!text-[1.5rem]
+                      "
+        // mb: 20px→1.25rem | 24px→1.5rem | 28px→1.75rem
+        // text: 16px→1rem | 18px→1.125rem | 20px→1.25rem | 24px→1.5rem
+        >
+            {title} </Typography>
+        {children} </div>
+);
+
+// ─── Document Card ────────────────────────────────────────────────────────────
+
+const DocumentCard = ({ label, imageUrl }: {
+    label: string;
+    imageUrl?: string;
+}) => (
+    <div className="
+                  flex flex-col
+                  gap-[0.5rem]
+                  lg:gap-[0.625rem]
+                "
+    // 8px→0.5rem | 10px→0.625rem
+    >
+        <span className="
+                        font-medium
+                        font-[family-name:var(--font-sans)]
+                        text-[color:var(--label-color)]
+                        text-[0.75rem]
+                        lg:text-[0.8125rem]
+                        xl:text-[0.875rem]
+                        2xl:text-[1rem]
+                      "
+        // 12px→0.75rem | 13px→0.8125rem | 14px→0.875rem | 16px→1rem
+        >
+            {label} </span>
+        <div className="
+                        border
+                        border-dashed
+                        border-[color:var(--border-default)]
+                        rounded-[0.75rem]
+                        lg:rounded-[0.875rem]
+                        xl:rounded-[1.125rem]
+                        overflow-hidden
+                        flex items-center justify-center
+                        w-full
+                        aspect-[323/197]
+                      "
+        // 12px→0.75rem | 14px→0.875rem | 18px→1.125rem
+        >
+            {
+                imageUrl ? (
+                    <img src={imageUrl}
+                        alt={label}
+                        className="
+                                    w-[75%]
+                                    h-[80%]
+                                    object-cover
+                                    rounded-[0.25rem]
+                                    shadow-[0px_4px_4px_rgba(0,0,0,0.25)]
+                                  "
+                    // 4px→0.25rem
+                    />
+                ) : (
+                    <div className="
+                                    w-[75%]
+                                    h-[78%]
+                                    rounded-[0.375rem]
+                                    flex items-center justify-center
+                                    shadow-[0px_4px_4px_rgba(0,0,0,0.10)]
+                                    bg-gradient-to-br
+                                    from-[color:var(--document-placeholder-from)]
+                                    to-[color:var(--document-placeholder-to)]
+                                  "
+                    // 6px→0.375rem
+                    >
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="opacity-30">
+                            <rect x="2" y="4" width="20" height="16" rx="2" stroke="var(--text-secondary)" strokeWidth="1.5" />
+                            <path d="M2 9h20" stroke="var(--text-secondary)" strokeWidth="1.5" />
+                            <circle cx="6" cy="13" r="1" fill="var(--text-secondary)" />
+                        </svg>
+                    </div>
+                )
+            } </div>
+    </div>
+);
+
+// ─── Back Button ──────────────────────────────────────────────────────────────
+
+const BackButton = ({ onClick }: {
+    onClick?: () => void
+}) => (
+    <button onClick={onClick}
+        className="
+                  flex items-center gap-2
+                  px-5 py-3
+                  mb-[clamp(1.5rem,2.5vw,2.375rem)]
+                  bg-[color:var(--surface-card)]
+                  rounded-full
+                  shadow-[0px_0px_4px_rgba(0,0,0,0.12)]
+                  text-[color:var(--text-secondary)]
+                  text-[clamp(0.75rem,0.95vw,1rem)]
+                  font-[family-name:var(--font-inter)]
+                  hover:opacity-80
+                  transition-opacity
+                "
+    // clamp: 24px→1.5rem, 38px→2.375rem | 12px→0.75rem, 16px→1rem
+    >
+        <ArrowLeft size={16}
+            strokeWidth={1.4} />
+        Go Back to Dashboard
+    </button>
+);
+
+// ─── Profile Header ───────────────────────────────────────────────────────────
+
+const ProfileHeaderCard = ({ agent }: {
+    agent: AgentDetail
+}) => (
+    <div className="
+                  bg-[color:var(--surface-card)]
+                  rounded-[1rem]
+                  lg:rounded-[1.25rem]
+                  xl:rounded-[1.5rem]
+                  shadow-[0px_0px_6px_rgba(0,0,0,0.12)]  
+                  overflow-hidden
+                  relative
+                "
+    // 16px→1rem | 20px→1.25rem | 24px→1.5rem
+    >
+        {/* Banner */}
+        <div className="h-[clamp(5rem,12vw,8.75rem)] overflow-hidden">
+            {/* 80px→5rem | 140px→8.75rem */}
+            <img src={Bannar}
+                alt="Banner"
+                className="w-full h-full object-cover" />
+        </div>
+
+        {/* Content */}
+        <div className="
+                        relative
+                        flex items-end justify-between
+                        px-[1.25rem]
+                        lg:px-[1.75rem]
+                        xl:px-[3.125rem]
+                        pb-[1rem]
+                        lg:pb-[1.125rem]
+                        xl:pb-[1.375rem]
+                      ">
+            {/* Left */}
+            <div className="
+                              flex items-end
+                              gap-[0.875rem]
+                              lg:gap-[1rem]
+                              xl:gap-[1.25rem]
+                            "
+            // 14px→0.875rem | 16px→1rem | 20px→1.25rem
+            >
+                {/* Avatar */}
+                <div className="
+                                    shrink-0
+                                    rounded-full
+                                    border-[3px]
+                                    border-white
+                                    overflow-hidden
+                                    flex items-center justify-center
+                                    bg-[color:var(--avatar-fallback)]
+                                    shadow-[0px_2px_4px_rgba(0,0,0,0.10)]
+                                    -mt-[2rem]
+                                    lg:-mt-[2.25rem]
+                                    xl:-mt-[2.75rem]
+                                    2xl:-mt-[3.25rem]
+                                    w-[4.5rem]
+                                    h-[4.5rem]
+                                    lg:w-[5.625rem]
+                                    lg:h-[5.625rem]
+                                    xl:w-[6.875rem]
+                                    xl:h-[6.875rem]
+                                    2xl:w-[8.125rem]
+                                    2xl:h-[8.125rem]
+                                  ">
+                    {
+                        agent.avatarUrl ? (
+                            <img src={
+                                agent.avatarUrl
+                            }
+                                alt={
+                                    agent.name
+                                }
+                                className="w-full h-full object-cover" />
+                        ) : (
+                            <span className="
+                                                font-bold
+                                                text-white
+                                                font-[family-name:var(--font-heading)]
+                                                text-[1.25rem]
+                                                lg:text-[1.5rem]
+                                                xl:text-[1.75rem]
+                                                2xl:text-[2rem]
+                                              "
+                            // 20px→1.25rem | 24px→1.5rem | 28px→1.75rem | 32px→2rem
+                            >
+                                {
+                                    agent.initials
+                                } </span>
+                        )
+                    } </div>
+
+                {/* Info */}
+                <div className="
+                                    flex flex-col
+                                    gap-[0.25rem]
+                                    lg:gap-[0.375rem]
+                                    pb-[0.125rem]
+                                  "
+                // 4px→0.25rem | 6px→0.375rem | 2px→0.125rem
+                >
+                    <Typography variant="h3" className="
+                                          font-bold
+                                          leading-none
+                                          font-[family-name:var(--font-sans)]
+                                          text-[color:var(--profile-text)]
+                                          !text-[1rem]
+                                          lg:!text-[1.125rem]
+                                          xl:!text-[1.25rem]
+                                          2xl:!text-[1.5rem]
+                                        "
+                    // 16px→1rem | 18px→1.125rem | 20px→1.25rem | 24px→1.5rem
+                    >
+                        {
+                            agent.name
+                        } </Typography>
+                    <span className="
+                                          font-medium
+                                          leading-none
+                                          font-[family-name:var(--font-sans)]
+                                          text-[color:var(--text-supporting)]
+                                          text-[0.6875rem]
+                                          lg:text-[0.75rem]
+                                          xl:text-[0.8125rem]
+                                          2xl:text-[1rem]
+                                        ">
+                        Application ID : {
+                            agent.applicationId
+                        } </span>
+                </div>
+            </div>
+
+            {/* Status */}
+            <div className="pb-[0.125rem]">
+                {/* 2px→0.125rem */}
+                <StatusBadge status={
+                    agent.status
+                } />
+            </div>
+        </div>
+    </div>
+);
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
@@ -48,23 +419,16 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
     const [showIssueForm, setShowIssueForm] = React.useState(false);
 
     const { id } = useParams();
-    const userId = id ? Number(id) : NaN;
 
-    const {
-      data,
-      isLoading,
-      error,
-    } = useGetAgentProfileQuery(userId, {
-      skip: isNaN(userId),
-    });
+    const userId = Number(id);
 
-    const [updateAgentVerification, { isLoading: isUpdating }] = useUpdateAgentVerificationMutation();
-    const {
-          data,
-          isLoading,
-           } = useGetAgentByIdQuery(userId, {
-          skip: !userId,
-         });
+    const [getAgentById, { data, isLoading, error }] = useGetAgentByIdMutation();
+
+    React.useEffect(() => {
+        if (userId) {
+            getAgentById(userId);
+        }
+    }, [userId, getAgentById]);
 
 
 
@@ -422,15 +786,12 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
                               backdrop-blur-[2px]
                               p-4
                             ">
-                    <RaiseIssueForm
-                        agentEmail={agent.email}
-                        onClose={
+                        <RaiseIssueForm onClose={
                             () => setShowIssueForm(false)
-                        }
-                    />
-                </div>
-            )
-        } </main>
+                        } />
+                    </div>
+                )
+            } </main>
     );
 };
 
