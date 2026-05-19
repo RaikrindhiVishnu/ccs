@@ -37,7 +37,7 @@ const getFeatureBounds = (feature: any): maplibregl.LngLatBoundsLike => {
   } else if (geometry.type === "MultiPolygon") {
     geometry.coordinates.forEach((polygon: any) => extendBounds(polygon));
   }
-  
+
   return bounds;
 };
 
@@ -50,8 +50,12 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [regionName, setRegionName] = useState("");
   const [regionCode, setRegionCode] = useState("");
-  
-  const stateName = (feature?.properties?.STNAME || feature?.properties?.name || "Selected State").toUpperCase();
+
+  const stateName = (
+    feature?.properties?.STNAME ||
+    feature?.properties?.name ||
+    "Selected State"
+  ).toUpperCase();
   const stateId = feature?.properties?.id || 1;
   const encodedStateName = encodeURIComponent(stateName);
 
@@ -89,7 +93,7 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
 
       map.current.on("style.load", async () => {
         setMapReady(true);
-        
+
         try {
           // Add the specific state feature passed as a prop (from your API)
           map.current?.addSource("selected-state", {
@@ -162,40 +166,46 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
             });
 
             // 1. Add Fill Layer for Interaction & Hover Effect
-            map.current?.addLayer({
-              id: "districts-fill",
-              type: "fill",
-              source: "districts-source",
-              paint: {
-                "fill-color": [
-                  "case",
-                  ["boolean", ["feature-state", "selected"], false],
-                  "#3b82f6", // Selected color
-                  "#3b82f6", // Normal color
-                ],
-                "fill-opacity": [
-                  "case",
-                  ["boolean", ["feature-state", "selected"], false],
-                  0.35, // Selected opacity
-                  ["boolean", ["feature-state", "hover"], false],
-                  0.15, // Hover opacity
-                  0,    // Transparent normally
-                ],
+            map.current?.addLayer(
+              {
+                id: "districts-fill",
+                type: "fill",
+                source: "districts-source",
+                paint: {
+                  "fill-color": [
+                    "case",
+                    ["boolean", ["feature-state", "selected"], false],
+                    "#3b82f6", // Selected color
+                    "#3b82f6", // Normal color
+                  ],
+                  "fill-opacity": [
+                    "case",
+                    ["boolean", ["feature-state", "selected"], false],
+                    0.35, // Selected opacity
+                    ["boolean", ["feature-state", "hover"], false],
+                    0.15, // Hover opacity
+                    0, // Transparent normally
+                  ],
+                },
               },
-            }, "state-border");
+              "state-border",
+            );
 
             // 2. Add District Boundaries
-            map.current?.addLayer({
-              id: "districts-layer",
-              type: "line",
-              source: "districts-source",
-              paint: {
-                "line-color": "#3b82f6",
-                "line-width": 0.8,
-                "line-dasharray": [2, 1],
-                "line-opacity": 0.6,
+            map.current?.addLayer(
+              {
+                id: "districts-layer",
+                type: "line",
+                source: "districts-source",
+                paint: {
+                  "line-color": "#3b82f6",
+                  "line-width": 0.8,
+                  "line-dasharray": [2, 1],
+                  "line-opacity": 0.6,
+                },
               },
-            }, "state-border");
+              "state-border",
+            );
 
             // 3. Interactivity Listeners
             let hoveredDistrictId: string | number | null = null;
@@ -203,24 +213,26 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
             map.current?.on("mousemove", "districts-fill", (e) => {
               if (e.features && e.features.length > 0) {
                 const newId = e.features[0].id;
-                
+
                 if (hoveredDistrictId !== null) {
                   map.current?.setFeatureState(
                     { source: "districts-source", id: hoveredDistrictId },
-                    { hover: false }
+                    { hover: false },
                   );
                 }
-                
+
                 // Fix: check for undefined/null explicitly to allow ID 0
-                hoveredDistrictId = (newId !== undefined && newId !== null) ? newId : null;
-                
+                hoveredDistrictId =
+                  newId !== undefined && newId !== null ? newId : null;
+
                 if (hoveredDistrictId !== null) {
                   map.current?.setFeatureState(
                     { source: "districts-source", id: hoveredDistrictId },
-                    { hover: true }
+                    { hover: true },
                   );
                 }
-                if (map.current) map.current.getCanvas().style.cursor = "pointer";
+                if (map.current)
+                  map.current.getCanvas().style.cursor = "pointer";
               }
             });
 
@@ -228,7 +240,7 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
               if (hoveredDistrictId !== null) {
                 map.current?.setFeatureState(
                   { source: "districts-source", id: hoveredDistrictId },
-                  { hover: false }
+                  { hover: false },
                 );
               }
               hoveredDistrictId = null;
@@ -239,32 +251,39 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
               if (e.features && e.features.length > 0) {
                 const districtFeature = e.features[0];
                 const districtData = districtFeature.properties;
-                const dtCode = districtData.dtcode11 || districtData.dtcode || districtFeature.id;
+                const dtCode =
+                  districtData.dtcode11 ||
+                  districtData.dtcode ||
+                  districtFeature.id;
 
                 setSelectedDistricts((prev) => {
-                  const isAlreadySelected = prev.find((d) => (d.dtcode11 || d.dtcode || d.id) === dtCode);
-                  
+                  const isAlreadySelected = prev.find(
+                    (d) => (d.dtcode11 || d.dtcode || d.id) === dtCode,
+                  );
+
                   if (isAlreadySelected) {
                     // Unselect
                     map.current?.setFeatureState(
                       { source: "districts-source", id: districtFeature.id },
-                      { selected: false }
+                      { selected: false },
                     );
-                    return prev.filter((d) => (d.dtcode11 || d.dtcode || d.id) !== dtCode);
+                    return prev.filter(
+                      (d) => (d.dtcode11 || d.dtcode || d.id) !== dtCode,
+                    );
                   } else {
                     // Select
                     map.current?.setFeatureState(
                       { source: "districts-source", id: districtFeature.id },
-                      { selected: true }
+                      { selected: true },
                     );
-                    return [...prev, { ...districtData, id: districtFeature.id }];
+                    return [
+                      ...prev,
+                      { ...districtData, id: districtFeature.id },
+                    ];
                   }
                 });
-                
-
               }
             });
-
           }
         } catch (err) {
           console.error("Fallback Districts failed:", err);
@@ -282,24 +301,26 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
     }
 
     try {
-      const districtIds = selectedDistricts.map(d => Number(d.dtcode11 || d.dtcode));
-      
+      const districtIds = selectedDistricts.map((d) =>
+        Number(d.dtcode11 || d.dtcode),
+      );
+
       await createRegion({
         regionName,
         regionCode,
         regionalOfficerId: 1, // Hardcoded as requested
         inteligenceOfficerId: 2, // Hardcoded as requested
-        district_ids: districtIds
+        district_ids: districtIds,
       }).unwrap();
 
       toast.success("Region created successfully!");
-      
+
       // Cleanup: Clear selection and keep on map as requested
-      selectedDistricts.forEach(d => {
+      selectedDistricts.forEach((d) => {
         if (d.id !== undefined) {
           map.current?.setFeatureState(
             { source: "districts-source", id: d.id },
-            { selected: false }
+            { selected: false },
           );
         }
       });
@@ -348,22 +369,26 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
             });
 
             // Add internal district boundaries (rendered UNDER the main state border)
-            map.current.addLayer({
-              id: "districts-layer",
-              type: "line",
-              source: "districts-source",
-              paint: {
-                "line-color": "#3b82f6",
-                "line-width": 0.8,
-                "line-dasharray": [2, 1],
-                "line-opacity": 0.6,
+            map.current.addLayer(
+              {
+                id: "districts-layer",
+                type: "line",
+                source: "districts-source",
+                paint: {
+                  "line-color": "#3b82f6",
+                  "line-width": 0.8,
+                  "line-dasharray": [2, 1],
+                  "line-opacity": 0.6,
+                },
               },
-            }, "state-border"); // Insert before state-border to keep state outline on top
+              "state-border",
+            ); // Insert before state-border to keep state outline on top
           } else {
-            const source = map.current.getSource("districts-source") as maplibregl.GeoJSONSource;
+            const source = map.current.getSource(
+              "districts-source",
+            ) as maplibregl.GeoJSONSource;
             source.setData(finalData);
           }
-
         }
       } catch (err) {
         console.error("Error rendering districts:", err);
@@ -379,7 +404,7 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
             onClick={onBack}
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 shadow-sm",
-              "text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all active:scale-95"
+              "text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all active:scale-95",
             )}
           >
             <ChevronLeft className="w-5 h-5" />
@@ -392,21 +417,28 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
             <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em]">
               District View
             </span>
-            <Typography variant="h2" className="text-2xl font-black text-slate-800 tracking-tight">
+            <Typography
+              variant="h2"
+              className="text-2xl font-black text-slate-800 tracking-tight"
+            >
               {stateName}
             </Typography>
           </div>
         </div>
 
         {selectedDistricts.length > 0 && (
-          <Button 
+          <Button
             onClick={() => setIsModalOpen(true)}
             className="rounded-2xl bg-slate-900 text-white px-6 py-6 shadow-xl hover:bg-slate-800 transition-all flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-300"
           >
             <Plus className="w-5 h-5" />
             <div className="flex flex-col items-start">
-              <span className="text-xs font-bold uppercase tracking-wider">Create Region</span>
-              <span className="text-[10px] opacity-70">{selectedDistricts.length} Selected</span>
+              <span className="text-xs font-bold uppercase tracking-wider">
+                Create Region
+              </span>
+              <span className="text-[10px] opacity-70">
+                {selectedDistricts.length} Selected
+              </span>
             </div>
           </Button>
         )}
@@ -414,7 +446,7 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
 
       <div className="flex-1 relative rounded-[2rem] overflow-hidden border border-slate-200 shadow-xl bg-white">
         <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
-        
+
         {/* Loading Overlay */}
         {isLoading && (
           <div className="absolute inset-0 z-10 bg-slate-50/80 backdrop-blur-sm flex flex-col items-center justify-center gap-4 animate-in fade-in duration-300">
@@ -423,10 +455,16 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
               <div className="absolute inset-0 w-10 h-10 border-4 border-blue-100 rounded-full" />
             </div>
             <div className="flex flex-col items-center gap-1">
-              <Typography variant="span" className="text-sm font-bold text-slate-800 tracking-tight">
+              <Typography
+                variant="span"
+                className="text-sm font-bold text-slate-800 tracking-tight"
+              >
                 Fetching Boundaries
               </Typography>
-              <Typography variant="span" className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">
+              <Typography
+                variant="span"
+                className="text-[10px] font-medium text-slate-500 uppercase tracking-widest"
+              >
                 Loading detailed {stateName} shapefile
               </Typography>
             </div>
@@ -436,12 +474,12 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
         {/* Custom Modal Implementation */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div 
+            <div
               className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300"
               onClick={() => setIsModalOpen(false)}
             />
             <div className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-8">
-              <button 
+              <button
                 onClick={() => setIsModalOpen(false)}
                 className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 transition-colors"
               >
@@ -449,15 +487,22 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
               </button>
 
               <div className="flex flex-col gap-1 mb-8">
-                <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em]">New Configuration</span>
-                <Typography variant="h2" className="text-2xl font-black text-slate-800 tracking-tight">
+                <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em]">
+                  New Configuration
+                </span>
+                <Typography
+                  variant="h2"
+                  className="text-2xl font-black text-slate-800 tracking-tight"
+                >
                   Create New Region
                 </Typography>
               </div>
 
               <div className="flex flex-col gap-6 mb-8">
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Region Name</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
+                    Region Name
+                  </label>
                   <Input
                     placeholder="e.g. North Coastal Region"
                     value={regionName}
@@ -467,7 +512,9 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">Region Code</label>
+                  <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
+                    Region Code
+                  </label>
                   <Input
                     placeholder="e.g. NCR-001"
                     value={regionCode}
@@ -477,10 +524,15 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
                 </div>
 
                 <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">Selected Districts</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">
+                    Selected Districts
+                  </span>
                   <div className="flex flex-wrap gap-2">
                     {selectedDistricts.map((d, i) => (
-                      <div key={i} className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-[10px] font-bold shadow-sm">
+                      <div
+                        key={i}
+                        className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-[10px] font-bold shadow-sm"
+                      >
                         {d.dtname || d.name}
                       </div>
                     ))}
@@ -488,12 +540,14 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
                 </div>
               </div>
 
-              <Button 
+              <Button
                 disabled={isCreating}
                 onClick={handleCreateRegion}
                 className="w-full rounded-2xl bg-slate-900 py-7 text-white font-bold uppercase tracking-widest text-xs hover:bg-slate-800 transition-all active:scale-95 shadow-xl"
               >
-                {isCreating && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+                {isCreating && (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                )}
                 Confirm & Create Region
               </Button>
             </div>
@@ -504,7 +558,9 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
         {!isLoading && (
           <div className="absolute top-8 left-8 p-6 bg-white/90 backdrop-blur-md rounded-3xl border border-white/50 shadow-2xl max-w-xs animate-in fade-in slide-in-from-left-4 duration-500">
             <div className="flex flex-col gap-1">
-              <h2 className="text-xl font-black text-slate-800 leading-tight">{stateName}</h2>
+              <h2 className="text-xl font-black text-slate-800 leading-tight">
+                {stateName}
+              </h2>
             </div>
           </div>
         )}
