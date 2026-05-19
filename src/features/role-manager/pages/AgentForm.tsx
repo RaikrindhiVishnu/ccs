@@ -21,18 +21,16 @@ import { useLocation } from "react-router-dom";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { toast } from "sonner";
 import { useState, useEffect } from "react"; // kept only for profileImage                       // kept only for profileImage
-import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { useGetAllMasterDataQuery, useGetAllRegionsByStateIdMutation } from "@/features/role-manager/api/masterDataApi";
+import {
+  useGetRegionOfficerDetailsQuery,
+  useGetFieldOfficerDetailsQuery,
+} from "@/features/role-manager/api/userDirectoryApi";
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
 import { useGetAgentByIdMutation } from "@/features/role-manager/api/roleManagerApi";
 // ─── Dropdown option lists ────────────────────────────────────────────────────
 
-const REGION_OPTIONS = [
-  "Godavari Region",
-  "Krishna Region",
-  "Rayalaseema Region",
-  "North Coastal Region",
-];
 
 const AREA_OPTIONS = [
   "Tanuku Area",
@@ -76,14 +74,16 @@ export default function AgentForm({
   const [dobState, setDobState] = useState("");
   const [addressState, setAddressState] = useState("");
   const [roleIdState, setRoleIdState] = useState(1);
-  const [selectedRegionId, setSelectedRegionId] = useState(1);
   const { data: masterData } = useGetAllMasterDataQuery();
   const agentRoleId = getRoleId(
     masterData?.data?.userRolesResult || [],
     "AGENT",
   );
 
-  const { control, handleSubmit, watch, reset } = useForm<AgentFormValues>({
+  const [regionsList, setRegionsList] = useState<any[]>([]);
+  const [getRegionsByStateId] = useGetAllRegionsByStateIdMutation();
+
+  const { control, handleSubmit, watch, reset, setValue } = useForm<AgentFormValues>({
     resolver: zodResolver(agentSchema),
     defaultValues: {
       firstName:
@@ -154,6 +154,163 @@ export default function AgentForm({
     }
   }, [userId, getAgentById]);
 
+  const selectedStateName = watch("state");
+  const selectedRegionName = watch("region");
+  const selectedAreaName = watch("area");
+
+  const selectedStateObj = states.find((s: any) => s.desc === selectedStateName);
+  const stateId = selectedStateObj?.id;
+
+  const selectedRegionObj = regionsList.find((r: any) => (r.region_name || r.desc) === selectedRegionName);
+  const regionId = selectedRegionObj?.id;
+
+  const areaIndex = AREA_OPTIONS.indexOf(selectedAreaName || "");
+  const areaId = areaIndex !== -1 ? areaIndex + 1 : null;
+
+  // 1. Fetch Regions based on State ID
+  useEffect(() => {
+    if (stateId) {
+      getRegionsByStateId({ state_id: stateId })
+        .unwrap()
+        .then((res) => {
+          setRegionsList(res?.data || []);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch regions:", err);
+          setRegionsList([]);
+        });
+    } else {
+      setRegionsList([]);
+    }
+  }, [stateId, getRegionsByStateId]);
+
+  // 2. Fetch Regional Officer & Intelligence Officer details
+  const { data: regionOfficerData } = useGetRegionOfficerDetailsQuery(
+    {
+      state_id: stateId || 0,
+      region_id: regionId || 0,
+    },
+    {
+      skip: !stateId || !regionId,
+    }
+  );
+
+  const regionalOfficerId = regionOfficerData?.data?.regional_officer_id;
+  const intelligenceOfficerId = regionOfficerData?.data?.intelligence_officer_id;
+
+  // 3. Fetch Field Officers under these regional/intelligence officers
+  const { data: fieldOfficerData } = useGetFieldOfficerDetailsQuery(
+    {
+      regional_officer_id: regionalOfficerId || 0,
+      intelligence_officer_id: intelligenceOfficerId || 0,
+    },
+    {
+      skip: !regionalOfficerId && !intelligenceOfficerId,
+    }
+  );
+
+  // 4. Filter FO list by selected Area
+  const filteredFO = fieldOfficerData?.data?.find((fo: any) => {
+    const foAreaId = fo.geo_assignments?.areas_id ?? fo.areas_id ?? fo.area_id;
+    return Number(foAreaId) === Number(areaId);
+  });
+
+  // 5. Reset child selections properly when parent changes
+  const prevStateIdRef = useRef<any>(undefined);
+  useEffect(() => {
+    if (stateId && prevStateIdRef.current !== undefined && stateId !== prevStateIdRef.current) {
+      setValue("region", "");
+      setValue("area", "");
+    }
+    if (stateId) {
+      prevStateIdRef.current = stateId;
+    }
+  }, [stateId, setValue]);
+
+  const prevRegionIdRef = useRef<any>(undefined);
+  useEffect(() => {
+    if (regionId && prevRegionIdRef.current !== undefined && regionId !== prevRegionIdRef.current) {
+      setValue("area", "");
+    }
+    if (regionId) {
+      prevRegionIdRef.current = regionId;
+    }
+  }, [regionId, setValue]);
+
+  // 6. Pre-fill names dynamically in edit mode (resolving ID to name)
+  useEffect(() => {
+    if (agentData?.data && states.length > 0) {
+      const data = agentData.data;
+      const stateVal = data.state || data.geo_assignments?.state_id || "";
+      const matchedState = states.find((s: any) => String(s.id) === String(stateVal) || s.desc === stateVal);
+      if (matchedState) {
+        setValue("state", matchedState.desc);
+      }
+    }
+  }, [agentData, states, setValue]);
+
+  useEffect(() => {
+    if (agentData?.data && regionsList.length > 0) {
+      const data = agentData.data;
+      const regionVal = data.region || data.geo_assignments?.region_id || "";
+      const matchedRegion = regionsList.find((r: any) => String(r.id) === String(regionVal) || (r.region_name || r.desc) === regionVal);
+      if (matchedRegion) {
+        setValue("region", matchedRegion.region_name || matchedRegion.desc || "");
+      }
+    }
+  }, [regionsList, agentData, setValue]);
+
+  useEffect(() => {
+    if (agentData?.data) {
+      const data = agentData.data;
+      const areaVal = data.area || data.geo_assignments?.areas_id || "";
+      if (typeof areaVal === "number" || !isNaN(Number(areaVal))) {
+        const idx = Number(areaVal) - 1;
+        if (idx >= 0 && idx < AREA_OPTIONS.length) {
+          setValue("area", AREA_OPTIONS[idx]);
+        }
+      } else if (areaVal) {
+        setValue("area", String(areaVal));
+      }
+    }
+  }, [agentData, setValue]);
+
+  useEffect(() => {
+    if (initialData && states.length > 0) {
+      const stateVal = initialData.state ?? (initialData as any).geo_assignments?.state_id ?? "";
+      const matchedState = states.find((s: any) => String(s.id) === String(stateVal) || s.desc === stateVal);
+      if (matchedState) {
+        setValue("state", matchedState.desc);
+      }
+    }
+  }, [initialData, states, setValue]);
+
+  useEffect(() => {
+    if (initialData && regionsList.length > 0) {
+      const regionVal = initialData.region ?? (initialData as any).geo_assignments?.region_id ?? "";
+      const matchedRegion = regionsList.find((r: any) => String(r.id) === String(regionVal) || (r.region_name || r.desc) === regionVal);
+      if (matchedRegion) {
+        setValue("region", matchedRegion.region_name || matchedRegion.desc || "");
+      }
+    }
+  }, [initialData, regionsList, setValue]);
+
+  useEffect(() => {
+    if (initialData) {
+      const areaVal = initialData.area ?? (initialData as any).geo_assignments?.areas_id ?? "";
+      if (typeof areaVal === "number" || !isNaN(Number(areaVal))) {
+        const idx = Number(areaVal) - 1;
+        if (idx >= 0 && idx < AREA_OPTIONS.length) {
+          setValue("area", AREA_OPTIONS[idx]);
+        }
+      } else if (areaVal) {
+        setValue("area", String(areaVal));
+      }
+    }
+  }, [initialData, setValue]);
+
+
+
   useEffect(() => {
     if (agentData?.data) {
       const data = agentData.data;
@@ -179,7 +336,6 @@ export default function AgentForm({
       setDobState(data.dob || "");
       setAddressState(data.address || data.address?.address || "");
       setRoleIdState(data.role_id || 1);
-      setSelectedRegionId(data.geo_assignments?.region_id || 1);
     }
   }, [agentData, reset]);
 
@@ -196,22 +352,26 @@ export default function AgentForm({
         "",
       );
       setRoleIdState((initialData as any).role_id || 1);
-      setSelectedRegionId((initialData as any).geo_assignments?.region_id || 1);
     }
   }, [isEdit, initialData]);
 
   const handleSave = async (values: AgentFormValues) => {
-
-
     try {
+      const selectedStateObj = states.find((s: any) => s.desc === values.state);
+      const stateIdVal = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
+
+      const selectedRegionObj = regionsList.find((r: any) => (r.region_name || r.desc) === values.region);
+      const regionIdVal = selectedRegionObj?.id ? Number(selectedRegionObj.id) : 1;
+
+      const areaIndexVal = AREA_OPTIONS.indexOf(values.area);
+      const areaIdVal = areaIndexVal !== -1 ? areaIndexVal + 1 : 1;
+
       if (isEdit) {
         const userId =
           locUserId ||
           (initialData as any)?.originalId ||
           (initialData as any)?.id ||
           1;
-
-
 
         if (roleType === "AG") {
           const payload: UpdateAgentRequest = {
@@ -225,19 +385,17 @@ export default function AgentForm({
 
             address: {
               address: values.address || addressState || "",
-              state_id: Number(values.state) || 1,
+              state_id: stateIdVal,
               city: values.city || "",
               pincode: values.pincode || "",
             },
 
             geo_assignments: {
-              state_id: Number(values.state) || 1,
-              region_id: Number(values.region || selectedRegionId || 1),
-              areas_id: Number(values.area || 1),
+              state_id: stateIdVal,
+              region_id: regionIdVal,
+              areas_id: areaIdVal,
             },
           };
-
-
 
           await updateAgentDetails(payload).unwrap();
         } else {
@@ -257,18 +415,18 @@ export default function AgentForm({
 
           address: {
             address: values.address,
-            state_id: 1,
+            state_id: stateIdVal,
             city: values.city,
             pincode: values.pincode,
           },
 
           geo_assignments: {
             country_id: 1,
-            state_id: 1,
+            state_id: stateIdVal,
             district_id: 1,
             mandal_id: 1,
-            region_id: 1,
-            areas_id: 1,
+            region_id: regionIdVal,
+            areas_id: areaIdVal,
           },
 
           id_proof: {
@@ -567,17 +725,30 @@ export default function AgentForm({
                 name="region"
                 control={control}
                 label="Region"
-                options={REGION_OPTIONS}
+                options={regionsList.map((r: any) => r.region_name || r.desc || "")}
                 placeholder="Godavari Region"
                 disabled={isViewMode}
               />
               <div className="mt-3 space-y-2">
-                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
-                  RO : Jayanth kumar (GLC 0012)
-                </p>
-                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
-                  IO : Jayanth kumar (GLC 0012)
-                </p>
+                {selectedRegionName && regionOfficerData?.data ? (
+                  <>
+                    <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                      RO : {`${regionOfficerData.data.regional_officer_first_name || ""} ${regionOfficerData.data.regional_officer_last_name || ""}`.trim() || "Not Assigned"} {regionOfficerData.data.regional_officer_id ? `(GLC ${regionOfficerData.data.regional_officer_id})` : ""}
+                    </p>
+                    <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                      IO : {`${regionOfficerData.data.intelligence_officer_first_name || ""} ${regionOfficerData.data.intelligence_officer_last_name || ""}`.trim() || "Not Assigned"} {regionOfficerData.data.intelligence_officer_id ? `(GLC ${regionOfficerData.data.intelligence_officer_id})` : ""}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                      RO : Not Assigned
+                    </p>
+                    <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                      IO : Not Assigned
+                    </p>
+                  </>
+                )}
               </div>
             </div>
             <div>
@@ -590,9 +761,15 @@ export default function AgentForm({
                 disabled={isViewMode}
               />
               <div className="mt-3">
-                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
-                  FO : Ram Verma (GLC 0019)
-                </p>
+                {selectedAreaName && filteredFO ? (
+                  <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                    FO : {`${filteredFO.first_name || ""} ${filteredFO.last_name || ""}`.trim()} {filteredFO.role_id || filteredFO.id ? `(GLC ${filteredFO.role_id || filteredFO.id})` : ""}
+                  </p>
+                ) : (
+                  <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                    FO : Not Assigned
+                  </p>
+                )}
               </div>
             </div>
           </div>
