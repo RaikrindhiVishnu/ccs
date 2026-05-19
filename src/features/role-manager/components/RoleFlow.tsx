@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Typography } from "@/components/ui/typography";
-import { useGetAgentDetailsMutation } from "../api/userDirectoryApi";
+import { useLazyGetAgentDetailsQuery } from "../api/userDirectoryApi";
 
 import { FlowCard } from "./FlowCard";
 import { FlowItem } from "./FlowItem";
@@ -27,7 +27,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
     const userId = item.originalId || item.id;
     let path = "";
     if (roleType === "IO") path = "/role-manager/edit-intelligence-officer";
-    else if (roleType === "RO") path = "/role-manager/edit-regional-officer";
+    else if (roleType === "RO") path = `/role-manager/edit-regional-officer/${userId}`;
     else if (roleType === "FO") path = "/role-manager/edit-field-officer";
     else if (roleType === "AG") path = "/role-manager/agent-edit";
 
@@ -48,67 +48,66 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
 
   const roAndIo =
     regionOfficerData?.data &&
-    !Array.isArray(regionOfficerData.data)
+      !Array.isArray(regionOfficerData.data)
       ? [
-          {
-            id: String(regionOfficerData.data.regional_officer_id),
-            originalId: regionOfficerData.data.regional_officer_id,
-            first_name:
-              regionOfficerData.data.regional_officer_first_name,
-            last_name:
-              regionOfficerData.data.regional_officer_last_name,
-            phone: regionOfficerData.data.regional_officer_phone,
-            name: `${
-              regionOfficerData.data
-                .regional_officer_first_name || ""
-            } ${
-              regionOfficerData.data
-                .regional_officer_last_name || ""
+        {
+          id: String(regionOfficerData.data.regional_officer_id),
+          originalId: regionOfficerData.data.regional_officer_id,
+          first_name:
+            regionOfficerData.data.regional_officer_first_name,
+          last_name:
+            regionOfficerData.data.regional_officer_last_name,
+          phone: regionOfficerData.data.regional_officer_phone,
+          name: `${regionOfficerData.data
+            .regional_officer_first_name || ""
+            } ${regionOfficerData.data
+              .regional_officer_last_name || ""
             }`.trim(),
-            role: "Regional Officer" as const,
-            roleId: "RO",
-            contact:
-              regionOfficerData.data.regional_officer_phone,
-            avatar:
-              regionOfficerData.data.regional_officer_avatar ||
-              regionOfficerData.data.avatar ||
-              regionOfficerData.data.profile_image ||
-              "",
-          },
-          {
-            id: String(
-              regionOfficerData.data.intelligence_officer_id
-            ),
-            originalId:
-              regionOfficerData.data.intelligence_officer_id,
-            first_name:
-              regionOfficerData.data
-                .intelligence_officer_first_name,
-            last_name:
-              regionOfficerData.data
-                .intelligence_officer_last_name,
-            phone:
-              regionOfficerData.data
-                .intelligence_officer_phone,
-            name: `${
-              regionOfficerData.data
-                .intelligence_officer_first_name || ""
-            } ${
-              regionOfficerData.data
-                .intelligence_officer_last_name || ""
+          email: regionOfficerData.data.regional_officer_email,
+          state: regionOfficerData.data.state_id,
+          region: regionOfficerData.data.region_name || regionOfficerData.data.region_id,
+          role: "Regional Officer" as const,
+          roleId: "RO",
+          contact:
+            regionOfficerData.data.regional_officer_phone,
+          avatar:
+            regionOfficerData.data.regional_officer_avatar ||
+            regionOfficerData.data.avatar ||
+            regionOfficerData.data.profile_image ||
+            "",
+        },
+        {
+          id: String(
+            regionOfficerData.data.intelligence_officer_id
+          ),
+          originalId:
+            regionOfficerData.data.intelligence_officer_id,
+          first_name:
+            regionOfficerData.data
+              .intelligence_officer_first_name,
+          last_name:
+            regionOfficerData.data
+              .intelligence_officer_last_name,
+          phone:
+            regionOfficerData.data
+              .intelligence_officer_phone,
+          name: `${regionOfficerData.data
+            .intelligence_officer_first_name || ""
+            } ${regionOfficerData.data
+              .intelligence_officer_last_name || ""
             }`.trim(),
-            role: "Intelligence Officer" as const,
-            roleId: "IO",
-            contact:
-              regionOfficerData.data
-                .intelligence_officer_phone,
-            avatar:
-              regionOfficerData.data.intelligence_officer_avatar ||
-              regionOfficerData.data.avatar ||
-              regionOfficerData.data.profile_image ||
-              "",
-          },
-        ].filter((item) => item.name)
+          role: "Intelligence Officer" as const,
+          roleId: "IO",
+          contact:
+            regionOfficerData.data
+              .intelligence_officer_phone,
+          avatar:
+            regionOfficerData.data.intelligence_officer_avatar ||
+            regionOfficerData.data.avatar ||
+            regionOfficerData.data.profile_image ||
+            "",
+        },
+      ].filter((item) => item.name)
       : [];
 
   // ─────────────────────────────────────────────────────────────
@@ -117,19 +116,18 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
 
   const fieldOfficers = Array.isArray(fieldOfficerData?.data)
     ? fieldOfficerData.data.map(
-        (fo: any, index: number) => ({
-          ...fo,
-          id: `${fo.id}-${index}`,
-          originalId: fo.id,
-          name: `${fo.first_name || ""} ${
-            fo.last_name || ""
+      (fo: any, index: number) => ({
+        ...fo,
+        id: `${fo.id}-${index}`,
+        originalId: fo.id,
+        name: `${fo.first_name || ""} ${fo.last_name || ""
           }`.trim(),
-          role: "Field Officer" as const,
-          roleId: `FO-${fo.role_id || "000"}`,
-          contact: fo.phone,
-          avatar: fo.avatar || fo.profile_image || fo.image || "",
-        })
-      )
+        role: "Field Officer" as const,
+        roleId: `FO-${fo.role_id || "000"}`,
+        contact: fo.phone,
+        avatar: fo.avatar || fo.profile_image || fo.image || "",
+      })
+    )
     : [];
 
   const [selectedFO, setSelectedFO] =
@@ -139,7 +137,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
   const [searchAgent, setSearchAgent] = useState("");
 
   const [getAgentDetails] =
-    useGetAgentDetailsMutation();
+    useLazyGetAgentDetailsQuery();
 
   const [localAgents, setLocalAgents] = useState<any[]>(
     []
@@ -190,19 +188,18 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
 
   const rawAgents = Array.isArray(agentsToMap)
     ? agentsToMap.map(
-        (ag: any, index: number) => ({
-          ...ag,
-          id: `${ag.id}-${index}`,
-          originalId: ag.id,
-          name: `${ag.first_name || ""} ${
-            ag.last_name || ""
+      (ag: any, index: number) => ({
+        ...ag,
+        id: `${ag.id}-${index}`,
+        originalId: ag.id,
+        name: `${ag.first_name || ""} ${ag.last_name || ""
           }`.trim(),
-          role: "Agent" as const,
-          roleId: `AG-${ag.role_id || "000"}`,
-          contact: ag.phone,
-          avatar: ag.avatar || ag.profile_image || ag.image || "",
-        })
-      )
+        role: "Agent" as const,
+        roleId: `AG-${ag.role_id || "000"}`,
+        contact: ag.phone,
+        avatar: ag.avatar || ag.profile_image || ag.image || "",
+      })
+    )
     : [];
 
   const filteredAgents = rawAgents.filter(
@@ -241,7 +238,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                     navigate(
                       role.roleId === "IO"
                         ? "/role-manager/edit-intelligence-officer"
-                        : "/role-manager/edit-regional-officer",
+                        : `/role-manager/edit-regional-officer/${role.originalId}`,
                       {
                         state: {
                           initialData: role,

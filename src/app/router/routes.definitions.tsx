@@ -86,7 +86,7 @@ export const authRoutes: RouteObject[] = [
   element: <EditIntelligenceOfficer />,
 },
 {
-  path: "/role-manager/edit-regional-officer",
+  path: "/role-manager/edit-regional-officer/:id",
   element: <EditRegionalOfficer />,
 },
       { path: "/role-manager/profile/:id", element: <RoleManagerDetails /> },

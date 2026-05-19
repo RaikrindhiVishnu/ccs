@@ -306,9 +306,9 @@ export default function CreateIntelligenceOfficer() {
 
       isEditMode
         ? await updateRegionalOfficer({
-            ...payload,
-            userId,
-          }).unwrap()
+          ...payload,
+          userId,
+        }).unwrap()
         : await createRegionalOfficer(payload).unwrap();
 
       toast.success("Intelligence Officer created successfully");
@@ -344,8 +344,8 @@ export default function CreateIntelligenceOfficer() {
         {isViewMode
           ? "View Intelligence Officer Profile"
           : isEditMode
-          ? "Edit Intelligence Officer"
-          : "Create Intelligence Officer"}
+            ? "Edit Intelligence Officer"
+            : "Create Intelligence Officer"}
       </Typography>
 
       {/* ── Outer white card ── */}
