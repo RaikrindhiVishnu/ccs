@@ -420,9 +420,14 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
 
     const { id } = useParams();
 
-    const userId = Number(id);
+    const {
+      data,
+      isLoading,
+    } = useGetAgentProfileQuery(userId, {
+      skip: isNaN(userId),
+    });
 
-    const [getAgentById, { data, isLoading, error }] = useGetAgentByIdMutation();
+    const [updateAgentVerification, { isLoading: isUpdating }] = useUpdateAgentVerificationMutation();
 
     React.useEffect(() => {
         if (userId) {

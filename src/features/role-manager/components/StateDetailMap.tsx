@@ -50,7 +50,7 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [regionName, setRegionName] = useState("");
   const [regionCode, setRegionCode] = useState("");
-
+  console.log(feature, "insideDetails");
   const stateName = (
     feature?.properties?.STNAME ||
     feature?.properties?.name ||
@@ -311,6 +311,7 @@ const StateDetailMap: React.FC<StateDetailMapProps> = ({ feature, onBack }) => {
         regionalOfficerId: 1, // Hardcoded as requested
         inteligenceOfficerId: 2, // Hardcoded as requested
         district_ids: districtIds,
+        stateId: Number(stateId),
       }).unwrap();
 
       toast.success("Region created successfully!");
