@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react"; // removed useState
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ImageUp, FileImage } from "lucide-react";
 import { BackButton } from "@/components/ui/BackButton";
@@ -11,7 +11,7 @@ import {
   useUpdateRegionalOfficerMutation,
 } from "@/features/role-manager/api/agentApi";
 
-import { useGetRegionalOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
+
 import { useForm, Controller } from "react-hook-form"; // added Controller
 import type { Control } from "react-hook-form"; // type-only import
 import { toast } from "sonner";
@@ -25,6 +25,7 @@ import { RHFTextField } from "@/components/form/RHFTextField";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { useGetRegionalOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
 
 const BACK_ROUTE = "/role-manager/create-roles" as const;
 
@@ -203,14 +204,14 @@ const REGIONS = ["North", "South", "East", "West", "Central", "North-East"];
 export default function CreateRegionalOfficer() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams<{ id?: string }>();
 
-  const userId = location.state?.userId;
+  const userId = id || location.state?.userId;
   const isViewMode = location.state?.isViewMode || false;
   const fromPath = location.state?.from || BACK_ROUTE;
+  const initialData = location.state?.initialData;
 
   const isEditMode = !!userId;
-  const [getRegionalOfficerById, { data: regionalOfficerData }] =
-    useGetRegionalOfficerByIdMutation();
   const states = useAppSelector((state) => state.roleManager.states);
 
   const stateOptions = states.map((item) => item.desc);
@@ -244,30 +245,61 @@ export default function CreateRegionalOfficer() {
       panCard: undefined,
     },
   });
-  const fetchedRef = useRef(false);
+
+
+  const [getRegionalOfficerById, { data: regionalOfficerData }] =
+    useGetRegionalOfficerByIdMutation();
+
+  const fetchedRef = useRef<any>(null);
 
   useEffect(() => {
-    if (userId && !fetchedRef.current) {
-      fetchedRef.current = true;
+    if (userId && fetchedRef.current !== userId) {
+      fetchedRef.current = userId;
       getRegionalOfficerById(userId);
     }
   }, [userId, getRegionalOfficerById]);
+
+  // 1. Immediate pre-fill using initialData as fallback/instant load
+  useEffect(() => {
+    if (initialData) {
+      reset({
+        firstName: initialData.first_name || initialData.firstName || "",
+        lastName: initialData.last_name || initialData.lastName || "",
+        dob: initialData.dob || "",
+        email: initialData.email || initialData.emailAddress || "",
+        mobile: initialData.phone || initialData.mobile || initialData.phoneNumber || initialData.contact || "",
+        address: initialData.address || "",
+        addressState: initialData.state || "",
+        city: initialData.city || "",
+        pincode: initialData.pincode || "",
+        state: initialData.state || "",
+        region: initialData.region || "",
+      });
+    }
+  }, [initialData, reset]);
+
+  // 2. Prefill/reset the form using server-fetched regionalOfficerData
   useEffect(() => {
     if (regionalOfficerData?.data) {
       const data = regionalOfficerData.data;
-
       reset({
-        firstName: data.firstName || "",
-        lastName: data.lastName || "",
+        firstName: data.firstName || data.first_name || "",
+        lastName: data.lastName || data.last_name || "",
         dob: data.dob || "",
-        email: data.emailAddress || "",
-        mobile: data.phoneNumber || "",
-        address: data.address?.address || "",
-        city: data.address?.city || "",
-        pincode: data.address?.pincode || "",
+        email: data.emailAddress || data.email || "",
+        mobile: data.phoneNumber || data.phone || data.mobile || "",
+        address: data.address?.address || data.address || "",
+        addressState: data.address?.state || data.state || "",
+        city: data.address?.city || data.city || "",
+        pincode: data.address?.pincode || data.pincode || "",
+        state: data.address?.state || data.state || "",
+        region: data.region || "",
       });
     }
   }, [regionalOfficerData, reset]);
+
+
+
   const handleCreateRegionalOfficer = async (
     values: RegionalOfficerFormValues,
   ) => {
@@ -302,9 +334,9 @@ export default function CreateRegionalOfficer() {
 
       const response = isEditMode
         ? await updateRegionalOfficer({
-            ...payload,
-            userId,
-          }).unwrap()
+          ...payload,
+          userId,
+        }).unwrap()
         : await createRegionalOfficer(payload).unwrap();
       toast.success(response?.message || "Regional Officer created successfully");
       navigate(fromPath);
@@ -341,8 +373,8 @@ export default function CreateRegionalOfficer() {
         {isViewMode
           ? "View Regional Officer Profile"
           : isEditMode
-          ? "Edit Regional Officer"
-          : "Create Regional Officer"}
+            ? "Edit Regional Officer"
+            : "Create Regional Officer"}
       </Typography>
 
       <Card className="rounded-[clamp(1.75rem,3.19vw,2.875rem)] shadow-none border-none px-[clamp(1.5rem,3.47vw,3.125rem)] py-[clamp(1.5rem,3.4vw,3.0625rem)]">

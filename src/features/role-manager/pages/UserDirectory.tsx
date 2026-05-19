@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
-  useGetRegionOfficerDetailsMutation,
-  useGetFieldOfficerDetailsMutation,
-  useGetAgentDetailsMutation,
+  useGetRegionOfficerDetailsQuery,
+  useGetFieldOfficerDetailsQuery,
+  useGetAgentDetailsQuery,
 } from "../api/userDirectoryApi";
 import { useDispatch, useSelector } from "react-redux";
 import { setRegions } from "../store/roleManagerSlice";
@@ -17,74 +17,71 @@ import { Plus } from "lucide-react";
 import { PillDropdown } from "@/components/ui/Dropdown";
 import { RoleFlow } from "../components/RoleFlow";
 
+let lastFetchedStateId = "";
+
 const UserDirectory: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const states = useSelector((state: any) => state.roleManager.states);
   const regions = useSelector((state: any) => state.roleManager.regions);
   
-  const [selectedStateId, setSelectedStateId] = React.useState<string>("");
-  const [selectedRegionId, setSelectedRegionId] = React.useState<string>("");
-  const [isWorkforceLoading, setIsWorkforceLoading] = React.useState<boolean>(false);
+  const [selectedStateId, setSelectedStateId] = React.useState<string>(
+    states?.[0]?.id?.toString() || ""
+  );
+  const [selectedRegionId, setSelectedRegionId] = React.useState<string>(
+    regions?.[0]?.id?.toString() || ""
+  );
 
   const [
     getRegionsByStateId,
     { isLoading: isRegionsLoading }
   ] = useGetAllRegionsByStateIdMutation();
 
-  const [
-    getRegionOfficerDetails,
-    { data: regionOfficerData, isLoading: isRegionLoading },
-  ] = useGetRegionOfficerDetailsMutation();
-
-  const [
-    getFieldOfficerDetails,
-    { data: fieldOfficerData, isLoading: isFieldLoading },
-  ] = useGetFieldOfficerDetailsMutation();
-
-  const [
-    getAgentDetails,
-    { data: agentData, isLoading: isAgentLoading },
-  ] = useGetAgentDetailsMutation();
-
-  const loadWorkforceHierarchy = async (stateId: string, regionId: string) => {
-    if (!stateId || !regionId) return;
-    setIsWorkforceLoading(true);
-    try {
-      // 1. Fetch Regional Officer & Intelligence Officer details
-      const regionOfficerRes = await getRegionOfficerDetails({
-        state_id: stateId,
-        region_id: regionId,
-      }).unwrap();
-
-      const regionalOfficerId = regionOfficerRes?.data?.regional_officer_id;
-      const intelligenceOfficerId = regionOfficerRes?.data?.intelligence_officer_id;
-
-      // 2. Fetch Field Officers under these regional/intelligence officers (pass 0 if null/undefined)
-      const fieldOfficerRes = await getFieldOfficerDetails({
-        regional_officer_id: regionalOfficerId || 0,
-        intelligence_officer_id: intelligenceOfficerId || 0,
-      }).unwrap();
-
-      const fieldOfficersList = fieldOfficerRes?.data || [];
-      
-      // 3. Fetch Agents under the first Field Officer automatically
-      if (fieldOfficersList.length > 0) {
-        const firstFieldOfficer = fieldOfficersList[0];
-        await getAgentDetails(firstFieldOfficer.role_id || firstFieldOfficer.id).unwrap();
-      } else {
-        // Fetch with 0 to safely clear/reset the agent list
-        await getAgentDetails(0).unwrap();
-      }
-    } catch (error) {
-      console.error("Error loading workforce hierarchy:", error);
-    } finally {
-      setIsWorkforceLoading(false);
+  // 1. Fetch Regional Officer & Intelligence Officer details
+  const { data: regionOfficerData, isLoading: isRegionLoading } = useGetRegionOfficerDetailsQuery(
+    {
+      state_id: selectedStateId,
+      region_id: selectedRegionId,
+    },
+    { 
+      skip: !selectedStateId || !selectedRegionId,
+      refetchOnMountOrArgChange: true,
     }
-  };
+  );
+
+  const regionalOfficerId = regionOfficerData?.data?.regional_officer_id;
+  const intelligenceOfficerId = regionOfficerData?.data?.intelligence_officer_id;
+
+  // 2. Fetch Field Officers under these regional/intelligence officers (pass 0 if null/undefined)
+  const { data: fieldOfficerData, isLoading: isFieldLoading } = useGetFieldOfficerDetailsQuery(
+    {
+      regional_officer_id: regionalOfficerId || 0,
+      intelligence_officer_id: intelligenceOfficerId || 0,
+    },
+    { 
+      skip: !regionOfficerData,
+      refetchOnMountOrArgChange: true,
+    }
+  );
+
+  const fieldOfficersList = fieldOfficerData?.data || [];
+  const firstFieldOfficerId = fieldOfficersList.length > 0 
+    ? (fieldOfficersList[0].role_id || fieldOfficersList[0].id) 
+    : 0;
+
+  // 3. Fetch Agents under the first Field Officer automatically
+  const { data: agentData, isLoading: isAgentLoading } = useGetAgentDetailsQuery(
+    firstFieldOfficerId,
+    { 
+      skip: !fieldOfficerData,
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   const handleStateChange = async (stateId: string) => {
     if (!stateId) return;
+    if (stateId === lastFetchedStateId && regions.length > 0) return;
+    lastFetchedStateId = stateId;
     setSelectedStateId(stateId);
     try {
       const response = await getRegionsByStateId({ state_id: stateId }).unwrap();
@@ -94,31 +91,37 @@ const UserDirectory: React.FC = () => {
       if (fetchedRegions.length > 0) {
         const firstRegionId = fetchedRegions[0].id.toString();
         setSelectedRegionId(firstRegionId);
-        await loadWorkforceHierarchy(stateId, firstRegionId);
       } else {
         setSelectedRegionId("");
-        await loadWorkforceHierarchy(stateId, "0");
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleRegionChange = async (regionId: string) => {
+  const handleRegionChange = (regionId: string) => {
     if (!regionId) return;
     setSelectedRegionId(regionId);
-    await loadWorkforceHierarchy(selectedStateId, regionId);
   };
 
+  const initializedRef = useRef(false);
+
   useEffect(() => {
-    if (states && states.length > 0) {
+    if (states && states.length > 0 && !initializedRef.current) {
+      initializedRef.current = true;
       const firstStateId = states[0].id.toString();
       setSelectedStateId(firstStateId);
       handleStateChange(firstStateId);
     }
   }, [states]);
 
-  const isUpdating = isRegionsLoading || isWorkforceLoading || isRegionLoading || isFieldLoading || isAgentLoading;
+  useEffect(() => {
+    return () => {
+      lastFetchedStateId = "";
+    };
+  }, []);
+
+  const isUpdating = isRegionsLoading || isRegionLoading || isFieldLoading || isAgentLoading;
 
   return (
     <div className="flex flex-col py-16 px-4 gap-6 box-border min-h-full bg-( --surface-page)">

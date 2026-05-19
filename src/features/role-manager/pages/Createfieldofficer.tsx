@@ -11,7 +11,7 @@ import {
   useCreateFieldOfficerMutation,
   useUpdateFieldOfficerMutation,
 } from "@/features/role-manager/api/agentApi";
-import { useGetFieldOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
+
 import { useForm, Controller } from "react-hook-form";
 import type { Control } from "react-hook-form"; // added Controller, Control
 import { toast } from "sonner";
@@ -26,6 +26,7 @@ import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterData
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
 import { uploadUserDocument } from "@/core/utils/fileUpload";
+import { useGetFieldOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
 const BACK_ROUTE = "/role-manager/create-roles" as const;
 
 // ─── Field Label ──────────────────────────────────────────────────────────────
@@ -209,8 +210,6 @@ const CreateFieldOfficer = () => {
   const fromPath = location.state?.from || BACK_ROUTE;
 
   const isEditMode = !!userId;
-  const [getFieldOfficerById, { data: fieldOfficerData }] =
-    useGetFieldOfficerByIdMutation();
   const [createFieldOfficer, { isLoading }] = useCreateFieldOfficerMutation();
 
   const [updateFieldOfficer] = useUpdateFieldOfficerMutation();
@@ -239,30 +238,57 @@ const CreateFieldOfficer = () => {
       panCard: undefined,
     },
   });
-  const fetchedRef = useRef(false);
+  const initialData = location.state?.initialData;
+
+  const [getFieldOfficerById, { data: fieldOfficerData }] =
+    useGetFieldOfficerByIdMutation();
+
+  const fetchedRef = useRef<any>(null);
 
   useEffect(() => {
-    if (userId && !fetchedRef.current) {
-      fetchedRef.current = true;
+    if (userId && fetchedRef.current !== userId) {
+      fetchedRef.current = userId;
       getFieldOfficerById(userId);
     }
   }, [userId, getFieldOfficerById]);
+
+  // 1. Immediate pre-fill using initialData as fallback/instant load
+  useEffect(() => {
+    if (initialData) {
+      reset({
+        firstName: initialData.first_name || initialData.firstName || "",
+        lastName: initialData.last_name || initialData.lastName || "",
+        dob: initialData.dob || "",
+        email: initialData.email || initialData.emailAddress || "",
+        mobile: initialData.phone || initialData.mobile || initialData.phoneNumber || initialData.contact || "",
+        address: initialData.address?.address || initialData.address || "",
+        city: initialData.address?.city || initialData.city || "",
+        pincode: initialData.address?.pincode || initialData.pincode || "",
+        state: initialData.state || "",
+        region: initialData.region || "",
+      });
+    }
+  }, [initialData, reset]);
+
+  // 2. Prefill/reset the form using server-fetched fieldOfficerData
   useEffect(() => {
     if (fieldOfficerData?.data) {
       const data = fieldOfficerData.data;
-
       reset({
-        firstName: data.firstName || "",
-        lastName: data.lastName || "",
+        firstName: data.firstName || data.first_name || "",
+        lastName: data.lastName || data.last_name || "",
         dob: data.dob || "",
-        email: data.emailAddress || "",
-        mobile: data.phoneNumber || "",
-        address: data.address?.address || "",
-        city: data.address?.city || "",
-        pincode: data.address?.pincode || "",
+        email: data.emailAddress || data.email || "",
+        mobile: data.phoneNumber || data.phone || data.mobile || "",
+        address: data.address?.address || data.address || "",
+        city: data.address?.city || data.city || "",
+        pincode: data.address?.pincode || data.pincode || "",
+        state: data.address?.state || data.state || "",
+        region: data.region || "",
       });
     }
   }, [fieldOfficerData, reset]);
+
   const states = useSelector((state: any) => state.roleManager.states);
   const stateOptions = states.map((item: any) => item.desc);
   const handleCreateFieldOfficer = async (values: OfficerFormValues) => {
@@ -342,9 +368,9 @@ const CreateFieldOfficer = () => {
 
       const response = isEditMode
         ? await updateFieldOfficer({
-            ...payload,
-            userId,
-          }).unwrap()
+          ...payload,
+          userId,
+        }).unwrap()
         : await createFieldOfficer(payload).unwrap();
       toast.success(response?.message || "Field Officer created successfully");
       navigate(fromPath);
@@ -381,8 +407,8 @@ const CreateFieldOfficer = () => {
         {isViewMode
           ? "View Field Officer Profile"
           : isEditMode
-          ? "Edit Field Officer"
-          : "Create Field Officer"}
+            ? "Edit Field Officer"
+            : "Create Field Officer"}
       </Typography>
 
       {/* ── Outer white card ── */}

@@ -4,7 +4,6 @@ import { env } from "@/core/config/env";
 import type {
   GetAgentsRequest,
   GetAgentsApiResponse,
-  GetAgentByIdResponse,
 } from "../types/agent";
 
 export const roleManagerApi = createApi({
@@ -40,9 +39,24 @@ export const roleManagerApi = createApi({
         body,
       }),
     }),
-    getAgentById: builder.query<GetAgentByIdResponse, number>({
+    getAgentById: builder.mutation<any, any>({
       query: (userId) => ({
-        url: "/agent/getAgentById",
+        url: "/agents/getAgentById",
+        method: "POST",
+        body: {
+          userId,
+        },
+      }),
+    }),
+    getRegionalOfficerById: builder.mutation<any, string | number>({
+      query: (userId) => ({
+        url: `/regionalOfficer/getRegionalOfficerById/${userId}`,
+        method: "POST",
+      }),
+    }),
+    getFieldOfficerById: builder.mutation<any, string | number>({
+      query: (userId) => ({
+        url: "/feildOfficer/getFieldOfficerById",
         method: "POST",
         body: {
           userId,
@@ -53,9 +67,9 @@ export const roleManagerApi = createApi({
 });
 
 export const {
-    useGetRegionalOfficerByIdMutation,
-    useGetFieldOfficerByIdMutation,
-    useGetAgentDetailsByUserIdMutation,
-    useGetAllAgentsMutation,
-    useGetAgentByIdQuery,
+  useGetAgentDetailsByUserIdMutation,
+  useGetAllAgentsMutation,
+  useGetAgentByIdMutation,
+  useGetRegionalOfficerByIdMutation,
+  useGetFieldOfficerByIdMutation,
 } = roleManagerApi;

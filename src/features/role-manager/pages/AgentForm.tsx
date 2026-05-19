@@ -24,6 +24,7 @@ import { useState, useEffect } from "react"; // kept only for profileImage      
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
+import { useGetAgentByIdMutation } from "@/features/role-manager/api/roleManagerApi";
 // ─── Dropdown option lists ────────────────────────────────────────────────────
 
 const REGION_OPTIONS = [
@@ -82,7 +83,7 @@ export default function AgentForm({
     "AGENT",
   );
 
-  const { control, handleSubmit, watch } = useForm<AgentFormValues>({
+  const { control, handleSubmit, watch, reset } = useForm<AgentFormValues>({
     resolver: zodResolver(agentSchema),
     defaultValues: {
       firstName:
@@ -141,6 +142,47 @@ export default function AgentForm({
     },
   });
 
+  const userId = locUserId || (initialData as any)?.originalId || (initialData as any)?.id;
+  const [getAgentById, { data: agentData }] = useGetAgentByIdMutation();
+
+  const fetchedRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (userId && fetchedRef.current !== userId) {
+      fetchedRef.current = userId;
+      getAgentById(userId);
+    }
+  }, [userId, getAgentById]);
+
+  useEffect(() => {
+    if (agentData?.data) {
+      const data = agentData.data;
+      reset({
+        firstName: data.firstName || data.first_name || "",
+        lastName: data.lastName || data.last_name || "",
+        dob: data.dob || "",
+        email: data.email || data.emailAddress || "",
+        phone: data.phone || data.phoneNumber || data.mobile || data.contact || "",
+        address: data.address || data.address?.address || "",
+        addressState: data.state || data.address?.state || "",
+        city: data.city || data.address?.city || "",
+        pincode: data.pincode || data.address?.pincode || "",
+        panNumber: data.panCardNumber || data.id_proof?.pan_card_number || "",
+        state: data.state || data.geo_assignments?.state_id || "",
+        region: data.region || data.geo_assignments?.region_id || "",
+        area: data.area || data.geo_assignments?.areas_id || "",
+        bankName: data.bankName || data.id_proof?.bank_name || "",
+        accountNumber: data.accountNumber || data.id_proof?.bank_account_number || "",
+        ifscCode: data.ifscCode || data.id_proof?.ifsc_code || "",
+        bankBranch: data.bankBranch || data.id_proof?.branch || "",
+      });
+      setDobState(data.dob || "");
+      setAddressState(data.address || data.address?.address || "");
+      setRoleIdState(data.role_id || 1);
+      setSelectedRegionId(data.geo_assignments?.region_id || 1);
+    }
+  }, [agentData, reset]);
+
   const firstName = watch("firstName");
   const lastName = watch("lastName");
 
@@ -149,9 +191,9 @@ export default function AgentForm({
       setDobState(initialData.dob || (initialData as any).dob || "");
       setAddressState(
         initialData.address ||
-          (initialData as any).address?.address ||
-          (initialData as any).address ||
-          "",
+        (initialData as any).address?.address ||
+        (initialData as any).address ||
+        "",
       );
       setRoleIdState((initialData as any).role_id || 1);
       setSelectedRegionId((initialData as any).geo_assignments?.region_id || 1);
@@ -257,8 +299,8 @@ export default function AgentForm({
 
       toast.error(
         (err as any)?.data?.message ||
-          (err as any)?.data?.error ||
-          "Something went wrong",
+        (err as any)?.data?.error ||
+        "Something went wrong",
       );
     }
   };
@@ -289,8 +331,8 @@ export default function AgentForm({
         {isViewMode
           ? "View Agent Profile"
           : isEdit
-          ? "Edit Agent"
-          : "Create Agent"}
+            ? "Edit Agent"
+            : "Create Agent"}
       </Typography>
 
       {/* ── Outer card ── */}
@@ -737,16 +779,14 @@ function UploadBox({
                             border-2 border-dashed rounded-[var(--radius-dropdown)]
                             bg-[color:var(--input)]
                             transition-colors
-                            ${
-                              disabled
-                                ? "opacity-60 cursor-not-allowed border-gray-200"
-                                : "cursor-pointer hover:brightness-95"
-                            }
-                            ${
-                              fieldState.error
-                                ? "border-red-500 bg-red-50/30"
-                                : "border-[color:var(--border-default)]"
-                            }
+                            ${disabled
+                ? "opacity-60 cursor-not-allowed border-gray-200"
+                : "cursor-pointer hover:brightness-95"
+              }
+                            ${fieldState.error
+                ? "border-red-500 bg-red-50/30"
+                : "border-[color:var(--border-default)]"
+              }
                         `}
           >
             {field.value ? (

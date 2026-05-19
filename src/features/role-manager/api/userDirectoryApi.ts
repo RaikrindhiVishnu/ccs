@@ -4,7 +4,7 @@ export const userDirectoryApi = roleManagerApi.injectEndpoints({
     endpoints: (builder) => ({
 
         // 1. Region Officer Details
-        getRegionOfficerDetails: builder.mutation<any, { state_id: string | number; region_id: string | number }>({
+        getRegionOfficerDetails: builder.query<any, { state_id: string | number; region_id: string | number }>({
             query: (body) => ({
                 url: "/userDirectory/regionOfficerDetails",
                 method: "POST",
@@ -12,8 +12,16 @@ export const userDirectoryApi = roleManagerApi.injectEndpoints({
             }),
         }),
 
+        // 1.1 Region Officer Details By ID (as per ChatGPT recommendation)
+        regionOfficerDetails: builder.query<any, string | number>({
+            query: (id) => ({
+                url: `/regionalOfficerDetails/${id}`,
+                method: "GET",
+            }),
+        }),
+
         // 2. Field Officer Details
-        getFieldOfficerDetails: builder.mutation<any, { regional_officer_id: string | number; intelligence_officer_id: string | number; offset?: string }>({
+        getFieldOfficerDetails: builder.query<any, { regional_officer_id: string | number; intelligence_officer_id: string | number; offset?: string }>({
             query: (body) => ({
                 url: "/userDirectory/fieldOfficers",
                 method: "POST",
@@ -25,7 +33,7 @@ export const userDirectoryApi = roleManagerApi.injectEndpoints({
         }),
 
         // 3. Agent Details
-        getAgentDetails: builder.mutation<any, string | number>({
+        getAgentDetails: builder.query<any, string | number>({
             query: (fieldOfficerId) => ({
                 url: "/userDirectory/agentDetails",
                 method: "POST",
@@ -40,7 +48,10 @@ export const userDirectoryApi = roleManagerApi.injectEndpoints({
 });
 
 export const {
-    useGetRegionOfficerDetailsMutation,
-    useGetFieldOfficerDetailsMutation,
-    useGetAgentDetailsMutation,
+    useGetRegionOfficerDetailsQuery,
+    useRegionOfficerDetailsQuery,
+    useLazyRegionOfficerDetailsQuery,
+    useGetFieldOfficerDetailsQuery,
+    useGetAgentDetailsQuery,
+    useLazyGetAgentDetailsQuery,
 } = userDirectoryApi;
