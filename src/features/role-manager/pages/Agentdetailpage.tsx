@@ -53,18 +53,11 @@ export const AgentDetailPage = ({onDismiss} : AgentDetailPageProps) => {
     const {
       data,
       isLoading,
-      error,
     } = useGetAgentProfileQuery(userId, {
       skip: isNaN(userId),
     });
 
     const [updateAgentVerification, { isLoading: isUpdating }] = useUpdateAgentVerificationMutation();
-    const {
-          data,
-          isLoading,
-           } = useGetAgentByIdQuery(userId, {
-          skip: !userId,
-         });
 
 
 

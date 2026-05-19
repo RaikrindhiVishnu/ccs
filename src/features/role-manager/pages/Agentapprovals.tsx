@@ -25,7 +25,7 @@ interface Agent {
 
 export const AgentApprovalsPage = () => {
   const navigate = useNavigate();
-const [getAllAgents] = useGetAllAgentsMutation();
+  const [getAllAgents, { isLoading }] = useGetAllAgentsMutation();
 
 const [agentList, setAgentList] = React.useState<Agent[]>([]);
 
