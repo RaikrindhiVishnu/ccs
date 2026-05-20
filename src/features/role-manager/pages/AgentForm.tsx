@@ -21,24 +21,17 @@ import { useLocation } from "react-router-dom";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { toast } from "sonner";
 import { useState, useEffect } from "react"; // kept only for profileImage                       // kept only for profileImage
-import { useGetAllMasterDataQuery, useGetAllRegionsByStateIdMutation } from "@/features/role-manager/api/masterDataApi";
-import {
-  useGetRegionOfficerDetailsQuery,
-  useGetFieldOfficerDetailsQuery,
-} from "@/features/role-manager/api/userDirectoryApi";
+import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
 import { useGetAgentByIdMutation } from "@/features/role-manager/api/roleManagerApi";
+import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
+import SectionCard from "../components/ui/SectionCard";
+import InfoField from "../components/ui/InfoField";
+import DocumentCard from "../components/ui/DocumentCard";
+import ProfileBackButton from "../components/ui/BackButton";
 // ─── Dropdown option lists ────────────────────────────────────────────────────
-
-
-const AREA_OPTIONS = [
-  "Tanuku Area",
-  "Eluru Area",
-  "Rajahmundry Area",
-  "Kakinada Area",
-  "Vijayawada Area",
-];
 
 const BANK_OPTIONS = [
   "HDFC Bank",
@@ -60,6 +53,8 @@ export default function AgentForm({
   isViewMode = false,
 }: AgentFormProps) {
   const states = useSelector((state: any) => state.roleManager.states);
+  const allDistricts = useSelector((state: any) => state.roleManager.districts);
+  const allMandals = useSelector((state: any) => state.roleManager.mandals);
 
   const stateOptions = states.map((item: any) => item.desc);
   const location = useLocation();
@@ -79,9 +74,6 @@ export default function AgentForm({
     masterData?.data?.userRolesResult || [],
     "AGENT",
   );
-
-  const [regionsList, setRegionsList] = useState<any[]>([]);
-  const [getRegionsByStateId] = useGetAllRegionsByStateIdMutation();
 
   const { control, handleSubmit, watch, reset, setValue } = useForm<AgentFormValues>({
     resolver: zodResolver(agentSchema),
@@ -112,13 +104,13 @@ export default function AgentForm({
         initialData?.state ??
         (initialData as any)?.geo_assignments?.state_id ??
         "",
-      region:
-        initialData?.region ??
-        (initialData as any)?.geo_assignments?.region_id ??
+      district:
+        initialData?.district ??
+        (initialData as any)?.geo_assignments?.district_id ??
         "",
-      area:
-        initialData?.area ??
-        (initialData as any)?.geo_assignments?.areas_id ??
+      mandal:
+        initialData?.mandal ??
+        (initialData as any)?.geo_assignments?.mandal_id ??
         "",
       bankName:
         initialData?.bankName ??
@@ -155,159 +147,86 @@ export default function AgentForm({
   }, [userId, getAgentById]);
 
   const selectedStateName = watch("state");
-  const selectedRegionName = watch("region");
-  const selectedAreaName = watch("area");
+  const selectedDistrictName = watch("district");
 
   const selectedStateObj = states.find((s: any) => s.desc === selectedStateName);
-  const stateId = selectedStateObj?.id;
 
-  const selectedRegionObj = regionsList.find((r: any) => (r.region_name || r.desc) === selectedRegionName);
-  const regionId = selectedRegionObj?.id;
+  // Cascading district & mandal options
+  const districtOptions = selectedStateObj
+    ? allDistricts.filter((d: any) => d.state_id === selectedStateObj.id).map((d: any) => d.desc)
+    : [];
 
-  const areaIndex = AREA_OPTIONS.indexOf(selectedAreaName || "");
-  const areaId = areaIndex !== -1 ? areaIndex + 1 : null;
+  const selectedDistrictObj = allDistricts.find((d: any) => d.desc === selectedDistrictName);
+  const mandalOptions = selectedDistrictObj
+    ? allMandals.filter((m: any) => m.districts_id === selectedDistrictObj.id).map((m: any) => m.desc)
+    : [];
 
-  // 1. Fetch Regions based on State ID
+  // Reset child fields when parent changes
+  const prevStateRef = useRef(selectedStateName);
+  const prevDistrictRef = useRef(selectedDistrictName);
+
   useEffect(() => {
-    if (stateId) {
-      getRegionsByStateId({ state_id: stateId })
-        .unwrap()
-        .then((res) => {
-          setRegionsList(res?.data || []);
-        })
-        .catch((err) => {
-          console.error("Failed to fetch regions:", err);
-          setRegionsList([]);
-        });
-    } else {
-      setRegionsList([]);
+    if (selectedStateName !== prevStateRef.current) {
+      setValue("district", "");
+      setValue("mandal", "");
+      prevStateRef.current = selectedStateName;
     }
-  }, [stateId, getRegionsByStateId]);
+  }, [selectedStateName, setValue]);
 
-  // 2. Fetch Regional Officer & Intelligence Officer details
-  const { data: regionOfficerData } = useGetRegionOfficerDetailsQuery(
-    {
-      state_id: stateId || 0,
-      region_id: regionId || 0,
-    },
-    {
-      skip: !stateId || !regionId,
-    }
-  );
-
-  const regionalOfficerId = regionOfficerData?.data?.regional_officer_id;
-  const intelligenceOfficerId = regionOfficerData?.data?.intelligence_officer_id;
-
-  // 3. Fetch Field Officers under these regional/intelligence officers
-  const { data: fieldOfficerData } = useGetFieldOfficerDetailsQuery(
-    {
-      regional_officer_id: regionalOfficerId || 0,
-      intelligence_officer_id: intelligenceOfficerId || 0,
-    },
-    {
-      skip: !regionalOfficerId && !intelligenceOfficerId,
-    }
-  );
-
-  // 4. Filter FO list by selected Area
-  const filteredFO = fieldOfficerData?.data?.find((fo: any) => {
-    const foAreaId = fo.geo_assignments?.areas_id ?? fo.areas_id ?? fo.area_id;
-    return Number(foAreaId) === Number(areaId);
-  });
-
-  // 5. Reset child selections properly when parent changes
-  const prevStateIdRef = useRef<any>(undefined);
   useEffect(() => {
-    if (stateId && prevStateIdRef.current !== undefined && stateId !== prevStateIdRef.current) {
-      setValue("region", "");
-      setValue("area", "");
+    if (selectedDistrictName !== prevDistrictRef.current) {
+      setValue("mandal", "");
+      prevDistrictRef.current = selectedDistrictName;
     }
-    if (stateId) {
-      prevStateIdRef.current = stateId;
-    }
-  }, [stateId, setValue]);
+  }, [selectedDistrictName, setValue]);
 
-  const prevRegionIdRef = useRef<any>(undefined);
-  useEffect(() => {
-    if (regionId && prevRegionIdRef.current !== undefined && regionId !== prevRegionIdRef.current) {
-      setValue("area", "");
-    }
-    if (regionId) {
-      prevRegionIdRef.current = regionId;
-    }
-  }, [regionId, setValue]);
-
-  // 6. Pre-fill names dynamically in edit mode (resolving ID to name)
+  // Pre-fill geo fields from agentData (resolving IDs to names)
   useEffect(() => {
     if (agentData?.data && states.length > 0) {
       const data = agentData.data;
-      const stateVal = data.state || data.geo_assignments?.state_id || "";
-      const matchedState = states.find((s: any) => String(s.id) === String(stateVal) || s.desc === stateVal);
-      if (matchedState) {
-        setValue("state", matchedState.desc);
-      }
-    }
-  }, [agentData, states, setValue]);
+      const geo = data.geo_assignments;
 
-  useEffect(() => {
-    if (agentData?.data && regionsList.length > 0) {
-      const data = agentData.data;
-      const regionVal = data.region || data.geo_assignments?.region_id || "";
-      const matchedRegion = regionsList.find((r: any) => String(r.id) === String(regionVal) || (r.region_name || r.desc) === regionVal);
-      if (matchedRegion) {
-        setValue("region", matchedRegion.region_name || matchedRegion.desc || "");
-      }
-    }
-  }, [regionsList, agentData, setValue]);
+      const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === data.state);
+      const stateVal = stateObj?.desc || data.state || "";
 
-  useEffect(() => {
-    if (agentData?.data) {
-      const data = agentData.data;
-      const areaVal = data.area || data.geo_assignments?.areas_id || "";
-      if (typeof areaVal === "number" || !isNaN(Number(areaVal))) {
-        const idx = Number(areaVal) - 1;
-        if (idx >= 0 && idx < AREA_OPTIONS.length) {
-          setValue("area", AREA_OPTIONS[idx]);
-        }
-      } else if (areaVal) {
-        setValue("area", String(areaVal));
-      }
-    }
-  }, [agentData, setValue]);
+      const districtsForState = stateObj ? allDistricts.filter((d: any) => d.state_id === stateObj.id) : allDistricts;
+      const districtObj = districtsForState.find((d: any) => d.id === geo?.district_id || d.desc === data.district);
+      const districtVal = districtObj?.desc || data.district || "";
 
+      const mandalsForDistrict = districtObj ? allMandals.filter((m: any) => m.districts_id === districtObj.id) : allMandals;
+      const mandalObj = mandalsForDistrict.find((m: any) => m.id === geo?.mandal_id || m.desc === data.mandal || m.desc === data.area);
+      const mandalVal = mandalObj?.desc || data.mandal || data.area || "";
+
+      prevStateRef.current = stateVal;
+      prevDistrictRef.current = districtVal;
+      setValue("state", stateVal);
+      setValue("district", districtVal);
+      setValue("mandal", mandalVal);
+    }
+  }, [agentData, states, allDistricts, allMandals, setValue]);
+
+  // Pre-fill geo fields from initialData
   useEffect(() => {
     if (initialData && states.length > 0) {
-      const stateVal = initialData.state ?? (initialData as any).geo_assignments?.state_id ?? "";
-      const matchedState = states.find((s: any) => String(s.id) === String(stateVal) || s.desc === stateVal);
-      if (matchedState) {
-        setValue("state", matchedState.desc);
-      }
-    }
-  }, [initialData, states, setValue]);
+      const geo = (initialData as any).geo_assignments;
 
-  useEffect(() => {
-    if (initialData && regionsList.length > 0) {
-      const regionVal = initialData.region ?? (initialData as any).geo_assignments?.region_id ?? "";
-      const matchedRegion = regionsList.find((r: any) => String(r.id) === String(regionVal) || (r.region_name || r.desc) === regionVal);
-      if (matchedRegion) {
-        setValue("region", matchedRegion.region_name || matchedRegion.desc || "");
-      }
-    }
-  }, [initialData, regionsList, setValue]);
+      const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === initialData.state);
+      const stateVal = stateObj?.desc || initialData.state || "";
 
-  useEffect(() => {
-    if (initialData) {
-      const areaVal = initialData.area ?? (initialData as any).geo_assignments?.areas_id ?? "";
-      if (typeof areaVal === "number" || !isNaN(Number(areaVal))) {
-        const idx = Number(areaVal) - 1;
-        if (idx >= 0 && idx < AREA_OPTIONS.length) {
-          setValue("area", AREA_OPTIONS[idx]);
-        }
-      } else if (areaVal) {
-        setValue("area", String(areaVal));
-      }
+      const districtsForState = stateObj ? allDistricts.filter((d: any) => d.state_id === stateObj.id) : allDistricts;
+      const districtObj = districtsForState.find((d: any) => d.id === geo?.district_id || d.desc === (initialData as any).district);
+      const districtVal = districtObj?.desc || (initialData as any).district || "";
+
+      const mandalsForDistrict = districtObj ? allMandals.filter((m: any) => m.districts_id === districtObj.id) : allMandals;
+      const mandalObj = mandalsForDistrict.find((m: any) => m.id === geo?.mandal_id || m.desc === (initialData as any).mandal || m.desc === (initialData as any).area);
+      const mandalVal = mandalObj?.desc || (initialData as any).mandal || (initialData as any).area || "";
+      prevStateRef.current = stateVal;
+      prevDistrictRef.current = districtVal;
+      setValue("state", stateVal);
+      setValue("district", districtVal);
+      setValue("mandal", mandalVal);
     }
-  }, [initialData, setValue]);
+  }, [initialData, states, allDistricts, allMandals, setValue]);
 
 
 
@@ -325,9 +244,9 @@ export default function AgentForm({
         city: data.city || data.address?.city || "",
         pincode: data.pincode || data.address?.pincode || "",
         panNumber: data.panCardNumber || data.id_proof?.pan_card_number || "",
-        state: data.state || data.geo_assignments?.state_id || "",
-        region: data.region || data.geo_assignments?.region_id || "",
-        area: data.area || data.geo_assignments?.areas_id || "",
+        state: "",
+        district: "",
+        mandal: "",
         bankName: data.bankName || data.id_proof?.bank_name || "",
         accountNumber: data.accountNumber || data.id_proof?.bank_account_number || "",
         ifscCode: data.ifscCode || data.id_proof?.ifsc_code || "",
@@ -360,11 +279,11 @@ export default function AgentForm({
       const selectedStateObj = states.find((s: any) => s.desc === values.state);
       const stateIdVal = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
 
-      const selectedRegionObj = regionsList.find((r: any) => (r.region_name || r.desc) === values.region);
-      const regionIdVal = selectedRegionObj?.id ? Number(selectedRegionObj.id) : 1;
+      const selectedDistrictObj = allDistricts.find((d: any) => d.desc === values.district);
+      const districtIdVal = selectedDistrictObj?.id ? Number(selectedDistrictObj.id) : 1;
 
-      const areaIndexVal = AREA_OPTIONS.indexOf(values.area);
-      const areaIdVal = areaIndexVal !== -1 ? areaIndexVal + 1 : 1;
+      const selectedMandalObj = allMandals.find((m: any) => m.desc === values.mandal);
+      const mandalIdVal = selectedMandalObj?.id ? Number(selectedMandalObj.id) : 1;
 
       if (isEdit) {
         const userId =
@@ -392,8 +311,8 @@ export default function AgentForm({
 
             geo_assignments: {
               state_id: stateIdVal,
-              region_id: regionIdVal,
-              areas_id: areaIdVal,
+              district_id: districtIdVal,
+              mandal_id: mandalIdVal,
             },
           };
 
@@ -423,10 +342,10 @@ export default function AgentForm({
           geo_assignments: {
             country_id: 1,
             state_id: stateIdVal,
-            district_id: 1,
-            mandal_id: 1,
-            region_id: regionIdVal,
-            areas_id: areaIdVal,
+            district_id: districtIdVal,
+            mandal_id: mandalIdVal,
+            region_id: 1,
+            areas_id: 1,
           },
 
           id_proof: {
@@ -463,6 +382,105 @@ export default function AgentForm({
     }
   };
   const isVerified = isEdit && !!initialData?.firstName;
+
+  if (isViewMode) {
+    const data = agentData?.data || initialData;
+    const name = `${watch("firstName") || data?.firstName || data?.first_name || ""} ${watch("lastName") || data?.lastName || data?.last_name || ""}`.trim() || "Agent Name";
+    const status = data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review";
+    const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "AN";
+    const avatarUrl = data?.avatar || data?.profile_image || profileImage || "";
+    
+    const agent = {
+      name,
+      applicationId: userId?.toString() || data?.id?.toString() || "N/A",
+      status: status as any,
+      avatarUrl,
+      initials,
+    };
+
+    const email = watch("email") || data?.email || data?.emailAddress || "N/A";
+    const phone = watch("phone") || data?.phone || data?.phoneNumber || data?.mobile || data?.contact || "N/A";
+    const dateOfBirth = watch("dob") || data?.dob ? new Date(watch("dob") || data.dob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' }) : "N/A";
+    
+    const stateObj = states.find((s: any) => s.desc === watch("state") || s.id === data?.geo_assignments?.state_id);
+    const districtObj = allDistricts.find((d: any) => d.desc === watch("district") || d.id === data?.geo_assignments?.district_id);
+    const mandalObj = allMandals.find((m: any) => m.desc === watch("mandal") || m.id === data?.geo_assignments?.mandal_id);
+
+    const stateName = stateObj?.desc || data?.state || "N/A";
+    const districtName = districtObj?.desc || data?.district || "N/A";
+    const mandalName = mandalObj?.desc || data?.mandal || data?.area || "N/A";
+
+    // Operating Territory
+    const operatingTerritory = [
+      mandalName,
+      districtName,
+      stateName,
+    ].filter((val) => val && val !== "N/A").join(", ") || "N/A";
+
+    const bankName = watch("bankName") || data?.bankName || data?.id_proof?.bank_name || "N/A";
+    const accountNumber = watch("accountNumber") || data?.accountNumber || data?.id_proof?.bank_account_number || "N/A";
+    const ifscCode = watch("ifscCode") || data?.ifscCode || data?.id_proof?.ifsc_code || "N/A";
+
+    const aadharFrontUrl = data?.id_proof_front_url || data?.id_proof?.id_proof_frontUrl || "";
+    const aadharBackUrl = data?.id_proof_back_url || data?.id_proof?.id_proof_backUrl || "";
+    const panCardUrl = data?.pan_card_url || data?.id_proof?.pan_card_url || "";
+
+    return (
+      <main className="w-full min-h-screen bg-[color:var(--surface-page)] font-[family-name:var(--font-sans)]">
+        <div className="mx-auto max-w-[118.75rem] px-[1.5rem] lg:px-[2.5rem] xl:px-[3.5rem] 2xl:px-[4.5rem] py-[1.5rem] lg:py-[2rem] xl:py-[2.5rem] 2xl:py-[3rem]">
+          <div className="mb-[1.25rem] lg:mb-[1.5rem] xl:mb-[1.75rem]">
+            <ProfileBackButton onClick={onCancel} />
+          </div>
+
+          <div className="bg-[color:var(--surface-card)] rounded-[1.75rem] lg:rounded-[2.25rem] xl:rounded-[2.875rem] px-[1.25rem] lg:px-[2rem] xl:px-[3.125rem] pt-[1.5rem] lg:pt-[1.75rem] xl:pt-[2rem] pb-[2rem] lg:pb-[2.5rem] xl:pb-[3rem] flex flex-col gap-[1rem] lg:gap-[1.125rem] xl:gap-[1.25rem]">
+            <ProfileHeaderCard agent={agent} />
+
+            <SectionCard title="Info">
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-[1.5rem] lg:gap-x-[2rem] xl:gap-x-[2.5rem] gap-y-[1.25rem] lg:gap-y-[1.5rem] xl:gap-y-[1.75rem]">
+                <InfoField label="Email" value={email} />
+                <InfoField label="Phone number" value={phone} />
+                <InfoField label="Date Of Birth" value={dateOfBirth} />
+                <InfoField label="Operating Territory" value={operatingTerritory} className="col-span-2 xl:col-span-3" />
+              </div>
+            </SectionCard>
+
+            <SectionCard title="Bank Details">
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-[1.5rem] lg:gap-x-[2rem] xl:gap-x-[2.5rem] gap-y-[1.25rem] lg:gap-y-[1.5rem]">
+                <InfoField label="Bank Name" value={bankName} />
+                <InfoField label="Account Number" value={accountNumber} />
+                <InfoField label="IFSC Code" value={ifscCode} />
+              </div>
+            </SectionCard>
+
+            <SectionCard title="Documents Provided">
+              <div className="grid grid-cols-2 gap-[1.25rem] lg:gap-[1.5rem] xl:gap-[2rem] max-w-[48.75rem]">
+                <DocumentCard label="Aadhaar card (Front)" imageUrl={aadharFrontUrl} />
+                <DocumentCard label="Aadhaar card (Back)" imageUrl={aadharBackUrl} />
+                <DocumentCard label="Pan card" imageUrl={panCardUrl} />
+              </div>
+            </SectionCard>
+
+            <div className="flex items-center justify-end gap-[0.625rem] lg:gap-[0.75rem] xl:gap-[0.875rem] pt-4">
+              <button
+                type="button"
+                onClick={onCancel}
+                className="font-medium font-[family-name:'Inter',sans-serif] text-[color:var(--profile-text)] px-[1.25rem] lg:px-[1.5rem] py-[0.5rem] rounded-[0.375rem] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:bg-gray-100 transition-colors"
+              >
+                Dismiss
+              </button>
+              <button
+                type="button"
+                onClick={onCancel}
+                className="font-medium font-[family-name:'Inter',sans-serif] text-white px-[1.75rem] lg:px-[2rem] py-[0.5rem] rounded-full bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:opacity-90 active:scale-[0.97] transition-all duration-150"
+              >
+                Approve
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[color:var(--surface-page)] p-[clamp(16px,2vw,32px)]">
@@ -709,69 +727,33 @@ export default function AgentForm({
           </div>
         </FormSection>
 
-        {/* ── SELECT STATE, REGION & AREA ── */}
-        <FormSection title="Select State, Region & Area">
+        {/* ── SELECT STATE, DISTRICT & MANDAL ── */}
+        <FormSection title="Select State, District & Mandal">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
             <RHFDropdown
               name="state"
               control={control}
               label="State"
               options={stateOptions}
-              placeholder="Andhra Pradesh"
+              placeholder="Select State"
               disabled={isViewMode}
             />
-            <div>
-              <RHFDropdown
-                name="region"
-                control={control}
-                label="Region"
-                options={regionsList.map((r: any) => r.region_name || r.desc || "")}
-                placeholder="Godavari Region"
-                disabled={isViewMode}
-              />
-              <div className="mt-3 space-y-2">
-                {selectedRegionName && regionOfficerData?.data ? (
-                  <>
-                    <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
-                      RO : {`${regionOfficerData.data.regional_officer_first_name || ""} ${regionOfficerData.data.regional_officer_last_name || ""}`.trim() || "Not Assigned"} {regionOfficerData.data.regional_officer_id ? `(GLC ${regionOfficerData.data.regional_officer_id})` : ""}
-                    </p>
-                    <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
-                      IO : {`${regionOfficerData.data.intelligence_officer_first_name || ""} ${regionOfficerData.data.intelligence_officer_last_name || ""}`.trim() || "Not Assigned"} {regionOfficerData.data.intelligence_officer_id ? `(GLC ${regionOfficerData.data.intelligence_officer_id})` : ""}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
-                      RO : Not Assigned
-                    </p>
-                    <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
-                      IO : Not Assigned
-                    </p>
-                  </>
-                )}
-              </div>
-            </div>
-            <div>
-              <RHFDropdown
-                name="area"
-                control={control}
-                label="Area"
-                options={AREA_OPTIONS}
-                placeholder="Tanuku Area"
-                disabled={isViewMode}
-              />
-              <div className="mt-3">
-                {selectedAreaName && filteredFO ? (
-                  <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
-                    FO : {`${filteredFO.first_name || ""} ${filteredFO.last_name || ""}`.trim()} {filteredFO.role_id || filteredFO.id ? `(GLC ${filteredFO.role_id || filteredFO.id})` : ""}
-                  </p>
-                ) : (
-                  <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
-                    FO : Not Assigned
-                  </p>
-                )}
-              </div>
-            </div>
+            <RHFDropdown
+              name="district"
+              control={control}
+              label="District"
+              options={districtOptions}
+              placeholder="Select District"
+              disabled={isViewMode}
+            />
+            <RHFDropdown
+              name="mandal"
+              control={control}
+              label="Mandal"
+              options={mandalOptions}
+              placeholder="Select Mandal"
+              disabled={isViewMode}
+            />
           </div>
         </FormSection>
 

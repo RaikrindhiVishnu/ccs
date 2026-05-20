@@ -26,6 +26,11 @@ import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import { useGetRegionalOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
+import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
+import SectionCard from "../components/ui/SectionCard";
+import InfoField from "../components/ui/InfoField";
+import DocumentCard from "../components/ui/DocumentCard";
+import ProfileBackButton from "../components/ui/BackButton";
 
 const BACK_ROUTE = "/role-manager/create-roles" as const;
 
@@ -213,6 +218,8 @@ export default function CreateRegionalOfficer() {
 
   const isEditMode = !!userId;
   const states = useAppSelector((state) => state.roleManager.states);
+  const allDistricts = useAppSelector((state) => state.roleManager.districts);
+  const allMandals = useAppSelector((state) => state.roleManager.mandals);
 
   const stateOptions = states.map((item) => item.desc);
   const [createRegionalOfficer, { isLoading }] =
@@ -224,7 +231,7 @@ export default function CreateRegionalOfficer() {
     masterData?.data?.userRolesResult || [],
     "RO",
   );
-  const { control, handleSubmit, reset } = useForm<RegionalOfficerFormValues>({
+  const { control, handleSubmit, reset, watch, setValue } = useForm<RegionalOfficerFormValues>({
     resolver: zodResolver(regionalOfficerSchema),
     defaultValues: {
       firstName: "",
@@ -237,7 +244,8 @@ export default function CreateRegionalOfficer() {
       city: "",
       pincode: "",
       state: "",
-      region: "",
+      district: "",
+      mandal: "",
       // ── file fields ──
       profilePicture: undefined,
       aadharFront: undefined,
@@ -246,6 +254,53 @@ export default function CreateRegionalOfficer() {
     },
   });
 
+  const selectedState = watch("state");
+  const selectedDistrict = watch("district");
+
+  const prevStateRef = useRef(selectedState);
+  const prevDistrictRef = useRef(selectedDistrict);
+
+  // Cascading logic
+  const selectedStateObj = states.find((s: any) => s.desc === selectedState);
+  const districtOptions = selectedStateObj
+    ? allDistricts.filter((d: any) => d.state_id === selectedStateObj.id).map((d: any) => d.desc)
+    : [];
+
+  const selectedDistrictObj = allDistricts.find((d: any) => d.desc === selectedDistrict);
+  const mandalOptions = selectedDistrictObj
+    ? allMandals.filter((m: any) => m.districts_id === selectedDistrictObj.id).map((m: any) => m.desc)
+    : [];
+
+  useEffect(() => {
+    if (selectedState !== prevStateRef.current) {
+      setValue("district", "");
+      setValue("mandal", "");
+      prevStateRef.current = selectedState;
+    }
+  }, [selectedState, setValue]);
+
+  useEffect(() => {
+    if (selectedDistrict !== prevDistrictRef.current) {
+      setValue("mandal", "");
+      prevDistrictRef.current = selectedDistrict;
+    }
+  }, [selectedDistrict, setValue]);
+
+  const getGeoNames = (srcData: any) => {
+    const geo = srcData?.geo_assignments;
+    const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === srcData?.state || s.desc === srcData?.address?.state);
+    const stateVal = stateObj?.desc || srcData?.state || srcData?.address?.state || "";
+
+    const districtsForState = stateObj ? allDistricts.filter((d: any) => d.state_id === stateObj.id) : allDistricts;
+    const districtObj = districtsForState.find((d: any) => d.id === geo?.district_id || d.desc === srcData?.district);
+    const districtVal = districtObj?.desc || srcData?.district || "";
+
+    const mandalsForDistrict = districtObj ? allMandals.filter((m: any) => m.districts_id === districtObj.id) : allMandals;
+    const mandalObj = mandalsForDistrict.find((m: any) => m.id === geo?.mandal_id || m.desc === srcData?.mandal || m.desc === srcData?.area);
+    const mandalVal = mandalObj?.desc || srcData?.mandal || srcData?.area || "";
+
+    return { stateVal, districtVal, mandalVal };
+  };
 
   const [getRegionalOfficerById, { data: regionalOfficerData }] =
     useGetRegionalOfficerByIdMutation();
@@ -261,7 +316,10 @@ export default function CreateRegionalOfficer() {
 
   // 1. Immediate pre-fill using initialData as fallback/instant load
   useEffect(() => {
-    if (initialData) {
+    if (initialData && states.length && allDistricts.length && allMandals.length) {
+      const { stateVal, districtVal, mandalVal } = getGeoNames(initialData);
+      prevStateRef.current = stateVal;
+      prevDistrictRef.current = districtVal;
       reset({
         firstName: initialData.first_name || initialData.firstName || "",
         lastName: initialData.last_name || initialData.lastName || "",
@@ -269,19 +327,23 @@ export default function CreateRegionalOfficer() {
         email: initialData.email || initialData.emailAddress || "",
         mobile: initialData.phone || initialData.mobile || initialData.phoneNumber || initialData.contact || "",
         address: initialData.address || "",
-        addressState: initialData.state || "",
+        addressState: stateVal || "",
         city: initialData.city || "",
         pincode: initialData.pincode || "",
-        state: initialData.state || "",
-        region: initialData.region || "",
+        state: stateVal,
+        district: districtVal,
+        mandal: mandalVal,
       });
     }
-  }, [initialData, reset]);
+  }, [initialData, reset, states, allDistricts, allMandals]);
 
   // 2. Prefill/reset the form using server-fetched regionalOfficerData
   useEffect(() => {
-    if (regionalOfficerData?.data) {
+    if (regionalOfficerData?.data && states.length && allDistricts.length && allMandals.length) {
       const data = regionalOfficerData.data;
+      const { stateVal, districtVal, mandalVal } = getGeoNames(data);
+      prevStateRef.current = stateVal;
+      prevDistrictRef.current = districtVal;
       reset({
         firstName: data.firstName || data.first_name || "",
         lastName: data.lastName || data.last_name || "",
@@ -289,14 +351,15 @@ export default function CreateRegionalOfficer() {
         email: data.emailAddress || data.email || "",
         mobile: data.phoneNumber || data.phone || data.mobile || "",
         address: data.address?.address || data.address || "",
-        addressState: data.address?.state || data.state || "",
+        addressState: stateVal || "",
         city: data.address?.city || data.city || "",
         pincode: data.address?.pincode || data.pincode || "",
-        state: data.address?.state || data.state || "",
-        region: data.region || "",
+        state: stateVal,
+        district: districtVal,
+        mandal: mandalVal,
       });
     }
-  }, [regionalOfficerData, reset]);
+  }, [regionalOfficerData, reset, states, allDistricts, allMandals]);
 
 
 
@@ -304,6 +367,15 @@ export default function CreateRegionalOfficer() {
     values: RegionalOfficerFormValues,
   ) => {
     try {
+      const selectedStateObj = states.find((s: any) => s.desc === values.state);
+      const stateIdVal = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
+
+      const selectedDistrictObj = allDistricts.find((d: any) => d.desc === values.district);
+      const districtIdVal = selectedDistrictObj?.id ? Number(selectedDistrictObj.id) : 1;
+
+      const selectedMandalObj = allMandals.find((m: any) => m.desc === values.mandal);
+      const mandalIdVal = selectedMandalObj?.id ? Number(selectedMandalObj.id) : 1;
+
       const payload = {
         firstName: values.firstName,
         lastName: values.lastName,
@@ -314,13 +386,15 @@ export default function CreateRegionalOfficer() {
         role_id: regionalOfficerRoleId,
         address: {
           address: values.address,
-          state_id: 1,
+          state_id: stateIdVal,
           city: values.city,
           pincode: values.pincode,
         },
         geo_assignments: {
           country_id: 1,
-          state_id: 1,
+          state_id: stateIdVal,
+          district_id: districtIdVal,
+          mandal_id: mandalIdVal,
           region_id: 1,
           areas_id: 1,
         },
@@ -347,6 +421,92 @@ export default function CreateRegionalOfficer() {
       );
     }
   };
+
+  if (isViewMode) {
+    const data = regionalOfficerData?.data || initialData;
+    const name = `${watch("firstName") || data?.firstName || data?.first_name || ""} ${watch("lastName") || data?.lastName || data?.last_name || ""}`.trim() || "Regional Officer Name";
+    const status = data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review";
+    const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "RO";
+    const avatarUrl = data?.avatar || data?.profile_image || "";
+    
+    const officer = {
+      name,
+      applicationId: userId?.toString() || data?.id?.toString() || "N/A",
+      status: status as any,
+      avatarUrl,
+      initials,
+    };
+
+    const email = watch("email") || data?.emailAddress || data?.email || "N/A";
+    const phone = watch("mobile") || data?.phoneNumber || data?.phone || data?.mobile || "N/A";
+    const dateOfBirth = watch("dob") || data?.dob ? new Date(watch("dob") || data.dob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' }) : "N/A";
+    
+    const stateObj = states.find((s: any) => s.desc === watch("state") || s.id === data?.geo_assignments?.state_id || s.desc === data?.state);
+    const districtObj = allDistricts.find((d: any) => d.desc === watch("district") || d.id === data?.geo_assignments?.district_id || d.desc === data?.district);
+    const mandalObj = allMandals.find((m: any) => m.desc === watch("mandal") || m.id === data?.geo_assignments?.mandal_id || m.desc === data?.mandal);
+
+    const stateName = stateObj?.desc || data?.state || "N/A";
+    const districtName = districtObj?.desc || data?.district || "N/A";
+    const mandalName = mandalObj?.desc || data?.mandal || "N/A";
+
+    const operatingTerritory = [
+      mandalName,
+      districtName,
+      stateName,
+    ].filter((val) => val && val !== "N/A").join(", ") || "N/A";
+
+    const aadharFrontUrl = data?.id_proof_front_url || data?.id_proof?.id_proof_frontUrl || "";
+    const aadharBackUrl = data?.id_proof_back_url || data?.id_proof?.id_proof_backUrl || "";
+    const panCardUrl = data?.pan_card_url || data?.id_proof?.pan_card_url || "";
+
+    return (
+      <main className="w-full min-h-screen bg-[color:var(--surface-page)] font-[family-name:var(--font-sans)]">
+        <div className="mx-auto max-w-[118.75rem] px-[1.5rem] lg:px-[2.5rem] xl:px-[3.5rem] 2xl:px-[4.5rem] py-[1.5rem] lg:py-[2rem] xl:py-[2.5rem] 2xl:py-[3rem]">
+          <div className="mb-[1.25rem] lg:mb-[1.5rem] xl:mb-[1.75rem]">
+            <ProfileBackButton onClick={() => navigate(fromPath)} />
+          </div>
+
+          <div className="bg-[color:var(--surface-card)] rounded-[1.75rem] lg:rounded-[2.25rem] xl:rounded-[2.875rem] px-[1.25rem] lg:px-[2rem] xl:px-[3.125rem] pt-[1.5rem] lg:pt-[1.75rem] xl:pt-[2rem] pb-[2rem] lg:pb-[2.5rem] xl:pb-[3rem] flex flex-col gap-[1rem] lg:gap-[1.125rem] xl:gap-[1.25rem]">
+            <ProfileHeaderCard agent={officer} />
+
+            <SectionCard title="Info">
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-[1.5rem] lg:gap-x-[2rem] xl:gap-x-[2.5rem] gap-y-[1.25rem] lg:gap-y-[1.5rem] xl:gap-y-[1.75rem]">
+                <InfoField label="Email" value={email} />
+                <InfoField label="Phone number" value={phone} />
+                <InfoField label="Date Of Birth" value={dateOfBirth} />
+                <InfoField label="Operating Territory" value={operatingTerritory} className="col-span-2 xl:col-span-3" />
+              </div>
+            </SectionCard>
+
+            <SectionCard title="Documents Provided">
+              <div className="grid grid-cols-2 gap-[1.25rem] lg:gap-[1.5rem] xl:gap-[2rem] max-w-[48.75rem]">
+                <DocumentCard label="Aadhaar card (Front)" imageUrl={aadharFrontUrl} />
+                <DocumentCard label="Aadhaar card (Back)" imageUrl={aadharBackUrl} />
+                <DocumentCard label="Pan card" imageUrl={panCardUrl} />
+              </div>
+            </SectionCard>
+
+            <div className="flex items-center justify-end gap-[0.625rem] lg:gap-[0.75rem] xl:gap-[0.875rem] pt-4">
+              <button
+                type="button"
+                onClick={() => navigate(fromPath)}
+                className="font-medium font-[family-name:'Inter',sans-serif] text-[color:var(--profile-text)] px-[1.25rem] lg:px-[1.5rem] py-[0.5rem] rounded-[0.375rem] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:bg-gray-100 transition-colors"
+              >
+                Dismiss
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate(fromPath)}
+                className="font-medium font-[family-name:'Inter',sans-serif] text-white px-[1.75rem] lg:px-[2rem] py-[0.5rem] rounded-full bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:opacity-90 active:scale-[0.97] transition-all duration-150"
+              >
+                Approve
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[color:var(--surface-page)] rounded-[2rem] px-[clamp(1.5rem,6.81vw,6.8125rem)] py-[clamp(1.5rem,2.64vw,2.375rem)]">
@@ -464,8 +624,8 @@ export default function CreateRegionalOfficer() {
           </SectionPanel>
 
           {/* ── Section 2 ── */}
-          <SectionPanel title="Select State, Region">
-            <div className="grid grid-cols-2 gap-x-[clamp(1rem,2.7vw,2.4375rem)] max-w-[66%]">
+          <SectionPanel title="Select State, District, Mandal">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-[clamp(1rem,2.7vw,2.4375rem)] gap-y-[clamp(1rem,2.7vw,2.4375rem)] w-full">
               <RHFDropdown
                 name="state"
                 control={control}
@@ -477,11 +637,21 @@ export default function CreateRegionalOfficer() {
                 disabled={isViewMode}
               />
               <RHFDropdown
-                name="region"
+                name="district"
                 control={control}
-                label="Region"
-                placeholder="Select Region"
-                options={REGIONS}
+                label="District"
+                placeholder="Select District"
+                options={districtOptions}
+                containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
+                className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
+                disabled={isViewMode}
+              />
+              <RHFDropdown
+                name="mandal"
+                control={control}
+                label="Mandal"
+                placeholder="Select Mandal"
+                options={mandalOptions}
                 containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
                 className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
                 disabled={isViewMode}
