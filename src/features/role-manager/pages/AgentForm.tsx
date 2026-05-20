@@ -1,141 +1,317 @@
-import { useRef, useState } from "react";
-import { Input } from "@/components/ui/input";
+import { useRef } from "react"; // removed useState for files
 import { Button } from "@/components/ui/button";
-import { FormDropdown } from "@/components/ui/Dropdown";
 import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
 import SuccessIcon from "@/assets/sucess.svg";
 import { Upload, FileText, ArrowLeft, User, Camera } from "lucide-react";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface AgentFormData {
-    firstName: string;
-    lastName: string;
-    age: string;
-    phone: string;
-    city: string;
-    district: string;
-    state: string;
-    pincode: string;
-    region: string;
-    area: string;
-    bankName: string;
-    accountNumber: string;
-    ifscCode: string;
-    aadharFile?: File | null;
-    panFile?: File | null;
-    aadharFileName?: string;
-    panFileName?: string;
-    profileImage?: string;
-}
-
-interface AgentFormProps {
-    /** true  → Edit mode  (pre-fills data, shows "Update Profile") */
-    isEdit?: boolean;
-    /** Pass existing agent data when in edit mode */
-    initialData?: Partial<AgentFormData>;
-    /** Called with form payload on save — wire this to your RTK mutation */
-    onSave?: (data: AgentFormData) => void | Promise<void>;
-    /** Called when Cancel is clicked */
-    onCancel?: () => void;
-    /** Loading state (e.g. RTK mutation isLoading) */
-    isLoading?: boolean;
-}
-
-const emptyForm: AgentFormData = {
-    firstName: "",
-    lastName: "",
-    age: "",
-    phone: "",
-    city: "",
-    district: "",
-    state: "",
-    pincode: "",
-    region: "",
-    area: "",
-    bankName: "",
-    accountNumber: "",
-    ifscCode: "",
-    aadharFile: null,
-    panFile: null,
-    aadharFileName: "",
-    panFileName: "",
-};
-
+import {
+  useCreateAgentMutation,
+  useUpdateAgentDetailsMutation,
+} from "../api/agentApi";
+import type { AgentFormProps, UpdateAgentRequest } from "../types/agent";
+import { useForm, Controller } from "react-hook-form"; // added Controller
+import type { Control } from "react-hook-form"; // type-only import
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  agentSchema,
+  type AgentFormValues,
+} from "@/components/validations/agentSchema";
+import { RHFTextField } from "@/components/form/RHFTextField";
+import { useLocation } from "react-router-dom";
+import { RHFDropdown } from "@/components/form/RHFDropdown";
+import { toast } from "sonner";
+import { useState, useEffect } from "react"; // kept only for profileImage                       // kept only for profileImage
+import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { getRoleId } from "@/features/role-manager/utils/getRoleId";
+import { useSelector } from "react-redux";
+import { useGetAgentByIdMutation } from "@/features/role-manager/api/roleManagerApi";
 // ─── Dropdown option lists ────────────────────────────────────────────────────
 
-const STATE_OPTIONS = [
-    "Andhra Pradesh",
-    "Telangana",
-    "Maharashtra",
-    "Karnataka",
-    "Tamil Nadu",
-    "Kerala",
-];
-
 const REGION_OPTIONS = [
-    "Godavari Region",
-    "Krishna Region",
-    "Rayalaseema Region",
-    "North Coastal Region",
+  "Godavari Region",
+  "Krishna Region",
+  "Rayalaseema Region",
+  "North Coastal Region",
 ];
 
 const AREA_OPTIONS = [
-    "Tanuku Area",
-    "Eluru Area",
-    "Rajahmundry Area",
-    "Kakinada Area",
-    "Vijayawada Area",
+  "Tanuku Area",
+  "Eluru Area",
+  "Rajahmundry Area",
+  "Kakinada Area",
+  "Vijayawada Area",
 ];
 
 const BANK_OPTIONS = [
-    "HDFC Bank",
-    "SBI",
-    "ICICI Bank",
-    "Axis Bank",
-    "Bank of Baroda",
-    "Canara Bank",
+  "HDFC Bank",
+  "SBI",
+  "ICICI Bank",
+  "Axis Bank",
+  "Bank of Baroda",
+  "Canara Bank",
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function AgentForm({
-    isEdit = false,
-    initialData,
-    onSave,
-    onCancel,
-    isLoading = false,
+  isEdit = false,
+  initialData,
+  onCancel,
+  isLoading = false,
+  roleType,
+  isViewMode = false,
 }: AgentFormProps) {
-    // Initialise directly from initialData — no useEffect needed
-    const [formData, setFormData] = useState<AgentFormData>(() => ({
-        ...emptyForm,
-        ...initialData,
-    }));
+  const states = useSelector((state: any) => state.roleManager.states);
 
-    const handleChange = (key: keyof AgentFormData, value: string) => {
-        setFormData((prev) => ({ ...prev, [key]: value }));
-    };
+  const stateOptions = states.map((item: any) => item.desc);
+  const location = useLocation();
 
-    const handleSave = async () => {
-        if (onSave) {
-            await onSave(formData);
+  const { userId: locUserId } = location.state || {};
+
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  const [createAgent, { isLoading: isSubmitting }] = useCreateAgentMutation();
+  const [updateAgentDetails] = useUpdateAgentDetailsMutation();
+
+  const [dobState, setDobState] = useState("");
+  const [addressState, setAddressState] = useState("");
+  const [roleIdState, setRoleIdState] = useState(1);
+  const [selectedRegionId, setSelectedRegionId] = useState(1);
+  const { data: masterData } = useGetAllMasterDataQuery();
+  const agentRoleId = getRoleId(
+    masterData?.data?.userRolesResult || [],
+    "AGENT",
+  );
+
+  const { control, handleSubmit, watch, reset } = useForm<AgentFormValues>({
+    resolver: zodResolver(agentSchema),
+    defaultValues: {
+      firstName:
+        initialData?.firstName ?? (initialData as any)?.first_name ?? "",
+      lastName: initialData?.lastName ?? (initialData as any)?.last_name ?? "",
+      dob: initialData?.dob ?? "",
+      email: initialData?.email ?? (initialData as any)?.emailAddress ?? "",
+      phone:
+        initialData?.phone ??
+        (initialData as any)?.phoneNumber ??
+        (initialData as any)?.contact ??
+        (initialData as any)?.phone ??
+        "",
+      address:
+        initialData?.address ?? (initialData as any)?.address?.address ?? "",
+      addressState:
+        initialData?.state ?? (initialData as any)?.address?.state ?? "",
+      city: initialData?.city ?? (initialData as any)?.address?.city ?? "",
+      pincode:
+        initialData?.pincode ?? (initialData as any)?.address?.pincode ?? "",
+      panNumber:
+        initialData?.panNumber ??
+        (initialData as any)?.id_proof?.pan_card_number ??
+        "",
+      state:
+        initialData?.state ??
+        (initialData as any)?.geo_assignments?.state_id ??
+        "",
+      region:
+        initialData?.region ??
+        (initialData as any)?.geo_assignments?.region_id ??
+        "",
+      area:
+        initialData?.area ??
+        (initialData as any)?.geo_assignments?.areas_id ??
+        "",
+      bankName:
+        initialData?.bankName ??
+        (initialData as any)?.id_proof?.bank_name ??
+        "",
+      accountNumber:
+        initialData?.accountNumber ??
+        (initialData as any)?.id_proof?.bank_account_number ??
+        "",
+      ifscCode:
+        initialData?.ifscCode ??
+        (initialData as any)?.id_proof?.ifsc_code ??
+        "",
+      bankBranch:
+        initialData?.bankBranch ?? (initialData as any)?.id_proof?.branch ?? "",
+      // ── file fields ──
+      profilePicture: undefined,
+      aadharFront: undefined,
+      aadharBack: undefined,
+      panCard: undefined,
+    },
+  });
+
+  const userId = locUserId || (initialData as any)?.originalId || (initialData as any)?.id;
+  const [getAgentById, { data: agentData }] = useGetAgentByIdMutation();
+
+  const fetchedRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (userId && fetchedRef.current !== userId) {
+      fetchedRef.current = userId;
+      getAgentById(userId);
+    }
+  }, [userId, getAgentById]);
+
+  useEffect(() => {
+    if (agentData?.data) {
+      const data = agentData.data;
+      reset({
+        firstName: data.firstName || data.first_name || "",
+        lastName: data.lastName || data.last_name || "",
+        dob: data.dob || "",
+        email: data.email || data.emailAddress || "",
+        phone: data.phone || data.phoneNumber || data.mobile || data.contact || "",
+        address: data.address || data.address?.address || "",
+        addressState: data.state || data.address?.state || "",
+        city: data.city || data.address?.city || "",
+        pincode: data.pincode || data.address?.pincode || "",
+        panNumber: data.panCardNumber || data.id_proof?.pan_card_number || "",
+        state: data.state || data.geo_assignments?.state_id || "",
+        region: data.region || data.geo_assignments?.region_id || "",
+        area: data.area || data.geo_assignments?.areas_id || "",
+        bankName: data.bankName || data.id_proof?.bank_name || "",
+        accountNumber: data.accountNumber || data.id_proof?.bank_account_number || "",
+        ifscCode: data.ifscCode || data.id_proof?.ifsc_code || "",
+        bankBranch: data.bankBranch || data.id_proof?.branch || "",
+      });
+      setDobState(data.dob || "");
+      setAddressState(data.address || data.address?.address || "");
+      setRoleIdState(data.role_id || 1);
+      setSelectedRegionId(data.geo_assignments?.region_id || 1);
+    }
+  }, [agentData, reset]);
+
+  const firstName = watch("firstName");
+  const lastName = watch("lastName");
+
+  useEffect(() => {
+    if (isEdit && initialData) {
+      setDobState(initialData.dob || (initialData as any).dob || "");
+      setAddressState(
+        initialData.address ||
+        (initialData as any).address?.address ||
+        (initialData as any).address ||
+        "",
+      );
+      setRoleIdState((initialData as any).role_id || 1);
+      setSelectedRegionId((initialData as any).geo_assignments?.region_id || 1);
+    }
+  }, [isEdit, initialData]);
+
+  const handleSave = async (values: AgentFormValues) => {
+
+
+    try {
+      if (isEdit) {
+        const userId =
+          locUserId ||
+          (initialData as any)?.originalId ||
+          (initialData as any)?.id ||
+          1;
+
+
+
+        if (roleType === "AG") {
+          const payload: UpdateAgentRequest = {
+            userId: Number(userId),
+            firstName: values.firstName || "",
+            lastName: values.lastName || "",
+            emailAddress: values.email || "",
+            phoneNumber: values.phone || "",
+            dob: values.dob || dobState || "",
+            role_id: Number(roleIdState || agentRoleId),
+
+            address: {
+              address: values.address || addressState || "",
+              state_id: Number(values.state) || 1,
+              city: values.city || "",
+              pincode: values.pincode || "",
+            },
+
+            geo_assignments: {
+              state_id: Number(values.state) || 1,
+              region_id: Number(values.region || selectedRegionId || 1),
+              areas_id: Number(values.area || 1),
+            },
+          };
+
+
+
+          await updateAgentDetails(payload).unwrap();
         } else {
-            localStorage.setItem("agent-data", JSON.stringify(formData));
-            alert(
-                isEdit ? "Profile Updated Successfully" : "Profile Saved Successfully",
-            );
+          toast.error("Unknown role type for update");
+          return;
         }
-    };
+      } else {
+        const payload = {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          countryCode: "+91",
+          emailAddress: values.email,
+          phoneNumber: values.phone,
+          dob: values.dob,
 
-    const isVerified = isEdit && !!initialData?.firstName;
+          role_id: agentRoleId,
 
-    return (
-        <div className="min-h-screen bg-[color:var(--surface-page)] p-[clamp(16px,2vw,32px)]">
-            {/* ── Go Back ── */}
-            <button
-                onClick={onCancel}
-                className="
+          address: {
+            address: values.address,
+            state_id: 1,
+            city: values.city,
+            pincode: values.pincode,
+          },
+
+          geo_assignments: {
+            country_id: 1,
+            state_id: 1,
+            district_id: 1,
+            mandal_id: 1,
+            region_id: 1,
+            areas_id: 1,
+          },
+
+          id_proof: {
+            bank_account_name: `${values.firstName} ${values.lastName}`,
+            bank_account_number: values.accountNumber,
+            ifsc_code: values.ifscCode,
+            branch: values.bankBranch,
+            bank_name: values.bankName,
+            id_proof_frontUrl: "front.png",
+            id_proof_backUrl: "back.png",
+            pan_card_number: values.panNumber,
+            pan_card_url: "pan.png",
+          },
+        };
+
+        await createAgent(payload).unwrap();
+      }
+
+      toast.success(
+        isEdit ? "Profile Updated Successfully" : "Agent Created Successfully",
+      );
+
+      if (onCancel) {
+        onCancel();
+      }
+    } catch (err) {
+      console.error("Failed to save:", err);
+
+      toast.error(
+        (err as any)?.data?.message ||
+        (err as any)?.data?.error ||
+        "Something went wrong",
+      );
+    }
+  };
+  const isVerified = isEdit && !!initialData?.firstName;
+
+  return (
+    <div className="min-h-screen bg-[color:var(--surface-page)] p-[clamp(16px,2vw,32px)]">
+      {/* ── Go Back ── */}
+      <button
+        onClick={onCancel}
+        className="
                     flex items-center gap-2 px-5 py-3 mb-10
                     bg-[color:var(--surface-card)] rounded-full
                     shadow-[0px_0px_4px_rgba(0,0,0,0.12)]
@@ -144,344 +320,414 @@ export default function AgentForm({
                     font-[family-name:var(--font-inter)]
                     hover:opacity-80 transition-opacity cursor-pointer
                 "
-            >
-                <ArrowLeft size={16} strokeWidth={1.4} />
-                Go back to dashboard
-            </button>
+      >
+        <ArrowLeft size={16} strokeWidth={1.4} />
+        Go back to dashboard
+      </button>
+      <Typography
+        variant="h3"
+        className="font-bold text-[clamp(20px,2vw,32px)] text-[color:var(--text-primary)] mb-6"
+      >
+        {isViewMode
+          ? "View Agent Profile"
+          : isEdit
+            ? "Edit Agent"
+            : "Create Agent"}
+      </Typography>
 
-            {/* ── Outer card ── */}
-            <div
-                className="
+      {/* ── Outer card ── */}
+      <div
+        className="
                     max-w-[1600px] mx-auto
                     space-y-[clamp(16px,1.5vw,24px)]
                     bg-[color:var(--surface-card)]
                     rounded-[clamp(24px,2.5vw,46px)]
                     p-[clamp(20px,2vw,36px)]
                 "
-            >
-                {/* ── PROFILE BANNER CARD ──────────────────────────────────────── */}
-                <div
-                    className="
+      >
+        {/* ── PROFILE BANNER CARD ── */}
+        <div
+          className="
                         relative overflow-hidden
                         bg-[color:var(--surface-card)]
                         rounded-[clamp(16px,1.5vw,24px)]
                         shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
                     "
-                >
-                    {/* Banner image */}
-                    <div className="h-[clamp(80px,13vw,140px)] overflow-hidden">
-                        <img
-                            src={Bannar}
-                            alt="Banner"
-                            className="w-full h-full object-cover"
-                        />
-                    </div>
+        >
+          <div className="h-[clamp(80px,13vw,140px)] overflow-hidden">
+            <img
+              src={Bannar}
+              alt="Banner"
+              className="w-full h-full object-cover"
+            />
+          </div>
 
-                    {/* Profile row */}
-                    <div
-                        className="
+          <div
+            className="
                             flex items-end justify-between
                             px-[clamp(20px,2vw,30px)] pb-[clamp(16px,1.5vw,24px)]
                             -mt-[clamp(50px,5vw,70px)]
                         "
-                    >
-                        {/* Avatar + name */}
-                        <div className="flex items-end gap-4">
-                            <div className="relative shrink-0">
-                                {/* Profile image */}
-                                <div
-                                    className="
-                                        rounded-full bg-[color:var(--surface-card)]
-                                        border-4 border-[color:var(--surface-card)]
-                                        overflow-hidden
-                                        flex items-center justify-center
-                                        w-[clamp(80px,8vw,160px)] h-[clamp(80px,8vw,160px)]
-                                    "
-                                >
-                                    {formData.profileImage ? (
-                                        <img
-                                            src={formData.profileImage}
-                                            alt="profile"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <User
-                                            strokeWidth={1.5}
-                                            className="w-[40%] h-[40%] text-[color:var(--text-muted)]"
-                                        />
-                                    )}
-                                </div>
-
-                                {/* Edit button */}
-                                <label
-                                    className="
-                                        absolute bottom-1 right-1
-                                        w-[32px] h-[32px]
-                                        rounded-full bg-[color:var(--surface-card)]
-                                        border border-[color:var(--border)]
-                                        flex items-center justify-center
-                                        shadow-sm cursor-pointer hover:opacity-80
-                                    "
-                                >
-                                    <Camera
-                                        size={16}
-                                        strokeWidth={1.8}
-                                        className="text-[color:var(--label-color)]"
-                                    />
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            if (!file) return;
-                                            const imageUrl = URL.createObjectURL(file);
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                profileImage: imageUrl,
-                                            }));
-                                        }}
-                                    />
-                                </label>
-                            </div>
-
-                            {/* Name + role */}
-                            <div className="pt-20">
-                                <Typography
-                                    variant="h2"
-                                    className="font-bold text-[color:var(--profile-text)] text-[length:clamp(16px,1.5vw,24px)]"
-                                >
-                                    {formData.firstName
-                                        ? `${formData.firstName} ${formData.lastName}`.trim()
-                                        : "Agent Name"}
-                                </Typography>
-                                <p className="font-medium text-[length:clamp(12px,1vw,16px)] text-[color:var(--text-supporting)]">
-                                    Agent
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Verified badge */}
-                        {isVerified && (
-                            <div className="flex items-center justify-center rounded-[4px] shrink-0">
-                                <img
-                                    src={SuccessIcon}
-                                    alt="success"
-                                    className="w-[clamp(32px,3.5vw,58px)] h-[clamp(32px,3.5vw,58px)] object-contain"
-                                />
-                            </div>
+          >
+            <div className="flex items-end gap-4">
+              <div className="relative shrink-0">
+                {/* ── Profile picture — now RHF-controlled ── */}
+                <Controller
+                  name="profilePicture"
+                  control={control}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <div
+                        className={`
+                                                    rounded-full bg-[color:var(--surface-card)]
+                                                    border-4 overflow-hidden
+                                                    flex items-center justify-center
+                                                    w-[clamp(80px,8vw,160px)] h-[clamp(80px,8vw,160px)]
+                                                    ${fieldState.error ? "border-red-500" : "border-[color:var(--surface-card)]"}
+                                                `}
+                      >
+                        {profileImage ? (
+                          <img
+                            src={profileImage}
+                            alt="profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User
+                            strokeWidth={1.5}
+                            className="w-[40%] h-[40%] text-[color:var(--text-muted)]"
+                          />
                         )}
-                    </div>
-                </div>
+                      </div>
+                      {!isViewMode && (
+                        <label
+                          className="
+                                                      absolute bottom-1 right-1
+                                                      w-[32px] h-[32px]
+                                                      rounded-full bg-[color:var(--surface-card)]
+                                                      border border-[color:var(--border)]
+                                                      flex items-center justify-center
+                                                      shadow-sm cursor-pointer hover:opacity-80
+                                                  "
+                        >
+                          <Camera
+                            size={16}
+                            strokeWidth={1.8}
+                            className="text-[color:var(--label-color)]"
+                          />
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              field.onChange(file);
+                              setProfileImage(URL.createObjectURL(file));
+                            }}
+                          />
+                        </label>
+                      )}
+                      {fieldState.error && (
+                        <span className="absolute -bottom-5 left-0 text-red-500 text-[0.7rem] whitespace-nowrap">
+                          {fieldState.error.message}
+                        </span>
+                      )}
+                    </>
+                  )}
+                />
+              </div>
 
-                {/* ── REGION / AREA ASSIGNED ───────────────────────────────────── */}
-                <FormSection title="Region/Area Assigned">
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
-                        <FormDropdown
-                            label="State"
-                            options={STATE_OPTIONS}
-                            value={formData.state}
-                            onChange={(v) => handleChange("state", v)}
-                            placeholder="Select State"
-                        />
-                        <FormDropdown
-                            label="Region"
-                            options={REGION_OPTIONS}
-                            value={formData.region}
-                            onChange={(v) => handleChange("region", v)}
-                            placeholder="Select Region"
-                        />
-                        <FormDropdown
-                            label="Area"
-                            options={AREA_OPTIONS}
-                            value={formData.area}
-                            onChange={(v) => handleChange("area", v)}
-                            placeholder="Select Area"
-                        />
-                    </div>
-                </FormSection>
-
-                {/* ── ADDRESS + PERSONAL ───────────────────────────────────────── */}
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-[clamp(14px,1.5vw,20px)]">
-                    <FormSection title="Address Details">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(14px,1.5vw,20px)]">
-                            <Input
-                                variant="form"
-                                label="City"
-                                placeholder="Enter city"
-                                value={formData.city}
-                                onChange={(e) => handleChange("city", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="District"
-                                placeholder="Enter district"
-                                value={formData.district}
-                                onChange={(e) => handleChange("district", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="State"
-                                placeholder="Enter state"
-                                value={formData.state}
-                                onChange={(e) => handleChange("state", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="Pincode"
-                                placeholder="Enter pincode"
-                                value={formData.pincode}
-                                onChange={(e) => handleChange("pincode", e.target.value)}
-                            />
-                        </div>
-                    </FormSection>
-
-                    <FormSection title="Personal Details">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-[clamp(14px,1.5vw,20px)]">
-                            <Input
-                                variant="form"
-                                label="First Name"
-                                placeholder="Enter first name"
-                                value={formData.firstName}
-                                onChange={(e) => handleChange("firstName", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="Last Name"
-                                placeholder="Enter last name"
-                                value={formData.lastName}
-                                onChange={(e) => handleChange("lastName", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="Age"
-                                placeholder="Enter age"
-                                type="number"
-                                value={formData.age}
-                                onChange={(e) => handleChange("age", e.target.value)}
-                            />
-                            <Input
-                                variant="form"
-                                label="Phone Number"
-                                placeholder="+91 XXXXX-XXXXX"
-                                type="tel"
-                                value={formData.phone}
-                                onChange={(e) => handleChange("phone", e.target.value)}
-                            />
-                        </div>
-                    </FormSection>
-                </div>
-
-                {/* ── BANK DETAILS ─────────────────────────────────────────────── */}
-                <FormSection title="Bank Details">
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
-                        <FormDropdown
-                            label="Bank Name"
-                            options={BANK_OPTIONS}
-                            value={formData.bankName}
-                            onChange={(v) => handleChange("bankName", v)}
-                            placeholder="Select Bank"
-                        />
-                        <Input
-                            variant="form"
-                            label="Account Number"
-                            placeholder="Enter account number"
-                            value={formData.accountNumber}
-                            onChange={(e) => handleChange("accountNumber", e.target.value)}
-                        />
-                        <Input
-                            variant="form"
-                            label="IFSC Code"
-                            placeholder="e.g. HDFC0001234"
-                            value={formData.ifscCode}
-                            onChange={(e) => handleChange("ifscCode", e.target.value)}
-                        />
-                    </div>
-                </FormSection>
-
-                {/* ── DOCUMENTS ────────────────────────────────────────────────── */}
-                <FormSection title="Documents">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-                        <div className="w-full max-w-[346px]">
-                            <UploadBox
-                                title="Aadhar Card"
-                                fileName={formData.aadharFileName}
-                                onFile={(file) =>
-                                    setFormData((p) => ({
-                                        ...p,
-                                        aadharFile: file,
-                                        aadharFileName: file?.name ?? "",
-                                    }))
-                                }
-                            />
-                        </div>
-                        <div className="w-full max-w-[346px]">
-                            <UploadBox
-                                title="Pan Card"
-                                fileName={formData.panFileName}
-                                onFile={(file) =>
-                                    setFormData((p) => ({
-                                        ...p,
-                                        panFile: file,
-                                        panFileName: file?.name ?? "",
-                                    }))
-                                }
-                            />
-                        </div>
-                    </div>
-                </FormSection>
-
-                {/* ── ACTION BUTTONS ───────────────────────────────────────────── */}
-                <div className="flex justify-end items-center gap-[clamp(12px,1vw,16px)]">
-                    <Button
-                        variant="outline-dark"
-                        onClick={onCancel}
-                        disabled={isLoading}
-                        className="
-                            !h-[40px] !min-w-[101px] !px-[24px] !py-[8px]
-                            !font-[family-name:var(--font-inter)] !font-medium
-                            !text-[length:clamp(13px,0.9vw,16px)] !leading-[24px]
-                            !normal-case !tracking-normal !shadow-none
-                        "
-                    >
-                        Cancel
-                    </Button>
-
-                    <Button
-                        variant="primary"
-                        onClick={handleSave}
-                        loading={isLoading}
-                        className="
-                            !h-[40px] !min-w-[155px]
-                            !rounded-[100px]
-                            !px-[32px] !py-[8px]
-                            !font-[family-name:var(--font-inter)] !font-medium
-                            !text-[length:clamp(13px,0.9vw,16px)] !leading-[24px]
-                            !normal-case !tracking-normal
-                            !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
-                            !shadow-none
-                        "
-                    >
-                        {isEdit ? "Update Profile" : "Save Profile"}
-                    </Button>
-                </div>
+              <div className="pt-20">
+                <Typography
+                  variant="h2"
+                  className="font-bold text-[color:var(--profile-text)] text-[length:clamp(16px,1.5vw,24px)]"
+                >
+                  {firstName ? `${firstName} ${lastName}`.trim() : "Agent Name"}
+                </Typography>
+                <p className="font-medium text-[length:clamp(12px,1vw,16px)] text-[color:var(--text-supporting)]">
+                  Agent
+                </p>
+              </div>
             </div>
+
+            {isVerified && (
+              <div className="flex items-center justify-center rounded-[4px] shrink-0">
+                <img
+                  src={SuccessIcon}
+                  alt="success"
+                  className="w-[clamp(32px,3.5vw,58px)] h-[clamp(32px,3.5vw,58px)] object-contain"
+                />
+              </div>
+            )}
+          </div>
         </div>
-    );
+
+        {/* ── ENTER AGENT INFORMATION ── */}
+        <FormSection title="Enter Agent Information">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
+            <RHFTextField
+              name="firstName"
+              control={control}
+              label="First Name"
+              placeholder="Enter First name"
+              maxLength={30}
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="lastName"
+              control={control}
+              label="Last Name"
+              placeholder="Enter Last Name"
+              maxLength={30}
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="dob"
+              control={control}
+              label="D.O.B."
+              placeholder="Enter Age"
+              type="date"
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="email"
+              control={control}
+              label="Mail"
+              placeholder="Enter Mail ID"
+              type="email"
+              maxLength={150}
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="phone"
+              control={control}
+              label="Mobile Number"
+              placeholder="Enter Mobile Number"
+              type="tel"
+              maxLength={10}
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="address"
+              control={control}
+              label="Address"
+              placeholder="Enter Address"
+              maxLength={150}
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="addressState"
+              control={control}
+              label="State"
+              placeholder="Enter State"
+              maxLength={30}
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="city"
+              control={control}
+              label="City / Village"
+              placeholder="Enter City / Village"
+              maxLength={30}
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="pincode"
+              control={control}
+              label="Pin Code"
+              placeholder="Enter Pin Code"
+              maxLength={6}
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="panNumber"
+              control={control}
+              label="PAN Card Number"
+              placeholder="Enter PAN Number"
+              maxLength={30}
+              disabled={isViewMode}
+            />
+          </div>
+        </FormSection>
+
+        {/* ── SELECT STATE, REGION & AREA ── */}
+        <FormSection title="Select State, Region & Area">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
+            <RHFDropdown
+              name="state"
+              control={control}
+              label="State"
+              options={stateOptions}
+              placeholder="Andhra Pradesh"
+              disabled={isViewMode}
+            />
+            <div>
+              <RHFDropdown
+                name="region"
+                control={control}
+                label="Region"
+                options={REGION_OPTIONS}
+                placeholder="Godavari Region"
+                disabled={isViewMode}
+              />
+              <div className="mt-3 space-y-2">
+                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                  RO : Jayanth kumar (GLC 0012)
+                </p>
+                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                  IO : Jayanth kumar (GLC 0012)
+                </p>
+              </div>
+            </div>
+            <div>
+              <RHFDropdown
+                name="area"
+                control={control}
+                label="Area"
+                options={AREA_OPTIONS}
+                placeholder="Tanuku Area"
+                disabled={isViewMode}
+              />
+              <div className="mt-3">
+                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
+                  FO : Ram Verma (GLC 0019)
+                </p>
+              </div>
+            </div>
+          </div>
+        </FormSection>
+
+        {/* ── BANK DETAILS ── */}
+        <FormSection title="Enter Bank Details">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
+            <RHFDropdown
+              name="bankName"
+              control={control}
+              label="Bank Name"
+              options={BANK_OPTIONS}
+              placeholder="Select Bank"
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="accountNumber"
+              control={control}
+              label="Account Number"
+              placeholder="Enter Account Number"
+              maxLength={30}
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="ifscCode"
+              control={control}
+              label="IFSC Code"
+              placeholder="Enter IFSC Code"
+              maxLength={30}
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="bankBranch"
+              control={control}
+              label="Bank Branch"
+              placeholder="Enter Bank Branch"
+              maxLength={30}
+              disabled={isViewMode}
+            />
+          </div>
+        </FormSection>
+
+        {/* ── UPLOAD DOCUMENTS — now RHF-controlled ── */}
+        <FormSection title="Upload Documents">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,30px)]">
+            <UploadBox
+              name="aadharFront"
+              title="Aadhar Card (Front)"
+              control={control}
+              disabled={isViewMode}
+            />
+            <UploadBox
+              name="aadharBack"
+              title="Aadhar Card (Back)"
+              control={control}
+              disabled={isViewMode}
+            />
+            <UploadBox
+              name="panCard"
+              title="Pan Card"
+              control={control}
+              disabled={isViewMode}
+            />
+          </div>
+        </FormSection>
+
+        {/* ── ACTION BUTTONS ── */}
+        <div className="flex justify-end items-center gap-[clamp(12px,1vw,16px)] pt-4">
+          {isViewMode ? (
+            <Button
+              variant="primary"
+              onClick={onCancel}
+              className="
+                              !h-[44px] !min-w-[180px]
+                              !rounded-[100px]
+                              !px-[32px] !py-[8px]
+                              !font-[family-name:var(--font-inter)] !font-medium
+                              !text-[length:clamp(13px,0.9vw,16px)]
+                              !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
+                              !shadow-none
+                          "
+            >
+              Go Back
+            </Button>
+          ) : (
+            <>
+              <button
+                onClick={onCancel}
+                disabled={isLoading}
+                className="
+                                text-[clamp(12px,0.9vw,16px)] font-medium text-[color:var(--text-primary)]
+                                px-6 py-2 hover:opacity-70 transition-opacity disabled:opacity-50
+                            "
+              >
+                Cancel
+              </button>
+              <Button
+                variant="primary"
+                onClick={handleSubmit(handleSave, () => {
+                  toast.error("Please fix validation errors before saving.");
+                })}
+                loading={isLoading || isSubmitting}
+                className="
+                                !h-[44px] !min-w-[180px]
+                                !rounded-[100px]
+                                !px-[32px] !py-[8px]
+                                !font-[family-name:var(--font-inter)] !font-medium
+                                !text-[length:clamp(13px,0.9vw,16px)]
+                                !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
+                                !shadow-none
+                            "
+              >
+                {isEdit ? "Update Profile" : "Create Profile"}
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ─── FormSection ──────────────────────────────────────────────────────────────
 
 function FormSection({
-    title,
-    children,
+  title,
+  children,
 }: {
-    title: string;
-    children: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
 }) {
-    return (
-        <div
-            className="
+  return (
+    <div
+      className="
                 space-y-[clamp(14px,1.5vw,20px)]
                 bg-[color:var(--surface-card)]
                 border border-[color:var(--border)]
@@ -489,107 +735,97 @@ function FormSection({
                 shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
                 p-[clamp(18px,1.8vw,30px)]
             "
-        >
-            <Typography
-                variant="h3"
-                className="font-semibold text-[length:clamp(16px,1.4vw,24px)] text-[color:var(--text-subtle)]"
-            >
-                {title}
-            </Typography>
-            {children}
-        </div>
-    );
+    >
+      <Typography
+        variant="h3"
+        className="font-semibold text-[length:clamp(16px,1.4vw,24px)] text-[color:var(--text-subtle)]"
+      >
+        {title}
+      </Typography>
+      {children}
+    </div>
+  );
 }
 
-// ─── UploadBox ────────────────────────────────────────────────────────────────
+// ─── UploadBox (now RHF-controlled) ──────────────────────────────────────────
 
 function UploadBox({
-    title,
-    fileName,
-    onFile,
+  title,
+  name,
+  control,
+  disabled = false,
 }: {
-    title: string;
-    fileName?: string;
-    onFile: (file: File | null) => void;
+  title: string;
+  name: "aadharFront" | "aadharBack" | "panCard";
+  control: Control<AgentFormValues>;
+  disabled?: boolean;
 }) {
-    const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    return (
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState }) => (
         <div className="space-y-[clamp(8px,0.8vw,14px)]">
-            <p
-                className="
-                    font-medium
-                    text-[length:clamp(12px,0.97vw,16px)]
-                    text-[color:var(--label-color)]
-                    font-[family-name:var(--font-sans)]
-                "
-            >
-                {title}
-            </p>
-
-            <div
-                onClick={() => inputRef.current?.click()}
-                className="
-                    flex flex-col items-center justify-center gap-2
-                    h-[clamp(100px,9vw,128px)]
-                    border-2 border-dashed border-[color:var(--border-default)]
-                    rounded-[var(--radius-dropdown)]
-                    cursor-pointer
-                    bg-[color:var(--input)]
-                    hover:brightness-95
-                    transition-colors
-                "
-            >
-                {fileName ? (
-                    <>
-                        <FileText
-                            strokeWidth={1.5}
-                            className="
-                                w-[clamp(20px,1.8vw,28px)] h-[clamp(20px,1.8vw,28px)]
-                                text-[color:var(--label-color)]
-                            "
-                        />
-                        <span
-                            className="
-                                font-medium text-center px-3 truncate max-w-full
-                                text-[length:clamp(11px,0.85vw,14px)]
-                                text-[color:var(--profile-text)]
-                                font-[family-name:var(--font-sans)]
-                            "
-                        >
-                            {fileName}
-                        </span>
-                    </>
-                ) : (
-                    <>
-                        <Upload
-                            strokeWidth={1.5}
-                            className="
-                                w-[clamp(18px,1.6vw,24px)] h-[clamp(18px,1.6vw,24px)]
-                                text-[color:var(--label-color)]
-                            "
-                        />
-                        <span
-                            className="
-                                font-medium
-                                text-[length:clamp(12px,0.9vw,16px)]
-                                text-[color:var(--profile-text)]
-                                font-[family-name:var(--font-sans)]
-                            "
-                        >
-                            Upload File
-                        </span>
-                    </>
-                )}
-            </div>
-
-            <input
-                ref={inputRef}
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
-                className="hidden"
-                onChange={(e) => onFile(e.target.files?.[0] ?? null)}
-            />
+          <p className="font-medium text-[length:clamp(12px,0.97vw,16px)] text-[color:var(--label-color)] font-[family-name:var(--font-sans)]">
+            {title}
+          </p>
+          <div
+            onClick={() => !disabled && inputRef.current?.click()}
+            className={`
+                            flex flex-col items-center justify-center gap-2
+                            h-[clamp(100px,9vw,128px)]
+                            border-2 border-dashed rounded-[var(--radius-dropdown)]
+                            bg-[color:var(--input)]
+                            transition-colors
+                            ${disabled
+                ? "opacity-60 cursor-not-allowed border-gray-200"
+                : "cursor-pointer hover:brightness-95"
+              }
+                            ${fieldState.error
+                ? "border-red-500 bg-red-50/30"
+                : "border-[color:var(--border-default)]"
+              }
+                        `}
+          >
+            {field.value ? (
+              <>
+                <FileText
+                  strokeWidth={1.5}
+                  className="w-[clamp(20px,1.8vw,28px)] h-[clamp(20px,1.8vw,28px)] text-[color:var(--label-color)]"
+                />
+                <span className="font-medium text-center px-3 truncate max-w-full text-[length:clamp(11px,0.85vw,14px)] text-[color:var(--profile-text)] font-[family-name:var(--font-sans)]">
+                  {field.value.name}
+                </span>
+              </>
+            ) : (
+              <>
+                <Upload
+                  strokeWidth={1.5}
+                  className="w-[clamp(18px,1.6vw,24px)] h-[clamp(18px,1.6vw,24px)] text-[color:var(--label-color)]"
+                />
+                <span className="font-medium text-[length:clamp(12px,0.9vw,16px)] text-[color:var(--profile-text)] font-[family-name:var(--font-sans)]">
+                  Upload File
+                </span>
+              </>
+            )}
+          </div>
+          {fieldState.error && (
+            <span className="text-red-500 text-[0.75rem] leading-none">
+              {fieldState.error.message}
+            </span>
+          )}
+          <input
+            ref={inputRef}
+            type="file"
+            disabled={disabled}
+            accept=".pdf,.jpg,.jpeg,.png"
+            className="hidden"
+            onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
+          />
         </div>
-    );
+      )}
+    />
+  );
 }

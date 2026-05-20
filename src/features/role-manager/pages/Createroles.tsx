@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Typography } from "@/components/ui/typography";
 import arrowLeftIcon from "@/assets/arrow.svg";
@@ -8,7 +9,7 @@ import intelligenceOfficerImg from "@/assets/role-intelligence-officer.svg";
 import fieldOfficerImg from "@/assets/role-field-officer.svg";
 import agentImg from "@/assets/role-agent.svg";
 
-// ─── Role data ────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface RoleItem {
   id: string;
@@ -17,14 +18,16 @@ interface RoleItem {
   badge: string;
   imageSrc: string;
   imageAlt: string;
+  onClick?: () => void;
 }
+
+// ─── Role data ────────────────────────────────────────────────────────────────
 
 const ROLES: RoleItem[] = [
   {
     id: "regional-officer",
     title: "Regional Officer",
-    description:
-      "Oversees territory strategy and approves final land acquisitions.",
+    description: "Oversees territory strategy and approves final land acquisitions.",
     badge: "Approval Authority",
     imageSrc: regionalOfficerImg,
     imageAlt: "Regional Officer",
@@ -32,8 +35,7 @@ const ROLES: RoleItem[] = [
   {
     id: "intelligence-officer",
     title: "Intelligence Officer",
-    description:
-      "Validates documentation and ensures all assets are risk-free.",
+    description: "Validates documentation and ensures all assets are risk-free.",
     badge: "Risk Assessment",
     imageSrc: intelligenceOfficerImg,
     imageAlt: "Intelligence Officer",
@@ -41,8 +43,7 @@ const ROLES: RoleItem[] = [
   {
     id: "field-officer",
     title: "Field Officer",
-    description:
-      "Conducts physical inspections to verify boundaries and reality.",
+    description: "Conducts physical inspections to verify boundaries and reality.",
     badge: "Physical Verification",
     imageSrc: fieldOfficerImg,
     imageAlt: "Field Officer",
@@ -56,6 +57,16 @@ const ROLES: RoleItem[] = [
     imageAlt: "Agent",
   },
 ];
+
+// ─── Route map — must match paths in routes.config.tsx exactly ───────────────
+const ROLE_ROUTES: Record<string, string> = {
+  "regional-officer":     "/role-manager/regional-officer-create",
+  "intelligence-officer": "/role-manager/intellegence-officer-create", // matches routes.config typo
+  "field-officer":        "/role-manager/field-officer-create",
+  "agent":                "/role-manager/agent-create",
+};
+
+// ─── GoBackButton ─────────────────────────────────────────────────────────────
 
 const GoBackButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
   <button
@@ -73,11 +84,9 @@ const GoBackButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
     )}
     aria-label="Go Back to Dashboard"
   >
-    {/* Arrow icon — Figma: 24×24, rotated so it points left */}
     <span className="flex items-center justify-center shrink-0 w-5 h-5 lg:w-6 lg:h-6">
       <img src={arrowLeftIcon} alt="Back Arrow" className="w-5 h-5 shrink-0" />
     </span>
-
     <Typography
       as="span"
       variant="span"
@@ -93,6 +102,7 @@ const GoBackButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
   </button>
 );
 
+// ─── RoleCard ─────────────────────────────────────────────────────────────────
 
 const RoleCard: React.FC<RoleItem> = ({
   title,
@@ -100,37 +110,24 @@ const RoleCard: React.FC<RoleItem> = ({
   badge,
   imageSrc,
   imageAlt,
+  onClick,
 }) => (
   <div
+    onClick={onClick}
     className={cn(
       "relative flex flex-col w-full overflow-hidden",
       "bg-[var(--surface-card)]",
       "rounded-[32px] lg:rounded-[38px] xl:rounded-[46px] 2xl:rounded-[46px]",
       "shadow-[0px_0px_8.4px_rgba(0,0,0,0.06)]",
       "h-[280px] lg:h-[300px] xl:h-[331px] 2xl:h-[360px]",
+      "cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]",
     )}
   >
-    <div
-      className={cn(
-        "relative w-full bg-[var(--surface-card)] shrink-0",
-        "h-[52%]",
-        "px-3 pt-4 pb-0",
-      )}
-    >
-      <img
-        src={imageSrc}
-        alt={imageAlt}
-        className="w-full h-full object-contain object-bottom"
-      />
+    <div className={cn("relative w-full bg-[var(--surface-card)] shrink-0", "h-[52%]", "px-3 pt-4 pb-0")}>
+      <img src={imageSrc} alt={imageAlt} className="w-full h-full object-contain object-bottom" />
     </div>
 
-    <div
-      className={cn(
-        "flex flex-col flex-1 min-h-0 bg-[var(--surface-card)]",
-        "px-5 pt-3 pb-5",
-        "gap-1.5",
-      )}
-    >
+    <div className={cn("flex flex-col flex-1 min-h-0 bg-[var(--surface-card)]", "px-5 pt-3 pb-5", "gap-1.5")}>
       <Typography
         as="h3"
         variant="span"
@@ -143,6 +140,7 @@ const RoleCard: React.FC<RoleItem> = ({
       >
         {title}
       </Typography>
+
       <Typography
         as="p"
         variant="span"
@@ -157,13 +155,10 @@ const RoleCard: React.FC<RoleItem> = ({
         {description}
       </Typography>
 
-      {/* Badge — Style 1: grey filled pill, no border, muted blue-grey text */}
       <div
         className={cn(
           "inline-flex items-center justify-center self-start",
-          "bg-[var(--surface-page)]",
-          "border-0",
-          "rounded-[17.5px]",
+          "bg-[var(--surface-page)] border-0 rounded-[17.5px]",
           "px-3 lg:px-4",
           "h-[28px] lg:h-[30px] xl:h-[35px] 2xl:h-[37px]",
           "mt-0.5",
@@ -186,8 +181,11 @@ const RoleCard: React.FC<RoleItem> = ({
   </div>
 );
 
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 const CreateRoles: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <div
       className={cn(
@@ -196,40 +194,37 @@ const CreateRoles: React.FC = () => {
         "py-[38px] xl:py-[44px] [@media(min-width:1440px)]:py-[47px] 2xl:py-[52px] [@media(min-width:1920px)]:py-[60px]",
       )}
     >
-
-      <GoBackButton />
+      <GoBackButton onClick={() => navigate("/role-manager/user-directory")} />
 
       <Typography
         as="h1"
         variant="span"
         className={cn(
           "font-[family-name:var(--font-sans)] font-bold",
-          "text-[var(--text-primary)]",
-          "tracking-[-0.6px]",
-          "block",
+          "text-[var(--text-primary)] tracking-[-0.6px] block",
           "text-[22px] xl:text-[26px] [@media(min-width:1440px)]:text-[30px] [@media(min-width:1920px)]:text-[34px]",
           "leading-[1.1] [@media(min-width:1440px)]:leading-[32px]",
-          "mt-[44px] xl:text-[26px] xl:mt-[60px] [@media(min-width:1440px)]:mt-[70px] 2xl:mt-[76px] [@media(min-width:1920px)]:mt-[90px]",
+          "mt-[44px] xl:mt-[60px] [@media(min-width:1440px)]:mt-[70px] 2xl:mt-[76px] [@media(min-width:1920px)]:mt-[90px]",
         )}
       >
         Create Roles. Drive Accountability.
       </Typography>
+
       <Typography
         as="p"
         variant="span"
         className={cn(
           "font-[family-name:var(--font-sans)] font-normal",
-          "text-[var(--text-primary)] opacity-60",
-          "block",
+          "text-[var(--text-primary)] opacity-60 block",
           "text-[12px] xl:text-[15px] [@media(min-width:1440px)]:text-[16px] [@media(min-width:1920px)]:text-[17px]",
           "leading-[22px] [@media(min-width:1440px)]:leading-[26px]",
           "mt-[10px] xl:mt-[15px] [@media(min-width:1440px)]:mt-[19px] [@media(min-width:1920px)]:mt-[24px]",
           "max-w-[640px] xl:max-w-[860px] [@media(min-width:1440px)]:max-w-[996px] [@media(min-width:1920px)]:max-w-[1120px]",
         )}
       >
-        Assign clear responsibilities across your land operations, from
-        approvals and risk assessment to field verification and deal sourcing,
-        so every step is structured, transparent, and easy to manage.
+        Assign clear responsibilities across your land operations, from approvals and risk
+        assessment to field verification and deal sourcing, so every step is structured,
+        transparent, and easy to manage.
       </Typography>
 
       <div
@@ -241,7 +236,11 @@ const CreateRoles: React.FC = () => {
         )}
       >
         {ROLES.map((role) => (
-          <RoleCard key={role.id} {...role} />
+          <RoleCard
+            key={role.id}
+            {...role}
+            onClick={() => navigate(ROLE_ROUTES[role.id])}
+          />
         ))}
       </div>
     </div>

@@ -1,5 +1,6 @@
 export const env = {
-  API_BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+  AUTH_API_BASE_URL: import.meta.env.VITE_AUTH_API_BASE_URL || 'http://localhost:3000/api',
+  ROLE_MANAGER_API_BASE_URL: import.meta.env.VITE_ROLE_MANAGER_API_BASE_URL || 'https://adttk4j6t7.execute-api.ap-south-1.amazonaws.com',
   APP_NAME: import.meta.env.VITE_APP_NAME || 'GLC-UI',
   APP_ENV: import.meta.env.VITE_APP_ENV || 'development',
   APP_VERSION: import.meta.env.VITE_APP_VERSION || 'v1.0.0',

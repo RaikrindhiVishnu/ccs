@@ -39,7 +39,7 @@
   --text-supporting: #626c70;
   --profile-text: #191b1c;
   --text-button: #353535;
-
+  --text-strong:#000000;
   /* ─── STATUS ────────────────────────────────────────────────── */
   --status-pending: var(--brand-500);
   --status-success: #16A34A;
@@ -210,6 +210,7 @@
   --btn-radius-pill-sm: 33px;
   --btn-radius-circle: 9999px;
   --btn-radius-rounded: 8px;
+  --radius-dropdown: 12px;
 }
 
 /* ─── BASE STYLES ────────────────────────────────────────────────── */

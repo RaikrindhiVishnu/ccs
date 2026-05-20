@@ -36,10 +36,11 @@ function DropdownMenu({
   return (
     <div
       className={cn(
-        "absolute top-full z-50 mt-1 overflow-hidden",
+        "absolute top-full z-50 mt-1",
+        "max-h-[14rem] overflow-y-auto",
         "bg-[color:var(--surface-card)]",
         "border border-[color:var(--border)]",
-        "rounded-[var(--radius-dropdown)]",
+        "rounded-xl",
         "shadow-[var(--shadow-card)]",
         "min-w-full",
         align === "right" ? "right-0" : "left-0",
@@ -127,7 +128,7 @@ function useOutsideClick(cb: () => void) {
 }
 
 export interface PillDropdownProps {
-  options?: string[];
+  options?: string[] | { label: string; value: string }[];
   defaultValue?: string;
   value?: string;
   onChange?: (value: string) => void;
@@ -135,16 +136,23 @@ export interface PillDropdownProps {
 }
 
 export function PillDropdown({
-  options = ["January", "February", "March"],
+  options = [],
   defaultValue,
   value,
   onChange,
   className,
 }: PillDropdownProps) {
+  const normalized = options.map((o) =>
+    typeof o === "string" ? { label: o, value: o } : o,
+  );
+
   const [open, setOpen] = useState(false);
-  const [internal, setInternal] = useState(defaultValue ?? options[0]);
+  const [internal, setInternal] = useState(defaultValue ?? normalized[0]?.value ?? "");
   const ref = useOutsideClick(() => setOpen(false));
   const selected = value ?? internal;
+
+  const selectedLabel =
+    normalized.find((o) => o.value === selected)?.label ?? selected;
 
   const pick = (val: string) => {
     setInternal(val);
@@ -170,7 +178,7 @@ export function PillDropdown({
           "hover:bg-[color:var(--brand-tint)]",
         )}
       >
-        <span className="flex-1 text-left whitespace-nowrap">{selected}</span>
+        <span className="flex-1 text-left whitespace-nowrap">{selectedLabel}</span>
         <ChevronDown
           className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         />
@@ -178,14 +186,14 @@ export function PillDropdown({
 
       {open && (
         <DropdownMenu>
-          {options.map((opt) => (
+          {normalized.map((opt) => (
             <MenuItem
-              key={opt}
-              active={selected === opt}
-              onClick={() => pick(opt)}
+              key={opt.value}
+              active={selected === opt.value}
+              onClick={() => pick(opt.value)}
               fontClass="font-[family-name:var(--font-inter)]"
             >
-              {opt}
+              {opt.label}
             </MenuItem>
           ))}
         </DropdownMenu>
@@ -418,7 +426,7 @@ export function SquareDropdown({
           "px-[clamp(14px,1.5vw,26px)]",
           "bg-[color:var(--surface-card)]",
           "border border-[color:var(--text-muted-strong)]",
-          "rounded-[8px]",
+          "rounded-xl",
           "hover:border-[color:var(--brand-500)]",
         )}
       >
@@ -446,7 +454,11 @@ export function SquareDropdown({
                   onClick={(e) => removeChip(val, e)}
                   className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity flex items-center"
                 >
-                  <svg viewBox="0 0 8 8" fill="none" className="w-[8px] h-[8px]">
+                  <svg
+                    viewBox="0 0 8 8"
+                    fill="none"
+                    className="w-[8px] h-[8px]"
+                  >
                     <path
                       d="M1 1L7 7M7 1L1 7"
                       stroke="white"
@@ -548,7 +560,7 @@ export function CheckboxDropdown({
           "px-[clamp(14px,1.5vw,26px)]",
           "bg-[color:var(--surface-card)]",
           "border border-[color:var(--text-muted-strong)]",
-          "rounded-[8px]",
+          "rounded-xl",
           "hover:border-[color:var(--brand-500)]",
         )}
       >
@@ -580,7 +592,7 @@ export function CheckboxDropdown({
                 "w-full outline-none transition-colors duration-150",
                 "bg-[color:var(--input)]",
                 "border border-[color:var(--border)]",
-                "rounded-[8px]",
+                "rounded-xl",
                 "text-[color:var(--text-primary)]",
                 "text-[length:clamp(11px,0.75vw,14px)]",
                 "font-[family-name:var(--font-sans)]",
@@ -688,7 +700,7 @@ export function FormDropdown({
           "flex items-center w-full bg-[color:var(--surface-card)] cursor-pointer",
           "h-[clamp(36px,2.9vw,40px)]",
           "border border-[color:var(--border-default)]",
-          "rounded-[var(--radius-dropdown)]",
+          "rounded-xl",
           "px-[clamp(10px,0.9vw,14px)]",
           "transition-colors duration-150",
           "hover:border-[color:var(--brand-500)]",
