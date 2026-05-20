@@ -26,6 +26,14 @@ export const authApi = baseApi.injectEndpoints({
         body,
       }),
     }),
+
+    generatePresignedUrl: builder.query<{ url: string }, string>({
+      query: (key) => ({
+        url: "/s3/generateUrl",
+        method: "POST",
+        body: { key },
+      }),
+    }),
   }),
 });
 
@@ -33,4 +41,5 @@ export const {
   useLoginMutation,
   useSendIssueMailMutation,
   useApproveUserMutation,
+  useGeneratePresignedUrlQuery,
 } = authApi;

@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import Successcard from "@/components/ui/Successcard";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { decompressGeoJSON } from "../utils/utils";
-import { Maximize2, ChevronLeft, Plus, X, Loader2 } from "lucide-react";
+import { Maximize2, ChevronLeft, Plus, X, Loader2, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -241,6 +242,9 @@ const RegionSelection: React.FC = () => {
 
   const [searchParams] = useSearchParams();
   const mode = searchParams.get("mode") || "region";
+
+  const navigate = useNavigate();
+  const [successCardProps, setSuccessCardProps] = useState<any | null>(null);
 
   const [isZoomed, setIsZooming] = useState(false);
   const [selectedState, setSelectedState] = useState<any | null>(null);
@@ -1304,6 +1308,17 @@ const RegionSelection: React.FC = () => {
     }
   }, [selectedState, regionsByCountryData, mode]);
 
+  const handleRemoveDistrict = (district: any) => {
+    const dtId = district.id ?? district.featureId;
+    setSelectedDistricts((prev) => prev.filter((d) => (d.id ?? d.featureId) !== dtId));
+    if (district.featureId !== undefined && map.current) {
+      map.current.setFeatureState(
+        { source: "districts-source", id: district.featureId },
+        { selected: false }
+      );
+    }
+  };
+
   const handleCreateRegion = async () => {
     if (
       !regionName ||
@@ -1320,7 +1335,7 @@ const RegionSelection: React.FC = () => {
         Number(d.id ?? d.featureId),
       );
 
-      await createRegion({
+      const res = await createRegion({
         regionName,
         regionCode,
         regionalOfficerId: selectedRegionalOfficerId,
@@ -1348,6 +1363,19 @@ const RegionSelection: React.FC = () => {
       setRegionCode("");
       setSelectedRegionalOfficerId(null);
       setSelectedIntelligenceOfficerId(null);
+
+      // Show Successcard
+      const now = new Date();
+      setSuccessCardProps({
+        badgeLabel: "Region Creation",
+        titleLine1: "Region",
+        titleLine2: "Created Successfully!",
+        redirectText: "Redirecting to Dashboard...",
+        regionName: regionName,
+        assignedId: res?.data?.region_code || res?.regionCode || regionCode,
+        createdDate: now.toLocaleDateString(),
+        createdTime: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      });
     } catch (err) {
       console.error("Failed to create region:", err);
       toast.error("Failed to create region");
@@ -1365,7 +1393,7 @@ const RegionSelection: React.FC = () => {
         mandal_id: Number(m.id ?? m.featureId),
       }));
 
-      await createArea({
+      const res = await createArea({
         areaName,
         area_code: areaCode,
         field_officer_id: 115, // Hardcoded per user request
@@ -1395,11 +1423,33 @@ const RegionSelection: React.FC = () => {
       setIsAreaModalOpen(false);
       setAreaName("");
       setAreaCode("");
+
+      // Show Successcard
+      const now = new Date();
+      setSuccessCardProps({
+        badgeLabel: "Area Creation",
+        titleLine1: "Area",
+        titleLine2: "Created Successfully!",
+        redirectText: "Redirecting to Dashboard...",
+        regionName: areaName,
+        assignedId: res?.data?.area_code || res?.areaCode || areaCode,
+        createdDate: now.toLocaleDateString(),
+        createdTime: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      });
     } catch (err) {
       console.error("Failed to create area:", err);
       toast.error("Failed to create area");
     }
   };
+
+  if (successCardProps) {
+    return (
+      <Successcard
+        {...successCardProps}
+        onRedirect={() => navigate("/role-manager/region-area-dashboard")}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-slate-50/50 relative">
@@ -1552,7 +1602,7 @@ const RegionSelection: React.FC = () => {
             className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300"
             onClick={() => setIsModalOpen(false)}
           />
-          <div className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-8">
+          <div className="relative w-full max-w-md max-h-[90vh] flex flex-col bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-8">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 transition-colors"
@@ -1560,43 +1610,48 @@ const RegionSelection: React.FC = () => {
               <X className="w-5 h-5 text-slate-400" />
             </button>
 
-            <div className="flex flex-col gap-1 mb-8">
-              <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em]">
-                Region Setup
-              </span>
-              <p className="text-2xl font-black text-slate-800 tracking-tight">
-                Create New Region
-              </p>
+            <div className="flex items-center gap-3.5 mb-6">
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center">
+                <MapPin className="w-6 h-6 text-slate-600" />
+              </div>
+              <div className="flex flex-col">
+                <h3 className="text-xl font-bold text-slate-800 tracking-tight leading-none mb-1">
+                  Create Region
+                </h3>
+                <p className="text-xs text-slate-500 font-medium">
+                  Creating regions in {selectedState?.properties?.name || selectedState?.properties?.STNAME || "Andhra Pradesh"}
+                </p>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-6 mb-8">
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
-                  Region Name
+            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 mb-6">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-700 ml-1">
+                  Enter Region Name
                 </label>
                 <Input
-                  placeholder="e.g. South Andhra Hub"
+                  placeholder="e.g. Nellore"
                   value={regionName}
                   onChange={(e) => setRegionName(e.target.value)}
-                  className="rounded-2xl border-slate-200 h-14 px-5 focus:ring-blue-500"
+                  className="rounded-2xl border-slate-200 h-12 px-4 text-sm focus:ring-blue-500"
                 />
               </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
-                  Region Code
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-700 ml-1">
+                  Enter Region Code
                 </label>
                 <Input
                   placeholder="e.g. SAH-01"
                   value={regionCode}
                   onChange={(e) => setRegionCode(e.target.value)}
-                  className="rounded-2xl border-slate-200 h-14 px-5 focus:ring-blue-500"
+                  className="rounded-2xl border-slate-200 h-12 px-4 text-sm focus:ring-blue-500"
                 />
               </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
-                  Regional Officer
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-700 ml-1">
+                  Select Regional Officer
                 </label>
                 <select
                   value={selectedRegionalOfficerId ?? ""}
@@ -1605,7 +1660,7 @@ const RegionSelection: React.FC = () => {
                       e.target.value ? Number(e.target.value) : null,
                     )
                   }
-                  className="rounded-2xl border border-slate-200 h-14 px-5 bg-white text-slate-800 focus:ring-blue-500"
+                  className="rounded-2xl border border-slate-200 h-12 px-4 bg-white text-slate-800 text-sm focus:ring-blue-500"
                 >
                   <option value="">Select Regional Officer</option>
                   {regionalOfficers.map((officer, index) => {
@@ -1628,9 +1683,9 @@ const RegionSelection: React.FC = () => {
                 </select>
               </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
-                  Intelligence Officer
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-700 ml-1">
+                  Select Intelligence Officer
                 </label>
                 <select
                   value={selectedIntelligenceOfficerId ?? ""}
@@ -1639,7 +1694,7 @@ const RegionSelection: React.FC = () => {
                       e.target.value ? Number(e.target.value) : null,
                     )
                   }
-                  className="rounded-2xl border border-slate-200 h-14 px-5 bg-white text-slate-800 focus:ring-blue-500"
+                  className="rounded-2xl border border-slate-200 h-12 px-4 bg-white text-slate-800 text-sm focus:ring-blue-500"
                 >
                   <option value="">Select Intelligence Officer</option>
                   {intelligenceOfficers.map((officer, index) => {
@@ -1662,17 +1717,19 @@ const RegionSelection: React.FC = () => {
                 </select>
               </div>
 
-              <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">
-                  Linked Districts
-                </span>
-                <div className="flex flex-wrap gap-2">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-slate-700 ml-1">
+                  Tag Sub-Regions
+                </label>
+                <div className="flex flex-wrap gap-2 p-3.5 rounded-2xl bg-slate-50 border border-slate-100 max-h-32 overflow-y-auto">
                   {selectedDistricts.map((d, i) => (
                     <div
                       key={i}
-                      className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-[10px] font-bold shadow-sm"
+                      onClick={() => handleRemoveDistrict(d)}
+                      className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-[#2B82C9] text-xs font-bold shadow-sm flex items-center gap-2 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 group cursor-pointer"
                     >
-                      {d.name || d.dtname || d.d}
+                      <span>{d.name || d.dtname || d.d}</span>
+                      <X className="w-3.5 h-3.5 text-slate-400 group-hover:text-red-500 transition-colors" />
                     </div>
                   ))}
                 </div>
@@ -1682,10 +1739,10 @@ const RegionSelection: React.FC = () => {
             <Button
               disabled={isCreating}
               onClick={handleCreateRegion}
-              className="w-full rounded-2xl bg-slate-900 py-7 text-white font-bold uppercase tracking-widest text-xs hover:bg-slate-800 transition-all active:scale-95 shadow-xl"
+              className="w-full rounded-full bg-[#2B82C9] py-6 text-white font-bold text-sm hover:bg-[#206fae] transition-all active:scale-[0.98] shadow-lg shadow-blue-500/10 flex items-center justify-center gap-2"
             >
-              {isCreating && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-              Save Region Configuration
+              {isCreating && <Loader2 className="w-4 h-4 animate-spin" />}
+              Save Region
             </Button>
           </div>
         </div>
