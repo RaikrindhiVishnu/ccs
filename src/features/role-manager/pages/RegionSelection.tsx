@@ -9,9 +9,25 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import {
   useCreateRegionMutation,
+  useCreateAreaMutation,
   useGetAllGeoJsonDataQuery,
   useGetRegionsByCountryIdQuery,
+  useGetAllAreasByRegionIdQuery,
 } from "../api/regionSelectionApi";
+
+// ─── Constants ──────────────────────────────────────────────────────────────
+const AREA_COLORS = [
+  "#3b82f6", // Premium Blue
+  "#10b981", // Premium Emerald
+  "#f59e0b", // Premium Amber
+  "#ef4444", // Premium Red
+  "#8b5cf6", // Premium Violet
+  "#ec4899", // Premium Pink
+  "#06b6d4", // Premium Cyan
+  "#f97316", // Premium Orange
+  "#14b8a6", // Premium Teal
+  "#6366f1", // Premium Indigo
+];
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 interface GeoMasterItem {
@@ -21,7 +37,9 @@ interface GeoMasterItem {
   i: number; // id
 }
 
-interface MandalItem extends GeoMasterItem {}
+interface MandalItem extends GeoMasterItem {
+  district_id?: number;
+}
 
 interface DistrictItem extends GeoMasterItem {
   mandals: MandalItem[];
@@ -93,10 +111,11 @@ function extractDistrictsGeoJSON(
   }));
 }
 
-/** Extract a FeatureCollection of mandals for a list of district IDs */
+/** Extract a FeatureCollection of mandals for a list of district IDs and tag assigned ones with dynamic colors per area */
 function extractMandalsGeoJSON(
   data: GeoMasterData,
   districtIds: number[],
+  areasList: any[] = [],
 ): GeoJSON.FeatureCollection {
   const allMandals: MandalItem[] = [];
 
@@ -105,14 +124,42 @@ function extractMandalsGeoJSON(
       state.districts?.forEach((district) => {
         if (districtIds.includes(district.i)) {
           if (district.mandals) {
-            allMandals.push(...district.mandals);
+            const mappedMandals = district.mandals.map(m => ({ ...m, district_id: district.i }));
+            mappedMandals.forEach(m => {
+              if (!allMandals.some(existing => existing.i === m.i)) {
+                allMandals.push(m);
+              }
+            });
           }
         }
       });
     });
   });
 
-  return toFeatureCollection(allMandals);
+  const assignedMandalMap = new Map<number, { color: string; areaName: string }>();
+  if (Array.isArray(areasList)) {
+    areasList.forEach((area, idx) => {
+      const color = AREA_COLORS[idx % AREA_COLORS.length];
+      if (Array.isArray(area.mandal_ids)) {
+        area.mandal_ids.forEach((mId: any) => {
+          const idNum = Number(mId);
+          if (!isNaN(idNum)) {
+            assignedMandalMap.set(idNum, { color, areaName: area.area_name || area.areaName || "" });
+          }
+        });
+      }
+    });
+  }
+
+  return toFeatureCollection(allMandals, (item) => {
+    const info = assignedMandalMap.get(item.i);
+    return { 
+      district_id: (item as MandalItem).district_id,
+      isAssigned: !!info,
+      areaColor: info?.color || "",
+      areaName: info?.areaName || "",
+    };
+  });
 }
 
 /** Robustly extract district IDs from a region feature using optimal keys and fallback name matching */
@@ -206,6 +253,12 @@ const RegionSelection: React.FC = () => {
   const [regionName, setRegionName] = useState("");
   const [regionCode, setRegionCode] = useState("");
   const [hoveredDistrictName, setHoveredDistrictName] = useState<string | null>(null);
+
+  // Area Creation States
+  const [selectedMandals, setSelectedMandals] = useState<any[]>([]);
+  const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
+  const [areaName, setAreaName] = useState("");
+  const [areaCode, setAreaCode] = useState("");
   const [hoveredMandalName, setHoveredMandalName] = useState<string | null>(null);
 
   const { data: allGeoJsonData } = useGetAllGeoJsonDataQuery();
@@ -239,6 +292,12 @@ const RegionSelection: React.FC = () => {
     }
     return assigned;
   }, [regionsByCountryData, geoMasterData]);
+
+  const selectedRegionId = selectedRegion?.properties?.region_id ?? selectedRegion?.properties?.id ?? selectedRegion?.id;
+  const { data: areasData, refetch: refetchAreas } = useGetAllAreasByRegionIdQuery(
+    { region_id: Number(selectedRegionId) },
+    { skip: !selectedRegionId }
+  );
 
   // Filter country regions for selected state to render emerald overlays in Region Mode
   const stateRegionsData = useMemo(() => {
@@ -276,6 +335,7 @@ const RegionSelection: React.FC = () => {
   }, [selectedState, regionsByCountryData, geoMasterData]);
 
   const [createRegion, { isLoading: isCreating }] = useCreateRegionMutation();
+  const [createArea, { isLoading: isCreatingArea }] = useCreateAreaMutation();
 
 
   const selectedStateId: number | undefined = selectedState?.properties?.id;
@@ -817,6 +877,173 @@ const RegionSelection: React.FC = () => {
     }
   }, [selectedState, stateRegionsData, mapLoaded]);
 
+  // Effect to dynamically update (or create) mandals-source when areasData or selectedRegion updates
+  useEffect(() => {
+    if (!map.current || !geoMasterData || !selectedRegion) return;
+
+    try {
+      const districtIds = getDistrictIdsFromRegion(selectedRegion, geoMasterData);
+      if (districtIds.length === 0) return;
+
+      const areasList = areasData?.data || [];
+      const mandalsGeoJSON = extractMandalsGeoJSON(geoMasterData, districtIds, areasList);
+
+      const existingSource = map.current.getSource("mandals-source") as maplibregl.GeoJSONSource | undefined;
+
+      if (existingSource) {
+        // Source already exists — just refresh the data
+        existingSource.setData(mandalsGeoJSON);
+      } else {
+        // Source doesn't exist yet — create source + layers + events from scratch
+        map.current.addSource("mandals-source", {
+          type: "geojson",
+          data: mandalsGeoJSON,
+          generateId: true,
+        });
+
+        // Fill layer with dynamic area colors
+        map.current.addLayer(
+          {
+            id: "mandals-fill",
+            type: "fill",
+            source: "mandals-source",
+            paint: {
+              "fill-color": [
+                "case",
+                ["boolean", ["get", "isAssigned"], false],
+                ["coalesce", ["get", "areaColor"], "#94a3b8"],
+                ["boolean", ["feature-state", "selected"], false],
+                "#0284c7",
+                "#38bdf8",
+              ],
+              "fill-opacity": [
+                "case",
+                ["boolean", ["get", "isAssigned"], false],
+                0.4,
+                ["boolean", ["feature-state", "selected"], false],
+                0.55,
+                ["boolean", ["feature-state", "hover"], false],
+                0.45,
+                0.25,
+              ],
+            },
+          },
+          "states-border-line",
+        );
+
+        // Teal outline
+        map.current.addLayer(
+          {
+            id: "mandals-line",
+            type: "line",
+            source: "mandals-source",
+            paint: {
+              "line-color": "#0d9488",
+              "line-width": 1.2,
+            },
+          },
+          "states-border-line",
+        );
+
+        // Hover / click events
+        let hoveredMandalId: any = null;
+
+        map.current.on("mouseenter", "mandals-fill", (e) => {
+          if (map.current) {
+            const isAssigned = e.features && e.features.length > 0 ? e.features[0].properties?.isAssigned : false;
+            map.current.getCanvas().style.cursor = isAssigned ? "not-allowed" : "pointer";
+          }
+        });
+
+        map.current.on("click", "mandals-fill", (ev) => {
+          if (ev.features && ev.features.length > 0) {
+            const feature = ev.features[0];
+            const mData = feature.properties;
+            const mId = mData?.id ?? feature.id;
+
+            if (mData?.isAssigned) {
+              const nameText = mData.areaName ? `assigned to Area "${mData.areaName}"` : "assigned to an existing area";
+              toast.warning(`${mData.name || "This mandal"} is already ${nameText}.`);
+              return;
+            }
+
+            setSelectedMandals((prev) => {
+              const isAlreadySelected = prev.find((m) => (m.id ?? m.featureId) === mId);
+              if (isAlreadySelected) {
+                map.current?.setFeatureState({ source: "mandals-source", id: feature.id }, { selected: false });
+                return prev.filter((m) => (m.id ?? m.featureId) !== mId);
+              } else {
+                map.current?.setFeatureState({ source: "mandals-source", id: feature.id }, { selected: true });
+                return [...prev, { ...mData, featureId: feature.id }];
+              }
+            });
+          }
+        });
+
+        map.current.on("mousemove", "mandals-fill", (ev) => {
+          if (ev.features && ev.features.length > 0) {
+            const mId = ev.features[0].id;
+            const props = ev.features[0].properties || {};
+            const mName = props.name || props.d || "";
+            const isAssigned: boolean = !!props.isAssigned;
+            const areaName: string = props.areaName || "";
+            const areaColor: string = props.areaColor || "#64748b";
+
+            setHoveredMandalName(mName || null);
+
+            if (map.current && popup.current) {
+              const areaTag = isAssigned && areaName
+                ? `<div style="
+                    display:inline-flex;align-items:center;gap:5px;
+                    margin-top:5px;padding:2px 8px;border-radius:999px;
+                    background:${areaColor}22;border:1.5px solid ${areaColor};
+                    font-size:10px;font-weight:700;color:${areaColor};letter-spacing:0.05em;
+                    white-space:nowrap;
+                  ">
+                    <span style="width:7px;height:7px;border-radius:50%;background:${areaColor};display:inline-block;flex-shrink:0;"></span>
+                    ${areaName}
+                  </div>`
+                : "";
+
+              const html = `
+                <div style="
+                  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+                  background:white;border-radius:10px;padding:9px 12px;
+                  box-shadow:0 4px 20px rgba(0,0,0,0.15);min-width:120px;
+                  border:1px solid #e2e8f0;
+                ">
+                  <div style="font-weight:700;font-size:13px;color:#0f172a;line-height:1.3;">${mName}</div>
+                  ${areaTag}
+                </div>`;
+
+              popup.current.setLngLat(ev.lngLat).setHTML(html).addTo(map.current);
+            }
+
+            if (hoveredMandalId !== null) {
+              map.current?.setFeatureState({ source: "mandals-source", id: hoveredMandalId }, { hover: false });
+            }
+            hoveredMandalId = mId !== undefined && mId !== null ? mId : null;
+            if (hoveredMandalId !== null) {
+              map.current?.setFeatureState({ source: "mandals-source", id: hoveredMandalId }, { hover: true });
+            }
+          }
+        });
+
+        map.current.on("mouseleave", "mandals-fill", () => {
+          if (map.current) map.current.getCanvas().style.cursor = "";
+          setHoveredMandalName(null);
+          popup.current?.remove();
+          if (hoveredMandalId !== null) {
+            map.current?.setFeatureState({ source: "mandals-source", id: hoveredMandalId }, { hover: false });
+          }
+          hoveredMandalId = null;
+        });
+      }
+    } catch (err) {
+      console.error("Failed to dynamically update mandals data:", err);
+    }
+  }, [areasData, selectedRegion, geoMasterData, mapLoaded]);
+
   // Effect to process and render country-wide regions when in India map view
   useEffect(() => {
     if (map.current && regionsByCountryData) {
@@ -904,112 +1131,9 @@ const RegionSelection: React.FC = () => {
                 });
                 setIsZooming(true);
 
-                // Query and render the mandal boundaries
-                const districtIds = getDistrictIdsFromRegion(feature, geoMasterData);
-                console.log("Region clicked in Area Mode. District IDs resolved:", districtIds);
-
-                if (districtIds.length > 0 && geoMasterData) {
-                  const mandalsGeoJSON = extractMandalsGeoJSON(geoMasterData, districtIds);
-
-                  if (!map.current?.getSource("mandals-source")) {
-                    map.current?.addSource("mandals-source", {
-                      type: "geojson",
-                      data: mandalsGeoJSON,
-                      generateId: true,
-                    });
-
-                    // Premium Sky-Blue Fill
-                    map.current?.addLayer(
-                      {
-                        id: "mandals-fill",
-                        type: "fill",
-                        source: "mandals-source",
-                        paint: {
-                          "fill-color": "#38bdf8",
-                          "fill-opacity": [
-                            "case",
-                            ["boolean", ["feature-state", "hover"], false],
-                            0.45,
-                            0.25,
-                          ],
-                        },
-                      },
-                      "states-border-line",
-                    );
-
-                    // Premium Teal Outline
-                    map.current?.addLayer(
-                      {
-                        id: "mandals-line",
-                        type: "line",
-                        source: "mandals-source",
-                        paint: {
-                          "line-color": "#0d9488",
-                          "line-width": 1.2,
-                        },
-                      },
-                      "states-border-line",
-                    );
-
-                    // Hover events for mandals
-                    let hoveredMandalId: any = null;
-                    map.current?.on("mousemove", "mandals-fill", (ev) => {
-                      if (ev.features && ev.features.length > 0) {
-                        const mId = ev.features[0].id;
-                        const mName =
-                          ev.features[0].properties?.d ||
-                          ev.features[0].properties?.name ||
-                          ev.features[0].properties?.description ||
-                          "";
-                        setHoveredMandalName(mName || null);
-
-                        if (mName && map.current && popup.current) {
-                          popup.current
-                            .setLngLat(ev.lngLat)
-                            .setHTML(
-                              `<div style="font-weight: 700; color: #0f172a;">${mName}</div>`,
-                            )
-                            .addTo(map.current);
-                        }
-
-                        if (hoveredMandalId !== null) {
-                          map.current?.setFeatureState(
-                            { source: "mandals-source", id: hoveredMandalId },
-                            { hover: false },
-                          );
-                        }
-                        hoveredMandalId =
-                          mId !== undefined && mId !== null ? mId : null;
-                        if (hoveredMandalId !== null) {
-                          map.current?.setFeatureState(
-                            { source: "mandals-source", id: hoveredMandalId },
-                            { hover: true },
-                          );
-                        }
-                      }
-                    });
-
-                    map.current?.on("mouseleave", "mandals-fill", () => {
-                      setHoveredMandalName(null);
-                      if (popup.current) {
-                        popup.current.remove();
-                      }
-
-                      if (hoveredMandalId !== null) {
-                        map.current?.setFeatureState(
-                          { source: "mandals-source", id: hoveredMandalId },
-                          { hover: false },
-                        );
-                      }
-                      hoveredMandalId = null;
-                    });
-                  } else {
-                    const source = map.current.getSource(
-                      "mandals-source",
-                    ) as maplibregl.GeoJSONSource;
-                    source.setData(mandalsGeoJSON);
-                  }
-                }
+                // Note: mandals-source and layers are created/updated by the useEffect
+                // reacting to [areasData, selectedRegion, geoMasterData]
+                console.log("Region clicked in Area Mode. District IDs will be resolved by the useEffect.");
               }
             });
 
@@ -1129,6 +1253,53 @@ const RegionSelection: React.FC = () => {
       toast.error("Failed to create region");
     }
   };
+  const handleCreateArea = async () => {
+    if (!areaName || !areaCode) {
+      toast.error("Please fill in all area fields");
+      return;
+    }
+
+    try {
+      const assignments = selectedMandals.map((m) => ({
+        district_id: Number(m.district_id || 5), // Injected district_id fallback to 5
+        mandal_id: Number(m.id ?? m.featureId),
+      }));
+
+      await createArea({
+        areaName,
+        area_code: areaCode,
+        field_officer_id: 115, // Hardcoded per user request
+        assignments,
+      }).unwrap();
+      
+      toast.success("Area created successfully!");
+      
+      try {
+        if (typeof refetchAreas === "function") {
+          refetchAreas();
+        }
+      } catch (refetchErr) {
+        console.warn("Failed to trigger areas query refetch:", refetchErr);
+      }
+
+      selectedMandals.forEach((m) => {
+        const featId = m.featureId !== undefined ? m.featureId : m.id;
+        if (featId !== undefined) {
+          map.current?.setFeatureState(
+            { source: "mandals-source", id: featId },
+            { selected: false },
+          );
+        }
+      });
+      setSelectedMandals([]);
+      setIsAreaModalOpen(false);
+      setAreaName("");
+      setAreaCode("");
+    } catch (err) {
+      console.error("Failed to create area:", err);
+      toast.error("Failed to create area");
+    }
+  };
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-slate-50/50 relative">
@@ -1225,6 +1396,23 @@ const RegionSelection: React.FC = () => {
               </span>
               <span className="text-[10px] opacity-70">
                 {selectedDistricts.length} Districts Selected
+              </span>
+            </div>
+          </Button>
+        )}
+
+        {mode === "area" && selectedMandals.length > 0 && (
+          <Button
+            onClick={() => setIsAreaModalOpen(true)}
+            className="pointer-events-auto rounded-2xl bg-teal-900 text-white px-8 py-7 shadow-2xl hover:bg-teal-800 transition-all flex items-center gap-4 animate-in fade-in slide-in-from-right-4 duration-300"
+          >
+            <Plus className="w-5 h-5" />
+            <div className="flex flex-col items-start">
+              <span className="text-xs font-bold uppercase tracking-wider">
+                Create Area
+              </span>
+              <span className="text-[10px] opacity-70">
+                {selectedMandals.length} Mandals Selected
               </span>
             </div>
           </Button>
@@ -1330,6 +1518,84 @@ const RegionSelection: React.FC = () => {
             >
               {isCreating && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               Save Region Configuration
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Area Creation Modal */}
+      {isAreaModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300"
+            onClick={() => setIsAreaModalOpen(false)}
+          />
+          <div className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-8">
+            <button
+              onClick={() => setIsAreaModalOpen(false)}
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 transition-colors"
+            >
+              <X className="w-5 h-5 text-slate-400" />
+            </button>
+
+            <div className="flex flex-col gap-1 mb-8">
+              <span className="text-[10px] font-bold text-teal-500 uppercase tracking-[0.2em]">
+                Area Setup
+              </span>
+              <p className="text-2xl font-black text-slate-800 tracking-tight">
+                Create New Area
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-6 mb-8">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
+                  Area Name
+                </label>
+                <Input
+                  placeholder="e.g. West Godavari Hub"
+                  value={areaName}
+                  onChange={(e) => setAreaName(e.target.value)}
+                  className="rounded-2xl border-slate-200 h-14 px-5 focus:ring-teal-500"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
+                  Area Code
+                </label>
+                <Input
+                  placeholder="e.g. WGH-01"
+                  value={areaCode}
+                  onChange={(e) => setAreaCode(e.target.value)}
+                  className="rounded-2xl border-slate-200 h-14 px-5 focus:ring-teal-500"
+                />
+              </div>
+
+              <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">
+                  Linked Mandals
+                </span>
+                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+                  {selectedMandals.map((m, i) => (
+                    <div
+                      key={i}
+                      className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-[10px] font-bold shadow-sm"
+                    >
+                      {m.name || m.mandal_name || m.d || m.description}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <Button
+              disabled={isCreatingArea}
+              onClick={handleCreateArea}
+              className="w-full rounded-2xl bg-teal-900 py-7 text-white font-bold uppercase tracking-widest text-xs hover:bg-teal-800 transition-all active:scale-95 shadow-xl"
+            >
+              {isCreatingArea && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+              Save Area Configuration
             </Button>
           </div>
         </div>
