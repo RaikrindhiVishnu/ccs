@@ -48,19 +48,23 @@ export const roleManagerApi = createApi({
         },
       }),
     }),
-    getRegionalOfficerById: builder.mutation<any, string | number>({
-      query: (userId) => ({
-        url: `/regionalOfficer/getRegionalOfficerById/${userId}`,
+    
+    getAllIntelligenceOfficers: builder.mutation<any, void>({
+      query: () => ({
+        url: "/master/get_all_intelligence_officers",
         method: "POST",
       }),
     }),
-    getFieldOfficerById: builder.mutation<any, string | number>({
-      query: (userId) => ({
-        url: "/feildOfficer/getFieldOfficerById",
+    getAllRegionalOfficers: builder.mutation<any, void>({
+      query: () => ({
+        url: "/master/get_all_regional_officers",
         method: "POST",
-        body: {
-          userId,
-        },
+      }),
+    }),
+    getAllFieldOfficers: builder.mutation<any, void>({
+      query: () => ({
+        url: "/master/get_all_field_officers",
+        method: "POST",
       }),
     }),
   }),
@@ -72,4 +76,7 @@ export const {
   useGetAgentByIdMutation,
   useGetRegionalOfficerByIdMutation,
   useGetFieldOfficerByIdMutation,
+  useGetAllIntelligenceOfficersMutation,
+  useGetAllRegionalOfficersMutation,
+  useGetAllFieldOfficersMutation,
 } = roleManagerApi;

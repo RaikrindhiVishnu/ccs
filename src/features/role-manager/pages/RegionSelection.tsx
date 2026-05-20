@@ -14,6 +14,10 @@ import {
   useGetRegionsByCountryIdQuery,
   useGetAllAreasByRegionIdQuery,
 } from "../api/regionSelectionApi";
+import {
+  useGetAllRegionalOfficersMutation,
+  useGetAllIntelligenceOfficersMutation,
+} from "../api/roleManagerApi";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 const AREA_COLORS = [
@@ -337,6 +341,43 @@ const RegionSelection: React.FC = () => {
   const [createRegion, { isLoading: isCreating }] = useCreateRegionMutation();
   const [createArea, { isLoading: isCreatingArea }] = useCreateAreaMutation();
 
+  const [regionalOfficers, setRegionalOfficers] = useState<any[]>([]);
+  const [intelligenceOfficers, setIntelligenceOfficers] = useState<any[]>([]);
+  const [selectedRegionalOfficerId, setSelectedRegionalOfficerId] = useState<number | null>(null);
+  const [selectedIntelligenceOfficerId, setSelectedIntelligenceOfficerId] = useState<number | null>(null);
+
+  const [getAllRegionalOfficers] = useGetAllRegionalOfficersMutation();
+  const [getAllIntelligenceOfficers] = useGetAllIntelligenceOfficersMutation();
+
+  useEffect(() => {
+    const fetchOfficerLists = async () => {
+      try {
+        const regionalResult = await getAllRegionalOfficers().unwrap();
+        const regionalList = Array.isArray(regionalResult?.data)
+          ? regionalResult.data
+          : Array.isArray(regionalResult)
+          ? regionalResult
+          : [];
+        setRegionalOfficers(regionalList);
+      } catch (err) {
+        console.error("Failed to load regional officers:", err);
+      }
+
+      try {
+        const intelligenceResult = await getAllIntelligenceOfficers().unwrap();
+        const intelligenceList = Array.isArray(intelligenceResult?.data)
+          ? intelligenceResult.data
+          : Array.isArray(intelligenceResult)
+          ? intelligenceResult
+          : [];
+        setIntelligenceOfficers(intelligenceList);
+      } catch (err) {
+        console.error("Failed to load intelligence officers:", err);
+      }
+    };
+
+    fetchOfficerLists();
+  }, [getAllRegionalOfficers, getAllIntelligenceOfficers]);
 
   const selectedStateId: number | undefined = selectedState?.properties?.id;
 
@@ -835,7 +876,9 @@ const RegionSelection: React.FC = () => {
           let hoveredRegionId: any = null;
           map.current?.on("mousemove", "regions-fill", (e) => {
             if (e.features && e.features.length > 0) {
-              const newId = e.features[0].id;
+              const feature = e.features[0];
+              const props = feature.properties || {};
+              const newId = feature.id;
               if (hoveredRegionId !== null) {
                 map.current?.setFeatureState(
                   { source: "regions-source", id: hoveredRegionId },
@@ -850,6 +893,29 @@ const RegionSelection: React.FC = () => {
                   { hover: true },
                 );
               }
+
+              const regionName =
+                props.region_name || props.regionName || props.name || "Region";
+              let districtLabel = "";
+              if (Array.isArray(props.districts)) {
+                districtLabel = props.districts
+                  .map((d: any) => d?.name || d?.d || d?.district_name || d?.districtName)
+                  .filter(Boolean)
+                  .join(", ");
+              } else if (typeof props.all_districts === "string") {
+                districtLabel = props.all_districts;
+              } else if (Array.isArray(props.district_ids)) {
+                districtLabel = props.district_ids.join(", ");
+              }
+              const html = `
+                <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.3;">
+                  <div style="font-weight:700;font-size:13px;color:#0f172a;">${regionName}</div>
+                  ${districtLabel ? `<div style="font-size:11px;color:#475569;margin-top:4px;">${districtLabel}</div>` : ""}
+                </div>
+              `;
+              if (map.current && popup.current) {
+                popup.current.setLngLat(e.lngLat).setHTML(html).addTo(map.current);
+              }
             }
           });
 
@@ -861,6 +927,7 @@ const RegionSelection: React.FC = () => {
               );
             }
             hoveredRegionId = null;
+            popup.current?.remove();
           });
         } else {
           const source = map.current.getSource(
@@ -1147,7 +1214,9 @@ const RegionSelection: React.FC = () => {
                 );
               }
               if (e.features && e.features.length > 0) {
-                const newId = e.features[0].id;
+                const feature = e.features[0];
+                const props = feature.properties || {};
+                const newId = feature.id;
                 hoveredRegionId =
                   newId !== undefined && newId !== null ? newId : null;
                 if (hoveredRegionId !== null) {
@@ -1155,6 +1224,29 @@ const RegionSelection: React.FC = () => {
                     { source: "country-regions-source", id: hoveredRegionId },
                     { hover: true },
                   );
+                }
+
+                const regionName =
+                  props.region_name || props.regionName || props.name || "Region";
+                let districtLabel = "";
+                if (Array.isArray(props.districts)) {
+                  districtLabel = props.districts
+                    .map((d: any) => d?.name || d?.d || d?.district_name || d?.districtName)
+                    .filter(Boolean)
+                    .join(", ");
+                } else if (typeof props.all_districts === "string") {
+                  districtLabel = props.all_districts;
+                } else if (Array.isArray(props.district_ids)) {
+                  districtLabel = props.district_ids.join(", ");
+                }
+                const html = `
+                  <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.3;">
+                    <div style="font-weight:700;font-size:13px;color:#0f172a;">${regionName}</div>
+                    ${districtLabel ? `<div style="font-size:11px;color:#475569;margin-top:4px;">${districtLabel}</div>` : ""}
+                  </div>
+                `;
+                if (map.current && popup.current) {
+                  popup.current.setLngLat(e.lngLat).setHTML(html).addTo(map.current);
                 }
               }
             });
@@ -1167,6 +1259,7 @@ const RegionSelection: React.FC = () => {
                 );
               }
               hoveredRegionId = null;
+              popup.current?.remove();
             });
           } else {
             const source = map.current.getSource(
@@ -1212,7 +1305,12 @@ const RegionSelection: React.FC = () => {
   }, [selectedState, regionsByCountryData, mode]);
 
   const handleCreateRegion = async () => {
-    if (!regionName || !regionCode) {
+    if (
+      !regionName ||
+      !regionCode ||
+      !selectedRegionalOfficerId ||
+      !selectedIntelligenceOfficerId
+    ) {
       toast.error("Please fill in all fields");
       return;
     }
@@ -1225,8 +1323,8 @@ const RegionSelection: React.FC = () => {
       await createRegion({
         regionName,
         regionCode,
-        regionalOfficerId: 1,
-        inteligenceOfficerId: 2,
+        regionalOfficerId: selectedRegionalOfficerId,
+        inteligenceOfficerId: selectedIntelligenceOfficerId,
         district_ids: districtIds,
         stateId: Number(selectedStateId),
       }).unwrap();
@@ -1248,6 +1346,8 @@ const RegionSelection: React.FC = () => {
       setIsModalOpen(false);
       setRegionName("");
       setRegionCode("");
+      setSelectedRegionalOfficerId(null);
+      setSelectedIntelligenceOfficerId(null);
     } catch (err) {
       console.error("Failed to create region:", err);
       toast.error("Failed to create region");
@@ -1314,12 +1414,12 @@ const RegionSelection: React.FC = () => {
               <ChevronLeft className="w-5 h-5 text-slate-600 group-hover:-translate-x-0.5 transition-transform" />
             </button>
           ) : (
-            <div className="bg-white/90 backdrop-blur-xl px-6 py-3 rounded-3xl border border-white/50 shadow-2xl">
-              <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] block mb-0.5">
-                Selection Mode
+            <div className="bg-white/90 backdrop-blur-xl px-4 py-2 rounded-3xl border border-white/50 shadow-2xl">
+              <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-[0.24em] block mb-1">
+                Selection mode
               </span>
-              <p className="text-lg font-black text-slate-800 tracking-tight">
-                {mode === "area" ? "Area Dashboard" : "Regional Dashboard"}
+              <p className="text-sm font-semibold text-slate-800 tracking-tight leading-none">
+                {mode === "area" ? "Area dashboard" : "Regional dashboard"}
               </p>
             </div>
           )}
@@ -1492,6 +1592,74 @@ const RegionSelection: React.FC = () => {
                   onChange={(e) => setRegionCode(e.target.value)}
                   className="rounded-2xl border-slate-200 h-14 px-5 focus:ring-blue-500"
                 />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
+                  Regional Officer
+                </label>
+                <select
+                  value={selectedRegionalOfficerId ?? ""}
+                  onChange={(e) =>
+                    setSelectedRegionalOfficerId(
+                      e.target.value ? Number(e.target.value) : null,
+                    )
+                  }
+                  className="rounded-2xl border border-slate-200 h-14 px-5 bg-white text-slate-800 focus:ring-blue-500"
+                >
+                  <option value="">Select Regional Officer</option>
+                  {regionalOfficers.map((officer, index) => {
+                    const id = officer.id ?? officer.i ?? officer.user_id;
+                    const fullName = `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
+                    const label =
+                      fullName ||
+                      officer.name ||
+                      officer.d ||
+                      officer.fullName ||
+                      officer.username ||
+                      officer.email ||
+                      `Regional Officer ${index + 1}`;
+                    return (
+                      <option key={id ?? index} value={id ?? index}>
+                        {label}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
+                  Intelligence Officer
+                </label>
+                <select
+                  value={selectedIntelligenceOfficerId ?? ""}
+                  onChange={(e) =>
+                    setSelectedIntelligenceOfficerId(
+                      e.target.value ? Number(e.target.value) : null,
+                    )
+                  }
+                  className="rounded-2xl border border-slate-200 h-14 px-5 bg-white text-slate-800 focus:ring-blue-500"
+                >
+                  <option value="">Select Intelligence Officer</option>
+                  {intelligenceOfficers.map((officer, index) => {
+                    const id = officer.id ?? officer.i ?? officer.user_id;
+                    const fullName = `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
+                    const label =
+                      fullName ||
+                      officer.name ||
+                      officer.d ||
+                      officer.fullName ||
+                      officer.username ||
+                      officer.email ||
+                      `Intelligence Officer ${index + 1}`;
+                    return (
+                      <option key={id ?? index} value={id ?? index}>
+                        {label}
+                      </option>
+                    );
+                  })}
+                </select>
               </div>
 
               <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100">
