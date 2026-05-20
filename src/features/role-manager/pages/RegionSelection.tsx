@@ -9,9 +9,11 @@ import { toast } from "sonner";
 import { 
   useGetCountryByIdQuery, 
   useGetStatesByCountryIdQuery,
+  useGetRegionsByCountryIdQuery,
   useGetDistrictsByStateIdQuery,
   useCreateRegionMutation 
 } from "../api/regionSelectionApi";
+import { useGetAllRegionsByStateIdMutation } from "../api/masterDataApi";
 
 // Helper to calculate bounds for a GeoJSON feature
 const getFeatureBounds = (feature: any): maplibregl.LngLatBoundsLike => {
@@ -46,6 +48,7 @@ const RegionSelection: React.FC = () => {
   const [regionCode, setRegionCode] = useState("");
   const { data: countryData } = useGetCountryByIdQuery({ country_id: 1 });
   const { data: statesData } = useGetStatesByCountryIdQuery({ country_id: 1 });
+  const { data: regionsByCountryData } = useGetRegionsByCountryIdQuery({ country_id: 1 });
   const [createRegion, { isLoading: isCreating }] = useCreateRegionMutation();
 
   const selectedStateId = selectedState?.properties?.id;
@@ -54,11 +57,31 @@ const RegionSelection: React.FC = () => {
     { skip: !selectedStateId }
   );
 
+  const [getAllRegionsByStateId, { data: regionsData }] = useGetAllRegionsByStateIdMutation();
+
+  useEffect(() => {
+    if (selectedStateId) {
+      getAllRegionsByStateId({ state_id: selectedStateId });
+    }
+  }, [selectedStateId, getAllRegionsByStateId]);
+
   useEffect(() => {
     if (districtsData) {
       console.log("Districts API Response for State ID:", selectedStateId, districtsData);
     }
   }, [districtsData, selectedStateId]);
+
+  useEffect(() => {
+    if (regionsData) {
+      console.log("Regions API Response for State ID:", selectedStateId, regionsData);
+    }
+  }, [regionsData, selectedStateId]);
+
+  useEffect(() => {
+    if (regionsByCountryData) {
+      console.log("Regions by Country ID API Response:", regionsByCountryData);
+    }
+  }, [regionsByCountryData]);
 
 
   useEffect(() => {
@@ -89,6 +112,12 @@ const RegionSelection: React.FC = () => {
     // Clear district data from map
     if (map.current?.getSource("districts-source")) {
       const source = map.current.getSource("districts-source") as maplibregl.GeoJSONSource;
+      source.setData({ type: "FeatureCollection", features: [] });
+    }
+
+    // Clear regions data from map
+    if (map.current?.getSource("regions-source")) {
+      const source = map.current.getSource("regions-source") as maplibregl.GeoJSONSource;
       source.setData({ type: "FeatureCollection", features: [] });
     }
   };
@@ -390,6 +419,173 @@ const RegionSelection: React.FC = () => {
       }
     }
   }, [selectedState, districtsData, mapLoaded]);
+
+  // Effect to process and render regions when regionsData is fetched from API
+  useEffect(() => {
+    if (map.current && selectedState && regionsData) {
+      try {
+        const finalData = decompressGeoJSON(regionsData);
+        console.log(finalData,"insideEffct")
+        if (finalData) {
+          if (!map.current?.getSource("regions-source")) {
+            map.current?.addSource("regions-source", {
+              type: "geojson",
+              data: finalData,
+              generateId: true,
+            });
+
+            // Fill Layer for Regions (emerald/teal transparent overlay)
+            map.current?.addLayer({
+              id: "regions-fill",
+              type: "fill",
+              source: "regions-source",
+              paint: {
+                "fill-color": "#10b981", // Beautiful Emerald Green for existing regions
+                "fill-opacity": [
+                  "case",
+                  ["boolean", ["feature-state", "hover"], false],
+                  0.35,
+                  0.2,
+                ],
+              },
+            }, "states-border-line");
+
+            // Line Layer for Region borders
+            map.current?.addLayer({
+              id: "regions-line",
+              type: "line",
+              source: "regions-source",
+              paint: {
+                "line-color": "#059669", // Darker Emerald Green
+                "line-width": 1.8,
+              },
+            }, "states-border-line");
+
+            // Hover effect for regions
+            let hoveredRegionId: any = null;
+            map.current?.on("mousemove", "regions-fill", (e) => {
+              if (e.features && e.features.length > 0) {
+                const newId = e.features[0].id;
+                if (hoveredRegionId !== null) {
+                  map.current?.setFeatureState({ source: "regions-source", id: hoveredRegionId }, { hover: false });
+                }
+                hoveredRegionId = (newId !== undefined && newId !== null) ? newId : null;
+                if (hoveredRegionId !== null) {
+                  map.current?.setFeatureState({ source: "regions-source", id: hoveredRegionId }, { hover: true });
+                }
+              }
+            });
+
+            map.current?.on("mouseleave", "regions-fill", () => {
+              if (hoveredRegionId !== null) {
+                map.current?.setFeatureState({ source: "regions-source", id: hoveredRegionId }, { hover: false });
+              }
+              hoveredRegionId = null;
+            });
+          } else {
+            const source = map.current.getSource("regions-source") as maplibregl.GeoJSONSource;
+            source.setData(finalData);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to render regions from API:", err);
+      }
+    }
+  }, [selectedState, regionsData, mapLoaded]);
+
+  // Effect to process and render country-wide regions when in India map view
+  useEffect(() => {
+    if (map.current && regionsByCountryData) {
+      try {
+        const finalData = decompressGeoJSON(regionsByCountryData);
+
+        if (finalData) {
+          if (!map.current?.getSource("country-regions-source")) {
+            map.current?.addSource("country-regions-source", {
+              type: "geojson",
+              data: finalData,
+              generateId: true,
+            });
+
+            // Fill Layer for Country Regions (Beautiful Violet transparent overlay)
+            map.current?.addLayer({
+              id: "country-regions-fill",
+              type: "fill",
+              source: "country-regions-source",
+              paint: {
+                "fill-color": "#8b5cf6", // Premium violet color
+                "fill-opacity": [
+                  "case",
+                  ["boolean", ["feature-state", "hover"], false],
+                  0.4,
+                  0.2,
+                ],
+              },
+            }, "states-border-line"); // Insert below state borders
+
+            // Line Layer for Country Region borders
+            map.current?.addLayer({
+              id: "country-regions-line",
+              type: "line",
+              source: "country-regions-source",
+              paint: {
+                "line-color": "#6d28d9", // Darker violet
+                "line-width": 1.5,
+              },
+            }, "states-border-line");
+
+            // Hover effect for country regions
+            let hoveredRegionId: any = null;
+            map.current?.on("mousemove", "country-regions-fill", (e) => {
+              if (e.features && e.features.length > 0 && !selectedState) {
+                const newId = e.features[0].id;
+                if (hoveredRegionId !== null) {
+                  map.current?.setFeatureState({ source: "country-regions-source", id: hoveredRegionId }, { hover: false });
+                }
+                hoveredRegionId = (newId !== undefined && newId !== null) ? newId : null;
+                if (hoveredRegionId !== null) {
+                  map.current?.setFeatureState({ source: "country-regions-source", id: hoveredRegionId }, { hover: true });
+                }
+              }
+            });
+
+            map.current?.on("mouseleave", "country-regions-fill", () => {
+              if (hoveredRegionId !== null) {
+                map.current?.setFeatureState({ source: "country-regions-source", id: hoveredRegionId }, { hover: false });
+              }
+              hoveredRegionId = null;
+            });
+          } else {
+            const source = map.current.getSource("country-regions-source") as maplibregl.GeoJSONSource;
+            source.setData(finalData);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to render country regions from API:", err);
+      }
+    }
+  }, [regionsByCountryData, mapLoaded]);
+
+  // Effect to toggle country regions visibility based on selectedState
+  useEffect(() => {
+    if (map.current) {
+      try {
+        const fillLayer = map.current.getLayer("country-regions-fill");
+        const lineLayer = map.current.getLayer("country-regions-line");
+        
+        const visibility = selectedState ? "none" : "visible";
+        
+        if (fillLayer) {
+          map.current.setLayoutProperty("country-regions-fill", "visibility", visibility);
+        }
+        if (lineLayer) {
+          map.current.setLayoutProperty("country-regions-line", "visibility", visibility);
+        }
+      } catch (err) {
+        // Safe check for early renders
+      }
+    }
+  }, [selectedState, regionsByCountryData]);
 
   const handleCreateRegion = async () => {
     if (!regionName || !regionCode) {
