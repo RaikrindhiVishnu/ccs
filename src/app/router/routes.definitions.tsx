@@ -1,5 +1,6 @@
 import type { RouteObject } from 'react-router-dom';
 import { RootLayout } from '@/components/common/layouts/RootLayout';
+import { DashboardRedirect } from './DashboardRedirect';
 import CreateRegionsAndAreas from '@/features/role-manager/pages/Createregionsandareas';
 import CreateRoles from '@/features/role-manager/pages/Createroles';
 import {
@@ -24,6 +25,19 @@ import {
   ProcessingFeeScreen,
   IODashboard,
   RegionalOfficerDashboard,
+  AssignedFarmlands,
+  RequestedInfo,
+  RequestedInfoDetails,
+  RequestedInfoReason,
+  Drafts,
+  FarmlandsList,
+  FarmlandDetails,
+  LandDocument,
+  FamilyTree,
+  LandDetails,
+  CustomerLandDetails,
+  SubmitForm,
+  LandBoundaries,
   RegionalOfficerLayout,
   FieldOfficerDashboard,
 } from './routes.config';
@@ -39,7 +53,8 @@ export const authRoutes: RouteObject[] = [
   {
     element: <RootLayout />,
     children: [
-      { path: '/',                              element: <CcsDashboard /> },
+      { path: '/',                              element: <DashboardRedirect /> },
+      { path: '/ccs/dashboard',                 element: <CcsDashboard /> },
       { path: '/home',                          element: <Home /> },
       { path: '/pending-cases',                 element: <ActiveVerifications /> },
       { path: '/geospatial-audit',              element: <GeospatialAudit /> },
@@ -60,8 +75,52 @@ export const authRoutes: RouteObject[] = [
   {
     element: <RegionalOfficerLayout />,
     children: [
-      { path: '/regional-officer/dashboard', element: <RegionalOfficerDashboard /> },
+      { path: '/regional-officer/dashboard',          element: <RegionalOfficerDashboard /> },
+      { path: '/regional-officer/assigned-farmlands', element: <AssignedFarmlands /> },
+      { path: '/regional-officer/requested-info',     element: <RequestedInfo /> },
+      { path: '/regional-officer/drafts',             element: <Drafts /> },
+      { path: '/regional-officer/farmlands-list',     element: <FarmlandsList /> },
     ],
+  },
+  {
+    path: '/regional-officer/requested-info-details/:id',
+    element: <RequestedInfoDetails />,
+  },
+  {
+    path: '/regional-officer/requested-info-reason/:id',
+    element: <RequestedInfoReason />,
+  },
+  {
+    path: '/regional-officer/farmlands-list-details/:id',
+    element: <FarmlandDetails />,
+  },
+  {
+    path: '/regional-officer/assigned-farmlands-details/:id',
+    element: <FarmlandDetails />,
+  },
+  {
+    path: '/regional-officer/assigned-farmlands-upload/:id',
+    element: <LandDocument />,
+  },
+  {
+    path: '/regional-officer/assigned-farmlands-family-tree/:id',
+    element: <FamilyTree />,
+  },
+  {
+    path: '/regional-officer/assigned-farmlands-land-details/:id',
+    element: <CustomerLandDetails />,
+  },
+  {
+    path: '/regional-officer/assigned-farmlands-valuation/:id',
+    element: <LandDetails />,
+  },
+  {
+    path: '/regional-officer/submit-form/:id',
+    element: <SubmitForm />,
+  },
+  {
+    path: '/regional-officer/assigned-farmlands-land-boundaries/:id',
+    element: <LandBoundaries />,
   },
 ];
 

@@ -7,7 +7,7 @@ const GuestGuard = () => {
   const user = useSelector(selectCurrentUser);
 
   if (isAuthenticated && user) {
-    if (user.role === 'CCS') return <Navigate to="/" replace />;
+    if (user.role === 'CCS') return <Navigate to="/ccs/dashboard" replace />;
     if (user.role === 'FO') return <Navigate to="/field-officer/dashboard" replace />;
     if (user.role === 'RO') return <Navigate to="/regional-officer/dashboard" replace />;
     return <Navigate to="/role-manager/dashboard" replace />;

@@ -4,24 +4,6 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { Maximize2 } from "lucide-react";
 import StateDetailMap from "../components/StateDetailMap";
 
-// Helper to calculate bounds for a GeoJSON feature
-const getFeatureBounds = (feature: any): maplibregl.LngLatBoundsLike => {
-  const bounds = new maplibregl.LngLatBounds();
-  const geometry = feature.geometry;
-
-  const extendBounds = (coords: any[]) => {
-    coords.forEach((coord) => {
-      if (Array.isArray(coord[0])) {
-        extendBounds(coord);
-      } else {
-        bounds.extend(coord as [number, number]);
-      }
-    });
-  };
-
-  extendBounds(geometry.coordinates);
-  return bounds;
-};
 
 const RegionSelection: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);

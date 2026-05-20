@@ -48,9 +48,9 @@ export const RegionalOfficerLayout = () => {
         {/* Right Action Section */}
         <div className="flex items-center gap-[15px] justify-self-end">
           <button className="icon-button relative">
-            <img src={bellIcon} alt="Notifications" className="w-[12px] h-[15px]" />
+            <img src={bellIcon} alt="Notifications" className="w-[26px] h-[28px]" />
             {/* Red Dot from Figma */}
-            <div className="absolute top-[8px] right-[8px] w-[6px] h-[6px] bg-[#FF2D55] rounded-full border border-white"></div>
+            <div className="absolute top-[2px] right-[2px] w-[6px] h-[6px] bg-[#FF2D55] rounded-full border border-white"></div>
           </button>
 
           <div className="profile-container">
@@ -60,7 +60,7 @@ export const RegionalOfficerLayout = () => {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full px-6 py-8 overflow-y-auto">
+      <main className="flex-1 w-full px-6 pt-4 pb-12">
         <div className="w-[98%] max-w-[1800px] mx-auto">
           <Outlet />
         </div>

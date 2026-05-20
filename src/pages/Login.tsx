@@ -132,7 +132,7 @@ export default function Login() {
       
       // Navigate based on role
       if (roleCode === "CCS") {
-        navigate("/");
+        navigate("/ccs/dashboard");
       } else if (roleCode === "RO") {
         navigate("/regional-officer/dashboard");
       } else if (roleCode === "FO") {
@@ -163,7 +163,7 @@ export default function Login() {
       
       // Navigate based on role
       if (roleCode === "CCS") {
-        navigate("/");
+        navigate("/ccs/dashboard");
       } else if (roleCode === "RO") {
         navigate("/regional-officer/dashboard");
       } else if (roleCode === "FO") {
