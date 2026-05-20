@@ -19,6 +19,13 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
         body,
       }),
     }),
+    getRegionsByCountryId: builder.query<any, { country_id: number }>({
+      query: (body) => ({
+        url: "master/get_regions_by_country_id",
+        method: "POST",
+        body,
+      }),
+    }),
     getDistrictsByStateId: builder.query<any, { state_id: number }>({
       query: (body) => ({
         url: "master/get_districts_by_state_id",
@@ -46,6 +53,7 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
 export const { 
   useGetCountryByIdQuery, 
   useGetStatesByCountryIdQuery,
+  useGetRegionsByCountryIdQuery,
   useGetDistrictsByStateIdQuery,
   useCreateRegionMutation
 } = regionSelectionApi;
