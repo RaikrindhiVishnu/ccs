@@ -21,7 +21,8 @@ const baseOfficerSchema = z.object({
   city: z.string().min(1, "City is required"),
   pincode: z.string().min(6, "Pincode must be 6 digits"),
   state: z.string().min(1, "State is required"),
-  region: z.string().min(1, "Region is required"),
+  district: z.string().min(1, "District is required"),
+  mandal: z.string().min(1, "Mandal is required"),
 
   // ── File fields ──────────────────────────────────────────
   profilePicture: fileSchema(ACCEPTED_IMAGE_TYPES, "Profile picture"),
@@ -30,10 +31,8 @@ const baseOfficerSchema = z.object({
   panCard: fileSchema(ACCEPTED_DOC_TYPES, "PAN Card"),
 });
 
-// ── Field Officer (with area) ──
-export const officerSchema = baseOfficerSchema.extend({
-  area: z.string().min(1, "Area is required"),
-});
+// ── Field Officer (no area, now state/district/mandal) ──
+export const officerSchema = baseOfficerSchema;
 
 // ── Regional Officer (no area) ──
 export const regionalOfficerSchema = baseOfficerSchema;
