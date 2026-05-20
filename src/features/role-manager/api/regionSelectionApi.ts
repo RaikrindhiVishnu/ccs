@@ -47,6 +47,13 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
         body,
       }),
     }),
+    getAllGeoJsonData: builder.query<any, void>({
+      query: () => ({
+        url: "master/get_all_geo_json_data",
+        method: "POST",
+        body: {},
+      }),
+    }),
   }),
 });
 
@@ -55,5 +62,6 @@ export const {
   useGetStatesByCountryIdQuery,
   useGetRegionsByCountryIdQuery,
   useGetDistrictsByStateIdQuery,
-  useCreateRegionMutation
+  useCreateRegionMutation,
+  useGetAllGeoJsonDataQuery
 } = regionSelectionApi;
