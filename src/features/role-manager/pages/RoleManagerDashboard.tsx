@@ -13,7 +13,6 @@ import geoJsonData from '../data/geoJsonApi.json';
 import { useDispatch } from "react-redux";
 import {
   useGetAllGeoMasterDataQuery,
-  useGetAllMasterDataQuery,
 } from "@/features/role-manager/api/masterDataApi"; import { setGeoMasterData } from "@/features/role-manager/store/roleManagerSlice";
 import { useEffect, useCallback } from "react";
 
@@ -86,7 +85,6 @@ const RoleManagerHeader: React.FC = () => {
 const RoleManagerDashboard: React.FC = () => {
   const dispatch = useDispatch();
   const { data: geoData } = useGetAllGeoMasterDataQuery();
-  const { data: masterData } = useGetAllMasterDataQuery();
 
   useEffect(() => {
     if (geoData) {

@@ -145,8 +145,12 @@ const InfoCard: React.FC<InfoCardProps> = ({
 const CreateRegionsAndAreas: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleNavigateToCreation = () => {
-    navigate("/role-manager/region-creation");
+  const handleNavigateToRegion = () => {
+    navigate("/role-manager/region-creation?mode=region");
+  };
+
+  const handleNavigateToArea = () => {
+    navigate("/role-manager/region-creation?mode=area");
   };
 
   return (
@@ -224,7 +228,7 @@ const CreateRegionsAndAreas: React.FC = () => {
               description="A broad strategic territory managed by the Regional Officer, comprising multiple operational clusters."
               imageSrc={regionImg}
               imageAlt="Region illustration"
-              onClick={handleNavigateToCreation}
+              onClick={handleNavigateToRegion}
             />
 
             <InfoCard
@@ -232,7 +236,7 @@ const CreateRegionsAndAreas: React.FC = () => {
               description="A specific locality or zone within a Region where daily land sourcing operations take place."
               imageSrc={areasImg}
               imageAlt="Area illustration"
-              onClick={handleNavigateToCreation}
+              onClick={handleNavigateToArea}
             />
           </div>
         </Card>
