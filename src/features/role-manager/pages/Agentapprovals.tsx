@@ -6,6 +6,7 @@ import { Typography } from "@/components/ui/typography";
 
 import { Plus } from "lucide-react";
 import { useGetAllAgentsMutation } from "@/features/role-manager/api/getagents";
+import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import AgentRow from "../components/ui/AgentRow";
 import Loader from "../components/ui/Loader";
 
@@ -26,54 +27,64 @@ interface Agent {
 export const AgentApprovalsPage = () => {
   const navigate = useNavigate();
   const [getAllAgents, { isLoading }] = useGetAllAgentsMutation();
+  const { data: masterData } = useGetAllMasterDataQuery();
 
 const [agentList, setAgentList] = React.useState<Agent[]>([]);
 
-React.useEffect(() => {
-  fetchPendingAgents();
-}, []);
+// Resolve PENDNG status id from master data
+const pendingStatusId = React.useMemo(() => {
+  const statuses = masterData?.data?.userRegistrationStatusResult || [];
+  const pending = statuses.find((s: any) => s.code === "PENDNG");
+  return pending?.id ?? null;
+}, [masterData]);
 
-const fetchPendingAgents = async () => {
+const fetchPendingAgents = async (statusId: number) => {
   try {
-   const response = await getAllAgents({
-  is_verified: 0,
- 
-}).unwrap();
-
+    const response = await getAllAgents({
+      registration_status_id: statusId,
+      limit: 0,
+      offset: 0,
+    }).unwrap();
 
 
     const apiAgents = response?.data || [];
 
     const formattedAgents: Agent[] = apiAgents.map((item: any) => ({
-  id: item.id?.toString() || "",
-name:
-  item.name ||
-  item.full_name ||
-  `${item.first_name || ""} ${item.last_name || ""}`.trim(),
+      id: item.id?.toString() || "",
+      name:
+        item.name ||
+        item.full_name ||
+        `${item.first_name || ""} ${item.last_name || ""}`.trim(),
 
-  location:
-    item.location ||
-    item.city ||
-    item.address ||
-    "Location Not Available",
+      location:
+        item.location ||
+        item.city ||
+        item.address ||
+        "Location Not Available",
 
-  status: "Pending Review",
+      status: "Pending Review",
 
-  avatarUrl: item.avatar || item.profile_image || "",
+      avatarUrl: item.avatar || item.profile_image || "",
 
-  initials:
-    `${item.first_name || ""} ${item.last_name || ""}`
-      ?.split(" ")
-      ?.map((word: string) => word[0])
-      ?.join("")
-      ?.toUpperCase() || "NA",
-}));
+      initials:
+        `${item.first_name || ""} ${item.last_name || ""}`
+          ?.split(" ")
+          ?.map((word: string) => word[0])
+          ?.join("")
+          ?.toUpperCase() || "NA",
+    }));
 
     setAgentList(formattedAgents);
   } catch (error) {
-
+    // ignore for now
   }
 };
+
+React.useEffect(() => {
+  if (pendingStatusId !== null) {
+    fetchPendingAgents(pendingStatusId);
+  }
+}, [pendingStatusId]);
 
   const [visibleCount, setVisibleCount] = React.useState(5);
 

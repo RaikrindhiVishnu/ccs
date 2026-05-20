@@ -13,8 +13,13 @@ import geoJsonData from '../data/geoJsonApi.json';
 import { useDispatch } from "react-redux";
 import {
   useGetAllGeoMasterDataQuery,
-  useGetAllMasterDataQuery,
-} from "@/features/role-manager/api/masterDataApi"; import { setGeoMasterData } from "@/features/role-manager/store/roleManagerSlice";
+} from "@/features/role-manager/api/masterDataApi";
+import { setGeoMasterData } from "@/features/role-manager/store/roleManagerSlice";
+import {
+  useGetAllIntelligenceOfficersMutation,
+  useGetAllRegionalOfficersMutation,
+  useGetAllFieldOfficersMutation,
+} from "@/features/role-manager/api/roleManagerApi";
 import { useEffect, useCallback } from "react";
 
 // import RegionalCreationTargetVsActual from "@/pages/Dashboard/RegionalCreationTargetVsActual";
@@ -86,7 +91,6 @@ const RoleManagerHeader: React.FC = () => {
 const RoleManagerDashboard: React.FC = () => {
   const dispatch = useDispatch();
   const { data: geoData } = useGetAllGeoMasterDataQuery();
-  const { data: masterData } = useGetAllMasterDataQuery();
 
   useEffect(() => {
     if (geoData) {
@@ -118,13 +122,43 @@ const RoleManagerDashboard: React.FC = () => {
 
   // For testing purposes as requested by user
   React.useEffect(() => {
-    if (geoJsonData && geoJsonData.data) {
-
-      fetchAndDecodeGeoData(geoJsonData.data);
-    } else {
-
+    const data = (geoJsonData as any)?.data;
+    if (data) {
+      fetchAndDecodeGeoData(data);
     }
   }, [fetchAndDecodeGeoData]);
+
+  // Use roleManagerApi mutations to fetch master lists and log responses
+  const [getIntelligence] = useGetAllIntelligenceOfficersMutation();
+  const [getRegional] = useGetAllRegionalOfficersMutation();
+  const [getField] = useGetAllFieldOfficersMutation();
+
+  React.useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        const intel = await getIntelligence().unwrap();
+        console.log("[RoleManagerDashboard] get_all_intelligence_officers:", intel);
+      } catch (error) {
+        console.error("[RoleManagerDashboard] Error fetching intelligence officers:", error);
+      }
+
+      try {
+        const regional = await getRegional().unwrap();
+        console.log("[RoleManagerDashboard] get_all_regional_officers:", regional);
+      } catch (error) {
+        console.error("[RoleManagerDashboard] Error fetching regional officers:", error);
+      }
+
+      try {
+        const field = await getField().unwrap();
+        console.log("[RoleManagerDashboard] get_all_field_officers:", field);
+      } catch (error) {
+        console.error("[RoleManagerDashboard] Error fetching field officers:", error);
+      }
+    };
+
+    fetchAll();
+  }, [getIntelligence, getRegional, getField]);
 
 
   return (

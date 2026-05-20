@@ -1,8 +1,9 @@
 import { roleManagerApi } from "./roleManagerApi";
 
 export interface GetAgentsRequest {
-  is_verified: number;
-
+  registration_status_id: number;
+  limit: number;
+  offset: number;
 }
 
 export interface AgentResponse {

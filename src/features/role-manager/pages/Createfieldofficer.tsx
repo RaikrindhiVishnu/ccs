@@ -1,5 +1,5 @@
-import { useRef, useEffect } from "react"; // removed useState
-import { useNavigate, useLocation } from "react-router-dom";
+import { useRef, useEffect, useState } from "react"; // added useState for preview
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ImageUp, FileImage } from "lucide-react";
 // ── Reused shared components ──────────────────────────────────────────────────
@@ -26,6 +26,7 @@ import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterData
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
 import { uploadUserDocument } from "@/core/utils/fileUpload";
+import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 import { useGetFieldOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
 import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
 import SectionCard from "../components/ui/SectionCard";
@@ -48,6 +49,52 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
+function ImagePreview({ file, className }: { file: any; className?: string }) {
+  const [src, setSrc] = useState<string>("");
+
+  const isS3Key = typeof file === "string" && !file.startsWith("http") && !file.startsWith("data:");
+  
+  const { data: s3Data } = useGeneratePresignedUrlQuery(file, {
+    skip: !isS3Key,
+  });
+
+  useEffect(() => {
+    if (!file) {
+      setSrc("");
+      return;
+    }
+    if (file instanceof File) {
+      if (!file.type.startsWith("image/")) {
+        setSrc("");
+        return;
+      }
+      const objectUrl = URL.createObjectURL(file);
+      setSrc(objectUrl);
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
+    } else if (typeof file === "string") {
+      if (isS3Key) {
+        if (s3Data?.url) {
+          setSrc(s3Data.url);
+        }
+      } else {
+        setSrc(file);
+      }
+    }
+  }, [file, s3Data, isS3Key]);
+
+  if (!src) return null;
+
+  return (
+    <img
+      src={src}
+      alt="Preview"
+      className={cn("object-cover rounded-lg", className)}
+    />
+  );
+}
+
 // ─── Upload Picture (now RHF-controlled) ─────────────────────────────────────
 
 function UploadPictureField({
@@ -66,31 +113,38 @@ function UploadPictureField({
       render={({ field, fieldState }) => (
         <div className="flex flex-col gap-[clamp(0.375rem,0.5vw,0.625rem)]">
           <FieldLabel>Upload Picture</FieldLabel>
-          <button
-            type="button"
-            onClick={() => !disabled && ref.current?.click()}
-            disabled={disabled}
-            className={cn(
-              "flex items-center justify-between w-full h-[clamp(2rem,2.78vw,2.5rem)] px-[clamp(0.625rem,0.97vw,0.875rem)] bg-[color:var(--surface-card)] border rounded-[clamp(0.5rem,0.83vw,0.75rem)] transition-colors duration-150",
-              disabled
-                ? "opacity-60 cursor-not-allowed border-gray-200"
-                : "cursor-pointer border-[color:var(--border-default)] hover:border-[color:var(--brand-500)]",
-              fieldState.error && "border-red-500",
+          <div className="flex items-center gap-3">
+            {field.value && (
+              <div className="relative shrink-0 w-11 h-11 rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50 flex items-center justify-center">
+                <ImagePreview file={field.value} className="w-full h-full" />
+              </div>
             )}
-          >
-            <span className="flex-1 text-left truncate mr-2 font-[family-name:var(--font-inter)] font-normal text-[clamp(0.6875rem,0.83vw,0.875rem)] text-[color:var(--text-muted)]">
-              {field.value?.name ?? "Supports JPEG, PNG and Other Formats"}
-            </span>
-            <ImageUp className="shrink-0 text-[var(--text-primary)] w-[1.125rem] h-[1.125rem] stroke-[1.75]" />
-            <input
-              ref={ref}
-              type="file"
+            <button
+              type="button"
+              onClick={() => !disabled && ref.current?.click()}
               disabled={disabled}
-              accept="image/jpeg,image/png,image/webp"
-              className="hidden"
-              onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
-            />
-          </button>
+              className={cn(
+                "flex-1 flex items-center justify-between h-[clamp(2rem,2.78vw,2.5rem)] px-[clamp(0.625rem,0.97vw,0.875rem)] bg-[color:var(--surface-card)] border rounded-[clamp(0.5rem,0.83vw,0.75rem)] transition-colors duration-150",
+                disabled
+                  ? "opacity-60 cursor-not-allowed border-gray-200"
+                  : "cursor-pointer border-[color:var(--border-default)] hover:border-[color:var(--brand-500)]",
+                fieldState.error && "border-red-500",
+              )}
+            >
+              <span className="flex-1 text-left truncate mr-2 font-[family-name:var(--font-inter)] font-normal text-[clamp(0.6875rem,0.83vw,0.875rem)] text-[color:var(--text-muted)]">
+                {field.value?.name ?? (typeof field.value === "string" ? "Existing Picture" : "Supports JPEG, PNG and Other Formats")}
+              </span>
+              <ImageUp className="shrink-0 text-[var(--text-primary)] w-[1.125rem] h-[1.125rem] stroke-[1.75]" />
+              <input
+                ref={ref}
+                type="file"
+                disabled={disabled}
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
+              />
+            </button>
+          </div>
           {fieldState.error && (
             <span className="text-red-500 text-[0.75rem] leading-none">
               {fieldState.error.message}
@@ -135,29 +189,38 @@ function DocUploadField({
             onClick={() => !disabled && ref.current?.click()}
             disabled={disabled}
             className={cn(
-              "flex flex-col items-center justify-center gap-[clamp(0.375rem,0.56vw,0.5rem)] h-[clamp(5rem,8.89vw,8rem)] bg-[color:var(--surface-page)] border-2 border-dashed rounded-[clamp(0.5rem,0.83vw,0.75rem)] transition-colors duration-200",
+              "relative flex flex-col items-center justify-center gap-[clamp(0.375rem,0.56vw,0.5rem)] h-[clamp(5rem,8.89vw,8rem)] bg-[color:var(--surface-page)] border-2 border-dashed rounded-[clamp(0.5rem,0.83vw,0.75rem)] transition-colors duration-200 overflow-hidden",
               disabled
                 ? "opacity-60 cursor-not-allowed border-gray-200"
                 : "cursor-pointer border-[color:var(--border-default)] hover:border-[color:var(--brand-500)] hover:bg-[color:var(--brand-tint)]",
               fieldState.error && "border-red-500 bg-red-50/30",
             )}
           >
-            <FileImage className="shrink-0 text-[var(--text-primary)] w-[1rem] h-[1rem] stroke-[1.75]" />
-            <Typography
-              as="span"
-              variant="span"
-              className="font-[family-name:var(--font-inter)] font-medium text-[clamp(0.75rem,0.97vw,1rem)] leading-[1.5] text-[color:var(--text-primary)] text-center"
-            >
-              {field.value ? "File Selected" : "Click to Upload"}
-            </Typography>
-            {field.value && (
-              <Typography
-                as="span"
-                variant="span"
-                className="font-[family-name:var(--font-inter)] font-normal text-[clamp(0.625rem,0.69vw,0.75rem)] text-[color:var(--brand-500)] text-center max-w-[90%] truncate"
-              >
-                {field.value.name}
-              </Typography>
+            {field.value ? (
+              <>
+                <ImagePreview file={field.value} className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-300" />
+                <div className="absolute inset-0 bg-slate-950/40 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white">
+                  <FileImage className="w-5 h-5 text-white stroke-[2]" />
+                  <span className="text-xs font-semibold">Change File</span>
+                  <span className="text-[10px] opacity-80 max-w-[90%] truncate">
+                    {typeof field.value === "string" ? "Existing Document" : field.value.name}
+                  </span>
+                </div>
+                <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium pointer-events-none">
+                  {typeof field.value === "string" ? "Uploaded" : "Selected"}
+                </div>
+              </>
+            ) : (
+              <>
+                <FileImage className="shrink-0 text-[var(--text-primary)] w-[1rem] h-[1rem] stroke-[1.75]" />
+                <Typography
+                  as="span"
+                  variant="span"
+                  className="font-[family-name:var(--font-inter)] font-medium text-[clamp(0.75rem,0.97vw,1rem)] leading-[1.5] text-[color:var(--text-primary)] text-center"
+                >
+                  Click to Upload
+                </Typography>
+              </>
             )}
             <input
               ref={ref}
@@ -209,9 +272,11 @@ const REGIONS = ["North", "South", "East", "West", "Central", "North-East"];
 const CreateFieldOfficer = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id: routeId, userId: routeUserId } = useParams();
 
-  const userId = location.state?.userId;
-  const isViewMode = location.state?.isViewMode || false;
+  const routeParamId = routeId || routeUserId;
+  const userId = routeParamId || location.state?.userId;
+  const isViewMode = location.state?.isViewMode || !!routeParamId || false;
   const fromPath = location.state?.from || BACK_ROUTE;
 
   const isEditMode = !!userId;
@@ -329,6 +394,9 @@ const CreateFieldOfficer = () => {
         state: stateVal,
         district: districtVal,
         mandal: mandalVal,
+        aadharFront: initialData.id_proof_front_url || initialData.id_proof?.id_proof_frontUrl || undefined,
+        aadharBack: initialData.id_proof_back_url || initialData.id_proof?.id_proof_backUrl || undefined,
+        panCard: initialData.pan_card_url || initialData.id_proof?.pan_card_url || undefined,
       });
     }
   }, [initialData, reset, states, allDistricts, allMandals]);
@@ -352,6 +420,9 @@ const CreateFieldOfficer = () => {
         state: stateVal,
         district: districtVal,
         mandal: mandalVal,
+        aadharFront: data.id_proof_front_url || data.id_proof?.id_proof_frontUrl || undefined,
+        aadharBack: data.id_proof_back_url || data.id_proof?.id_proof_backUrl || undefined,
+        panCard: data.pan_card_url || data.id_proof?.pan_card_url || undefined,
       });
     }
   }, [fieldOfficerData, reset, states, allDistricts, allMandals]);

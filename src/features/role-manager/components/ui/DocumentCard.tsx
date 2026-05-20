@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 
 interface DocumentCardProps {
   label: string;
@@ -9,6 +10,14 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
   label,
   imageUrl,
 }) => {
+  const isS3Key = typeof imageUrl === "string" && !imageUrl.startsWith("http") && !imageUrl.startsWith("data:");
+  
+  const { data: s3Data } = useGeneratePresignedUrlQuery(imageUrl || "", {
+    skip: !isS3Key || !imageUrl,
+  });
+
+  const resolvedUrl = isS3Key ? s3Data?.url : imageUrl;
+
   return (
     <div className="flex flex-col gap-[0.5rem] lg:gap-[0.625rem]">
       <span
@@ -38,9 +47,9 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
           aspect-[323/197]
         "
       >
-        {imageUrl ? (
+        {resolvedUrl ? (
           <img
-            src={imageUrl}
+            src={resolvedUrl}
             alt={label}
             className="
               w-[75%]

@@ -1,4 +1,5 @@
 import { useRef } from "react"; // removed useState for files
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
@@ -17,7 +18,7 @@ import {
   type AgentFormValues,
 } from "@/components/validations/agentSchema";
 import { RHFTextField } from "@/components/form/RHFTextField";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { toast } from "sonner";
 import { useState, useEffect } from "react"; // kept only for profileImage                       // kept only for profileImage
@@ -26,6 +27,7 @@ import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterData
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
 import { useGetAgentByIdMutation } from "@/features/role-manager/api/roleManagerApi";
+import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
 import SectionCard from "../components/ui/SectionCard";
 import InfoField from "../components/ui/InfoField";
@@ -41,6 +43,54 @@ const BANK_OPTIONS = [
   "Bank of Baroda",
   "Canara Bank",
 ];
+
+// ─── Image Preview Helper ───────────────────────────────────────────────────
+
+function ImagePreview({ file, className }: { file: any; className?: string }) {
+  const [src, setSrc] = useState<string>("");
+
+  const isS3Key = typeof file === "string" && !file.startsWith("http") && !file.startsWith("data:");
+  
+  const { data: s3Data } = useGeneratePresignedUrlQuery(file, {
+    skip: !isS3Key,
+  });
+
+  useEffect(() => {
+    if (!file) {
+      setSrc("");
+      return;
+    }
+    if (file instanceof File) {
+      if (!file.type.startsWith("image/")) {
+        setSrc("");
+        return;
+      }
+      const objectUrl = URL.createObjectURL(file);
+      setSrc(objectUrl);
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
+    } else if (typeof file === "string") {
+      if (isS3Key) {
+        if (s3Data?.url) {
+          setSrc(s3Data.url);
+        }
+      } else {
+        setSrc(file);
+      }
+    }
+  }, [file, s3Data, isS3Key]);
+
+  if (!src) return null;
+
+  return (
+    <img
+      src={src}
+      alt="Preview"
+      className={cn("object-cover rounded-lg", className)}
+    />
+  );
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -58,8 +108,13 @@ export default function AgentForm({
 
   const stateOptions = states.map((item: any) => item.desc);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const { userId: locUserId } = location.state || {};
+
+  const handleBackToDirectory = () => {
+    navigate("/role-manager/user-directory");
+  };
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
@@ -429,7 +484,7 @@ export default function AgentForm({
       <main className="w-full min-h-screen bg-[color:var(--surface-page)] font-[family-name:var(--font-sans)]">
         <div className="mx-auto max-w-[118.75rem] px-[1.5rem] lg:px-[2.5rem] xl:px-[3.5rem] 2xl:px-[4.5rem] py-[1.5rem] lg:py-[2rem] xl:py-[2.5rem] 2xl:py-[3rem]">
           <div className="mb-[1.25rem] lg:mb-[1.5rem] xl:mb-[1.75rem]">
-            <ProfileBackButton onClick={onCancel} />
+            <ProfileBackButton onClick={handleBackToDirectory} />
           </div>
 
           <div className="bg-[color:var(--surface-card)] rounded-[1.75rem] lg:rounded-[2.25rem] xl:rounded-[2.875rem] px-[1.25rem] lg:px-[2rem] xl:px-[3.125rem] pt-[1.5rem] lg:pt-[1.75rem] xl:pt-[2rem] pb-[2rem] lg:pb-[2.5rem] xl:pb-[3rem] flex flex-col gap-[1rem] lg:gap-[1.125rem] xl:gap-[1.25rem]">
@@ -463,14 +518,14 @@ export default function AgentForm({
             <div className="flex items-center justify-end gap-[0.625rem] lg:gap-[0.75rem] xl:gap-[0.875rem] pt-4">
               <button
                 type="button"
-                onClick={onCancel}
+                onClick={handleBackToDirectory}
                 className="font-medium font-[family-name:'Inter',sans-serif] text-[color:var(--profile-text)] px-[1.25rem] lg:px-[1.5rem] py-[0.5rem] rounded-[0.375rem] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:bg-gray-100 transition-colors"
               >
                 Dismiss
               </button>
               <button
                 type="button"
-                onClick={onCancel}
+                onClick={handleBackToDirectory}
                 className="font-medium font-[family-name:'Inter',sans-serif] text-white px-[1.75rem] lg:px-[2rem] py-[0.5rem] rounded-full bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:opacity-90 active:scale-[0.97] transition-all duration-150"
               >
                 Approve
@@ -486,7 +541,7 @@ export default function AgentForm({
     <div className="min-h-screen bg-[color:var(--surface-page)] p-[clamp(16px,2vw,32px)]">
       {/* ── Go Back ── */}
       <button
-        onClick={onCancel}
+        onClick={handleBackToDirectory}
         className="
                     flex items-center gap-2 px-5 py-3 mb-10
                     bg-[color:var(--surface-card)] rounded-full
@@ -562,7 +617,15 @@ export default function AgentForm({
                                                     ${fieldState.error ? "border-red-500" : "border-[color:var(--surface-card)]"}
                                                 `}
                       >
-                        {profileImage ? (
+                        {field.value ? (
+                          <ImagePreview file={field.value} className="w-full h-full object-cover rounded-full" />
+                        ) : (agentData?.data?.avatar || agentData?.data?.profile_image || initialData?.avatar || (initialData as any)?.profile_image) ? (
+                          <img
+                            src={agentData?.data?.avatar || agentData?.data?.profile_image || initialData?.avatar || (initialData as any)?.profile_image}
+                            alt="profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : profileImage ? (
                           <img
                             src={profileImage}
                             alt="profile"
@@ -803,18 +866,21 @@ export default function AgentForm({
               title="Aadhar Card (Front)"
               control={control}
               disabled={isViewMode}
+              existingUrl={agentData?.data?.id_proof_front_url || agentData?.data?.id_proof?.id_proof_frontUrl || initialData?.id_proof_front_url || initialData?.id_proof?.id_proof_frontUrl || (initialData as any)?.id_proof?.id_proof_front_url}
             />
             <UploadBox
               name="aadharBack"
               title="Aadhar Card (Back)"
               control={control}
               disabled={isViewMode}
+              existingUrl={agentData?.data?.id_proof_back_url || agentData?.data?.id_proof?.id_proof_backUrl || initialData?.id_proof_back_url || initialData?.id_proof?.id_proof_backUrl || (initialData as any)?.id_proof?.id_proof_back_url}
             />
             <UploadBox
               name="panCard"
               title="Pan Card"
               control={control}
               disabled={isViewMode}
+              existingUrl={agentData?.data?.pan_card_url || agentData?.data?.id_proof?.pan_card_url || initialData?.pan_card_url || initialData?.id_proof?.pan_card_url || (initialData as any)?.id_proof?.pan_card_url}
             />
           </div>
         </FormSection>
@@ -824,7 +890,7 @@ export default function AgentForm({
           {isViewMode ? (
             <Button
               variant="primary"
-              onClick={onCancel}
+              onClick={handleBackToDirectory}
               className="
                               !h-[44px] !min-w-[180px]
                               !rounded-[100px]
@@ -840,7 +906,7 @@ export default function AgentForm({
           ) : (
             <>
               <button
-                onClick={onCancel}
+                onClick={handleBackToDirectory}
                 disabled={isLoading}
                 className="
                                 text-[clamp(12px,0.9vw,16px)] font-medium text-[color:var(--text-primary)]
@@ -913,11 +979,13 @@ function UploadBox({
   name,
   control,
   disabled = false,
+  existingUrl = "",
 }: {
   title: string;
   name: "aadharFront" | "aadharBack" | "panCard";
   control: Control<AgentFormValues>;
   disabled?: boolean;
+  existingUrl?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -933,11 +1001,11 @@ function UploadBox({
           <div
             onClick={() => !disabled && inputRef.current?.click()}
             className={`
-                            flex flex-col items-center justify-center gap-2
+                            relative flex flex-col items-center justify-center gap-2
                             h-[clamp(100px,9vw,128px)]
                             border-2 border-dashed rounded-[var(--radius-dropdown)]
                             bg-[color:var(--input)]
-                            transition-colors
+                            transition-colors overflow-hidden
                             ${disabled
                 ? "opacity-60 cursor-not-allowed border-gray-200"
                 : "cursor-pointer hover:brightness-95"
@@ -948,15 +1016,19 @@ function UploadBox({
               }
                         `}
           >
-            {field.value ? (
+            {field.value || existingUrl ? (
               <>
-                <FileText
-                  strokeWidth={1.5}
-                  className="w-[clamp(20px,1.8vw,28px)] h-[clamp(20px,1.8vw,28px)] text-[color:var(--label-color)]"
-                />
-                <span className="font-medium text-center px-3 truncate max-w-full text-[length:clamp(11px,0.85vw,14px)] text-[color:var(--profile-text)] font-[family-name:var(--font-sans)]">
-                  {field.value.name}
-                </span>
+                <ImagePreview file={field.value || existingUrl} className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-300" />
+                <div className="absolute inset-0 bg-slate-950/40 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white">
+                  <FileText className="w-5 h-5 text-white stroke-[2]" />
+                  <span className="text-xs font-semibold">Change File</span>
+                  <span className="text-[10px] opacity-80 max-w-[90%] truncate">
+                    {field.value instanceof File ? field.value.name : "Existing Document"}
+                  </span>
+                </div>
+                <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium pointer-events-none">
+                  {field.value ? "Selected" : "Uploaded"}
+                </div>
               </>
             ) : (
               <>

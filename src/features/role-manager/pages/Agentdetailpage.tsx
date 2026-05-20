@@ -2,7 +2,7 @@ import * as React from "react";
 
 import {useNavigate, useParams} from "react-router-dom";
 import { useGetAgentByIdMutation } from "@/features/role-manager/api/roleManagerApi";
-import { useUpdateAgentDetailsMutation } from "@/features/role-manager/api/agentApi";
+import { useApproveUserMutation } from "@/features/auth/api/authApi";
 import RaiseIssueForm from "@/features/role-manager/components/form";
 import { toast } from "sonner";
 
@@ -50,7 +50,7 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
     const userId = id ? Number(id) : NaN;
 
     const [getAgentById, { data, isLoading }] = useGetAgentByIdMutation();
-    const [updateAgentDetails, { isLoading: isUpdating }] = useUpdateAgentDetailsMutation();
+    const [approveUser, { isLoading: isApproving }] = useApproveUserMutation();
 
     React.useEffect(() => {
         if (!isNaN(userId)) {
@@ -138,46 +138,14 @@ const agent: AgentDetail = {
         }
     };
 
+    // TODO: role_id and role_code are hardcoded. Later map from master data dynamically.
     const handleApprove = async () => {
         try {
-            const payload = {
-                userId: apiData?.id || userId || 0,
-                firstName: apiData?.first_name || apiData?.name?.split(" ")[0] || "string",
-                lastName: apiData?.last_name || apiData?.name?.split(" ").slice(1).join(" ") || "string",
-                countryCode: apiData?.countryCode || "+91",
-                emailAddress: apiData?.email || apiData?.emailAddress || "string",
-                phoneNumber: apiData?.phone || apiData?.phoneNumber || "string",
-                dob: apiData?.dob ? new Date(apiData.dob).toISOString().split('T')[0] : "2026-05-18",
-                role_id: apiData?.role_id || 1,
-                isVerified: 1, // Approved => 1
-                address: {
-                    address: apiData?.address || "string",
-                    state_id: apiData?.state_id || 0,
-                    city: apiData?.city || "string",
-                    pincode: apiData?.pincode || "string"
-                },
-                geo_assignments: {
-                    country_id: apiData?.geo_assignments?.country_id || 0,
-                    state_id: apiData?.geo_assignments?.state_id || 0,
-                    district_id: apiData?.geo_assignments?.district_id || 0,
-                    mandal_id: apiData?.geo_assignments?.mandal_id || 0,
-                    region_id: apiData?.geo_assignments?.region_id || 0,
-                    areas_id: apiData?.geo_assignments?.areas_id || 0
-                },
-                id_proof: {
-                    bank_account_name: apiData?.id_proof?.bank_account_name || `${apiData?.first_name || ""} ${apiData?.last_name || ""}`.trim() || "string",
-                    bank_account_number: apiData?.id_proof?.bank_account_number || apiData?.account_number || "string",
-                    ifsc_code: apiData?.id_proof?.ifsc_code || apiData?.ifsc_code || "string",
-                    branch: apiData?.id_proof?.branch || "string",
-                    bank_name: apiData?.id_proof?.bank_name || apiData?.bank_name || "string",
-                    id_proof_frontUrl: apiData?.id_proof_front_url || apiData?.id_proof?.id_proof_frontUrl || "string",
-                    id_proof_backUrl: apiData?.id_proof_back_url || apiData?.id_proof?.id_proof_backUrl || "string",
-                    pan_card_number: apiData?.pan_card_number || apiData?.id_proof?.pan_card_number || "string",
-                    pan_card_url: apiData?.pan_card_url || apiData?.id_proof?.pan_card_url || "string"
-                }
-            };
-
-            await updateAgentDetails(payload).unwrap();
+            await approveUser({
+                user_id: apiData?.id || userId || 0,
+                role_id: 6,        // Hardcoded: AGENT role id
+                role_code: "AGENT", // Hardcoded: AGENT role code
+            }).unwrap();
             toast.success("Agent approved successfully!");
             if (onApprove) {
                 onApprove();
@@ -194,7 +162,7 @@ const agent: AgentDetail = {
         return <Loader message="Loading Agent Details..." fullscreen />;
     }
 
-    if (isUpdating) {
+    if (isApproving) {
         return <Loader message="Approving Agent Registration..." fullscreen />;
     }
     return (
