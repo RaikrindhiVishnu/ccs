@@ -650,9 +650,9 @@ export default function AgentForm({
                       >
                         {field.value ? (
                           <ImagePreview file={field.value} className="w-full h-full object-cover rounded-full" />
-                        ) : (agentData?.data?.avatar || agentData?.data?.profile_image || initialData?.avatar || (initialData as any)?.profile_image) ? (
+                        ) : (agentData?.data?.avatar || agentData?.data?.profile_image || (initialData as any)?.avatar || (initialData as any)?.profile_image) ? (
                           <img
-                            src={agentData?.data?.avatar || agentData?.data?.profile_image || initialData?.avatar || (initialData as any)?.profile_image}
+                            src={agentData?.data?.avatar || agentData?.data?.profile_image || (initialData as any)?.avatar || (initialData as any)?.profile_image}
                             alt="profile"
                             className="w-full h-full object-cover"
                           />
@@ -934,21 +934,21 @@ export default function AgentForm({
               title="Aadhar Card (Front)"
               control={control}
               disabled={isViewMode}
-              existingUrl={agentData?.data?.id_proof_front_url || agentData?.data?.id_proof?.id_proof_frontUrl || initialData?.id_proof_front_url || initialData?.id_proof?.id_proof_frontUrl || (initialData as any)?.id_proof?.id_proof_front_url}
+              existingUrl={agentData?.data?.id_proof_front_url || agentData?.data?.id_proof?.id_proof_frontUrl || (initialData as any)?.id_proof_front_url || (initialData as any)?.id_proof?.id_proof_frontUrl || (initialData as any)?.id_proof?.id_proof_front_url}
             />
             <UploadBox
               name="aadharBack"
               title="Aadhar Card (Back)"
               control={control}
               disabled={isViewMode}
-              existingUrl={agentData?.data?.id_proof_back_url || agentData?.data?.id_proof?.id_proof_backUrl || initialData?.id_proof_back_url || initialData?.id_proof?.id_proof_backUrl || (initialData as any)?.id_proof?.id_proof_back_url}
+              existingUrl={agentData?.data?.id_proof_back_url || agentData?.data?.id_proof?.id_proof_backUrl || (initialData as any)?.id_proof_back_url || (initialData as any)?.id_proof?.id_proof_backUrl || (initialData as any)?.id_proof?.id_proof_back_url}
             />
             <UploadBox
               name="panCard"
               title="Pan Card"
               control={control}
               disabled={isViewMode}
-              existingUrl={agentData?.data?.pan_card_url || agentData?.data?.id_proof?.pan_card_url || initialData?.pan_card_url || initialData?.id_proof?.pan_card_url || (initialData as any)?.id_proof?.pan_card_url}
+              existingUrl={agentData?.data?.pan_card_url || agentData?.data?.id_proof?.pan_card_url || (initialData as any)?.pan_card_url || (initialData as any)?.id_proof?.pan_card_url || (initialData as any)?.id_proof?.pan_card_url}
             />
           </div>
         </FormSection>

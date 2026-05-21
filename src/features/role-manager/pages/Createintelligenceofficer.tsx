@@ -266,7 +266,7 @@ function SectionPanel({
   );
 }
 
-const REGIONS = ["North", "South", "East", "West", "Central", "North-East"];
+
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -525,7 +525,7 @@ export default function CreateIntelligenceOfficer() {
   };
 
   if (isViewMode) {
-    const data = regionalOfficerData?.data || initialData;
+    const data = intelligenceOfficerData?.data || initialData;
     const name = `${watch("firstName") || data?.firstName || data?.first_name || ""} ${watch("lastName") || data?.lastName || data?.last_name || ""}`.trim() || "Intelligence Officer Name";
     const status = data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review";
     const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "IO";

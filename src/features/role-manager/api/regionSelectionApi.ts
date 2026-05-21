@@ -51,6 +51,8 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
       areaName: string;
       area_code: string;
       field_officer_id: number;
+      regional_officer_id?: number | null;
+      intelligence_officer_id?: number | null;
       assignments: {
         district_id: number;
         mandal_id: number;
