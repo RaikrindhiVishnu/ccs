@@ -1,83 +1,135 @@
-import React from "react";
-import { LayoutGrid, Search } from "lucide-react";
+import React, { useEffect, useCallback } from "react";
+import { LayoutGrid, Search, Bell } from "lucide-react";
+import headerBg from "@/assets/header.svg";
 import { Typography } from "@/components/ui/typography";
 import { Input } from "@/components/ui/input";
-import bellIcon from "@/assets/bellicon.svg";
 import AgentOnboardingVelocity from "@/features/role-manager/components/AgentOnboardingVelocity";
 import RegionCreationVelocity from "@/features/role-manager/components/RegionCreationVelocity";
 import WorkforceStructure from "@/features/role-manager/components/WorkforceStructure";
 import RoleCreationOverviewCard from "@/features/role-manager/components/Rolecreationoverviewcard";
-import pako from 'pako';
-import { Buffer } from 'buffer';
-import geoJsonData from '../data/geoJsonApi.json';
+import pako from "pako";
+import { Buffer } from "buffer";
+import geoJsonData from "../data/geoJsonApi.json";
 import { useDispatch } from "react-redux";
-import {
-  useGetAllGeoMasterDataQuery,
-} from "@/features/role-manager/api/masterDataApi";
+import { useGetAllGeoMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import { setGeoMasterData } from "@/features/role-manager/store/roleManagerSlice";
 import {
   useGetAllIntelligenceOfficersMutation,
   useGetAllRegionalOfficersMutation,
   useGetAllFieldOfficersMutation,
 } from "@/features/role-manager/api/roleManagerApi";
-import { useEffect, useCallback } from "react";
 
 // import RegionalCreationTargetVsActual from "@/pages/Dashboard/RegionalCreationTargetVsActual";
-// ─── Local Header Component (Copied for independence) ──────────────────────────
+
+// ─── Header ────────────────────────────────────────────────────────────────────
 const RoleManagerHeader: React.FC = () => {
   return (
     <div
-      className="w-full rounded-[clamp(12px,1.67vw,24px)] relative overflow-hidden box-border shrink-0 p-[clamp(12px,1.81vw,26px)] flex flex-col gap-4"
-      style={{ background: "var(--header-gradient)" }}
+      className={[
+        // structure
+        "relative w-full overflow-hidden flex flex-col justify-start",
+        // spacing
+        "px-4 py-4 sm:px-5 sm:py-[1.125rem] lg:px-6 lg:py-5 xl:px-[1.625rem] xl:py-6 2xl:px-8 2xl:py-7",
+        // size
+        "min-h-40 lg:min-h-44 xl:min-h-[11.875rem]",
+        // shape
+        "rounded-[1.25rem] xl:rounded-[1.5rem]",
+        // row gap
+        "gap-4",
+      ].join(" ")}
     >
-      {/* ROW 1: Dashboard label + Search + Bell */}
-      <div className="flex flex-row items-center justify-between z-10 w-full">
-        <div className="flex items-center gap-[clamp(2px,0.35vw,5px)]">
+      {/* ── Background SVG ── */}
+      <img
+        src={headerBg}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 w-full h-full object-cover object-center"
+      />
+
+      {/* ── ROW 1: Breadcrumb ←→ Search + Bell ── */}
+      <div className="relative z-10 flex items-start justify-between gap-4">
+
+        {/* Breadcrumb */}
+        <div className="flex shrink-0 items-center gap-1.5 min-w-fit">
           <LayoutGrid
             size={16}
             strokeWidth={2}
-            className="text-[var(--text-primary)]"
+            className="shrink-0 text-[var(--text-primary)]"
           />
           <Typography
             variant="span"
-            className="font-inter font-normal text-sm text-[var(--text-primary)]"
+            className="font-inter font-normal whitespace-nowrap leading-5 text-[var(--text-primary)] text-[0.75rem] sm:text-[0.8125rem] xl:text-sm"
           >
             Dashboard
           </Typography>
         </div>
 
-        <div className="flex items-center gap-4 shrink-0 h-[clamp(36px,3vh,44px)]">
-          {/* Search Input — White Variant */}
+        {/* Right controls: Search + Bell */}
+        <div className="flex flex-1 items-center justify-end gap-2 lg:gap-3 max-w-[18rem] md:max-w-xs lg:max-w-sm xl:max-w-[23.25rem] 2xl:max-w-[26rem]">
+
+          {/* Search */}
           <Input
             variant="white"
             placeholder="Search..."
-            containerClassName="w-80 h-full"
-            className="text-xs px-8"
-            icon={<Search size={14} className="text-[var(--text-muted)]" />}
+            icon={
+              <Search
+                size={20}
+                strokeWidth={2}
+                className="text-[var(--text-muted-strong)]"
+              />
+            }
+            containerClassName="flex-1"
+            wrapperClassName="h-10 lg:h-11 xl:h-[3.25rem] bg-[var(--surface-card)] rounded-full shadow-sm"
+            className="font-inter font-normal text-[var(--text-primary)] placeholder:text-[var(--text-muted-strong)] text-[0.8125rem] lg:text-sm xl:text-base"
           />
 
-          {/* Bell Icon — Matching Height */}
-          <div className="h-10 aspect-square bg-[var(--surface-card)] rounded-full flex justify-center items-center cursor-pointer shrink-0 overflow-hidden border border-[var(--border-default)]">
-            <img
-              src={bellIcon}
-              alt="notification"
-              className="w-[60%] h-[60%] object-contain"
+          {/* Bell */}
+          <button
+            type="button"
+            aria-label="Notifications"
+            className={[
+              "relative shrink-0 flex items-center justify-center",
+              "w-10 h-10 lg:w-11 lg:h-11 xl:w-[3.25rem] xl:h-[3.25rem]",
+              "rounded-full bg-[var(--surface-card)] shadow-sm",
+              "transition-all duration-200",
+            ].join(" ")}
+          >
+            <Bell
+              strokeWidth={1.8}
+              className="text-[var(--text-primary)] w-4 h-4 lg:w-[1.125rem] lg:h-[1.125rem] xl:w-[1.35rem] xl:h-[1.35rem]"
             />
-          </div>
+            {/* Notification dot */}
+            <span
+              aria-hidden="true"
+              className="absolute top-[0.78rem] right-[0.78rem] xl:top-[0.95rem] xl:right-[0.95rem] w-1.5 h-1.5 rounded-full bg-[var(--status-danger)]"
+            />
+          </button>
         </div>
       </div>
 
-      {/* Title + Subtitle */}
-      <div className="flex flex-col items-start gap-1 z-10">
-        <Typography
-          variant="p"
-          className="font-inter font-medium text-4xl leading-[110%] uppercase text-[var(--text-primary)] m-0 whitespace-nowrap tracking-tighter"
+      {/* ── ROW 2: Title + Subtitle ── */}
+      <div className="relative z-10 flex flex-col gap-1.5 xl:gap-2">
+
+        {/* Title — Figma: Inter 500, 36px, uppercase */}
+        <p
+          className={[
+            "!m-0 font-inter font-medium uppercase leading-[120%] tracking-[-0.02em]",
+            "text-[var(--text-strong)]",
+            "text-[1.75rem] sm:text-[1.875rem] lg:text-[2rem] xl:text-[2.25rem] 2xl:text-[2.5rem]",
+          ].join(" ")}
         >
-          Role Manager
-        </Typography>
+          ROLE MANAGER
+        </p>
+
+        {/* Subtitle — Figma: Inter 400, 14px, opacity 0.6 */}
         <Typography
           variant="p"
-          className="font-normal text-sm text-[var(--text-muted)] m-0 whitespace-nowrap opacity-70"
+          className={[
+            "m-0 font-inter font-normal text-[var(--text-muted)]",
+            "max-w-[95%] sm:max-w-[28rem] xl:max-w-[29.375rem]",
+            "text-[0.75rem] sm:text-[0.8125rem] xl:text-sm",
+            "leading-4 xl:leading-[1.125rem]",
+          ].join(" ")}
         >
           Next-generation platform infrastructure for scaling sustainable
           estates.
@@ -100,20 +152,10 @@ const RoleManagerDashboard: React.FC = () => {
 
   const fetchAndDecodeGeoData = useCallback(async (base64Data: string) => {
     try {
-
-      // 1. Convert Base64 string to a binary Buffer
-      const binaryData = Buffer.from(base64Data, 'base64');
-
-
-      // 2. Decompress the data using Pako (Gunzip)
+      const binaryData = Buffer.from(base64Data, "base64");
       const decompressedData = pako.ungzip(binaryData);
-
-      // 3. Convert to string and parse JSON
       const decompressedString = new TextDecoder().decode(decompressedData);
       const finalData = JSON.parse(decompressedString);
-
-
-
       return finalData;
     } catch (error) {
       console.error("Decoding failed:", error);
@@ -128,7 +170,6 @@ const RoleManagerDashboard: React.FC = () => {
     }
   }, [fetchAndDecodeGeoData]);
 
-  // Use roleManagerApi mutations to fetch master lists and log responses
   const [getIntelligence] = useGetAllIntelligenceOfficersMutation();
   const [getRegional] = useGetAllRegionalOfficersMutation();
   const [getField] = useGetAllFieldOfficersMutation();
@@ -160,32 +201,31 @@ const RoleManagerDashboard: React.FC = () => {
     fetchAll();
   }, [getIntelligence, getRegional, getField]);
 
-
   return (
-    <div className="flex flex-col p-[clamp(6px,0.83vw,12px)] gap-[clamp(12px,1.5vw,24px)] box-border min-h-full">
-      {/* Header section */}
+    <div className="box-border flex min-h-full flex-col gap-[clamp(12px,1.5vw,24px)] p-[clamp(6px,0.83vw,12px)]">
+      {/* Header */}
       <div className="shrink-0">
         <RoleManagerHeader />
       </div>
 
-      {/* Charts Grid — Automatic Height, No Squashing */}
-      <div className="grid grid-cols-2 gap-[clamp(12px,1.5vw,24px)] box-border">
+      {/* Charts Grid */}
+      <div className="box-border grid grid-cols-2 gap-[clamp(12px,1.5vw,24px)]">
         {/* Left Column */}
-        <div className="flex flex-col gap-[clamp(12px,1.5vw,24px)] min-h-[600px]">
-          <div className="bg-[var(--surface-card)] rounded-2xl shadow-sm overflow-hidden min-h-[350px] flex flex-col">
+        <div className="flex min-h-[600px] flex-col gap-[clamp(12px,1.5vw,24px)]">
+          <div className="flex min-h-[350px] flex-col overflow-hidden rounded-2xl bg-[var(--surface-card)] shadow-sm">
             <AgentOnboardingVelocity />
           </div>
-          <div className="bg-[var(--surface-card)] rounded-2xl shadow-sm overflow-hidden min-h-[350px] flex flex-col">
+          <div className="flex min-h-[350px] flex-col overflow-hidden rounded-2xl bg-[var(--surface-card)] shadow-sm">
             <RegionCreationVelocity />
           </div>
         </div>
 
         {/* Right Column */}
-        <div className="flex flex-col gap-[clamp(12px,1.5vw,24px)] min-h-[600px]">
-          <div className="bg-[var(--surface-card)] rounded-2xl shadow-sm overflow-hidden min-h-[300px] flex flex-col">
+        <div className="flex min-h-[600px] flex-col gap-[clamp(12px,1.5vw,24px)]">
+          <div className="flex min-h-[300px] flex-col overflow-hidden rounded-2xl bg-[var(--surface-card)] shadow-sm">
             <WorkforceStructure />
           </div>
-          <div className="bg-[var(--surface-card)] rounded-2xl shadow-sm overflow-hidden min-h-[400px] flex flex-col">
+          <div className="flex min-h-[400px] flex-col overflow-hidden rounded-2xl bg-[var(--surface-card)] shadow-sm">
             {/* <RegionalCreationTargetVsActual /> */}
             <RoleCreationOverviewCard />
           </div>
