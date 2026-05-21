@@ -45,7 +45,8 @@ export const authRoutes: RouteObject[] = [
   {
     element: <RootLayout />,
     children: [
-      { path: "/", element: <CcsDashboard /> },
+      { path: "/", element: <RoleManagerDashboard /> },
+      { path: "/ccs/dashboard", element: <CcsDashboard /> },
       { path: "/home", element: <Home /> },
       { path: "/pending-cases", element: <ActiveVerifications /> },
       { path: "/geospatial-audit", element: <GeospatialAudit /> },

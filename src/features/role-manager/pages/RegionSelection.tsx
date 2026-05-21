@@ -20,6 +20,7 @@ import {
   useGetAllIntelligenceOfficersMutation,
   useGetAllFieldOfficersMutation,
 } from "../api/roleManagerApi";
+import { useGetRegionOfficerDetailsQuery } from "../api/userDirectoryApi";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 const AREA_COLORS = [
@@ -231,9 +232,9 @@ const buildRegionFeatureFromDistricts = (
     .find((s) => s.i === stateId);
   if (!stateObj) return null;
 
-  const geometries: GeoJSON.Geometry[] = districtIds
+  const geometries: any[] = districtIds
     .map((id) => stateObj.districts?.find((d) => d.i === id)?.g)
-    .filter((g): g is GeoJSON.Geometry => !!g && !!(g as any).type);
+    .filter((g: any) => !!g && !!g.type);
 
   if (geometries.length === 0) return null;
 
@@ -259,7 +260,7 @@ const buildRegionsGeoJSON = (
         if (f.geometry && f.geometry.type) return f as GeoJSON.Feature;
         return buildRegionFeatureFromDistricts(f, masterData);
       })
-      .filter((f): f is GeoJSON.Feature => !!f);
+      .filter((f: any): f is GeoJSON.Feature => !!f);
 
     return { type: "FeatureCollection", features };
   } catch (err) {
@@ -454,7 +455,23 @@ const RegionSelection: React.FC = () => {
     fetchOfficerLists();
   }, [getAllRegionalOfficers, getAllIntelligenceOfficers]);
 
-  const selectedStateId: number | undefined = selectedState?.properties?.id;
+  const selectedStateId: number | undefined = selectedState?.properties?.id ?? 
+    (selectedRegion?.properties?.state_id ? Number(selectedRegion.properties.state_id) : undefined) ?? 
+    (selectedRegion?.properties?.stateId ? Number(selectedRegion.properties.stateId) : undefined);
+
+  const { data: regionOfficerDetailsRes } = useGetRegionOfficerDetailsQuery(
+    {
+      state_id: selectedStateId ? String(selectedStateId) : "",
+      region_id: selectedRegionId ? String(selectedRegionId) : "",
+    },
+    {
+      skip: !selectedStateId || !selectedRegionId,
+    }
+  );
+
+  useEffect(() => {
+    console.log("RegionSelection Debug - selectedStateId:", selectedStateId, "selectedRegionId:", selectedRegionId, "regionOfficerDetails:", regionOfficerDetailsRes);
+  }, [selectedStateId, selectedRegionId, regionOfficerDetailsRes]);
 
   useEffect(() => {
     console.log("regionsByCountryData hook result:", regionsByCountryData);
@@ -1441,10 +1458,15 @@ const RegionSelection: React.FC = () => {
         mandal_id: Number(m.id ?? m.featureId),
       }));
 
+      const fetchedRegionalOfficerId = regionOfficerDetailsRes?.data?.regional_officer_id;
+      const fetchedIntelligenceOfficerId = regionOfficerDetailsRes?.data?.intelligence_officer_id;
+
       const res = await createArea({
         areaName,
         area_code: areaCode,
         field_officer_id: selectedFieldOfficerId!,
+        regional_officer_id: fetchedRegionalOfficerId ? Number(fetchedRegionalOfficerId) : null,
+        intelligence_officer_id: fetchedIntelligenceOfficerId ? Number(fetchedIntelligenceOfficerId) : null,
         assignments,
       }).unwrap();
       

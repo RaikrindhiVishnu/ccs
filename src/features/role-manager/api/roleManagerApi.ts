@@ -13,11 +13,14 @@ export const roleManagerApi = createApi({
   endpoints: (builder) => ({
     getRegionalOfficerById: builder.mutation<any, number>({
       query: (userId) => ({
-        url: "/regionalOfficer/getRegionalOfficerById",
+        url: `/regionalOfficer/getRegionalOfficerById/${userId}`,
         method: "POST",
-        body: {
-          userId,
-        },
+      }),
+    }),
+    getIntelligenceOfficerById: builder.mutation<any, number>({
+      query: (userId) => ({
+        url: `/regionalOfficer/getIntelligenceOfficerById/${userId}`,
+        method: "POST",
       }),
     }),
     getFieldOfficerById: builder.mutation<any, number>({
@@ -73,6 +76,13 @@ export const roleManagerApi = createApi({
         method: "POST",
       }),
     }),
+    getLocationHierarchyDetails: builder.mutation<any, { district_id: number; mandal_id: number }>({
+      query: (body) => ({
+        url: "/master/get_location_hierarchy_details",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -81,8 +91,10 @@ export const {
   useGetAllAgentsMutation,
   useGetAgentByIdMutation,
   useGetRegionalOfficerByIdMutation,
+  useGetIntelligenceOfficerByIdMutation,
   useGetFieldOfficerByIdMutation,
   useGetAllIntelligenceOfficersMutation,
   useGetAllRegionalOfficersMutation,
   useGetAllFieldOfficersMutation,
+  useGetLocationHierarchyDetailsMutation,
 } = roleManagerApi;

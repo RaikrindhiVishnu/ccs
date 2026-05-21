@@ -26,7 +26,7 @@ import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterData
 
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
-import { useGetAgentByIdMutation } from "@/features/role-manager/api/roleManagerApi";
+import { useGetAgentByIdMutation, useGetLocationHierarchyDetailsMutation } from "@/features/role-manager/api/roleManagerApi";
 import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
 import SectionCard from "../components/ui/SectionCard";
@@ -191,6 +191,8 @@ export default function AgentForm({
 
   const userId = locUserId || (initialData as any)?.originalId || (initialData as any)?.id;
   const [getAgentById, { data: agentData }] = useGetAgentByIdMutation();
+  const [getLocationHierarchyDetails] = useGetLocationHierarchyDetailsMutation();
+  const [hierarchy, setHierarchy] = useState<any>(null);
 
   const fetchedRef = useRef<any>(null);
 
@@ -203,6 +205,7 @@ export default function AgentForm({
 
   const selectedStateName = watch("state");
   const selectedDistrictName = watch("district");
+  const selectedMandalName = watch("mandal");
 
   const selectedStateObj = states.find((s: any) => s.desc === selectedStateName);
 
@@ -234,6 +237,34 @@ export default function AgentForm({
       prevDistrictRef.current = selectedDistrictName;
     }
   }, [selectedDistrictName, setValue]);
+
+  useEffect(() => {
+    if (selectedDistrictName && selectedMandalName) {
+      const selectedDistrictObj = allDistricts.find((d: any) => d.desc === selectedDistrictName);
+      const selectedMandalObj = allMandals.find((m: any) => m.desc === selectedMandalName);
+      if (selectedDistrictObj?.id && selectedMandalObj?.id) {
+        getLocationHierarchyDetails({
+          district_id: Number(selectedDistrictObj.id),
+          mandal_id: Number(selectedMandalObj.id),
+        })
+          .unwrap()
+          .then((res) => {
+            if (res?.success) {
+              setHierarchy(res.data);
+            } else {
+              setHierarchy(null);
+            }
+          })
+          .catch(() => {
+            setHierarchy(null);
+          });
+      } else {
+        setHierarchy(null);
+      }
+    } else {
+      setHierarchy(null);
+    }
+  }, [selectedDistrictName, selectedMandalName, allDistricts, allMandals, getLocationHierarchyDetails]);
 
   // Pre-fill geo fields from agentData (resolving IDs to names)
   useEffect(() => {
@@ -619,9 +650,9 @@ export default function AgentForm({
                       >
                         {field.value ? (
                           <ImagePreview file={field.value} className="w-full h-full object-cover rounded-full" />
-                        ) : (agentData?.data?.avatar || agentData?.data?.profile_image || initialData?.avatar || (initialData as any)?.profile_image) ? (
+                        ) : (agentData?.data?.avatar || agentData?.data?.profile_image || (initialData as any)?.avatar || (initialData as any)?.profile_image) ? (
                           <img
-                            src={agentData?.data?.avatar || agentData?.data?.profile_image || initialData?.avatar || (initialData as any)?.profile_image}
+                            src={agentData?.data?.avatar || agentData?.data?.profile_image || (initialData as any)?.avatar || (initialData as any)?.profile_image}
                             alt="profile"
                             className="w-full h-full object-cover"
                           />
@@ -801,22 +832,59 @@ export default function AgentForm({
               placeholder="Select State"
               disabled={isViewMode}
             />
-            <RHFDropdown
-              name="district"
-              control={control}
-              label="District"
-              options={districtOptions}
-              placeholder="Select District"
-              disabled={isViewMode}
-            />
-            <RHFDropdown
-              name="mandal"
-              control={control}
-              label="Mandal"
-              options={mandalOptions}
-              placeholder="Select Mandal"
-              disabled={isViewMode}
-            />
+            <div className="flex flex-col gap-1">
+              <RHFDropdown
+                name="district"
+                control={control}
+                label="District"
+                options={districtOptions}
+                placeholder="Select District"
+                disabled={isViewMode}
+              />
+              {(hierarchy?.region || hierarchy?.regional_officer || hierarchy?.intelligence_officer) && (
+                <div className="mt-1 px-1 flex flex-col">
+                  {hierarchy.region && (
+                    <span className="text-xs font-semibold text-slate-500">
+                      Region: {hierarchy.region.name || "N/A"}
+                    </span>
+                  )}
+                  {hierarchy.regional_officer && (
+                    <span className="text-[13px] font-medium text-[#16a34a] mt-1.5 flex items-center gap-1">
+                      RO : {hierarchy.regional_officer.first_name} {hierarchy.regional_officer.last_name} {hierarchy.regional_officer.id ? `(GLC 00${hierarchy.regional_officer.id})` : ""}
+                    </span>
+                  )}
+                  {hierarchy.intelligence_officer && (
+                    <span className="text-[13px] font-medium text-[#16a34a] mt-0.5 flex items-center gap-1">
+                      IO : {hierarchy.intelligence_officer.first_name} {hierarchy.intelligence_officer.last_name} {hierarchy.intelligence_officer.id ? `(GLC 00${hierarchy.intelligence_officer.id})` : ""}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              <RHFDropdown
+                name="mandal"
+                control={control}
+                label="Mandal"
+                options={mandalOptions}
+                placeholder="Select Mandal"
+                disabled={isViewMode}
+              />
+              {(hierarchy?.area || hierarchy?.field_officer) && (
+                <div className="mt-1 px-1 flex flex-col">
+                  {hierarchy.area && (
+                    <span className="text-xs font-semibold text-slate-500">
+                      Area: {hierarchy.area.name || hierarchy.area || "N/A"}
+                    </span>
+                  )}
+                  {hierarchy.field_officer && (
+                    <span className="text-[13px] font-medium text-[#16a34a] mt-1.5 flex items-center gap-1">
+                      FO : {hierarchy.field_officer.first_name} {hierarchy.field_officer.last_name} {hierarchy.field_officer.id ? `(${hierarchy.field_officer.id})` : ""}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </FormSection>
 
@@ -866,21 +934,21 @@ export default function AgentForm({
               title="Aadhar Card (Front)"
               control={control}
               disabled={isViewMode}
-              existingUrl={agentData?.data?.id_proof_front_url || agentData?.data?.id_proof?.id_proof_frontUrl || initialData?.id_proof_front_url || initialData?.id_proof?.id_proof_frontUrl || (initialData as any)?.id_proof?.id_proof_front_url}
+              existingUrl={agentData?.data?.id_proof_front_url || agentData?.data?.id_proof?.id_proof_frontUrl || (initialData as any)?.id_proof_front_url || (initialData as any)?.id_proof?.id_proof_frontUrl || (initialData as any)?.id_proof?.id_proof_front_url}
             />
             <UploadBox
               name="aadharBack"
               title="Aadhar Card (Back)"
               control={control}
               disabled={isViewMode}
-              existingUrl={agentData?.data?.id_proof_back_url || agentData?.data?.id_proof?.id_proof_backUrl || initialData?.id_proof_back_url || initialData?.id_proof?.id_proof_backUrl || (initialData as any)?.id_proof?.id_proof_back_url}
+              existingUrl={agentData?.data?.id_proof_back_url || agentData?.data?.id_proof?.id_proof_backUrl || (initialData as any)?.id_proof_back_url || (initialData as any)?.id_proof?.id_proof_backUrl || (initialData as any)?.id_proof?.id_proof_back_url}
             />
             <UploadBox
               name="panCard"
               title="Pan Card"
               control={control}
               disabled={isViewMode}
-              existingUrl={agentData?.data?.pan_card_url || agentData?.data?.id_proof?.pan_card_url || initialData?.pan_card_url || initialData?.id_proof?.pan_card_url || (initialData as any)?.id_proof?.pan_card_url}
+              existingUrl={agentData?.data?.pan_card_url || agentData?.data?.id_proof?.pan_card_url || (initialData as any)?.pan_card_url || (initialData as any)?.id_proof?.pan_card_url || (initialData as any)?.id_proof?.pan_card_url}
             />
           </div>
         </FormSection>
