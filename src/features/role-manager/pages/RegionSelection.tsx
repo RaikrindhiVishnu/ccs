@@ -18,6 +18,7 @@ import {
 import {
   useGetAllRegionalOfficersMutation,
   useGetAllIntelligenceOfficersMutation,
+  useGetAllFieldOfficersMutation,
 } from "../api/roleManagerApi";
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -216,6 +217,57 @@ const getDistrictIdsFromRegion = (
   return [];
 };
 
+const buildRegionFeatureFromDistricts = (
+  rawFeature: any,
+  masterData: GeoMasterData,
+): GeoJSON.Feature | null => {
+  const props = rawFeature.properties || {};
+  const stateId = Number(props.state_id);
+  const districtIds = getDistrictIdsFromRegion(rawFeature, masterData);
+  if (districtIds.length === 0) return null;
+
+  const stateObj = masterData.countries
+    .flatMap((c) => c.states ?? [])
+    .find((s) => s.i === stateId);
+  if (!stateObj) return null;
+
+  const geometries: GeoJSON.Geometry[] = districtIds
+    .map((id) => stateObj.districts?.find((d) => d.i === id)?.g)
+    .filter((g): g is GeoJSON.Geometry => !!g && !!(g as any).type);
+
+  if (geometries.length === 0) return null;
+
+  return {
+    type: "Feature",
+    id: props.region_id ?? rawFeature.id,
+    geometry: { type: "GeometryCollection", geometries } as any,
+    properties: props,
+  };
+};
+
+/** Build a valid FeatureCollection for regions — synthesizes geometry from district master data when geometry is null (backward-compatible) */
+const buildRegionsGeoJSON = (
+  rawApiData: any,
+  masterData: GeoMasterData,
+): GeoJSON.FeatureCollection => {
+  try {
+    const raw = decompressGeoJSON(rawApiData);
+    if (!raw?.features) return { type: "FeatureCollection", features: [] };
+
+    const features: GeoJSON.Feature[] = raw.features
+      .map((f: any) => {
+        if (f.geometry && f.geometry.type) return f as GeoJSON.Feature;
+        return buildRegionFeatureFromDistricts(f, masterData);
+      })
+      .filter((f): f is GeoJSON.Feature => !!f);
+
+    return { type: "FeatureCollection", features };
+  } catch (err) {
+    console.error("Failed to build regions GeoJSON:", err);
+    return { type: "FeatureCollection", features: [] };
+  }
+};
+
 // Helper to calculate bounds for a GeoJSON feature
 const getFeatureBounds = (feature: any): maplibregl.LngLatBoundsLike => {
   const bounds = new maplibregl.LngLatBounds();
@@ -231,7 +283,13 @@ const getFeatureBounds = (feature: any): maplibregl.LngLatBoundsLike => {
     });
   };
 
-  extendBounds(geometry.coordinates);
+  if (geometry.type === "GeometryCollection") {
+    (geometry.geometries as any[]).forEach((g: any) => {
+      if (g?.coordinates) extendBounds(g.coordinates);
+    });
+  } else {
+    extendBounds(geometry.coordinates);
+  }
   return bounds;
 };
 
@@ -315,22 +373,20 @@ const RegionSelection: React.FC = () => {
     }
 
     try {
-      const decompressed = decompressGeoJSON(regionsByCountryData);
-      if (!decompressed || !decompressed.features) {
-        return { type: "FeatureCollection" as const, features: [] };
-      }
+      // Build with synthesized geometry from district master data
+      const allRegionsGeoJSON = buildRegionsGeoJSON(regionsByCountryData, geoMasterData);
 
       // Gather all district IDs of the selected state
       const stateDistrictIds = new Set<number>();
       const stateObj = geoMasterData.countries
         .flatMap((c) => c.states ?? [])
         .find((s) => s.i === selectedStateId);
-      if (stateObj && stateObj.districts) {
+      if (stateObj?.districts) {
         stateObj.districts.forEach((d) => stateDistrictIds.add(d.i));
       }
 
       // Filter regions containing at least one district of this state
-      const filtered = decompressed.features.filter((feature: any) => {
+      const filtered = allRegionsGeoJSON.features.filter((feature: any) => {
         const regionIds = getDistrictIdsFromRegion(feature, geoMasterData);
         return regionIds.some((id) => stateDistrictIds.has(id));
       });
@@ -347,11 +403,14 @@ const RegionSelection: React.FC = () => {
 
   const [regionalOfficers, setRegionalOfficers] = useState<any[]>([]);
   const [intelligenceOfficers, setIntelligenceOfficers] = useState<any[]>([]);
+  const [fieldOfficers, setFieldOfficers] = useState<any[]>([]);
   const [selectedRegionalOfficerId, setSelectedRegionalOfficerId] = useState<number | null>(null);
   const [selectedIntelligenceOfficerId, setSelectedIntelligenceOfficerId] = useState<number | null>(null);
+  const [selectedFieldOfficerId, setSelectedFieldOfficerId] = useState<number | null>(null);
 
   const [getAllRegionalOfficers] = useGetAllRegionalOfficersMutation();
   const [getAllIntelligenceOfficers] = useGetAllIntelligenceOfficersMutation();
+  const [getAllFieldOfficers] = useGetAllFieldOfficersMutation();
 
   useEffect(() => {
     const fetchOfficerLists = async () => {
@@ -377,6 +436,18 @@ const RegionSelection: React.FC = () => {
         setIntelligenceOfficers(intelligenceList);
       } catch (err) {
         console.error("Failed to load intelligence officers:", err);
+      }
+
+      try {
+        const fieldResult = await getAllFieldOfficers().unwrap();
+        const fieldList = Array.isArray(fieldResult?.data)
+          ? fieldResult.data
+          : Array.isArray(fieldResult)
+          ? fieldResult
+          : [];
+        setFieldOfficers(fieldList);
+      } catch (err) {
+        console.error("Failed to load field officers:", err);
       }
     };
 
@@ -1117,34 +1188,10 @@ const RegionSelection: React.FC = () => {
 
   // Effect to process and render country-wide regions when in India map view
   useEffect(() => {
-    if (map.current && regionsByCountryData) {
+    if (map.current && regionsByCountryData && geoMasterData) {
       try {
-        const finalData = decompressGeoJSON(regionsByCountryData);
-
-        if (finalData && finalData.features) {
-          finalData.features.forEach((feature: any) => {
-            const props = feature.properties || {};
-            // Enrich with district IDs resolved from names in all_districts if needed
-            if (!props.districts && !props.district_ids) {
-              const matchedIds: number[] = [];
-              if (props.all_districts && geoMasterData) {
-                const names = props.all_districts.split(",").map((n: string) => n.trim().toLowerCase());
-                geoMasterData.countries.forEach((country) => {
-                  country.states?.forEach((state) => {
-                    state.districts?.forEach((dist) => {
-                      if (names.includes(dist.d.toLowerCase())) {
-                        matchedIds.push(dist.i);
-                      }
-                    });
-                  });
-                });
-              }
-              props.district_ids = matchedIds.length > 0 ? matchedIds : [11, 12, 13];
-            }
-            if (!props.state_id) props.state_id = 1;
-            if (!props.state_name) props.state_name = "Andhra Pradesh";
-          });
-        }
+        // Synthesize valid geometry from district master data (handles geometry:null from API)
+        const finalData = buildRegionsGeoJSON(regionsByCountryData, geoMasterData);
 
         if (finalData) {
           if (!map.current?.getSource("country-regions-source")) {
@@ -1285,8 +1332,9 @@ const RegionSelection: React.FC = () => {
         const fillLayer = map.current.getLayer("country-regions-fill");
         const lineLayer = map.current.getLayer("country-regions-line");
 
-        // Hide country regions in region mode if a state is selected (to avoid blocking district selection)
-        const visibility = (mode === "region" && selectedState) ? "none" : "visible";
+        // Always keep regions visible — click handler already blocks selection in region mode
+        // When a state is selected, the emerald regions-source overlay shows state-filtered regions
+        const visibility = "visible";
 
         if (fillLayer) {
           map.current.setLayoutProperty(
@@ -1382,8 +1430,8 @@ const RegionSelection: React.FC = () => {
     }
   };
   const handleCreateArea = async () => {
-    if (!areaName || !areaCode) {
-      toast.error("Please fill in all area fields");
+    if (!areaName || !areaCode || !selectedFieldOfficerId) {
+      toast.error("Please fill in all area fields and select a Field Officer");
       return;
     }
 
@@ -1396,7 +1444,7 @@ const RegionSelection: React.FC = () => {
       const res = await createArea({
         areaName,
         area_code: areaCode,
-        field_officer_id: 115, // Hardcoded per user request
+        field_officer_id: selectedFieldOfficerId!,
         assignments,
       }).unwrap();
       
@@ -1423,6 +1471,7 @@ const RegionSelection: React.FC = () => {
       setIsAreaModalOpen(false);
       setAreaName("");
       setAreaCode("");
+      setSelectedFieldOfficerId(null);
 
       // Show Successcard
       const now = new Date();
@@ -1755,7 +1804,7 @@ const RegionSelection: React.FC = () => {
             className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300"
             onClick={() => setIsAreaModalOpen(false)}
           />
-          <div className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-8">
+          <div className="relative w-full max-w-md max-h-[90vh] flex flex-col bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-8">
             <button
               onClick={() => setIsAreaModalOpen(false)}
               className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 transition-colors"
@@ -1763,7 +1812,7 @@ const RegionSelection: React.FC = () => {
               <X className="w-5 h-5 text-slate-400" />
             </button>
 
-            <div className="flex flex-col gap-1 mb-8">
+            <div className="flex flex-col gap-1 mb-5">
               <span className="text-[10px] font-bold text-teal-500 uppercase tracking-[0.2em]">
                 Area Setup
               </span>
@@ -1772,33 +1821,66 @@ const RegionSelection: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex flex-col gap-6 mb-8">
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
+            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 mb-6">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-700 ml-1">
                   Area Name
                 </label>
                 <Input
                   placeholder="e.g. West Godavari Hub"
                   value={areaName}
                   onChange={(e) => setAreaName(e.target.value)}
-                  className="rounded-2xl border-slate-200 h-14 px-5 focus:ring-teal-500"
+                  className="rounded-2xl border-slate-200 h-11 px-4 text-sm focus:ring-teal-500"
                 />
               </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-700 ml-1">
                   Area Code
                 </label>
                 <Input
                   placeholder="e.g. WGH-01"
                   value={areaCode}
                   onChange={(e) => setAreaCode(e.target.value)}
-                  className="rounded-2xl border-slate-200 h-14 px-5 focus:ring-teal-500"
+                  className="rounded-2xl border-slate-200 h-11 px-4 text-sm focus:ring-teal-500"
                 />
               </div>
 
-              <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-3">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-slate-700 ml-1">
+                  Field Officer
+                </label>
+                <select
+                  value={selectedFieldOfficerId ?? ""}
+                  onChange={(e) =>
+                    setSelectedFieldOfficerId(
+                      e.target.value ? Number(e.target.value) : null,
+                    )
+                  }
+                  className="rounded-2xl border border-slate-200 h-11 px-4 bg-white text-slate-800 text-sm focus:ring-teal-500"
+                >
+                  <option value="">Select Field Officer</option>
+                  {fieldOfficers.map((officer, index) => {
+                    const id = officer.id ?? officer.i ?? officer.user_id;
+                    const fullName = `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
+                    const label =
+                      fullName ||
+                      officer.name ||
+                      officer.d ||
+                      officer.username ||
+                      officer.email ||
+                      `Field Officer ${index + 1}`;
+                    return (
+                      <option key={id ?? index} value={id ?? index}>
+                        {label}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">
                   Linked Mandals
                 </span>
                 <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
@@ -1817,7 +1899,7 @@ const RegionSelection: React.FC = () => {
             <Button
               disabled={isCreatingArea}
               onClick={handleCreateArea}
-              className="w-full rounded-2xl bg-teal-900 py-7 text-white font-bold uppercase tracking-widest text-xs hover:bg-teal-800 transition-all active:scale-95 shadow-xl"
+              className="w-full rounded-2xl bg-teal-900 py-5 text-white font-bold uppercase tracking-widest text-xs hover:bg-teal-800 transition-all active:scale-95 shadow-xl"
             >
               {isCreatingArea && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               Save Area Configuration
