@@ -105,16 +105,16 @@ export const NotificationHandler: React.FC = () => {
             }
 
             // 3. Register device with backend
-            await registerDevice(user.id, deviceId, fcmToken, accessToken);
+            await registerDevice(String(user.id), deviceId, fcmToken, accessToken);
 
             // 4. Send initial heartbeat
-            await sendHeartbeat(user.id, deviceId, accessToken);
+            await sendHeartbeat(String(user.id), deviceId, accessToken);
 
             // 5. Set up periodic heartbeat (every 5 minutes)
             heartbeatIntervalRef.current = setInterval(() => {
                 const currentToken = localStorage.getItem('accessToken');
                 if (currentToken) {
-                    sendHeartbeat(user.id, deviceId !, currentToken);
+                    sendHeartbeat(String(user.id), deviceId !, currentToken);
                 }
             }, HEARTBEAT_INTERVAL);
         };

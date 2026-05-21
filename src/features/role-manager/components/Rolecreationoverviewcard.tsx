@@ -4,7 +4,6 @@ import React, {
   useMemo,
 } from "react";
 import { cn } from "@/lib/utils";
-import { WeekDropdown } from "@/components/ui/Dropdown";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { useGetRoleCreationOverviewQuery } from "@/features/role-manager/api/agentApi";

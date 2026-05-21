@@ -1,5 +1,5 @@
-import { useRef, useEffect } from "react"; // removed useState
-import { useNavigate, useLocation } from "react-router-dom";
+import { useRef, useEffect, useState } from "react"; // added useState for preview
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ImageUp, FileImage } from "lucide-react";
 // ── Reused shared components ──────────────────────────────────────────────────
@@ -11,7 +11,7 @@ import {
   useCreateFieldOfficerMutation,
   useUpdateFieldOfficerMutation,
 } from "@/features/role-manager/api/agentApi";
-import { useGetFieldOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
+
 import { useForm, Controller } from "react-hook-form";
 import type { Control } from "react-hook-form"; // added Controller, Control
 import { toast } from "sonner";
@@ -25,6 +25,14 @@ import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
+import { uploadUserDocument } from "@/core/utils/fileUpload";
+import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
+import { useGetFieldOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
+import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
+import SectionCard from "../components/ui/SectionCard";
+import InfoField from "../components/ui/InfoField";
+import DocumentCard from "../components/ui/DocumentCard";
+import ProfileBackButton from "../components/ui/BackButton";
 const BACK_ROUTE = "/role-manager/create-roles" as const;
 
 // ─── Field Label ──────────────────────────────────────────────────────────────
@@ -41,12 +49,60 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
+function ImagePreview({ file, className }: { file: any; className?: string }) {
+  const [src, setSrc] = useState<string>("");
+
+  const isS3Key = typeof file === "string" && !file.startsWith("http") && !file.startsWith("data:");
+  
+  const { data: s3Data } = useGeneratePresignedUrlQuery(file, {
+    skip: !isS3Key,
+  });
+
+  useEffect(() => {
+    if (!file) {
+      setSrc("");
+      return;
+    }
+    if (file instanceof File) {
+      if (!file.type.startsWith("image/")) {
+        setSrc("");
+        return;
+      }
+      const objectUrl = URL.createObjectURL(file);
+      setSrc(objectUrl);
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
+    } else if (typeof file === "string") {
+      if (isS3Key) {
+        if (s3Data?.url) {
+          setSrc(s3Data.url);
+        }
+      } else {
+        setSrc(file);
+      }
+    }
+  }, [file, s3Data, isS3Key]);
+
+  if (!src) return null;
+
+  return (
+    <img
+      src={src}
+      alt="Preview"
+      className={cn("object-cover rounded-lg", className)}
+    />
+  );
+}
+
 // ─── Upload Picture (now RHF-controlled) ─────────────────────────────────────
 
 function UploadPictureField({
   control,
+  disabled = false,
 }: {
   control: Control<OfficerFormValues>;
+  disabled?: boolean;
 }) {
   const ref = useRef<HTMLInputElement>(null);
 
@@ -57,28 +113,38 @@ function UploadPictureField({
       render={({ field, fieldState }) => (
         <div className="flex flex-col gap-[clamp(0.375rem,0.5vw,0.625rem)]">
           <FieldLabel>Upload Picture</FieldLabel>
-          <button
-            type="button"
-            onClick={() => ref.current?.click()}
-            className={cn(
-              "flex items-center justify-between w-full h-[clamp(2rem,2.78vw,2.5rem)] px-[clamp(0.625rem,0.97vw,0.875rem)] bg-[color:var(--surface-card)] border rounded-[clamp(0.5rem,0.83vw,0.75rem)] cursor-pointer transition-colors duration-150",
-              fieldState.error
-                ? "border-red-500"
-                : "border-[color:var(--border-default)] hover:border-[color:var(--brand-500)]",
+          <div className="flex items-center gap-3">
+            {field.value && (
+              <div className="relative shrink-0 w-11 h-11 rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50 flex items-center justify-center">
+                <ImagePreview file={field.value} className="w-full h-full" />
+              </div>
             )}
-          >
-            <span className="flex-1 text-left truncate mr-2 font-[family-name:var(--font-inter)] font-normal text-[clamp(0.6875rem,0.83vw,0.875rem)] text-[color:var(--text-muted)]">
-              {field.value?.name ?? "Supports JPEG, PNG and Other Formats"}
-            </span>
-            <ImageUp className="shrink-0 text-[var(--text-primary)] w-[1.125rem] h-[1.125rem] stroke-[1.75]" />
-            <input
-              ref={ref}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="hidden"
-              onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
-            />
-          </button>
+            <button
+              type="button"
+              onClick={() => !disabled && ref.current?.click()}
+              disabled={disabled}
+              className={cn(
+                "flex-1 flex items-center justify-between h-[clamp(2rem,2.78vw,2.5rem)] px-[clamp(0.625rem,0.97vw,0.875rem)] bg-[color:var(--surface-card)] border rounded-[clamp(0.5rem,0.83vw,0.75rem)] transition-colors duration-150",
+                disabled
+                  ? "opacity-60 cursor-not-allowed border-gray-200"
+                  : "cursor-pointer border-[color:var(--border-default)] hover:border-[color:var(--brand-500)]",
+                fieldState.error && "border-red-500",
+              )}
+            >
+              <span className="flex-1 text-left truncate mr-2 font-[family-name:var(--font-inter)] font-normal text-[clamp(0.6875rem,0.83vw,0.875rem)] text-[color:var(--text-muted)]">
+                {field.value?.name ?? (typeof field.value === "string" ? "Existing Picture" : "Supports JPEG, PNG and Other Formats")}
+              </span>
+              <ImageUp className="shrink-0 text-[var(--text-primary)] w-[1.125rem] h-[1.125rem] stroke-[1.75]" />
+              <input
+                ref={ref}
+                type="file"
+                disabled={disabled}
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
+              />
+            </button>
+          </div>
           {fieldState.error && (
             <span className="text-red-500 text-[0.75rem] leading-none">
               {fieldState.error.message}
@@ -96,10 +162,12 @@ function DocUploadField({
   label,
   name,
   control,
+  disabled = false,
 }: {
   label: string;
   name: "aadharFront" | "aadharBack" | "panCard";
   control: Control<OfficerFormValues>;
+  disabled?: boolean;
 }) {
   const ref = useRef<HTMLInputElement>(null);
 
@@ -118,34 +186,46 @@ function DocUploadField({
           </Typography>
           <button
             type="button"
-            onClick={() => ref.current?.click()}
+            onClick={() => !disabled && ref.current?.click()}
+            disabled={disabled}
             className={cn(
-              "flex flex-col items-center justify-center gap-[clamp(0.375rem,0.56vw,0.5rem)] h-[clamp(5rem,8.89vw,8rem)] bg-[color:var(--surface-page)] border-2 border-dashed rounded-[clamp(0.5rem,0.83vw,0.75rem)] cursor-pointer transition-colors duration-200",
-              fieldState.error
-                ? "border-red-500 bg-red-50/30"
-                : "border-[color:var(--border-default)] hover:border-[color:var(--brand-500)] hover:bg-[color:var(--brand-tint)]",
+              "relative flex flex-col items-center justify-center gap-[clamp(0.375rem,0.56vw,0.5rem)] h-[clamp(5rem,8.89vw,8rem)] bg-[color:var(--surface-page)] border-2 border-dashed rounded-[clamp(0.5rem,0.83vw,0.75rem)] transition-colors duration-200 overflow-hidden",
+              disabled
+                ? "opacity-60 cursor-not-allowed border-gray-200"
+                : "cursor-pointer border-[color:var(--border-default)] hover:border-[color:var(--brand-500)] hover:bg-[color:var(--brand-tint)]",
+              fieldState.error && "border-red-500 bg-red-50/30",
             )}
           >
-            <FileImage className="shrink-0 text-[var(--text-primary)] w-[1rem] h-[1rem] stroke-[1.75]" />
-            <Typography
-              as="span"
-              variant="span"
-              className="font-[family-name:var(--font-inter)] font-medium text-[clamp(0.75rem,0.97vw,1rem)] leading-[1.5] text-[color:var(--text-primary)] text-center"
-            >
-              {field.value ? "File Selected" : "Click to Upload"}
-            </Typography>
-            {field.value && (
-              <Typography
-                as="span"
-                variant="span"
-                className="font-[family-name:var(--font-inter)] font-normal text-[clamp(0.625rem,0.69vw,0.75rem)] text-[color:var(--brand-500)] text-center max-w-[90%] truncate"
-              >
-                {field.value.name}
-              </Typography>
+            {field.value ? (
+              <>
+                <ImagePreview file={field.value} className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-300" />
+                <div className="absolute inset-0 bg-slate-950/40 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white">
+                  <FileImage className="w-5 h-5 text-white stroke-[2]" />
+                  <span className="text-xs font-semibold">Change File</span>
+                  <span className="text-[10px] opacity-80 max-w-[90%] truncate">
+                    {typeof field.value === "string" ? "Existing Document" : field.value.name}
+                  </span>
+                </div>
+                <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium pointer-events-none">
+                  {typeof field.value === "string" ? "Uploaded" : "Selected"}
+                </div>
+              </>
+            ) : (
+              <>
+                <FileImage className="shrink-0 text-[var(--text-primary)] w-[1rem] h-[1rem] stroke-[1.75]" />
+                <Typography
+                  as="span"
+                  variant="span"
+                  className="font-[family-name:var(--font-inter)] font-medium text-[clamp(0.75rem,0.97vw,1rem)] leading-[1.5] text-[color:var(--text-primary)] text-center"
+                >
+                  Click to Upload
+                </Typography>
+              </>
             )}
             <input
               ref={ref}
               type="file"
+              disabled={disabled}
               accept=".jpg,.jpeg,.png,.pdf"
               className="hidden"
               onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
@@ -192,12 +272,14 @@ const REGIONS = ["North", "South", "East", "West", "Central", "North-East"];
 const CreateFieldOfficer = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id: routeId, userId: routeUserId } = useParams();
 
-  const userId = location.state?.userId;
+  const routeParamId = routeId || routeUserId;
+  const userId = routeParamId || location.state?.userId;
+  const isViewMode = location.state?.isViewMode || !!routeParamId || false;
+  const fromPath = location.state?.from || BACK_ROUTE;
 
   const isEditMode = !!userId;
-  const [getFieldOfficerById, { data: fieldOfficerData }] =
-    useGetFieldOfficerByIdMutation();
   const [createFieldOfficer, { isLoading }] = useCreateFieldOfficerMutation();
 
   const [updateFieldOfficer] = useUpdateFieldOfficerMutation();
@@ -206,7 +288,13 @@ const CreateFieldOfficer = () => {
     masterData?.data?.userRolesResult || [],
     "FO",
   );
-  const { control, handleSubmit, reset } = useForm<OfficerFormValues>({
+
+  const states = useSelector((state: any) => state.roleManager.states);
+  const allDistricts = useSelector((state: any) => state.roleManager.districts);
+  const allMandals = useSelector((state: any) => state.roleManager.mandals);
+  const stateOptions = states.map((item: any) => item.desc);
+
+  const { control, handleSubmit, reset, watch, setValue } = useForm<OfficerFormValues>({
     resolver: zodResolver(officerSchema),
     defaultValues: {
       firstName: "",
@@ -218,42 +306,182 @@ const CreateFieldOfficer = () => {
       state: "",
       city: "",
       pincode: "",
-      region: "",
-      area: "",
+      district: "",
+      mandal: "",
       profilePicture: undefined,
       aadharFront: undefined,
       aadharBack: undefined,
       panCard: undefined,
     },
   });
-  const fetchedRef = useRef(false);
+  const initialData = location.state?.initialData;
+
+  const selectedState = watch("state");
+  const selectedDistrict = watch("district");
+
+  const prevStateRef = useRef(selectedState);
+  const prevDistrictRef = useRef(selectedDistrict);
+
+  // Cascading logic
+  const selectedStateObj = states.find((s: any) => s.desc === selectedState);
+  const districtOptions = selectedStateObj
+    ? allDistricts.filter((d: any) => d.state_id === selectedStateObj.id).map((d: any) => d.desc)
+    : [];
+
+  const selectedDistrictObj = allDistricts.find((d: any) => d.desc === selectedDistrict);
+  const mandalOptions = selectedDistrictObj
+    ? allMandals.filter((m: any) => m.districts_id === selectedDistrictObj.id).map((m: any) => m.desc)
+    : [];
 
   useEffect(() => {
-    if (userId && !fetchedRef.current) {
-      fetchedRef.current = true;
+    if (selectedState !== prevStateRef.current) {
+      setValue("district", "");
+      setValue("mandal", "");
+      prevStateRef.current = selectedState;
+    }
+  }, [selectedState, setValue]);
+
+  useEffect(() => {
+    if (selectedDistrict !== prevDistrictRef.current) {
+      setValue("mandal", "");
+      prevDistrictRef.current = selectedDistrict;
+    }
+  }, [selectedDistrict, setValue]);
+
+  const getGeoNames = (srcData: any) => {
+    const geo = srcData?.geo_assignments;
+    const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === srcData?.state || s.desc === srcData?.address?.state);
+    const stateVal = stateObj?.desc || srcData?.state || srcData?.address?.state || "";
+
+    const districtsForState = stateObj ? allDistricts.filter((d: any) => d.state_id === stateObj.id) : allDistricts;
+    const districtObj = districtsForState.find((d: any) => d.id === geo?.district_id || d.desc === srcData?.district);
+    const districtVal = districtObj?.desc || srcData?.district || "";
+
+    const mandalsForDistrict = districtObj ? allMandals.filter((m: any) => m.districts_id === districtObj.id) : allMandals;
+    const mandalObj = mandalsForDistrict.find((m: any) => m.id === geo?.mandal_id || m.desc === srcData?.mandal || m.desc === srcData?.area);
+    const mandalVal = mandalObj?.desc || srcData?.mandal || srcData?.area || "";
+
+    return { stateVal, districtVal, mandalVal };
+  };
+
+  const [getFieldOfficerById, { data: fieldOfficerData }] =
+    useGetFieldOfficerByIdMutation();
+
+  const fetchedRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (userId && fetchedRef.current !== userId) {
+      fetchedRef.current = userId;
       getFieldOfficerById(userId);
     }
   }, [userId, getFieldOfficerById]);
-  useEffect(() => {
-    if (fieldOfficerData?.data) {
-      const data = fieldOfficerData.data;
 
+  // 1. Immediate pre-fill using initialData as fallback/instant load
+  useEffect(() => {
+    if (initialData && states.length && allDistricts.length && allMandals.length) {
+      const { stateVal, districtVal, mandalVal } = getGeoNames(initialData);
+      prevStateRef.current = stateVal;
+      prevDistrictRef.current = districtVal;
       reset({
-        firstName: data.firstName || "",
-        lastName: data.lastName || "",
-        dob: data.dob || "",
-        email: data.emailAddress || "",
-        mobile: data.phoneNumber || "",
-        address: data.address?.address || "",
-        city: data.address?.city || "",
-        pincode: data.address?.pincode || "",
+        firstName: initialData.first_name || initialData.firstName || "",
+        lastName: initialData.last_name || initialData.lastName || "",
+        dob: initialData.dob || "",
+        email: initialData.email || initialData.emailAddress || "",
+        mobile: initialData.phone || initialData.mobile || initialData.phoneNumber || initialData.contact || "",
+        address: initialData.address?.address || initialData.address || "",
+        city: initialData.address?.city || initialData.city || "",
+        pincode: initialData.address?.pincode || initialData.pincode || "",
+        state: stateVal,
+        district: districtVal,
+        mandal: mandalVal,
+        aadharFront: initialData.id_proof_front_url || initialData.id_proof?.id_proof_frontUrl || undefined,
+        aadharBack: initialData.id_proof_back_url || initialData.id_proof?.id_proof_backUrl || undefined,
+        panCard: initialData.pan_card_url || initialData.id_proof?.pan_card_url || undefined,
       });
     }
-  }, [fieldOfficerData, reset]);
-  const states = useSelector((state: any) => state.roleManager.states);
-  const stateOptions = states.map((item: any) => item.desc);
+  }, [initialData, reset, states, allDistricts, allMandals]);
+
+  // 2. Prefill/reset the form using server-fetched fieldOfficerData
+  useEffect(() => {
+    if (fieldOfficerData?.data && states.length && allDistricts.length && allMandals.length) {
+      const data = fieldOfficerData.data;
+      const { stateVal, districtVal, mandalVal } = getGeoNames(data);
+      prevStateRef.current = stateVal;
+      prevDistrictRef.current = districtVal;
+      reset({
+        firstName: data.firstName || data.first_name || "",
+        lastName: data.lastName || data.last_name || "",
+        dob: data.dob || "",
+        email: data.emailAddress || data.email || "",
+        mobile: data.phoneNumber || data.phone || data.mobile || "",
+        address: data.address?.address || data.address || "",
+        city: data.address?.city || data.city || "",
+        pincode: data.address?.pincode || data.pincode || "",
+        state: stateVal,
+        district: districtVal,
+        mandal: mandalVal,
+        aadharFront: data.id_proof_front_url || data.id_proof?.id_proof_frontUrl || undefined,
+        aadharBack: data.id_proof_back_url || data.id_proof?.id_proof_backUrl || undefined,
+        panCard: data.pan_card_url || data.id_proof?.pan_card_url || undefined,
+      });
+    }
+  }, [fieldOfficerData, reset, states, allDistricts, allMandals]);
   const handleCreateFieldOfficer = async (values: OfficerFormValues) => {
     try {
+      // Default placeholders or existing string URLs (if in edit mode)
+      let aadharFrontKey = typeof values.aadharFront === "string" ? values.aadharFront : "front.png";
+      let aadharBackKey = typeof values.aadharBack === "string" ? values.aadharBack : "back.png";
+      let panCardKey = typeof values.panCard === "string" ? values.panCard : "pan.png";
+
+      // 1. Track files that need to be uploaded and run concurrently
+      const uploadPromises: Promise<any>[] = [];
+      const uploadFields: ("aadharFront" | "aadharBack" | "panCard")[] = [];
+
+      if (values.aadharFront instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.aadharFront, values.email, "aadhar_front"));
+        uploadFields.push("aadharFront");
+      }
+      if (values.aadharBack instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.aadharBack, values.email, "aadhar_back"));
+        uploadFields.push("aadharBack");
+      }
+      if (values.panCard instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.panCard, values.email, "pan"));
+        uploadFields.push("panCard");
+      }
+
+      // 2. Perform concurrent uploads if there are new files
+      if (uploadPromises.length > 0) {
+        const uploadToastId = toast.loading("Uploading documents, please wait...");
+        try {
+          const uploadResults = await Promise.all(uploadPromises);
+          
+          // Map results back to correct keys
+          uploadResults.forEach((res, index) => {
+            const field = uploadFields[index];
+            if (field === "aadharFront") aadharFrontKey = res.key;
+            if (field === "aadharBack") aadharBackKey = res.key;
+            if (field === "panCard") panCardKey = res.key;
+          });
+          
+          toast.dismiss(uploadToastId);
+        } catch (uploadError) {
+          toast.dismiss(uploadToastId);
+          toast.error("Document upload failed. Please try again.");
+          return; // Stop submission
+        }
+      }
+
+      const selectedStateObj = states.find((s: any) => s.desc === values.state);
+      const stateIdVal = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
+
+      const selectedDistrictObj = allDistricts.find((d: any) => d.desc === values.district);
+      const districtIdVal = selectedDistrictObj?.id ? Number(selectedDistrictObj.id) : 1;
+
+      const selectedMandalObj = allMandals.find((m: any) => m.desc === values.mandal);
+      const mandalIdVal = selectedMandalObj?.id ? Number(selectedMandalObj.id) : 1;
+
+      // 3. Assemble backend creation payload using S3 keys
       const payload = {
         firstName: values.firstName,
         lastName: values.lastName,
@@ -264,31 +492,34 @@ const CreateFieldOfficer = () => {
         role_id: fieldOfficerRoleId,
         address: {
           address: values.address,
-          state_id: 1,
+          state_id: stateIdVal,
           city: values.city,
           pincode: values.pincode,
         },
         geo_assignments: {
           country_id: 1,
-          state_id: 1,
+          state_id: stateIdVal,
+          district_id: districtIdVal,
+          mandal_id: mandalIdVal,
           region_id: 1,
           areas_id: 1,
         },
         id_proof: {
-          id_proof_frontUrl: "front.png",
-          id_proof_backUrl: "back.png",
+          id_proof_frontUrl: aadharFrontKey,
+          id_proof_backUrl: aadharBackKey,
           pan_card_number: "ABCDE1234F",
-          pan_card_url: "pan.png",
+          pan_card_url: panCardKey,
         },
       };
 
       const response = isEditMode
         ? await updateFieldOfficer({
-            ...payload,
-            userId,
-          }).unwrap()
+          ...payload,
+          userId,
+        }).unwrap()
         : await createFieldOfficer(payload).unwrap();
       toast.success(response?.message || "Field Officer created successfully");
+      navigate(fromPath);
     } catch (err: any) {
       console.error(err);
       toast.error(
@@ -297,13 +528,99 @@ const CreateFieldOfficer = () => {
     }
   };
 
+  if (isViewMode) {
+    const data = fieldOfficerData?.data || initialData;
+    const name = `${watch("firstName") || data?.firstName || data?.first_name || ""} ${watch("lastName") || data?.lastName || data?.last_name || ""}`.trim() || "Field Officer Name";
+    const status = data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review";
+    const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "FO";
+    const avatarUrl = data?.avatar || data?.profile_image || "";
+    
+    const officer = {
+      name,
+      applicationId: userId?.toString() || data?.id?.toString() || "N/A",
+      status: status as any,
+      avatarUrl,
+      initials,
+    };
+
+    const email = watch("email") || data?.emailAddress || data?.email || "N/A";
+    const phone = watch("mobile") || data?.phoneNumber || data?.phone || data?.mobile || "N/A";
+    const dateOfBirth = watch("dob") || data?.dob ? new Date(watch("dob") || data.dob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' }) : "N/A";
+    
+    const stateObj = states.find((s: any) => s.desc === watch("state") || s.id === data?.geo_assignments?.state_id || s.desc === data?.state);
+    const districtObj = allDistricts.find((d: any) => d.desc === watch("district") || d.id === data?.geo_assignments?.district_id || d.desc === data?.district);
+    const mandalObj = allMandals.find((m: any) => m.desc === watch("mandal") || m.id === data?.geo_assignments?.mandal_id || m.desc === data?.mandal);
+
+    const stateName = stateObj?.desc || data?.state || "N/A";
+    const districtName = districtObj?.desc || data?.district || "N/A";
+    const mandalName = mandalObj?.desc || data?.mandal || "N/A";
+
+    const operatingTerritory = [
+      mandalName,
+      districtName,
+      stateName,
+    ].filter((val) => val && val !== "N/A").join(", ") || "N/A";
+
+    const aadharFrontUrl = data?.id_proof_front_url || data?.id_proof?.id_proof_frontUrl || "";
+    const aadharBackUrl = data?.id_proof_back_url || data?.id_proof?.id_proof_backUrl || "";
+    const panCardUrl = data?.pan_card_url || data?.id_proof?.pan_card_url || "";
+
+    return (
+      <main className="w-full min-h-screen bg-[color:var(--surface-page)] font-[family-name:var(--font-sans)]">
+        <div className="mx-auto max-w-[118.75rem] px-[1.5rem] lg:px-[2.5rem] xl:px-[3.5rem] 2xl:px-[4.5rem] py-[1.5rem] lg:py-[2rem] xl:py-[2.5rem] 2xl:py-[3rem]">
+          <div className="mb-[1.25rem] lg:mb-[1.5rem] xl:mb-[1.75rem]">
+            <ProfileBackButton onClick={() => navigate(fromPath)} />
+          </div>
+
+          <div className="bg-[color:var(--surface-card)] rounded-[1.75rem] lg:rounded-[2.25rem] xl:rounded-[2.875rem] px-[1.25rem] lg:px-[2rem] xl:px-[3.125rem] pt-[1.5rem] lg:pt-[1.75rem] xl:pt-[2rem] pb-[2rem] lg:pb-[2.5rem] xl:pb-[3rem] flex flex-col gap-[1rem] lg:gap-[1.125rem] xl:gap-[1.25rem]">
+            <ProfileHeaderCard agent={officer} />
+
+            <SectionCard title="Info">
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-[1.5rem] lg:gap-x-[2rem] xl:gap-x-[2.5rem] gap-y-[1.25rem] lg:gap-y-[1.5rem] xl:gap-y-[1.75rem]">
+                <InfoField label="Email" value={email} />
+                <InfoField label="Phone number" value={phone} />
+                <InfoField label="Date Of Birth" value={dateOfBirth} />
+                <InfoField label="Operating Territory" value={operatingTerritory} className="col-span-2 xl:col-span-3" />
+              </div>
+            </SectionCard>
+
+            <SectionCard title="Documents Provided">
+              <div className="grid grid-cols-2 gap-[1.25rem] lg:gap-[1.5rem] xl:gap-[2rem] max-w-[48.75rem]">
+                <DocumentCard label="Aadhaar card (Front)" imageUrl={aadharFrontUrl} />
+                <DocumentCard label="Aadhaar card (Back)" imageUrl={aadharBackUrl} />
+                <DocumentCard label="Pan card" imageUrl={panCardUrl} />
+              </div>
+            </SectionCard>
+
+            <div className="flex items-center justify-end gap-[0.625rem] lg:gap-[0.75rem] xl:gap-[0.875rem] pt-4">
+              <button
+                type="button"
+                onClick={() => navigate(fromPath)}
+                className="font-medium font-[family-name:'Inter',sans-serif] text-[color:var(--profile-text)] px-[1.25rem] lg:px-[1.5rem] py-[0.5rem] rounded-[0.375rem] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:bg-gray-100 transition-colors"
+              >
+                Dismiss
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate(fromPath)}
+                className="font-medium font-[family-name:'Inter',sans-serif] text-white px-[1.75rem] lg:px-[2rem] py-[0.5rem] rounded-full bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:opacity-90 active:scale-[0.97] transition-all duration-150"
+              >
+                Approve
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[color:var(--surface-page)] rounded-[2rem] px-[clamp(1.5rem,6.81vw,6.8125rem)] py-[clamp(1.5rem,2.64vw,2.375rem)]">
-      {/* ── Back Button → /role-manager/create-roles ── */}
+      {/* ── Back Button ── */}
       <BackButton
         variant="light"
         label="Go back to dashboard"
-        onClick={() => navigate(BACK_ROUTE)}
+        onClick={() => navigate(fromPath)}
         className="w-[clamp(11.25rem,16.67vw,15rem)] h-[clamp(2.5rem,3.61vw,3.25rem)] text-[clamp(0.8125rem,1vw,1rem)] px-[clamp(0.875rem,1.39vw,1.25rem)] gap-[clamp(0.375rem,0.56vw,0.5rem)]"
       />
 
@@ -319,7 +636,11 @@ const CreateFieldOfficer = () => {
           "mb-6 xl:mb-8",
         )}
       >
-        {isEditMode ? "Edit Field Officer" : "Create Field Officer"}
+        {isViewMode
+          ? "View Field Officer Profile"
+          : isEditMode
+            ? "Edit Field Officer"
+            : "Create Field Officer"}
       </Typography>
 
       {/* ── Outer white card ── */}
@@ -334,6 +655,7 @@ const CreateFieldOfficer = () => {
                 label="First Name"
                 placeholder="Enter First name"
                 maxLength={30}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="lastName"
@@ -341,6 +663,7 @@ const CreateFieldOfficer = () => {
                 label="Last Name"
                 placeholder="Enter Last Name"
                 maxLength={30}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="dob"
@@ -348,6 +671,7 @@ const CreateFieldOfficer = () => {
                 label="DOB"
                 placeholder="Select DOB"
                 type="date"
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="email"
@@ -356,6 +680,7 @@ const CreateFieldOfficer = () => {
                 placeholder="Enter Mail ID"
                 type="email"
                 maxLength={100}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="mobile"
@@ -364,6 +689,7 @@ const CreateFieldOfficer = () => {
                 placeholder="Enter Mobile Number"
                 type="tel"
                 maxLength={10}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="address"
@@ -371,6 +697,7 @@ const CreateFieldOfficer = () => {
                 label="Address"
                 placeholder="Enter Address"
                 maxLength={150}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="state"
@@ -378,6 +705,7 @@ const CreateFieldOfficer = () => {
                 label="State"
                 placeholder="Enter State"
                 maxLength={50}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="city"
@@ -385,6 +713,7 @@ const CreateFieldOfficer = () => {
                 label="City / Village"
                 placeholder="Enter City / Village"
                 maxLength={50}
+                disabled={isViewMode}
               />
               <RHFTextField
                 name="pincode"
@@ -392,17 +721,18 @@ const CreateFieldOfficer = () => {
                 label="Pin Code"
                 placeholder="Enter Pin Code"
                 maxLength={6}
+                disabled={isViewMode}
               />
             </div>
             {/* ── only change: pass control ── */}
             <div className="mt-[clamp(0.75rem,1.67vw,1.5rem)] w-[calc(33.333%-clamp(0.667rem,1.8vw,1.625rem))]">
-              <UploadPictureField control={control} />
+              <UploadPictureField control={control} disabled={isViewMode} />
             </div>
           </SectionPanel>
 
           {/* ── Section 2 ── */}
-          <SectionPanel title="Select State, Region & Area">
-            <div className="grid grid-cols-3 gap-x-[clamp(0.875rem,1.4vw,1.5rem)] gap-y-[clamp(0.75rem,1vw,1rem)] w-full">
+          <SectionPanel title="Select State, District & Mandal">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-[clamp(0.875rem,1.4vw,1.5rem)] gap-y-[clamp(0.75rem,1vw,1rem)] w-full">
               <RHFDropdown
                 name="state"
                 control={control}
@@ -411,24 +741,27 @@ const CreateFieldOfficer = () => {
                 options={stateOptions}
                 containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
                 className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
+                disabled={isViewMode}
               />
               <RHFDropdown
-                name="region"
+                name="district"
                 control={control}
-                label="Region"
-                placeholder="Select Region"
-                options={REGIONS}
+                label="District"
+                placeholder="Select District"
+                options={districtOptions}
                 containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
                 className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
+                disabled={isViewMode}
               />
               <RHFDropdown
-                name="area"
+                name="mandal"
                 control={control}
-                label="Area"
-                placeholder="Select Area"
-                options={["Area 1", "Area 2", "Area 3"]}
+                label="Mandal"
+                placeholder="Select Mandal"
+                options={mandalOptions}
                 containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
                 className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
+                disabled={isViewMode}
               />
             </div>
           </SectionPanel>
@@ -440,16 +773,19 @@ const CreateFieldOfficer = () => {
                 label="Aadhar Card Front"
                 name="aadharFront"
                 control={control}
+                disabled={isViewMode}
               />
               <DocUploadField
                 label="Aadhar Card Back"
                 name="aadharBack"
                 control={control}
+                disabled={isViewMode}
               />
               <DocUploadField
                 label="Pan Card"
                 name="panCard"
                 control={control}
+                disabled={isViewMode}
               />
             </div>
           </SectionPanel>
@@ -462,52 +798,75 @@ const CreateFieldOfficer = () => {
               "mt-2",
             )}
           >
-            <Button
-              onClick={() => navigate("/role-manager/create-roles")}
-              className={cn(
-                "w-[6.4375rem]",
-                "h-[2.5rem]",
-                "px-6 py-2",
-                "rounded-[0.375rem]",
-                "bg-transparent",
-                "shadow-none",
-                "border-0",
-                "!font-normal",
-                "text-[1rem]",
-                "leading-6",
-                "text-[var(--text-primary)]",
-                "shrink-0 whitespace-nowrap",
-                "hover:bg-[var(--chart-bg)]",
-              )}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="gradient-blue"
-              onClick={handleSubmit(handleCreateFieldOfficer)}
-              disabled={isLoading}
-              className={cn(
-                "w-[10.5625rem]",
-                "h-[2.5rem]",
-                "px-8 py-2",
-                "bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)]",
-                "rounded-[6.25rem]",
-                "font-medium",
-                "text-[1rem]",
-                "leading-6",
-                "text-white",
-                "shadow-none",
-                "shrink-0 whitespace-nowrap",
-              )}
-            >
-              {isLoading
-                ? isEditMode
-                  ? "Updating..."
-                  : "Creating..."
-                : isEditMode
-                  ? "Update Profile"
-                  : "Create Profile"}
-            </Button>
+            {isViewMode ? (
+              <Button
+                onClick={() => navigate(fromPath)}
+                className={cn(
+                  "w-[10.5625rem]",
+                  "h-[2.5rem]",
+                  "px-8 py-2",
+                  "bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)]",
+                  "rounded-[6.25rem]",
+                  "font-medium",
+                  "text-[1rem]",
+                  "leading-6",
+                  "text-white",
+                  "shadow-none",
+                  "shrink-0 whitespace-nowrap",
+                )}
+              >
+                Go Back
+              </Button>
+            ) : (
+              <>
+                <Button
+                  onClick={() => navigate(fromPath)}
+                  className={cn(
+                    "w-[6.4375rem]",
+                    "h-[2.5rem]",
+                    "px-6 py-2",
+                    "rounded-[0.375rem]",
+                    "bg-transparent",
+                    "shadow-none",
+                    "border-0",
+                    "!font-normal",
+                    "text-[1rem]",
+                    "leading-6",
+                    "text-[var(--text-primary)]",
+                    "shrink-0 whitespace-nowrap",
+                    "hover:bg-[var(--chart-bg)]",
+                  )}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="gradient-blue"
+                  onClick={handleSubmit(handleCreateFieldOfficer)}
+                  disabled={isLoading}
+                  className={cn(
+                    "w-[10.5625rem]",
+                    "h-[2.5rem]",
+                    "px-8 py-2",
+                    "bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)]",
+                    "rounded-[6.25rem]",
+                    "font-medium",
+                    "text-[1rem]",
+                    "leading-6",
+                    "text-white",
+                    "shadow-none",
+                    "shrink-0 whitespace-nowrap",
+                  )}
+                >
+                  {isLoading
+                    ? isEditMode
+                      ? "Updating..."
+                      : "Creating..."
+                    : isEditMode
+                      ? "Update Profile"
+                      : "Create Profile"}
+                </Button>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>

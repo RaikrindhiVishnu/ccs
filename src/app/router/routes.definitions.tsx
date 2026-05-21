@@ -78,17 +78,25 @@ export const authRoutes: RouteObject[] = [
       { path: "/role-manager/regional-officer-create", element: <CreateregionalOfficer /> },
       { path: "/role-manager/agent-edit", element: <AgentEdit /> },
       {
-  path: "/role-manager/edit-field-officer",
-  element: <EditFieldOfficer />,
-},
-{
-  path: "/role-manager/edit-intelligence-officer",
-  element: <EditIntelligenceOfficer />,
-},
-{
-  path: "/role-manager/edit-regional-officer",
-  element: <EditRegionalOfficer />,
-},
+        path: "/role-manager/edit-field-officer",
+        element: <EditFieldOfficer />,
+      },
+      {
+        path: "/role-manager/edit-field-officer/:id",
+        element: <EditFieldOfficer />,
+      },
+      {
+        path: "/role-manager/edit-intelligence-officer",
+        element: <EditIntelligenceOfficer />,
+      },
+      {
+        path: "/role-manager/edit-intelligence-officer/:id",
+        element: <EditIntelligenceOfficer />,
+      },
+      {
+        path: "/role-manager/edit-regional-officer/:id",
+        element: <EditRegionalOfficer />,
+      },
       { path: "/role-manager/profile/:id", element: <RoleManagerDetails /> },
       { path: "/role-manager/agent-approvals", element: <AgentApprovals /> },
       { path: "/role-manager/agent-details/:id", element: <Agentdetailpage /> },   

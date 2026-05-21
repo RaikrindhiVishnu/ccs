@@ -122,6 +122,8 @@ const AssignedFarmlandList = () => {
             title="Assigned Farmlands"
             description=""
             searchPlaceholder="Search Agents..."
+            searchValue={search}
+            onSearchChange={setSearch}
             titleClassName="
                   font-[var(--font-heading)]
                   font-bold

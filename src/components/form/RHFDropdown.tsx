@@ -14,10 +14,11 @@ interface RHFDropdownProps<T extends FieldValues> {
   label: string;
   placeholder: string;
 
-options: string[];
+  options: string[];
 
-className?: string;
-containerClassName?: string;
+  className?: string;
+  containerClassName?: string;
+  disabled?: boolean;
 }
 
 export function RHFDropdown<T extends FieldValues>({
@@ -25,9 +26,10 @@ export function RHFDropdown<T extends FieldValues>({
   control,
   label,
   placeholder,
-options,
-className,
-containerClassName,
+  options,
+  className,
+  containerClassName,
+  disabled = false,
 }: RHFDropdownProps<T>){
   return (
     <Controller
@@ -42,8 +44,9 @@ containerClassName,
             options={options}
             value={field.value}
             onChange={field.onChange}
-             className={className}
-  containerClassName={containerClassName}
+            disabled={disabled}
+            className={className}
+            containerClassName={containerClassName}
           />
 
           {fieldState.error && (

@@ -1,4 +1,5 @@
 import { useRef } from "react"; // removed useState for files
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
@@ -17,29 +18,22 @@ import {
   type AgentFormValues,
 } from "@/components/validations/agentSchema";
 import { RHFTextField } from "@/components/form/RHFTextField";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { toast } from "sonner";
 import { useState, useEffect } from "react"; // kept only for profileImage                       // kept only for profileImage
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
+import { useGetAgentByIdMutation } from "@/features/role-manager/api/roleManagerApi";
+import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
+import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
+import SectionCard from "../components/ui/SectionCard";
+import InfoField from "../components/ui/InfoField";
+import DocumentCard from "../components/ui/DocumentCard";
+import ProfileBackButton from "../components/ui/BackButton";
 // ─── Dropdown option lists ────────────────────────────────────────────────────
-
-const REGION_OPTIONS = [
-  "Godavari Region",
-  "Krishna Region",
-  "Rayalaseema Region",
-  "North Coastal Region",
-];
-
-const AREA_OPTIONS = [
-  "Tanuku Area",
-  "Eluru Area",
-  "Rajahmundry Area",
-  "Kakinada Area",
-  "Vijayawada Area",
-];
 
 const BANK_OPTIONS = [
   "HDFC Bank",
@@ -50,6 +44,54 @@ const BANK_OPTIONS = [
   "Canara Bank",
 ];
 
+// ─── Image Preview Helper ───────────────────────────────────────────────────
+
+function ImagePreview({ file, className }: { file: any; className?: string }) {
+  const [src, setSrc] = useState<string>("");
+
+  const isS3Key = typeof file === "string" && !file.startsWith("http") && !file.startsWith("data:");
+  
+  const { data: s3Data } = useGeneratePresignedUrlQuery(file, {
+    skip: !isS3Key,
+  });
+
+  useEffect(() => {
+    if (!file) {
+      setSrc("");
+      return;
+    }
+    if (file instanceof File) {
+      if (!file.type.startsWith("image/")) {
+        setSrc("");
+        return;
+      }
+      const objectUrl = URL.createObjectURL(file);
+      setSrc(objectUrl);
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
+    } else if (typeof file === "string") {
+      if (isS3Key) {
+        if (s3Data?.url) {
+          setSrc(s3Data.url);
+        }
+      } else {
+        setSrc(file);
+      }
+    }
+  }, [file, s3Data, isS3Key]);
+
+  if (!src) return null;
+
+  return (
+    <img
+      src={src}
+      alt="Preview"
+      className={cn("object-cover rounded-lg", className)}
+    />
+  );
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function AgentForm({
@@ -58,13 +100,21 @@ export default function AgentForm({
   onCancel,
   isLoading = false,
   roleType,
+  isViewMode = false,
 }: AgentFormProps) {
   const states = useSelector((state: any) => state.roleManager.states);
+  const allDistricts = useSelector((state: any) => state.roleManager.districts);
+  const allMandals = useSelector((state: any) => state.roleManager.mandals);
 
   const stateOptions = states.map((item: any) => item.desc);
   const location = useLocation();
-  console.log("AgentForm Location State:", location.state);
+  const navigate = useNavigate();
+
   const { userId: locUserId } = location.state || {};
+
+  const handleBackToDirectory = () => {
+    navigate("/role-manager/user-directory");
+  };
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
@@ -74,14 +124,13 @@ export default function AgentForm({
   const [dobState, setDobState] = useState("");
   const [addressState, setAddressState] = useState("");
   const [roleIdState, setRoleIdState] = useState(1);
-  const [selectedRegionId, setSelectedRegionId] = useState(1);
   const { data: masterData } = useGetAllMasterDataQuery();
   const agentRoleId = getRoleId(
     masterData?.data?.userRolesResult || [],
     "AGENT",
   );
 
-  const { control, handleSubmit, watch } = useForm<AgentFormValues>({
+  const { control, handleSubmit, watch, reset, setValue } = useForm<AgentFormValues>({
     resolver: zodResolver(agentSchema),
     defaultValues: {
       firstName:
@@ -110,13 +159,13 @@ export default function AgentForm({
         initialData?.state ??
         (initialData as any)?.geo_assignments?.state_id ??
         "",
-      region:
-        initialData?.region ??
-        (initialData as any)?.geo_assignments?.region_id ??
+      district:
+        initialData?.district ??
+        (initialData as any)?.geo_assignments?.district_id ??
         "",
-      area:
-        initialData?.area ??
-        (initialData as any)?.geo_assignments?.areas_id ??
+      mandal:
+        initialData?.mandal ??
+        (initialData as any)?.geo_assignments?.mandal_id ??
         "",
       bankName:
         initialData?.bankName ??
@@ -140,6 +189,130 @@ export default function AgentForm({
     },
   });
 
+  const userId = locUserId || (initialData as any)?.originalId || (initialData as any)?.id;
+  const [getAgentById, { data: agentData }] = useGetAgentByIdMutation();
+
+  const fetchedRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (userId && fetchedRef.current !== userId) {
+      fetchedRef.current = userId;
+      getAgentById(userId);
+    }
+  }, [userId, getAgentById]);
+
+  const selectedStateName = watch("state");
+  const selectedDistrictName = watch("district");
+
+  const selectedStateObj = states.find((s: any) => s.desc === selectedStateName);
+
+  // Cascading district & mandal options
+  const districtOptions = selectedStateObj
+    ? allDistricts.filter((d: any) => d.state_id === selectedStateObj.id).map((d: any) => d.desc)
+    : [];
+
+  const selectedDistrictObj = allDistricts.find((d: any) => d.desc === selectedDistrictName);
+  const mandalOptions = selectedDistrictObj
+    ? allMandals.filter((m: any) => m.districts_id === selectedDistrictObj.id).map((m: any) => m.desc)
+    : [];
+
+  // Reset child fields when parent changes
+  const prevStateRef = useRef(selectedStateName);
+  const prevDistrictRef = useRef(selectedDistrictName);
+
+  useEffect(() => {
+    if (selectedStateName !== prevStateRef.current) {
+      setValue("district", "");
+      setValue("mandal", "");
+      prevStateRef.current = selectedStateName;
+    }
+  }, [selectedStateName, setValue]);
+
+  useEffect(() => {
+    if (selectedDistrictName !== prevDistrictRef.current) {
+      setValue("mandal", "");
+      prevDistrictRef.current = selectedDistrictName;
+    }
+  }, [selectedDistrictName, setValue]);
+
+  // Pre-fill geo fields from agentData (resolving IDs to names)
+  useEffect(() => {
+    if (agentData?.data && states.length > 0) {
+      const data = agentData.data;
+      const geo = data.geo_assignments;
+
+      const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === data.state);
+      const stateVal = stateObj?.desc || data.state || "";
+
+      const districtsForState = stateObj ? allDistricts.filter((d: any) => d.state_id === stateObj.id) : allDistricts;
+      const districtObj = districtsForState.find((d: any) => d.id === geo?.district_id || d.desc === data.district);
+      const districtVal = districtObj?.desc || data.district || "";
+
+      const mandalsForDistrict = districtObj ? allMandals.filter((m: any) => m.districts_id === districtObj.id) : allMandals;
+      const mandalObj = mandalsForDistrict.find((m: any) => m.id === geo?.mandal_id || m.desc === data.mandal || m.desc === data.area);
+      const mandalVal = mandalObj?.desc || data.mandal || data.area || "";
+
+      prevStateRef.current = stateVal;
+      prevDistrictRef.current = districtVal;
+      setValue("state", stateVal);
+      setValue("district", districtVal);
+      setValue("mandal", mandalVal);
+    }
+  }, [agentData, states, allDistricts, allMandals, setValue]);
+
+  // Pre-fill geo fields from initialData
+  useEffect(() => {
+    if (initialData && states.length > 0) {
+      const geo = (initialData as any).geo_assignments;
+
+      const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === initialData.state);
+      const stateVal = stateObj?.desc || initialData.state || "";
+
+      const districtsForState = stateObj ? allDistricts.filter((d: any) => d.state_id === stateObj.id) : allDistricts;
+      const districtObj = districtsForState.find((d: any) => d.id === geo?.district_id || d.desc === (initialData as any).district);
+      const districtVal = districtObj?.desc || (initialData as any).district || "";
+
+      const mandalsForDistrict = districtObj ? allMandals.filter((m: any) => m.districts_id === districtObj.id) : allMandals;
+      const mandalObj = mandalsForDistrict.find((m: any) => m.id === geo?.mandal_id || m.desc === (initialData as any).mandal || m.desc === (initialData as any).area);
+      const mandalVal = mandalObj?.desc || (initialData as any).mandal || (initialData as any).area || "";
+      prevStateRef.current = stateVal;
+      prevDistrictRef.current = districtVal;
+      setValue("state", stateVal);
+      setValue("district", districtVal);
+      setValue("mandal", mandalVal);
+    }
+  }, [initialData, states, allDistricts, allMandals, setValue]);
+
+
+
+  useEffect(() => {
+    if (agentData?.data) {
+      const data = agentData.data;
+      reset({
+        firstName: data.firstName || data.first_name || "",
+        lastName: data.lastName || data.last_name || "",
+        dob: data.dob || "",
+        email: data.email || data.emailAddress || "",
+        phone: data.phone || data.phoneNumber || data.mobile || data.contact || "",
+        address: data.address || data.address?.address || "",
+        addressState: data.state || data.address?.state || "",
+        city: data.city || data.address?.city || "",
+        pincode: data.pincode || data.address?.pincode || "",
+        panNumber: data.panCardNumber || data.id_proof?.pan_card_number || "",
+        state: "",
+        district: "",
+        mandal: "",
+        bankName: data.bankName || data.id_proof?.bank_name || "",
+        accountNumber: data.accountNumber || data.id_proof?.bank_account_number || "",
+        ifscCode: data.ifscCode || data.id_proof?.ifsc_code || "",
+        bankBranch: data.bankBranch || data.id_proof?.branch || "",
+      });
+      setDobState(data.dob || "");
+      setAddressState(data.address || data.address?.address || "");
+      setRoleIdState(data.role_id || 1);
+    }
+  }, [agentData, reset]);
+
   const firstName = watch("firstName");
   const lastName = watch("lastName");
 
@@ -148,28 +321,31 @@ export default function AgentForm({
       setDobState(initialData.dob || (initialData as any).dob || "");
       setAddressState(
         initialData.address ||
-          (initialData as any).address?.address ||
-          (initialData as any).address ||
-          "",
+        (initialData as any).address?.address ||
+        (initialData as any).address ||
+        "",
       );
       setRoleIdState((initialData as any).role_id || 1);
-      setSelectedRegionId((initialData as any).geo_assignments?.region_id || 1);
     }
   }, [isEdit, initialData]);
 
   const handleSave = async (values: AgentFormValues) => {
-    console.log("SAVE CLICKED", values);
-    console.log("ROLE TYPE:", roleType);
-
     try {
+      const selectedStateObj = states.find((s: any) => s.desc === values.state);
+      const stateIdVal = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
+
+      const selectedDistrictObj = allDistricts.find((d: any) => d.desc === values.district);
+      const districtIdVal = selectedDistrictObj?.id ? Number(selectedDistrictObj.id) : 1;
+
+      const selectedMandalObj = allMandals.find((m: any) => m.desc === values.mandal);
+      const mandalIdVal = selectedMandalObj?.id ? Number(selectedMandalObj.id) : 1;
+
       if (isEdit) {
         const userId =
           locUserId ||
           (initialData as any)?.originalId ||
           (initialData as any)?.id ||
           1;
-
-        console.log("USER ID for update:", userId);
 
         if (roleType === "AG") {
           const payload: UpdateAgentRequest = {
@@ -183,19 +359,17 @@ export default function AgentForm({
 
             address: {
               address: values.address || addressState || "",
-              state_id: Number(values.state) || 1,
+              state_id: stateIdVal,
               city: values.city || "",
               pincode: values.pincode || "",
             },
 
             geo_assignments: {
-              state_id: Number(values.state) || 1,
-              region_id: Number(values.region || selectedRegionId || 1),
-              areas_id: Number(values.area || 1),
+              state_id: stateIdVal,
+              district_id: districtIdVal,
+              mandal_id: mandalIdVal,
             },
           };
-
-          console.log("FINAL PAYLOAD (AG):", JSON.stringify(payload, null, 2));
 
           await updateAgentDetails(payload).unwrap();
         } else {
@@ -215,16 +389,16 @@ export default function AgentForm({
 
           address: {
             address: values.address,
-            state_id: 1,
+            state_id: stateIdVal,
             city: values.city,
             pincode: values.pincode,
           },
 
           geo_assignments: {
             country_id: 1,
-            state_id: 1,
-            district_id: 1,
-            mandal_id: 1,
+            state_id: stateIdVal,
+            district_id: districtIdVal,
+            mandal_id: mandalIdVal,
             region_id: 1,
             areas_id: 1,
           },
@@ -257,18 +431,117 @@ export default function AgentForm({
 
       toast.error(
         (err as any)?.data?.message ||
-          (err as any)?.data?.error ||
-          "Something went wrong",
+        (err as any)?.data?.error ||
+        "Something went wrong",
       );
     }
   };
   const isVerified = isEdit && !!initialData?.firstName;
 
+  if (isViewMode) {
+    const data = agentData?.data || initialData;
+    const name = `${watch("firstName") || data?.firstName || data?.first_name || ""} ${watch("lastName") || data?.lastName || data?.last_name || ""}`.trim() || "Agent Name";
+    const status = data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review";
+    const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "AN";
+    const avatarUrl = data?.avatar || data?.profile_image || profileImage || "";
+    
+    const agent = {
+      name,
+      applicationId: userId?.toString() || data?.id?.toString() || "N/A",
+      status: status as any,
+      avatarUrl,
+      initials,
+    };
+
+    const email = watch("email") || data?.email || data?.emailAddress || "N/A";
+    const phone = watch("phone") || data?.phone || data?.phoneNumber || data?.mobile || data?.contact || "N/A";
+    const dateOfBirth = watch("dob") || data?.dob ? new Date(watch("dob") || data.dob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' }) : "N/A";
+    
+    const stateObj = states.find((s: any) => s.desc === watch("state") || s.id === data?.geo_assignments?.state_id);
+    const districtObj = allDistricts.find((d: any) => d.desc === watch("district") || d.id === data?.geo_assignments?.district_id);
+    const mandalObj = allMandals.find((m: any) => m.desc === watch("mandal") || m.id === data?.geo_assignments?.mandal_id);
+
+    const stateName = stateObj?.desc || data?.state || "N/A";
+    const districtName = districtObj?.desc || data?.district || "N/A";
+    const mandalName = mandalObj?.desc || data?.mandal || data?.area || "N/A";
+
+    // Operating Territory
+    const operatingTerritory = [
+      mandalName,
+      districtName,
+      stateName,
+    ].filter((val) => val && val !== "N/A").join(", ") || "N/A";
+
+    const bankName = watch("bankName") || data?.bankName || data?.id_proof?.bank_name || "N/A";
+    const accountNumber = watch("accountNumber") || data?.accountNumber || data?.id_proof?.bank_account_number || "N/A";
+    const ifscCode = watch("ifscCode") || data?.ifscCode || data?.id_proof?.ifsc_code || "N/A";
+
+    const aadharFrontUrl = data?.id_proof_front_url || data?.id_proof?.id_proof_frontUrl || "";
+    const aadharBackUrl = data?.id_proof_back_url || data?.id_proof?.id_proof_backUrl || "";
+    const panCardUrl = data?.pan_card_url || data?.id_proof?.pan_card_url || "";
+
+    return (
+      <main className="w-full min-h-screen bg-[color:var(--surface-page)] font-[family-name:var(--font-sans)]">
+        <div className="mx-auto max-w-[118.75rem] px-[1.5rem] lg:px-[2.5rem] xl:px-[3.5rem] 2xl:px-[4.5rem] py-[1.5rem] lg:py-[2rem] xl:py-[2.5rem] 2xl:py-[3rem]">
+          <div className="mb-[1.25rem] lg:mb-[1.5rem] xl:mb-[1.75rem]">
+            <ProfileBackButton onClick={handleBackToDirectory} />
+          </div>
+
+          <div className="bg-[color:var(--surface-card)] rounded-[1.75rem] lg:rounded-[2.25rem] xl:rounded-[2.875rem] px-[1.25rem] lg:px-[2rem] xl:px-[3.125rem] pt-[1.5rem] lg:pt-[1.75rem] xl:pt-[2rem] pb-[2rem] lg:pb-[2.5rem] xl:pb-[3rem] flex flex-col gap-[1rem] lg:gap-[1.125rem] xl:gap-[1.25rem]">
+            <ProfileHeaderCard agent={agent} />
+
+            <SectionCard title="Info">
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-[1.5rem] lg:gap-x-[2rem] xl:gap-x-[2.5rem] gap-y-[1.25rem] lg:gap-y-[1.5rem] xl:gap-y-[1.75rem]">
+                <InfoField label="Email" value={email} />
+                <InfoField label="Phone number" value={phone} />
+                <InfoField label="Date Of Birth" value={dateOfBirth} />
+                <InfoField label="Operating Territory" value={operatingTerritory} className="col-span-2 xl:col-span-3" />
+              </div>
+            </SectionCard>
+
+            <SectionCard title="Bank Details">
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-[1.5rem] lg:gap-x-[2rem] xl:gap-x-[2.5rem] gap-y-[1.25rem] lg:gap-y-[1.5rem]">
+                <InfoField label="Bank Name" value={bankName} />
+                <InfoField label="Account Number" value={accountNumber} />
+                <InfoField label="IFSC Code" value={ifscCode} />
+              </div>
+            </SectionCard>
+
+            <SectionCard title="Documents Provided">
+              <div className="grid grid-cols-2 gap-[1.25rem] lg:gap-[1.5rem] xl:gap-[2rem] max-w-[48.75rem]">
+                <DocumentCard label="Aadhaar card (Front)" imageUrl={aadharFrontUrl} />
+                <DocumentCard label="Aadhaar card (Back)" imageUrl={aadharBackUrl} />
+                <DocumentCard label="Pan card" imageUrl={panCardUrl} />
+              </div>
+            </SectionCard>
+
+            <div className="flex items-center justify-end gap-[0.625rem] lg:gap-[0.75rem] xl:gap-[0.875rem] pt-4">
+              <button
+                type="button"
+                onClick={handleBackToDirectory}
+                className="font-medium font-[family-name:'Inter',sans-serif] text-[color:var(--profile-text)] px-[1.25rem] lg:px-[1.5rem] py-[0.5rem] rounded-[0.375rem] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:bg-gray-100 transition-colors"
+              >
+                Dismiss
+              </button>
+              <button
+                type="button"
+                onClick={handleBackToDirectory}
+                className="font-medium font-[family-name:'Inter',sans-serif] text-white px-[1.75rem] lg:px-[2rem] py-[0.5rem] rounded-full bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:opacity-90 active:scale-[0.97] transition-all duration-150"
+              >
+                Approve
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[color:var(--surface-page)] p-[clamp(16px,2vw,32px)]">
       {/* ── Go Back ── */}
       <button
-        onClick={onCancel}
+        onClick={handleBackToDirectory}
         className="
                     flex items-center gap-2 px-5 py-3 mb-10
                     bg-[color:var(--surface-card)] rounded-full
@@ -286,7 +559,11 @@ export default function AgentForm({
         variant="h3"
         className="font-bold text-[clamp(20px,2vw,32px)] text-[color:var(--text-primary)] mb-6"
       >
-        {isEdit ? "Edit Agent" : "Create Agent"}
+        {isViewMode
+          ? "View Agent Profile"
+          : isEdit
+            ? "Edit Agent"
+            : "Create Agent"}
       </Typography>
 
       {/* ── Outer card ── */}
@@ -340,7 +617,15 @@ export default function AgentForm({
                                                     ${fieldState.error ? "border-red-500" : "border-[color:var(--surface-card)]"}
                                                 `}
                       >
-                        {profileImage ? (
+                        {field.value ? (
+                          <ImagePreview file={field.value} className="w-full h-full object-cover rounded-full" />
+                        ) : (agentData?.data?.avatar || agentData?.data?.profile_image || initialData?.avatar || (initialData as any)?.profile_image) ? (
+                          <img
+                            src={agentData?.data?.avatar || agentData?.data?.profile_image || initialData?.avatar || (initialData as any)?.profile_image}
+                            alt="profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : profileImage ? (
                           <img
                             src={profileImage}
                             alt="profile"
@@ -353,33 +638,35 @@ export default function AgentForm({
                           />
                         )}
                       </div>
-                      <label
-                        className="
-                                                    absolute bottom-1 right-1
-                                                    w-[32px] h-[32px]
-                                                    rounded-full bg-[color:var(--surface-card)]
-                                                    border border-[color:var(--border)]
-                                                    flex items-center justify-center
-                                                    shadow-sm cursor-pointer hover:opacity-80
-                                                "
-                      >
-                        <Camera
-                          size={16}
-                          strokeWidth={1.8}
-                          className="text-[color:var(--label-color)]"
-                        />
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/png,image/webp"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (!file) return;
-                            field.onChange(file);
-                            setProfileImage(URL.createObjectURL(file));
-                          }}
-                        />
-                      </label>
+                      {!isViewMode && (
+                        <label
+                          className="
+                                                      absolute bottom-1 right-1
+                                                      w-[32px] h-[32px]
+                                                      rounded-full bg-[color:var(--surface-card)]
+                                                      border border-[color:var(--border)]
+                                                      flex items-center justify-center
+                                                      shadow-sm cursor-pointer hover:opacity-80
+                                                  "
+                        >
+                          <Camera
+                            size={16}
+                            strokeWidth={1.8}
+                            className="text-[color:var(--label-color)]"
+                          />
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              field.onChange(file);
+                              setProfileImage(URL.createObjectURL(file));
+                            }}
+                          />
+                        </label>
+                      )}
                       {fieldState.error && (
                         <span className="absolute -bottom-5 left-0 text-red-500 text-[0.7rem] whitespace-nowrap">
                           {fieldState.error.message}
@@ -424,6 +711,7 @@ export default function AgentForm({
               label="First Name"
               placeholder="Enter First name"
               maxLength={30}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="lastName"
@@ -431,6 +719,7 @@ export default function AgentForm({
               label="Last Name"
               placeholder="Enter Last Name"
               maxLength={30}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="dob"
@@ -438,6 +727,7 @@ export default function AgentForm({
               label="D.O.B."
               placeholder="Enter Age"
               type="date"
+              disabled={isViewMode}
             />
             <RHFTextField
               name="email"
@@ -446,6 +736,7 @@ export default function AgentForm({
               placeholder="Enter Mail ID"
               type="email"
               maxLength={150}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="phone"
@@ -454,6 +745,7 @@ export default function AgentForm({
               placeholder="Enter Mobile Number"
               type="tel"
               maxLength={10}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="address"
@@ -461,6 +753,7 @@ export default function AgentForm({
               label="Address"
               placeholder="Enter Address"
               maxLength={150}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="addressState"
@@ -468,6 +761,7 @@ export default function AgentForm({
               label="State"
               placeholder="Enter State"
               maxLength={30}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="city"
@@ -475,6 +769,7 @@ export default function AgentForm({
               label="City / Village"
               placeholder="Enter City / Village"
               maxLength={30}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="pincode"
@@ -482,6 +777,7 @@ export default function AgentForm({
               label="Pin Code"
               placeholder="Enter Pin Code"
               maxLength={6}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="panNumber"
@@ -489,51 +785,38 @@ export default function AgentForm({
               label="PAN Card Number"
               placeholder="Enter PAN Number"
               maxLength={30}
+              disabled={isViewMode}
             />
           </div>
         </FormSection>
 
-        {/* ── SELECT STATE, REGION & AREA ── */}
-        <FormSection title="Select State, Region & Area">
+        {/* ── SELECT STATE, DISTRICT & MANDAL ── */}
+        <FormSection title="Select State, District & Mandal">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
             <RHFDropdown
               name="state"
               control={control}
               label="State"
               options={stateOptions}
-              placeholder="Andhra Pradesh"
+              placeholder="Select State"
+              disabled={isViewMode}
             />
-            <div>
-              <RHFDropdown
-                name="region"
-                control={control}
-                label="Region"
-                options={REGION_OPTIONS}
-                placeholder="Godavari Region"
-              />
-              <div className="mt-3 space-y-2">
-                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
-                  RO : Jayanth kumar (GLC 0012)
-                </p>
-                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
-                  IO : Jayanth kumar (GLC 0012)
-                </p>
-              </div>
-            </div>
-            <div>
-              <RHFDropdown
-                name="area"
-                control={control}
-                label="Area"
-                options={AREA_OPTIONS}
-                placeholder="Tanuku Area"
-              />
-              <div className="mt-3">
-                <p className="text-[clamp(11px,0.85vw,14px)] font-medium text-[#00B012]">
-                  FO : Ram Verma (GLC 0019)
-                </p>
-              </div>
-            </div>
+            <RHFDropdown
+              name="district"
+              control={control}
+              label="District"
+              options={districtOptions}
+              placeholder="Select District"
+              disabled={isViewMode}
+            />
+            <RHFDropdown
+              name="mandal"
+              control={control}
+              label="Mandal"
+              options={mandalOptions}
+              placeholder="Select Mandal"
+              disabled={isViewMode}
+            />
           </div>
         </FormSection>
 
@@ -546,6 +829,7 @@ export default function AgentForm({
               label="Bank Name"
               options={BANK_OPTIONS}
               placeholder="Select Bank"
+              disabled={isViewMode}
             />
             <RHFTextField
               name="accountNumber"
@@ -553,6 +837,7 @@ export default function AgentForm({
               label="Account Number"
               placeholder="Enter Account Number"
               maxLength={30}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="ifscCode"
@@ -560,6 +845,7 @@ export default function AgentForm({
               label="IFSC Code"
               placeholder="Enter IFSC Code"
               maxLength={30}
+              disabled={isViewMode}
             />
             <RHFTextField
               name="bankBranch"
@@ -567,6 +853,7 @@ export default function AgentForm({
               label="Bank Branch"
               placeholder="Enter Bank Branch"
               maxLength={30}
+              disabled={isViewMode}
             />
           </div>
         </FormSection>
@@ -578,47 +865,76 @@ export default function AgentForm({
               name="aadharFront"
               title="Aadhar Card (Front)"
               control={control}
+              disabled={isViewMode}
+              existingUrl={agentData?.data?.id_proof_front_url || agentData?.data?.id_proof?.id_proof_frontUrl || initialData?.id_proof_front_url || initialData?.id_proof?.id_proof_frontUrl || (initialData as any)?.id_proof?.id_proof_front_url}
             />
             <UploadBox
               name="aadharBack"
               title="Aadhar Card (Back)"
               control={control}
+              disabled={isViewMode}
+              existingUrl={agentData?.data?.id_proof_back_url || agentData?.data?.id_proof?.id_proof_backUrl || initialData?.id_proof_back_url || initialData?.id_proof?.id_proof_backUrl || (initialData as any)?.id_proof?.id_proof_back_url}
             />
-            <UploadBox name="panCard" title="Pan Card" control={control} />
+            <UploadBox
+              name="panCard"
+              title="Pan Card"
+              control={control}
+              disabled={isViewMode}
+              existingUrl={agentData?.data?.pan_card_url || agentData?.data?.id_proof?.pan_card_url || initialData?.pan_card_url || initialData?.id_proof?.pan_card_url || (initialData as any)?.id_proof?.pan_card_url}
+            />
           </div>
         </FormSection>
 
         {/* ── ACTION BUTTONS ── */}
         <div className="flex justify-end items-center gap-[clamp(12px,1vw,16px)] pt-4">
-          <button
-            onClick={onCancel}
-            disabled={isLoading}
-            className="
-                            text-[clamp(12px,0.9vw,16px)] font-medium text-[color:var(--text-primary)]
-                            px-6 py-2 hover:opacity-70 transition-opacity disabled:opacity-50
-                        "
-          >
-            Cancel
-          </button>
-          <Button
-            variant="primary"
-            onClick={handleSubmit(handleSave, (errors) => {
-              console.log("Validation errors:", errors);
-              toast.error("Please fix validation errors before saving.");
-            })}
-            loading={isLoading || isSubmitting}
-            className="
-                            !h-[44px] !min-w-[180px]
-                            !rounded-[100px]
-                            !px-[32px] !py-[8px]
-                            !font-[family-name:var(--font-inter)] !font-medium
-                            !text-[length:clamp(13px,0.9vw,16px)]
-                            !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
-                            !shadow-none
-                        "
-          >
-            {isEdit ? "Update Profile" : "Create Profile"}
-          </Button>
+          {isViewMode ? (
+            <Button
+              variant="primary"
+              onClick={handleBackToDirectory}
+              className="
+                              !h-[44px] !min-w-[180px]
+                              !rounded-[100px]
+                              !px-[32px] !py-[8px]
+                              !font-[family-name:var(--font-inter)] !font-medium
+                              !text-[length:clamp(13px,0.9vw,16px)]
+                              !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
+                              !shadow-none
+                          "
+            >
+              Go Back
+            </Button>
+          ) : (
+            <>
+              <button
+                onClick={handleBackToDirectory}
+                disabled={isLoading}
+                className="
+                                text-[clamp(12px,0.9vw,16px)] font-medium text-[color:var(--text-primary)]
+                                px-6 py-2 hover:opacity-70 transition-opacity disabled:opacity-50
+                            "
+              >
+                Cancel
+              </button>
+              <Button
+                variant="primary"
+                onClick={handleSubmit(handleSave, () => {
+                  toast.error("Please fix validation errors before saving.");
+                })}
+                loading={isLoading || isSubmitting}
+                className="
+                                !h-[44px] !min-w-[180px]
+                                !rounded-[100px]
+                                !px-[32px] !py-[8px]
+                                !font-[family-name:var(--font-inter)] !font-medium
+                                !text-[length:clamp(13px,0.9vw,16px)]
+                                !bg-[linear-gradient(110.22deg,_#2680C4_0%,_#4A7BBB_100%)]
+                                !shadow-none
+                            "
+              >
+                {isEdit ? "Update Profile" : "Create Profile"}
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -662,10 +978,14 @@ function UploadBox({
   title,
   name,
   control,
+  disabled = false,
+  existingUrl = "",
 }: {
   title: string;
   name: "aadharFront" | "aadharBack" | "panCard";
   control: Control<AgentFormValues>;
+  disabled?: boolean;
+  existingUrl?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -679,29 +999,36 @@ function UploadBox({
             {title}
           </p>
           <div
-            onClick={() => inputRef.current?.click()}
+            onClick={() => !disabled && inputRef.current?.click()}
             className={`
-                            flex flex-col items-center justify-center gap-2
+                            relative flex flex-col items-center justify-center gap-2
                             h-[clamp(100px,9vw,128px)]
                             border-2 border-dashed rounded-[var(--radius-dropdown)]
-                            cursor-pointer bg-[color:var(--input)]
-                            hover:brightness-95 transition-colors
-                            ${
-                              fieldState.error
-                                ? "border-red-500 bg-red-50/30"
-                                : "border-[color:var(--border-default)]"
-                            }
+                            bg-[color:var(--input)]
+                            transition-colors overflow-hidden
+                            ${disabled
+                ? "opacity-60 cursor-not-allowed border-gray-200"
+                : "cursor-pointer hover:brightness-95"
+              }
+                            ${fieldState.error
+                ? "border-red-500 bg-red-50/30"
+                : "border-[color:var(--border-default)]"
+              }
                         `}
           >
-            {field.value ? (
+            {field.value || existingUrl ? (
               <>
-                <FileText
-                  strokeWidth={1.5}
-                  className="w-[clamp(20px,1.8vw,28px)] h-[clamp(20px,1.8vw,28px)] text-[color:var(--label-color)]"
-                />
-                <span className="font-medium text-center px-3 truncate max-w-full text-[length:clamp(11px,0.85vw,14px)] text-[color:var(--profile-text)] font-[family-name:var(--font-sans)]">
-                  {field.value.name}
-                </span>
+                <ImagePreview file={field.value || existingUrl} className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-300" />
+                <div className="absolute inset-0 bg-slate-950/40 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white">
+                  <FileText className="w-5 h-5 text-white stroke-[2]" />
+                  <span className="text-xs font-semibold">Change File</span>
+                  <span className="text-[10px] opacity-80 max-w-[90%] truncate">
+                    {field.value instanceof File ? field.value.name : "Existing Document"}
+                  </span>
+                </div>
+                <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium pointer-events-none">
+                  {field.value ? "Selected" : "Uploaded"}
+                </div>
               </>
             ) : (
               <>
@@ -723,6 +1050,7 @@ function UploadBox({
           <input
             ref={inputRef}
             type="file"
+            disabled={disabled}
             accept=".pdf,.jpg,.jpeg,.png"
             className="hidden"
             onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}

@@ -8,7 +8,6 @@ import {
   Mail,
   Phone,
   TrendingUp,
-  Wallet,
 } from "lucide-react";
 
 import {

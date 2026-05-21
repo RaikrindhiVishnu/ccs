@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Typography } from "@/components/ui/typography";
 import arrowLeftIcon from "@/assets/arrow.svg";
-import { BackButton } from "@/components/ui/BackButton";
 // ─── Image imports ────────────────────────────────────────────────────────────
 import regionalOfficerImg from "@/assets/role-regional-officer.svg";
 import intelligenceOfficerImg from "@/assets/role-intelligence-officer.svg";
