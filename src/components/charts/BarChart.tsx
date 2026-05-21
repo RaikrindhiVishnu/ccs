@@ -162,6 +162,9 @@ const BarChart: React.FC<Props> = ({
   const domainMax = yMaxProp ?? 300;
   const activeLbl = activeLabel ?? "We";
 
+  // Guard: don't render until data is a non-empty array
+  if (!data?.length) return null;
+
   return (
     <div className="w-full h-full min-h-[150px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -200,6 +203,16 @@ const BarChart: React.FC<Props> = ({
             dataKey="value"
             shape={(props: unknown) => {
               const p = props as CustomBarProps & { index: number };
+
+              // Guard: skip if index is out of bounds or entry is missing
+              if (
+                p.index === undefined ||
+                p.index === null ||
+                !data[p.index]
+              ) {
+                return null;
+              }
+
               return (
                 <CustomBar
                   x={p.x}
@@ -208,7 +221,7 @@ const BarChart: React.FC<Props> = ({
                   height={p.height}
                   value={p.value}
                   activeLabel={activeLbl}
-                  label={data[p.index ?? 0].label}
+                  label={data[p.index].label}
                 />
               );
             }}
