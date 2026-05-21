@@ -267,7 +267,7 @@ function SectionPanel({
   );
 }
 
-const REGIONS = ["North", "South", "East", "West", "Central", "North-East"];
+
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 

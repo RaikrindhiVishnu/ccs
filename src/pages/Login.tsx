@@ -116,12 +116,7 @@ export default function Login() {
         })
       );
       
-      // Navigate based on role
-      if (roleCode === "CCS") {
-        navigate("/");
-      } else {
-        navigate("/role-manager/dashboard");
-      }
+      navigate("/role-manager/dashboard");
       return;
     }
 
@@ -143,12 +138,7 @@ export default function Login() {
         }),
       );
       
-      // Navigate based on role
-      if (roleCode === "CCS") {
-        navigate("/");
-      } else {
-        navigate("/role-manager/dashboard");
-      }
+      navigate("/role-manager/dashboard");
     } catch (err: any) {
       console.error("Login failed:", err);
       setError(err?.data?.message || "Login failed. Please check your credentials.");
