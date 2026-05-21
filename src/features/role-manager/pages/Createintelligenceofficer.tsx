@@ -21,7 +21,7 @@ import {
   useUpdateRegionalOfficerMutation,
 } from "@/features/role-manager/api/agentApi";
 import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
-import { useGetRegionalOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
+import { useGetIntelligenceOfficerByIdMutation, useGetLocationHierarchyDetailsMutation } from "@/features/role-manager/api/roleManagerApi";
 import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
 import SectionCard from "../components/ui/SectionCard";
 import InfoField from "../components/ui/InfoField";
@@ -286,10 +286,12 @@ export default function CreateIntelligenceOfficer() {
   const fromPath = location.state?.from || BACK_ROUTE;
 
   const isEditMode = !!userId;
-  const [getRegionalOfficerById, { data: regionalOfficerData }] =
-    useGetRegionalOfficerByIdMutation();
+  const [getIntelligenceOfficerById, { data: intelligenceOfficerData }] =
+    useGetIntelligenceOfficerByIdMutation();
   const [createRegionalOfficer, { isLoading }] =
     useCreateRegionalOfficerMutation();
+  const [getLocationHierarchyDetails] = useGetLocationHierarchyDetailsMutation();
+  const [hierarchy, setHierarchy] = useState<any>(null);
 
   const [updateRegionalOfficer] = useUpdateRegionalOfficerMutation();
   const { data: masterData } = useGetAllMasterDataQuery();
@@ -323,6 +325,7 @@ export default function CreateIntelligenceOfficer() {
 
   const selectedState = watch("state");
   const selectedDistrict = watch("district");
+  const selectedMandal = watch("mandal");
 
   const prevStateRef = useRef(selectedState);
   const prevDistrictRef = useRef(selectedDistrict);
@@ -353,6 +356,34 @@ export default function CreateIntelligenceOfficer() {
     }
   }, [selectedDistrict, setValue]);
 
+  useEffect(() => {
+    if (selectedDistrict && selectedMandal) {
+      const selectedDistrictObj = allDistricts.find((d: any) => d.desc === selectedDistrict);
+      const selectedMandalObj = allMandals.find((m: any) => m.desc === selectedMandal);
+      if (selectedDistrictObj?.id && selectedMandalObj?.id) {
+        getLocationHierarchyDetails({
+          district_id: Number(selectedDistrictObj.id),
+          mandal_id: Number(selectedMandalObj.id),
+        })
+          .unwrap()
+          .then((res) => {
+            if (res?.success) {
+              setHierarchy(res.data);
+            } else {
+              setHierarchy(null);
+            }
+          })
+          .catch(() => {
+            setHierarchy(null);
+          });
+      } else {
+        setHierarchy(null);
+      }
+    } else {
+      setHierarchy(null);
+    }
+  }, [selectedDistrict, selectedMandal, allDistricts, allMandals, getLocationHierarchyDetails]);
+
   const getGeoNames = (srcData: any) => {
     const geo = srcData?.geo_assignments;
     const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === srcData?.state || s.desc === srcData?.address?.state);
@@ -374,9 +405,9 @@ export default function CreateIntelligenceOfficer() {
   useEffect(() => {
     if (userId && !fetchedRef.current) {
       fetchedRef.current = true;
-      getRegionalOfficerById(userId);
+      getIntelligenceOfficerById(userId);
     }
-  }, [userId, getRegionalOfficerById]);
+  }, [userId, getIntelligenceOfficerById]);
 
   // 1. Immediate pre-fill using initialData as fallback/instant load
   useEffect(() => {
@@ -404,10 +435,10 @@ export default function CreateIntelligenceOfficer() {
     }
   }, [initialData, reset, states, allDistricts, allMandals]);
 
-  // 2. Prefill/reset the form using server-fetched regionalOfficerData
+  // 2. Prefill/reset the form using server-fetched intelligenceOfficerData
   useEffect(() => {
-    if (regionalOfficerData?.data && states.length && allDistricts.length && allMandals.length) {
-      const data = regionalOfficerData.data;
+    if (intelligenceOfficerData?.data && states.length && allDistricts.length && allMandals.length) {
+      const data = intelligenceOfficerData.data;
       const { stateVal, districtVal, mandalVal } = getGeoNames(data);
       prevStateRef.current = stateVal;
       prevDistrictRef.current = districtVal;
@@ -429,7 +460,7 @@ export default function CreateIntelligenceOfficer() {
         panCard: data.pan_card_url || data.id_proof?.pan_card_url || undefined,
       });
     }
-  }, [regionalOfficerData, reset, states, allDistricts, allMandals]);
+  }, [intelligenceOfficerData, reset, states, allDistricts, allMandals]);
   const handleCreate = async (values: IntelligenceOfficerFormValues) => {
     try {
       const selectedStateObj = states.find((s: any) => s.desc === values.state);
@@ -708,26 +739,63 @@ export default function CreateIntelligenceOfficer() {
                 className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
                 disabled={isViewMode}
               />
-              <RHFDropdown
-                name="district"
-                control={control}
-                label="District"
-                placeholder="Select District"
-                options={districtOptions}
-                containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
-                className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
-                disabled={isViewMode}
-              />
-              <RHFDropdown
-                name="mandal"
-                control={control}
-                label="Mandal"
-                placeholder="Select Mandal"
-                options={mandalOptions}
-                containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
-                className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
-                disabled={isViewMode}
-              />
+              <div className="flex flex-col gap-1 w-full">
+                <RHFDropdown
+                  name="district"
+                  control={control}
+                  label="District"
+                  placeholder="Select District"
+                  options={districtOptions}
+                  containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
+                  className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
+                  disabled={isViewMode}
+                />
+                {(hierarchy?.region || hierarchy?.regional_officer || hierarchy?.intelligence_officer) && (
+                  <div className="mt-1 px-1 flex flex-col">
+                    {hierarchy.region && (
+                      <span className="text-xs font-semibold text-slate-500">
+                        Region: {hierarchy.region.name || "N/A"}
+                      </span>
+                    )}
+                    {hierarchy.regional_officer && (
+                      <span className="text-[13px] font-medium text-[#16a34a] mt-1.5 flex items-center gap-1">
+                        RO : {hierarchy.regional_officer.first_name} {hierarchy.regional_officer.last_name} {hierarchy.regional_officer.id ? `(${hierarchy.regional_officer.id})` : ""}
+                      </span>
+                    )}
+                    {hierarchy.intelligence_officer && (
+                      <span className="text-[13px] font-medium text-[#16a34a] mt-0.5 flex items-center gap-1">
+                        IO : {hierarchy.intelligence_officer.first_name} {hierarchy.intelligence_officer.last_name} {hierarchy.intelligence_officer.id ? `(${hierarchy.intelligence_officer.id})` : ""}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col gap-1 w-full">
+                <RHFDropdown
+                  name="mandal"
+                  control={control}
+                  label="Mandal"
+                  placeholder="Select Mandal"
+                  options={mandalOptions}
+                  containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
+                  className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
+                  disabled={isViewMode}
+                />
+                {(hierarchy?.area || hierarchy?.field_officer) && (
+                  <div className="mt-1 px-1 flex flex-col">
+                    {hierarchy.area && (
+                      <span className="text-xs font-semibold text-slate-500">
+                        Area: {hierarchy.area.name || hierarchy.area || "N/A"}
+                      </span>
+                    )}
+                    {hierarchy.field_officer && (
+                      <span className="text-[13px] font-medium text-[#16a34a] mt-1.5 flex items-center gap-1">
+                        FO : {hierarchy.field_officer.first_name} {hierarchy.field_officer.last_name} {hierarchy.field_officer.id ? `(${hierarchy.field_officer.id})` : ""}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </SectionPanel>
 
