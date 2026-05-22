@@ -243,7 +243,6 @@ h1 {
   color: var(--text-muted);
 }
 
-<<<<<<< HEAD
 /* Sleek custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
@@ -262,7 +261,7 @@ h1 {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
 }
-=======
+
 /* ─── REGIONAL OFFICER NAVIGATION ──────────────────────────────── */
 .nav-container {
   width: 98%;
@@ -339,4 +338,3 @@ h1 {
   height: 100%;
   object-fit: cover;
 }
->>>>>>> bhanu

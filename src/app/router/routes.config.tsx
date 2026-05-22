@@ -58,7 +58,6 @@ export const ProcessingFeeScreen = lazy(
 export const IODashboard = lazy(
   () => import("../../features/io/pages/Dashboard"),
 );
-<<<<<<< HEAD
 export const Assignedfarmland = lazy(
   () => import("../../features/io/pages/Assignedfarmland"),
 );
@@ -88,7 +87,6 @@ export const EditIntelligenceOfficer = lazy(
 export const EditRegionalOfficer = lazy(
   () => import("../../features/role-manager/pages/Createregionalofficer"),
 );
-=======
 
 // Regional Officer
 export const RegionalOfficerDashboard = lazy(
@@ -114,4 +112,3 @@ export const RequestInfoPage = lazy(
 export const FarmlandAlertsPage = lazy(
   () => import("../../features/field-officer/pages/FarmlandAlertsPage"),
 );
->>>>>>> bhanu

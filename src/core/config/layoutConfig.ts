@@ -74,12 +74,8 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     navItems: [
       { label: 'Dashboard',     path: '/role-manager/dashboard',      icon: 'LayoutDashboard' },
       { label: 'User Directory', path: '/role-manager/user-directory', icon: 'Users' },
-<<<<<<< HEAD
       { label: 'Regions',    path: '/role-manager/region-area-dashboard',   icon: 'Map' },
       { label: 'Agent Approvals', path: '/role-manager/agent-approvals', icon: 'User' },
-=======
-      { label: 'Regions',       path: '/role-manager/region-area',    icon: 'Map' },
->>>>>>> bhanu
     ],
   },
 
@@ -104,24 +100,12 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     ],
   },
 
-<<<<<<< HEAD
-IO: {
-  layoutVariant: 'sidebar-intelligence-officer',
-  roleLabel: 'Intelligence Officer',
-  navItems: [
-    { label: 'Dashboard',          path: '/io/dashboard',          icon: 'LayoutDashboard', iconImg: io1 },
-    { label: 'Assigned Farmlands', path: '/io/Assignedfarmland', icon: 'Shield',          iconImg: io2 },
-    { label: 'Requested info',     path: '/io/requested-info',     icon: 'FileText',        iconImg: io3 },
-    { label: 'Farmlands list',     path: '/io/farmlands-list',     icon: 'List',            iconImg: io4 },
-  ],
-},
-=======
   IO: {
     layoutVariant: 'sidebar-intelligence-officer',
     roleLabel: 'Intelligence Officer',
     navItems: [
       { label: 'Dashboard',          path: '/io/dashboard',          icon: 'LayoutDashboard', iconImg: io1 },
-      { label: 'Assigned Farmlands', path: '/io/assigned-farmlands', icon: 'Shield',          iconImg: io2 },
+      { label: 'Assigned Farmlands', path: '/io/Assignedfarmland', icon: 'Shield',          iconImg: io2 },
       { label: 'Requested info',     path: '/io/requested-info',     icon: 'FileText',        iconImg: io3 },
       { label: 'Farmlands list',     path: '/io/farmlands-list',     icon: 'List',            iconImg: io4 },
     ],
@@ -136,7 +120,6 @@ IO: {
       { label: 'Reports',   path: '/regional-officer/reports',            icon: 'FileText'        },
     ],
   },
->>>>>>> bhanu
 };
 
 // Fallback

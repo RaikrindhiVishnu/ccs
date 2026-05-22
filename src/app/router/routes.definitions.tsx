@@ -23,17 +23,15 @@ import {
   SendPaymentLink,
   ProcessingFeeScreen,
   IODashboard,
-<<<<<<< HEAD
   Assignedfarmland,
   AssignedFarmlandList,
-    Farmlanddocument,
-      CreateFieldOfficer,
-       CreateintellegenceOfficer,
-       CreateregionalOfficer,
-       EditFieldOfficer,
-EditIntelligenceOfficer,
-EditRegionalOfficer,
-=======
+  Farmlanddocument,
+  CreateFieldOfficer,
+  CreateintellegenceOfficer,
+  CreateregionalOfficer,
+  EditFieldOfficer,
+  EditIntelligenceOfficer,
+  EditRegionalOfficer,
   RegionalOfficerDashboard,
   RegionalOfficerLayout,
   FieldOfficerDashboard,
@@ -41,7 +39,6 @@ EditRegionalOfficer,
   FieldOfficerLayout,
   RequestInfoPage,
   FarmlandAlertsPage,
->>>>>>> bhanu
 } from './routes.config';
 
 export const guestRoutes: RouteObject[] = [
@@ -131,14 +128,10 @@ export const authRoutes: RouteObject[] = [
 ];
 
 export const publicRoutes: RouteObject[] = [
-<<<<<<< HEAD
-  { path: '/design-system',                    element: <DesignSystem /> },
-=======
   { path: '/design-system',                 element: <DesignSystem /> },
   { path: '/role-manager/agent-create',     element: <AgentCreate /> },
   { path: '/role-manager/agent-edit',       element: <AgentEdit /> },
   { path: '/role-manager/profile',          element: <RoleManagerDetails /> },
   { path: '/role-manager/agent-approvals',  element: <AgentApprovals /> },
   { path: '/role-manager/agent-details',    element: <Agentdetailpage /> },
->>>>>>> bhanu
 ];

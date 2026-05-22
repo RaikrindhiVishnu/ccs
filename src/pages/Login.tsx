@@ -130,9 +130,6 @@ export default function Login() {
         })
       );
       
-<<<<<<< HEAD
-      navigate("/role-manager/dashboard");
-=======
       // Navigate based on role
       if (roleCode === "CCS") {
         navigate("/");
@@ -143,7 +140,6 @@ export default function Login() {
       } else {
         navigate("/role-manager/dashboard");
       }
->>>>>>> bhanu
       return;
     }
 
@@ -165,9 +161,6 @@ export default function Login() {
         }),
       );
       
-<<<<<<< HEAD
-      navigate("/role-manager/dashboard");
-=======
       // Navigate based on role
       if (roleCode === "CCS") {
         navigate("/");
@@ -178,7 +171,6 @@ export default function Login() {
       } else {
         navigate("/role-manager/dashboard");
       }
->>>>>>> bhanu
     } catch (err: any) {
       console.error("Login failed:", err);
       setError(err?.data?.message || "Login failed. Please check your credentials.");
