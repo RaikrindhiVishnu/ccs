@@ -136,7 +136,7 @@ export function RoleCreationOverviewCard({
       className={cn(
         "w-full h-full flex flex-col min-h-0",
         "p-[clamp(0.875rem,1.5vw,1.5rem)]",
-        "rounded-[var(--radius-lg,1.5rem)]",
+        "rounded-4xl",
         "bg-[color:var(--surface-card,#fff)]",
         "shadow-[var(--shadow-card)]",
         "font-[family-name:var(--font-sans)]",
