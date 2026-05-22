@@ -19,13 +19,13 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
-const storedUser = localStorage.getItem('user');
+const storedUser = sessionStorage.getItem('user');
 
 const initialState: AuthState = {
   user: storedUser ? (JSON.parse(storedUser) as User) : null,
-  accessToken: localStorage.getItem('accessToken'),
-  refreshToken: localStorage.getItem('refreshToken'),
-  isAuthenticated: !!localStorage.getItem('accessToken'),
+  accessToken: sessionStorage.getItem('accessToken'),
+  refreshToken: sessionStorage.getItem('refreshToken'),
+  isAuthenticated: !!sessionStorage.getItem('accessToken'),
 };
 
 const authSlice = createSlice({
@@ -43,9 +43,9 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
 
       // Persist all three so role + tokens survive a page refresh
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
+      sessionStorage.setItem('user', JSON.stringify(user));
+      sessionStorage.setItem('accessToken', accessToken);
+      sessionStorage.setItem('refreshToken', refreshToken);
     },
     logOut: (state) => {
       state.user = null;
@@ -53,16 +53,16 @@ const authSlice = createSlice({
       state.refreshToken = null;
       state.isAuthenticated = false;
 
-      localStorage.removeItem('user');
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      sessionStorage.removeItem('user');
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('refreshToken');
     },
     updateTokens: (state, action: PayloadAction<{ accessToken: string; refreshToken: string }>) => {
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
       
-      localStorage.setItem('accessToken', action.payload.accessToken);
-      localStorage.setItem('refreshToken', action.payload.refreshToken);
+      sessionStorage.setItem('accessToken', action.payload.accessToken);
+      sessionStorage.setItem('refreshToken', action.payload.refreshToken);
     },
   },
 });
