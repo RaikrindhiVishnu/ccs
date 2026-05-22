@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import avatars from "../../../../assets/dashboard/avatars.png";
 import { TABLE_DATA } from "../../data/farmlandsData";
 
@@ -7,6 +8,7 @@ type Props = {
 };
 
 export default function FarmlandsTable({ isExpanded = false, onViewMore }: Props) {
+  const navigate = useNavigate();
   return (
     <div className="bg-white shadow-[0px_20px_40px_rgba(0,105,107,0.06)] w-full overflow-hidden rounded-[24px]">
       <div className="overflow-x-auto">
@@ -45,7 +47,10 @@ export default function FarmlandsTable({ isExpanded = false, onViewMore }: Props
                 <td className="px-8 text-[#3D4949] font-medium">{row.farmId}</td>
                 <td className="px-8 text-[#3D4949]">{row.pubTime}</td>
                 <td className="px-8">
-                  <button className="bg-[#96C9ED] text-black text-[12px] font-bold px-4 py-1.5 rounded-full hover:brightness-90 transition-all uppercase">
+                  <button 
+                    onClick={() => navigate(`/field-officer/assigned-farmland/${row.farmId}`)}
+                    className="bg-[#96C9ED] text-black text-[12px] font-bold px-4 py-1.5 rounded-full hover:brightness-90 transition-all uppercase cursor-pointer"
+                  >
                     View
                   </button>
                 </td>

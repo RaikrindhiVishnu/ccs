@@ -112,3 +112,19 @@ export const RequestInfoPage = lazy(
 export const FarmlandAlertsPage = lazy(
   () => import("../../features/field-officer/pages/FarmlandAlertsPage"),
 );
+export const TopPerformerDetailsPage = lazy(
+  () => import("../../features/field-officer/pages/TopPerformerDetailsPage"),
+);
+export const AgentDetailsPage = lazy(
+  () => import("../../features/field-officer/pages/AgentDetailsPage"),
+);
+export const AssignedFarmlandPage = lazy(
+  () => import("../../features/field-officer/pages/AssignedFarmlandPage"),
+);
+export const FarmlandWorkflowPage = lazy(
+  () => import("../../features/field-officer/pages/FarmlandWorkflowPage"),
+);
+export const DraftsDetailPage = lazy(
+  () => import("../../features/field-officer/pages/DraftsDetailPage"),
+);
+
