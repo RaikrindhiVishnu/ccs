@@ -25,13 +25,20 @@ import {
   IODashboard,
   Assignedfarmland,
   AssignedFarmlandList,
-    Farmlanddocument,
-      CreateFieldOfficer,
-       CreateintellegenceOfficer,
-       CreateregionalOfficer,
-       EditFieldOfficer,
-EditIntelligenceOfficer,
-EditRegionalOfficer,
+  Farmlanddocument,
+  CreateFieldOfficer,
+  CreateintellegenceOfficer,
+  CreateregionalOfficer,
+  EditFieldOfficer,
+  EditIntelligenceOfficer,
+  EditRegionalOfficer,
+  RegionalOfficerDashboard,
+  RegionalOfficerLayout,
+  FieldOfficerDashboard,
+  DraftsPage,
+  FieldOfficerLayout,
+  RequestInfoPage,
+  FarmlandAlertsPage,
 } from './routes.config';
 
 export const guestRoutes: RouteObject[] = [
@@ -103,8 +110,28 @@ export const authRoutes: RouteObject[] = [
       { path: "/role-manager/agent-details/:id", element: <Agentdetailpage /> },   
  ],
   },
+  {
+    element: <FieldOfficerLayout />,
+    children: [
+      { path: '/field-officer/dashboard',       element: <FieldOfficerDashboard /> },
+      { path: '/field-officer/drafts',          element: <DraftsPage /> },
+      { path: '/field-officer/request-info',    element: <RequestInfoPage /> },
+      { path: '/field-officer/alerts',          element: <FarmlandAlertsPage /> },
+    ],
+  },
+  {
+    element: <RegionalOfficerLayout />,
+    children: [
+      { path: '/regional-officer/dashboard', element: <RegionalOfficerDashboard /> },
+    ],
+  },
 ];
 
 export const publicRoutes: RouteObject[] = [
-  { path: '/design-system',                    element: <DesignSystem /> },
+  { path: '/design-system',                 element: <DesignSystem /> },
+  { path: '/role-manager/agent-create',     element: <AgentCreate /> },
+  { path: '/role-manager/agent-edit',       element: <AgentEdit /> },
+  { path: '/role-manager/profile',          element: <RoleManagerDetails /> },
+  { path: '/role-manager/agent-approvals',  element: <AgentApprovals /> },
+  { path: '/role-manager/agent-details',    element: <Agentdetailpage /> },
 ];

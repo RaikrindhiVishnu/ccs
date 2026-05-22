@@ -13,6 +13,7 @@ export type LayoutVariant =
   | 'sidebar-role-manager'
   | 'sidebar-ccs-officer'
   | 'sidebar-intelligence-officer'
+  | 'sidebar-regional-officer'
   | 'header-only';
 
 export type NavItem = {
@@ -52,11 +53,17 @@ export const MOCK_USERS: Record<
     role: 'CCS',
   },
   IO_OFFICER: {
-  email: 'io@glc.com',
-  password: 'io@123',
-  name: 'Arjun ',
-  role: 'IO',
-},
+    email: 'io@glc.com',
+    password: 'io@123',
+    name: 'Arjun ',
+    role: 'IO',
+  },
+  REGIONAL_OFFICER: {
+    email: 'regional@glc.com',
+    password: 'regional@123',
+    name: 'Edward Janowski',
+    role: 'RO',
+  },
 };
 
 // ─── Master Layout Config ─────────────────────────────────────────────────────
@@ -65,7 +72,7 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     layoutVariant: 'sidebar-role-manager',
     roleLabel: 'Role Manager',
     navItems: [
-      { label: 'Dashboard', path: '/role-manager/dashboard',      icon: 'LayoutDashboard' },
+      { label: 'Dashboard',     path: '/role-manager/dashboard',      icon: 'LayoutDashboard' },
       { label: 'User Directory', path: '/role-manager/user-directory', icon: 'Users' },
       { label: 'Regions',    path: '/role-manager/region-area-dashboard',   icon: 'Map' },
       { label: 'Agent Approvals', path: '/role-manager/agent-approvals', icon: 'User' },
@@ -76,10 +83,10 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     layoutVariant: 'header-only',
     roleLabel: 'Field Officer',
     navItems: [
-      { label: 'My Tasks', path: '/',        icon: 'ClipboardList' },
-      { label: 'Visits',   path: '/visits',  icon: 'MapPin'        },
-      { label: 'Reports',  path: '/reports', icon: 'FileBarChart'  },
-      { label: 'Profile',  path: '/profile', icon: 'UserCircle'    },
+      { label: 'My Tasks', path: '/field-officer/dashboard', icon: 'ClipboardList' },
+      { label: 'Visits',   path: '/visits',                  icon: 'MapPin'        },
+      { label: 'Reports',  path: '/reports',                 icon: 'FileBarChart'  },
+      { label: 'Profile',  path: '/profile',                 icon: 'UserCircle'    },
     ],
   },
 
@@ -93,16 +100,26 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     ],
   },
 
-IO: {
-  layoutVariant: 'sidebar-intelligence-officer',
-  roleLabel: 'Intelligence Officer',
-  navItems: [
-    { label: 'Dashboard',          path: '/io/dashboard',          icon: 'LayoutDashboard', iconImg: io1 },
-    { label: 'Assigned Farmlands', path: '/io/Assignedfarmland', icon: 'Shield',          iconImg: io2 },
-    { label: 'Requested info',     path: '/io/requested-info',     icon: 'FileText',        iconImg: io3 },
-    { label: 'Farmlands list',     path: '/io/farmlands-list',     icon: 'List',            iconImg: io4 },
-  ],
-},
+  IO: {
+    layoutVariant: 'sidebar-intelligence-officer',
+    roleLabel: 'Intelligence Officer',
+    navItems: [
+      { label: 'Dashboard',          path: '/io/dashboard',          icon: 'LayoutDashboard', iconImg: io1 },
+      { label: 'Assigned Farmlands', path: '/io/Assignedfarmland', icon: 'Shield',          iconImg: io2 },
+      { label: 'Requested info',     path: '/io/requested-info',     icon: 'FileText',        iconImg: io3 },
+      { label: 'Farmlands list',     path: '/io/farmlands-list',     icon: 'List',            iconImg: io4 },
+    ],
+  },
+
+  RO: {
+    layoutVariant: 'sidebar-regional-officer',
+    roleLabel: 'Regional Officer',
+    navItems: [
+      { label: 'Dashboard', path: '/regional-officer/dashboard',          icon: 'LayoutDashboard' },
+      { label: 'Farmlands', path: '/regional-officer/assigned-farmlands', icon: 'Map'             },
+      { label: 'Reports',   path: '/regional-officer/reports',            icon: 'FileText'        },
+    ],
+  },
 };
 
 // Fallback
