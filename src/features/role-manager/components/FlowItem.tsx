@@ -1,7 +1,6 @@
 import React from "react";
-import { Edit2, Eye } from "lucide-react";
+import { SquarePen, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Typography } from "@/components/ui/typography";
 
 interface FlowItemProps {
   name: string;
@@ -77,7 +76,7 @@ export const FlowItem: React.FC<FlowItemProps> = ({
         <div className="flex justify-between items-start">
           {renderAvatar("w-12 h-12 text-base")}
           <div className="flex gap-2">
-            <Edit2
+            <SquarePen
               size={16}
               className="text-(--text-muted-strong) cursor-pointer hover:text-(--brand-500) transition-colors"
               onClick={(e) => {
@@ -96,20 +95,17 @@ export const FlowItem: React.FC<FlowItemProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <Typography
-            variant="p"
-            className="text-sm font-semibold text-(--text-muted)"
-          >
+        <div className="flex flex-col gap-1.5 mt-2">
+          <span className="text-sm font-semibold text-[#191B1C] font-sans leading-tight">
             {name} - {role}
-          </Typography>
-          <Typography variant="p" className="text-sm text-(--text-muted)">
+          </span>
+          <span className="text-xs text-[#626C70] font-sans leading-tight">
             Role ID - {roleId}
-          </Typography>
+          </span>
           {contact && (
-            <Typography variant="p" className="text-sm text-(--text-muted)">
+            <span className="text-xs text-[#626C70] font-sans leading-tight mt-0.5">
               Contact - {contact}
-            </Typography>
+            </span>
           )}
         </div>
       </div>
@@ -120,31 +116,28 @@ export const FlowItem: React.FC<FlowItemProps> = ({
     <div
       onClick={onClick}
       className={cn(
-        "flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer group",
+        "flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer group border",
         active
-          ? "bg-(--primaryz-soft) border-l-4 border-(--brand-500)"
-          : "hover:bg-(--brand-tint)/50 border-l-4 border-transparent",
+          ? "bg-(--brand-tint) border-(--brand-200)"
+          : "hover:bg-(--brand-tint)/50 border-transparent",
       )}
     >
       <div className="flex items-center gap-3">
         {renderAvatar("w-10 h-10 text-xs")}
-        <div className="flex flex-col">
-          <Typography
-            variant="p"
-            className="font-semibold text-(--text-heading) text-sm"
-          >
+        <div className="flex flex-col gap-0.5">
+          <span className="font-semibold text-[#191B1C] text-sm font-sans leading-tight">
             {name}
-          </Typography>
-          <Typography variant="p" className="text-[11px] text-(--text-muted)">
+          </span>
+          <span className="text-[11px] text-[#626C70] font-sans leading-tight">
             Role ID - {roleId}
-          </Typography>
+          </span>
         </div>
       </div>
 
-      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Edit2
+      <div className="flex gap-2">
+        <SquarePen
           size={14}
-          className="text-(--text-muted-strong) cursor-pointer hover:text-(--brand-500)"
+          className="text-(--text-muted-strong) cursor-pointer hover:text-(--brand-500) transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             onEdit?.();
@@ -152,7 +145,7 @@ export const FlowItem: React.FC<FlowItemProps> = ({
         />
         <Eye
           size={14}
-          className="text-(--text-muted-strong) cursor-pointer hover:text-(--brand-500)"
+          className="text-(--text-muted-strong) cursor-pointer hover:text-(--brand-500) transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             onView?.();
