@@ -2,7 +2,9 @@ import React from "react";
 import BarChart from "@/components/charts/BarChart";
 import { useGetAgentOnboardingVelocityQuery } from "@/features/role-manager/api/agentApi";
 import DateRangePicker from "@/components/ui/DateRangePicker";
-
+import { Typography } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
 interface Props {
   activeLabel?: string;
   yMax?: number;
@@ -12,20 +14,25 @@ interface Props {
 
 const AgentOnboardingVelocity: React.FC<Props> = ({
   activeLabel,
-  yMax,
   title = "Agent Onboarding Velocity",
   subtitle = "Weekly overview of Onboarding of Agents",
 }) => {
-  // ✅ State first
-  const [dateRange, setDateRange] = React.useState<{ from: Date; to: Date }>(() => {
+  const [dateRange, setDateRange] = React.useState<{
+    from: Date;
+    to: Date;
+  }>(() => {
     const to = new Date();
     const from = new Date();
     from.setDate(from.getDate() - 6);
+
     return { from, to };
   });
 
-  // ✅ Single query using dateRange
-  const { data: apiData, isLoading, error } = useGetAgentOnboardingVelocityQuery({
+  const {
+    data: apiData,
+    isLoading,
+    error,
+  } = useGetAgentOnboardingVelocityQuery({
     startDate: dateRange.from.toISOString().split("T")[0],
     endDate: dateRange.to.toISOString().split("T")[0],
     offset: "0",
@@ -33,68 +40,96 @@ const AgentOnboardingVelocity: React.FC<Props> = ({
 
   const chartData =
     apiData?.data?.map((item) => ({
-      label: new Date(item.onboardingDate).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      }),
+     label: new Date(item.onboardingDate).toLocaleDateString("en-US", {
+  month: "short",
+  day: "numeric",
+}),
       value: item.totalAgents,
     })) || [];
+const maxValue =
+  chartData.length > 0
+    ? Math.max(...chartData.map((item) => item.value))
+    : 0;
 
+const dynamicYMax =
+  maxValue > 10
+    ? Math.ceil(maxValue * 1.2)
+    : 10;
   return (
-    <div className="card p-[clamp(16px,2vw,24px)_clamp(20px,3vw,32px)] w-full flex-1 min-h-0 box-border flex flex-col overflow-hidden bg-white rounded-3xl">
-
-      {/* Header */}
-      <div className="flex justify-between items-start mb-[clamp(20px,4vh,32px)] shrink-0">
-        <div className="flex flex-col gap-[clamp(4px,0.8vh,8px)]">
-          <h2 className="font-['Plus_Jakarta_Sans'] font-medium text-[clamp(16px,1.6vw,20px)] leading-tight text-[#000000] m-0">
+    <Card
+      className={cn(
+        "w-full h-full flex flex-col overflow-hidden box-border",
+        "bg-[color:var(--surface-card)] rounded-3xl shadow-[var(--shadow-card)]",
+        "p-[clamp(1rem,1.4vw,1.5rem)]",
+      )}
+    >
+      <div className="flex justify-between items-start mb-[clamp(0.75rem,1.5vh,1.5rem)] shrink-0">
+        <div className="flex flex-col gap-[clamp(0.25rem,0.5vh,0.5rem)]">
+          <Typography
+            as="p"
+            variant="p"
+            className="m-0 font-medium text-[clamp(0.875rem,1.5vw,1.25rem)] leading-[110%] text-[var(--text-primary)]"
+          >
             {title}
-          </h2>
-          <p className="font-['Plus_Jakarta_Sans'] font-normal text-[clamp(11px,1.1vw,14px)] leading-tight text-[#000000] opacity-60 m-0">
+          </Typography>
+
+          <Typography
+            as="p"
+            variant="p"
+            className="m-0 font-normal text-[clamp(0.6875rem,1vw,0.875rem)] leading-[110%] text-[var(--text-primary)] opacity-60"
+          >
             {subtitle}
-          </p>
+          </Typography>
         </div>
 
-        <DateRangePicker
-          from={dateRange.from}
-          to={dateRange.to}
-          onRangeChange={(range) => {
-            if (range) setDateRange(range);
-          }}
-        />
+        <div className="shrink-0">
+          <DateRangePicker
+            from={dateRange.from}
+            to={dateRange.to}
+            onRangeChange={(range) => {
+              if (range) setDateRange(range);
+            }}
+          />
+        </div>
       </div>
 
-      {/* Loading */}
-      {isLoading && (
-        <div className="flex items-center justify-center h-full">
-          Loading...
-        </div>
-      )}
-
-      {/* Error */}
-      {error && (
-        <div className="flex items-center justify-center h-full text-red-500">
-          Failed to load data
-        </div>
-      )}
-
-      {/* Chart */}
-      {!isLoading && !error && (
-        <div className="flex-1 min-h-0 w-full relative">
-          {chartData.length === 0 ? (
-            <div className="flex items-center justify-center h-full text-[14px] text-black/60">
-              No data available
-            </div>
-          ) : (
-            <BarChart
-              data={chartData}
-              activeLabel={activeLabel ?? "We"}
-              yMax={yMax}
-                tooltipLabel="Agents"
-            />
-          )}
-        </div>
-      )}
-    </div>
+      {/* Content */}
+    <div
+  className="
+    relative
+    w-full
+    h-full
+    min-h-0
+    overflow-hidden
+  "
+>
+        {isLoading ? (
+          <div className="flex h-full items-center justify-center text-sm text-[var(--text-muted)]">
+            Loading...
+          </div>
+        ) : error ? (
+          <div className="flex h-full items-center justify-center text-sm text-red-500">
+            Failed to load data
+          </div>
+        ) : chartData.length === 0 ? (
+          <div className="flex h-full items-center justify-center text-sm text-[var(--text-muted)]">
+            No data available
+          </div>
+        ) : (
+          <BarChart
+            data={chartData}
+            activeLabel={
+              chartData.reduce(
+                (max, item) => (item.value > max.value ? item : max),
+                chartData[0],
+              )?.label
+            }
+           yMax={dynamicYMax}
+            tooltipLabel="Agents"
+          />
+        )}
+      </div>
+    </Card>
   );
 };
 
