@@ -4,7 +4,8 @@ import Successcard from "@/components/ui/Successcard";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { decompressGeoJSON } from "../utils/utils";
-import { Maximize2, ChevronLeft, X, Loader2, MapPin, Search } from "lucide-react";
+import { getRegionColors, getAreaColors } from "../utils/colorPalette";
+import { Maximize2, ChevronLeft, X, Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -21,20 +22,6 @@ import {
   useGetAllFieldOfficersMutation,
 } from "../api/roleManagerApi";
 import { useGetRegionOfficerDetailsQuery } from "../api/userDirectoryApi";
-
-// ─── Constants ──────────────────────────────────────────────────────────────
-const AREA_COLORS = [
-  "#3b82f6", // Premium Blue
-  "#10b981", // Premium Emerald
-  "#f59e0b", // Premium Amber
-  "#ef4444", // Premium Red
-  "#8b5cf6", // Premium Violet
-  "#ec4899", // Premium Pink
-  "#06b6d4", // Premium Cyan
-  "#f97316", // Premium Orange
-  "#14b8a6", // Premium Teal
-  "#6366f1", // Premium Indigo
-];
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 interface GeoMasterItem {
@@ -123,6 +110,7 @@ function extractMandalsGeoJSON(
   data: GeoMasterData,
   districtIds: number[],
   areasList: any[] = [],
+  regionId: number | string = 1,
 ): GeoJSON.FeatureCollection {
   const allMandals: MandalItem[] = [];
 
@@ -131,9 +119,12 @@ function extractMandalsGeoJSON(
       state.districts?.forEach((district) => {
         if (districtIds.includes(district.i)) {
           if (district.mandals) {
-            const mappedMandals = district.mandals.map(m => ({ ...m, district_id: district.i }));
-            mappedMandals.forEach(m => {
-              if (!allMandals.some(existing => existing.i === m.i)) {
+            const mappedMandals = district.mandals.map((m) => ({
+              ...m,
+              district_id: district.i,
+            }));
+            mappedMandals.forEach((m) => {
+              if (!allMandals.some((existing) => existing.i === m.i)) {
                 allMandals.push(m);
               }
             });
@@ -143,15 +134,21 @@ function extractMandalsGeoJSON(
     });
   });
 
-  const assignedMandalMap = new Map<number, { color: string; areaName: string }>();
+  const assignedMandalMap = new Map<
+    number,
+    { color: string; areaName: string }
+  >();
   if (Array.isArray(areasList)) {
     areasList.forEach((area, idx) => {
-      const color = AREA_COLORS[idx % AREA_COLORS.length];
+      const color = getAreaColors(regionId, idx);
       if (Array.isArray(area.mandal_ids)) {
         area.mandal_ids.forEach((mId: any) => {
           const idNum = Number(mId);
           if (!isNaN(idNum)) {
-            assignedMandalMap.set(idNum, { color, areaName: area.area_name || area.areaName || "" });
+            assignedMandalMap.set(idNum, {
+              color,
+              areaName: area.area_name || area.areaName || "",
+            });
           }
         });
       }
@@ -160,7 +157,7 @@ function extractMandalsGeoJSON(
 
   return toFeatureCollection(allMandals, (item) => {
     const info = assignedMandalMap.get(item.i);
-    return { 
+    return {
       district_id: (item as MandalItem).district_id,
       isAssigned: !!info,
       areaColor: info?.color || "",
@@ -257,8 +254,21 @@ const buildRegionsGeoJSON = (
 
     const features: GeoJSON.Feature[] = raw.features
       .map((f: any) => {
-        if (f.geometry && f.geometry.type) return f as GeoJSON.Feature;
-        return buildRegionFeatureFromDistricts(f, masterData);
+        const synthesized =
+          f.geometry && f.geometry.type
+            ? f
+            : buildRegionFeatureFromDistricts(f, masterData);
+        if (synthesized) {
+          const regionId =
+            synthesized.properties?.region_id || synthesized.id || 1;
+          const colors = getRegionColors(regionId);
+          synthesized.properties = {
+            ...synthesized.properties,
+            regionColor: colors.fill,
+            regionBorderColor: colors.border,
+          };
+        }
+        return synthesized as GeoJSON.Feature;
       })
       .filter((f: any): f is GeoJSON.Feature => !!f);
 
@@ -319,7 +329,9 @@ const RegionSelection: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [regionName, setRegionName] = useState("");
   const [regionCode, setRegionCode] = useState("");
-  const [hoveredDistrictName, setHoveredDistrictName] = useState<string | null>(null);
+  const [hoveredDistrictName, setHoveredDistrictName] = useState<string | null>(
+    null,
+  );
   const [districtSearch, setDistrictSearch] = useState("");
 
   // Area Creation States
@@ -327,7 +339,9 @@ const RegionSelection: React.FC = () => {
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
   const [areaName, setAreaName] = useState("");
   const [areaCode, setAreaCode] = useState("");
-  const [hoveredMandalName, setHoveredMandalName] = useState<string | null>(null);
+  const [hoveredMandalName, setHoveredMandalName] = useState<string | null>(
+    null,
+  );
   const [mandalSearch, setMandalSearch] = useState("");
 
   // Automatically open/close modals based on selections
@@ -340,7 +354,10 @@ const RegionSelection: React.FC = () => {
   }, [selectedMandals.length]);
 
   const { data: allGeoJsonData } = useGetAllGeoJsonDataQuery();
-  const regionsQuery = useGetRegionsByCountryIdQuery({ country_id: 1 }, { refetchOnMountOrArgChange: true });
+  const regionsQuery = useGetRegionsByCountryIdQuery(
+    { country_id: 1 },
+    { refetchOnMountOrArgChange: true },
+  );
   const regionsByCountryData = regionsQuery.data;
 
   useEffect(() => {
@@ -349,7 +366,7 @@ const RegionSelection: React.FC = () => {
       isError: regionsQuery.isError,
       error: regionsQuery.error,
       isSuccess: regionsQuery.isSuccess,
-      data: regionsQuery.data
+      data: regionsQuery.data,
     });
   }, [regionsQuery]);
 
@@ -366,16 +383,23 @@ const RegionSelection: React.FC = () => {
         });
       }
     } catch (err) {
-      console.error("Failed to parse assigned district IDs from country regions:", err);
+      console.error(
+        "Failed to parse assigned district IDs from country regions:",
+        err,
+      );
     }
     return assigned;
   }, [regionsByCountryData, geoMasterData]);
 
-  const selectedRegionId = selectedRegion?.properties?.region_id ?? selectedRegion?.properties?.id ?? selectedRegion?.id;
-  const { data: areasData, refetch: refetchAreas } = useGetAllAreasByRegionIdQuery(
-    { region_id: Number(selectedRegionId) },
-    { skip: !selectedRegionId }
-  );
+  const selectedRegionId =
+    selectedRegion?.properties?.region_id ??
+    selectedRegion?.properties?.id ??
+    selectedRegion?.id;
+  const { data: areasData, refetch: refetchAreas } =
+    useGetAllAreasByRegionIdQuery(
+      { region_id: Number(selectedRegionId) },
+      { skip: !selectedRegionId },
+    );
 
   // Filter country regions for selected state to render emerald overlays in Region Mode
   const stateRegionsData = useMemo(() => {
@@ -386,7 +410,10 @@ const RegionSelection: React.FC = () => {
 
     try {
       // Build with synthesized geometry from district master data
-      const allRegionsGeoJSON = buildRegionsGeoJSON(regionsByCountryData, geoMasterData);
+      const allRegionsGeoJSON = buildRegionsGeoJSON(
+        regionsByCountryData,
+        geoMasterData,
+      );
 
       // Gather all district IDs of the selected state
       const stateDistrictIds = new Set<number>();
@@ -416,9 +443,14 @@ const RegionSelection: React.FC = () => {
   const [regionalOfficers, setRegionalOfficers] = useState<any[]>([]);
   const [intelligenceOfficers, setIntelligenceOfficers] = useState<any[]>([]);
   const [fieldOfficers, setFieldOfficers] = useState<any[]>([]);
-  const [selectedRegionalOfficerId, setSelectedRegionalOfficerId] = useState<number | null>(null);
-  const [selectedIntelligenceOfficerId, setSelectedIntelligenceOfficerId] = useState<number | null>(null);
-  const [selectedFieldOfficerId, setSelectedFieldOfficerId] = useState<number | null>(null);
+  const [selectedRegionalOfficerId, setSelectedRegionalOfficerId] = useState<
+    number | null
+  >(null);
+  const [selectedIntelligenceOfficerId, setSelectedIntelligenceOfficerId] =
+    useState<number | null>(null);
+  const [selectedFieldOfficerId, setSelectedFieldOfficerId] = useState<
+    number | null
+  >(null);
 
   const [getAllRegionalOfficers] = useGetAllRegionalOfficersMutation();
   const [getAllIntelligenceOfficers] = useGetAllIntelligenceOfficersMutation();
@@ -431,8 +463,8 @@ const RegionSelection: React.FC = () => {
         const regionalList = Array.isArray(regionalResult?.data)
           ? regionalResult.data
           : Array.isArray(regionalResult)
-          ? regionalResult
-          : [];
+            ? regionalResult
+            : [];
         setRegionalOfficers(regionalList);
       } catch (err) {
         console.error("Failed to load regional officers:", err);
@@ -443,8 +475,8 @@ const RegionSelection: React.FC = () => {
         const intelligenceList = Array.isArray(intelligenceResult?.data)
           ? intelligenceResult.data
           : Array.isArray(intelligenceResult)
-          ? intelligenceResult
-          : [];
+            ? intelligenceResult
+            : [];
         setIntelligenceOfficers(intelligenceList);
       } catch (err) {
         console.error("Failed to load intelligence officers:", err);
@@ -455,8 +487,8 @@ const RegionSelection: React.FC = () => {
         const fieldList = Array.isArray(fieldResult?.data)
           ? fieldResult.data
           : Array.isArray(fieldResult)
-          ? fieldResult
-          : [];
+            ? fieldResult
+            : [];
         setFieldOfficers(fieldList);
       } catch (err) {
         console.error("Failed to load field officers:", err);
@@ -466,9 +498,14 @@ const RegionSelection: React.FC = () => {
     fetchOfficerLists();
   }, [getAllRegionalOfficers, getAllIntelligenceOfficers]);
 
-  const selectedStateId: number | undefined = selectedState?.properties?.id ?? 
-    (selectedRegion?.properties?.state_id ? Number(selectedRegion.properties.state_id) : undefined) ?? 
-    (selectedRegion?.properties?.stateId ? Number(selectedRegion.properties.stateId) : undefined);
+  const selectedStateId: number | undefined =
+    selectedState?.properties?.id ??
+    (selectedRegion?.properties?.state_id
+      ? Number(selectedRegion.properties.state_id)
+      : undefined) ??
+    (selectedRegion?.properties?.stateId
+      ? Number(selectedRegion.properties.stateId)
+      : undefined);
 
   const { data: regionOfficerDetailsRes } = useGetRegionOfficerDetailsQuery(
     {
@@ -477,11 +514,18 @@ const RegionSelection: React.FC = () => {
     },
     {
       skip: !selectedStateId || !selectedRegionId,
-    }
+    },
   );
 
   useEffect(() => {
-    console.log("RegionSelection Debug - selectedStateId:", selectedStateId, "selectedRegionId:", selectedRegionId, "regionOfficerDetails:", regionOfficerDetailsRes);
+    console.log(
+      "RegionSelection Debug - selectedStateId:",
+      selectedStateId,
+      "selectedRegionId:",
+      selectedRegionId,
+      "regionOfficerDetails:",
+      regionOfficerDetailsRes,
+    );
   }, [selectedStateId, selectedRegionId, regionOfficerDetailsRes]);
 
   useEffect(() => {
@@ -510,8 +554,6 @@ const RegionSelection: React.FC = () => {
 
     fetchAndParse();
   }, [allGeoJsonData]);
-
-
 
   // ── Task 3: Inject country + state GeoJSON when map and data are both ready ─
   useEffect(() => {
@@ -712,7 +754,9 @@ const RegionSelection: React.FC = () => {
               const districtData = districtFeature.properties;
 
               if (districtData?.isAssigned) {
-                toast.warning(`${districtData.name || districtData.d || districtData.description || "This district"} is already part of an existing region.`);
+                toast.warning(
+                  `${districtData.name || districtData.d || districtData.description || "This district"} is already part of an existing region.`,
+                );
                 return;
               }
 
@@ -726,14 +770,14 @@ const RegionSelection: React.FC = () => {
 
                 if (isAlreadySelected) {
                   map.current?.setFeatureState(
-                     { source: "districts-source", id: districtFeature.id },
-                     { selected: false },
+                    { source: "districts-source", id: districtFeature.id },
+                    { selected: false },
                   );
                   return prev.filter((d) => (d.id ?? d.featureId) !== dtId);
                 } else {
                   map.current?.setFeatureState(
-                     { source: "districts-source", id: districtFeature.id },
-                     { selected: true },
+                    { source: "districts-source", id: districtFeature.id },
+                    { selected: true },
                   );
                   return [
                     ...prev,
@@ -758,8 +802,13 @@ const RegionSelection: React.FC = () => {
 
           map.current?.on("mouseenter", "districts-fill", (e) => {
             if (map.current && selectedState) {
-              const isAssigned = e.features && e.features.length > 0 ? e.features[0].properties?.isAssigned : false;
-              map.current.getCanvas().style.cursor = isAssigned ? "not-allowed" : "pointer";
+              const isAssigned =
+                e.features && e.features.length > 0
+                  ? e.features[0].properties?.isAssigned
+                  : false;
+              map.current.getCanvas().style.cursor = isAssigned
+                ? "not-allowed"
+                : "pointer";
             }
           });
 
@@ -813,7 +862,7 @@ const RegionSelection: React.FC = () => {
       const districtsGeoJSON = extractDistrictsGeoJSON(
         geoMasterData,
         selectedStateId!,
-        assignedDistrictIds
+        assignedDistrictIds,
       );
 
       if (!map.current.getSource("districts-source")) {
@@ -876,13 +925,19 @@ const RegionSelection: React.FC = () => {
           if (mode === "area") return; // Disable hover in Area Mode
           if (e.features && e.features.length > 0) {
             const newId = e.features[0].id;
-            const dName = e.features[0].properties?.d || e.features[0].properties?.name || e.features[0].properties?.description || "";
+            const dName =
+              e.features[0].properties?.d ||
+              e.features[0].properties?.name ||
+              e.features[0].properties?.description ||
+              "";
             setHoveredDistrictName(dName || null);
 
             if (dName && map.current && popup.current) {
               popup.current
                 .setLngLat(e.lngLat)
-                .setHTML(`<div style="font-weight: 700; color: #1e293b;">${dName}</div>`)
+                .setHTML(
+                  `<div style="font-weight: 700; color: #1e293b;">${dName}</div>`,
+                )
                 .addTo(map.current);
             }
 
@@ -949,7 +1004,7 @@ const RegionSelection: React.FC = () => {
               type: "fill",
               source: "regions-source",
               paint: {
-                "fill-color": "#10b981", // Beautiful Emerald Green for existing regions
+                "fill-color": ["coalesce", ["get", "regionColor"], "#10b981"],
                 "fill-opacity": [
                   "case",
                   ["boolean", ["feature-state", "hover"], false],
@@ -968,7 +1023,11 @@ const RegionSelection: React.FC = () => {
               type: "line",
               source: "regions-source",
               paint: {
-                "line-color": "#059669", // Darker Emerald Green
+                "line-color": [
+                  "coalesce",
+                  ["get", "regionBorderColor"],
+                  "#059669",
+                ],
                 "line-width": 1.8,
               },
             },
@@ -1002,7 +1061,10 @@ const RegionSelection: React.FC = () => {
               let districtLabel = "";
               if (Array.isArray(props.districts)) {
                 districtLabel = props.districts
-                  .map((d: any) => d?.name || d?.d || d?.district_name || d?.districtName)
+                  .map(
+                    (d: any) =>
+                      d?.name || d?.d || d?.district_name || d?.districtName,
+                  )
                   .filter(Boolean)
                   .join(", ");
               } else if (typeof props.all_districts === "string") {
@@ -1017,7 +1079,10 @@ const RegionSelection: React.FC = () => {
                 </div>
               `;
               if (map.current && popup.current) {
-                popup.current.setLngLat(e.lngLat).setHTML(html).addTo(map.current);
+                popup.current
+                  .setLngLat(e.lngLat)
+                  .setHTML(html)
+                  .addTo(map.current);
               }
             }
           });
@@ -1039,10 +1104,15 @@ const RegionSelection: React.FC = () => {
           source.setData(stateRegionsData);
         }
       } catch (err) {
-        console.error("Failed to render regions from filtered state data:", err);
+        console.error(
+          "Failed to render regions from filtered state data:",
+          err,
+        );
       }
     } else if (map.current?.getSource("regions-source")) {
-      const source = map.current.getSource("regions-source") as maplibregl.GeoJSONSource;
+      const source = map.current.getSource(
+        "regions-source",
+      ) as maplibregl.GeoJSONSource;
       source.setData({ type: "FeatureCollection", features: [] });
     }
   }, [selectedState, stateRegionsData, mapLoaded]);
@@ -1052,13 +1122,25 @@ const RegionSelection: React.FC = () => {
     if (!map.current || !geoMasterData || !selectedRegion) return;
 
     try {
-      const districtIds = getDistrictIdsFromRegion(selectedRegion, geoMasterData);
+      const districtIds = getDistrictIdsFromRegion(
+        selectedRegion,
+        geoMasterData,
+      );
       if (districtIds.length === 0) return;
 
       const areasList = areasData?.data || [];
-      const mandalsGeoJSON = extractMandalsGeoJSON(geoMasterData, districtIds, areasList);
+      const regionId =
+        selectedRegion?.properties?.region_id || selectedRegion?.id || 1;
+      const mandalsGeoJSON = extractMandalsGeoJSON(
+        geoMasterData,
+        districtIds,
+        areasList,
+        regionId,
+      );
 
-      const existingSource = map.current.getSource("mandals-source") as maplibregl.GeoJSONSource | undefined;
+      const existingSource = map.current.getSource("mandals-source") as
+        | maplibregl.GeoJSONSource
+        | undefined;
 
       if (existingSource) {
         // Source already exists — just refresh the data
@@ -1120,8 +1202,13 @@ const RegionSelection: React.FC = () => {
 
         map.current.on("mouseenter", "mandals-fill", (e) => {
           if (map.current) {
-            const isAssigned = e.features && e.features.length > 0 ? e.features[0].properties?.isAssigned : false;
-            map.current.getCanvas().style.cursor = isAssigned ? "not-allowed" : "pointer";
+            const isAssigned =
+              e.features && e.features.length > 0
+                ? e.features[0].properties?.isAssigned
+                : false;
+            map.current.getCanvas().style.cursor = isAssigned
+              ? "not-allowed"
+              : "pointer";
           }
         });
 
@@ -1132,18 +1219,30 @@ const RegionSelection: React.FC = () => {
             const mId = mData?.id ?? feature.id;
 
             if (mData?.isAssigned) {
-              const nameText = mData.areaName ? `assigned to Area "${mData.areaName}"` : "assigned to an existing area";
-              toast.warning(`${mData.name || "This mandal"} is already ${nameText}.`);
+              const nameText = mData.areaName
+                ? `assigned to Area "${mData.areaName}"`
+                : "assigned to an existing area";
+              toast.warning(
+                `${mData.name || "This mandal"} is already ${nameText}.`,
+              );
               return;
             }
 
             setSelectedMandals((prev) => {
-              const isAlreadySelected = prev.find((m) => (m.id ?? m.featureId) === mId);
+              const isAlreadySelected = prev.find(
+                (m) => (m.id ?? m.featureId) === mId,
+              );
               if (isAlreadySelected) {
-                map.current?.setFeatureState({ source: "mandals-source", id: feature.id }, { selected: false });
+                map.current?.setFeatureState(
+                  { source: "mandals-source", id: feature.id },
+                  { selected: false },
+                );
                 return prev.filter((m) => (m.id ?? m.featureId) !== mId);
               } else {
-                map.current?.setFeatureState({ source: "mandals-source", id: feature.id }, { selected: true });
+                map.current?.setFeatureState(
+                  { source: "mandals-source", id: feature.id },
+                  { selected: true },
+                );
                 return [...prev, { ...mData, featureId: feature.id }];
               }
             });
@@ -1162,8 +1261,9 @@ const RegionSelection: React.FC = () => {
             setHoveredMandalName(mName || null);
 
             if (map.current && popup.current) {
-              const areaTag = isAssigned && areaName
-                ? `<div style="
+              const areaTag =
+                isAssigned && areaName
+                  ? `<div style="
                     display:inline-flex;align-items:center;gap:5px;
                     margin-top:5px;padding:2px 8px;border-radius:999px;
                     background:${areaColor}22;border:1.5px solid ${areaColor};
@@ -1173,7 +1273,7 @@ const RegionSelection: React.FC = () => {
                     <span style="width:7px;height:7px;border-radius:50%;background:${areaColor};display:inline-block;flex-shrink:0;"></span>
                     ${areaName}
                   </div>`
-                : "";
+                  : "";
 
               const html = `
                 <div style="
@@ -1186,15 +1286,24 @@ const RegionSelection: React.FC = () => {
                   ${areaTag}
                 </div>`;
 
-              popup.current.setLngLat(ev.lngLat).setHTML(html).addTo(map.current);
+              popup.current
+                .setLngLat(ev.lngLat)
+                .setHTML(html)
+                .addTo(map.current);
             }
 
             if (hoveredMandalId !== null) {
-              map.current?.setFeatureState({ source: "mandals-source", id: hoveredMandalId }, { hover: false });
+              map.current?.setFeatureState(
+                { source: "mandals-source", id: hoveredMandalId },
+                { hover: false },
+              );
             }
             hoveredMandalId = mId !== undefined && mId !== null ? mId : null;
             if (hoveredMandalId !== null) {
-              map.current?.setFeatureState({ source: "mandals-source", id: hoveredMandalId }, { hover: true });
+              map.current?.setFeatureState(
+                { source: "mandals-source", id: hoveredMandalId },
+                { hover: true },
+              );
             }
           }
         });
@@ -1204,7 +1313,10 @@ const RegionSelection: React.FC = () => {
           setHoveredMandalName(null);
           popup.current?.remove();
           if (hoveredMandalId !== null) {
-            map.current?.setFeatureState({ source: "mandals-source", id: hoveredMandalId }, { hover: false });
+            map.current?.setFeatureState(
+              { source: "mandals-source", id: hoveredMandalId },
+              { hover: false },
+            );
           }
           hoveredMandalId = null;
         });
@@ -1219,7 +1331,10 @@ const RegionSelection: React.FC = () => {
     if (map.current && regionsByCountryData && geoMasterData) {
       try {
         // Synthesize valid geometry from district master data (handles geometry:null from API)
-        const finalData = buildRegionsGeoJSON(regionsByCountryData, geoMasterData);
+        const finalData = buildRegionsGeoJSON(
+          regionsByCountryData,
+          geoMasterData,
+        );
 
         if (finalData) {
           if (!map.current?.getSource("country-regions-source")) {
@@ -1236,7 +1351,7 @@ const RegionSelection: React.FC = () => {
                 type: "fill",
                 source: "country-regions-source",
                 paint: {
-                  "fill-color": "#8b5cf6", // Premium violet color
+                  "fill-color": ["coalesce", ["get", "regionColor"], "#8b5cf6"],
                   "fill-opacity": [
                     "case",
                     ["boolean", ["feature-state", "hover"], false],
@@ -1255,7 +1370,7 @@ const RegionSelection: React.FC = () => {
                 type: "line",
                 source: "country-regions-source",
                 paint: {
-                  "line-color": "#6d28d9", // Darker violet
+                  "line-color": ["coalesce", ["get", "regionBorderColor"], "#6d28d9"],
                   "line-width": 1.5,
                 },
               },
@@ -1279,7 +1394,9 @@ const RegionSelection: React.FC = () => {
 
                 // Note: mandals-source and layers are created/updated by the useEffect
                 // reacting to [areasData, selectedRegion, geoMasterData]
-                console.log("Region clicked in Area Mode. District IDs will be resolved by the useEffect.");
+                console.log(
+                  "Region clicked in Area Mode. District IDs will be resolved by the useEffect.",
+                );
               }
             });
 
@@ -1306,11 +1423,17 @@ const RegionSelection: React.FC = () => {
                 }
 
                 const regionName =
-                  props.region_name || props.regionName || props.name || "Region";
+                  props.region_name ||
+                  props.regionName ||
+                  props.name ||
+                  "Region";
                 let districtLabel = "";
                 if (Array.isArray(props.districts)) {
                   districtLabel = props.districts
-                    .map((d: any) => d?.name || d?.d || d?.district_name || d?.districtName)
+                    .map(
+                      (d: any) =>
+                        d?.name || d?.d || d?.district_name || d?.districtName,
+                    )
                     .filter(Boolean)
                     .join(", ");
                 } else if (typeof props.all_districts === "string") {
@@ -1325,7 +1448,10 @@ const RegionSelection: React.FC = () => {
                   </div>
                 `;
                 if (map.current && popup.current) {
-                  popup.current.setLngLat(e.lngLat).setHTML(html).addTo(map.current);
+                  popup.current
+                    .setLngLat(e.lngLat)
+                    .setHTML(html)
+                    .addTo(map.current);
                 }
               }
             });
@@ -1386,22 +1512,26 @@ const RegionSelection: React.FC = () => {
 
   const handleRemoveDistrict = (district: any) => {
     const dtId = district.id ?? district.featureId;
-    setSelectedDistricts((prev) => prev.filter((d) => (d.id ?? d.featureId) !== dtId));
+    setSelectedDistricts((prev) =>
+      prev.filter((d) => (d.id ?? d.featureId) !== dtId),
+    );
     if (district.featureId !== undefined && map.current) {
       map.current.setFeatureState(
         { source: "districts-source", id: district.featureId },
-        { selected: false }
+        { selected: false },
       );
     }
   };
 
   const handleRemoveMandal = (mandal: any) => {
     const mId = mandal.id ?? mandal.featureId;
-    setSelectedMandals((prev) => prev.filter((m) => (m.id ?? m.featureId) !== mId));
+    setSelectedMandals((prev) =>
+      prev.filter((m) => (m.id ?? m.featureId) !== mId),
+    );
     if (mandal.featureId !== undefined && map.current) {
       map.current.setFeatureState(
         { source: "mandals-source", id: mandal.featureId },
-        { selected: false }
+        { selected: false },
       );
     }
   };
@@ -1431,7 +1561,7 @@ const RegionSelection: React.FC = () => {
         stateId: Number(selectedStateId),
       }).unwrap();
       toast.success("Region created successfully!");
-      
+
       // Refetch country-wide regions to instantly update the map state and UI blocks
       regionsQuery.refetch();
 
@@ -1461,7 +1591,10 @@ const RegionSelection: React.FC = () => {
         regionName: regionName,
         assignedId: res?.data?.region_code || res?.regionCode || regionCode,
         createdDate: now.toLocaleDateString(),
-        createdTime: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        createdTime: now.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       });
     } catch (err) {
       console.error("Failed to create region:", err);
@@ -1480,20 +1613,26 @@ const RegionSelection: React.FC = () => {
         mandal_id: Number(m.id ?? m.featureId),
       }));
 
-      const fetchedRegionalOfficerId = regionOfficerDetailsRes?.data?.regional_officer_id;
-      const fetchedIntelligenceOfficerId = regionOfficerDetailsRes?.data?.intelligence_officer_id;
+      const fetchedRegionalOfficerId =
+        regionOfficerDetailsRes?.data?.regional_officer_id;
+      const fetchedIntelligenceOfficerId =
+        regionOfficerDetailsRes?.data?.intelligence_officer_id;
 
       const res = await createArea({
         areaName,
         area_code: areaCode,
         field_officer_id: selectedFieldOfficerId!,
-        regional_officer_id: fetchedRegionalOfficerId ? Number(fetchedRegionalOfficerId) : null,
-        intelligence_officer_id: fetchedIntelligenceOfficerId ? Number(fetchedIntelligenceOfficerId) : null,
+        regional_officer_id: fetchedRegionalOfficerId
+          ? Number(fetchedRegionalOfficerId)
+          : null,
+        intelligence_officer_id: fetchedIntelligenceOfficerId
+          ? Number(fetchedIntelligenceOfficerId)
+          : null,
         assignments,
       }).unwrap();
-      
+
       toast.success("Area created successfully!");
-      
+
       try {
         if (typeof refetchAreas === "function") {
           refetchAreas();
@@ -1527,7 +1666,10 @@ const RegionSelection: React.FC = () => {
         regionName: areaName,
         assignedId: res?.data?.area_code || res?.areaCode || areaCode,
         createdDate: now.toLocaleDateString(),
-        createdTime: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        createdTime: now.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
       });
     } catch (err) {
       console.error("Failed to create area:", err);
@@ -1558,7 +1700,11 @@ const RegionSelection: React.FC = () => {
               }
             }}
             className="p-2.5 rounded-full bg-white/70 backdrop-blur-md border border-white/40 shadow-lg hover:bg-white/90 hover:scale-105 active:scale-95 transition-all pointer-events-auto flex items-center justify-center"
-            title={selectedState || selectedRegion ? "Back to States" : "Back to Menu"}
+            title={
+              selectedState || selectedRegion
+                ? "Back to States"
+                : "Back to Menu"
+            }
           >
             <ChevronLeft className="w-4 h-4 text-slate-700 group-hover:-translate-x-0.5 transition-transform" />
           </button>
@@ -1635,7 +1781,10 @@ const RegionSelection: React.FC = () => {
 
       {/* Main Map Container */}
       <div className="absolute inset-0 w-full h-full z-0">
-        <div ref={mapContainer} className="absolute inset-0 w-full h-full bg-white" />
+        <div
+          ref={mapContainer}
+          className="absolute inset-0 w-full h-full bg-white"
+        />
 
         {isLoadingGeoData && (
           <div className="absolute inset-0 z-10 bg-white/40 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-300">
@@ -1661,25 +1810,28 @@ const RegionSelection: React.FC = () => {
       {isModalOpen && (
         <div className="fixed inset-y-0 right-0 z-[100] flex items-center p-6 pointer-events-none">
           <div className="relative w-full max-w-[460px] max-h-[90vh] flex flex-col bg-white rounded-[24px] border border-[var(--border-default)] shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden animate-in slide-in-from-right duration-300 p-6 pointer-events-auto">
-            
             <div className="flex items-center justify-between mb-5">
               <div className="flex flex-col">
                 <h3 className="text-base font-bold text-[var(--text-primary)] font-heading leading-tight">
                   Create Region
                 </h3>
                 <p className="text-[10px] text-[var(--text-secondary)] font-sans">
-                  {selectedState?.properties?.name || selectedState?.properties?.STNAME || "Andhra Pradesh"} state
+                  {selectedState?.properties?.name ||
+                    selectedState?.properties?.STNAME ||
+                    "Andhra Pradesh"}{" "}
+                  state
                 </p>
               </div>
               <button
                 onClick={() => {
                   // Clear all selected districts on the map, which automatically closes the modal
                   selectedDistricts.forEach((d) => {
-                    const featId = d.featureId !== undefined ? d.featureId : d.id;
+                    const featId =
+                      d.featureId !== undefined ? d.featureId : d.id;
                     if (featId !== undefined && map.current) {
                       map.current.setFeatureState(
                         { source: "districts-source", id: featId },
-                        { selected: false }
+                        { selected: false },
                       );
                     }
                   });
@@ -1727,7 +1879,8 @@ const RegionSelection: React.FC = () => {
                     <option value="">Select Regional Officer</option>
                     {regionalOfficers.map((officer, index) => {
                       const id = officer.id ?? officer.i ?? officer.user_id;
-                      const fullName = `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
+                      const fullName =
+                        `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
                       const label =
                         fullName ||
                         officer.name ||
@@ -1763,7 +1916,8 @@ const RegionSelection: React.FC = () => {
                     <option value="">Select Intelligence Officer</option>
                     {intelligenceOfficers.map((officer, index) => {
                       const id = officer.id ?? officer.i ?? officer.user_id;
-                      const fullName = `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
+                      const fullName =
+                        `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
                       const label =
                         fullName ||
                         officer.name ||
@@ -1789,13 +1943,23 @@ const RegionSelection: React.FC = () => {
                   placeholder="Search"
                   value={districtSearch}
                   onChange={(e) => setDistrictSearch(e.target.value)}
-                  icon={<Search size={14} className="text-[var(--text-supporting)]" />}
+                  icon={
+                    <Search
+                      size={14}
+                      className="text-[var(--text-supporting)]"
+                    />
+                  }
                   className="pl-9 pr-3 text-sm h-10"
                 />
                 <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto pt-1 custom-scrollbar">
                   {selectedDistricts
                     .filter((d) => {
-                      const name = (d.name || d.dtname || d.d || "").toLowerCase();
+                      const name = (
+                        d.name ||
+                        d.dtname ||
+                        d.d ||
+                        ""
+                      ).toLowerCase();
                       return name.includes(districtSearch.toLowerCase());
                     })
                     .map((d, i) => (
@@ -1829,7 +1993,6 @@ const RegionSelection: React.FC = () => {
       {isAreaModalOpen && (
         <div className="fixed inset-y-0 right-0 z-[100] flex items-center p-6 pointer-events-none">
           <div className="relative w-full max-w-[390px] max-h-[90vh] flex flex-col bg-white rounded-[24px] border border-[var(--border-default)] shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden animate-in slide-in-from-right duration-300 p-6 pointer-events-auto">
-            
             <div className="flex items-center justify-between mb-5">
               <div className="flex flex-col">
                 <h3 className="text-base font-bold text-[var(--text-primary)] font-heading leading-tight">
@@ -1843,11 +2006,12 @@ const RegionSelection: React.FC = () => {
                 onClick={() => {
                   // Clear all selected mandals on the map, which automatically closes the modal
                   selectedMandals.forEach((m) => {
-                    const featId = m.featureId !== undefined ? m.featureId : m.id;
+                    const featId =
+                      m.featureId !== undefined ? m.featureId : m.id;
                     if (featId !== undefined && map.current) {
                       map.current.setFeatureState(
                         { source: "mandals-source", id: featId },
-                        { selected: false }
+                        { selected: false },
                       );
                     }
                   });
@@ -1895,7 +2059,8 @@ const RegionSelection: React.FC = () => {
                     <option value="">Select Field Officer</option>
                     {fieldOfficers.map((officer, index) => {
                       const id = officer.id ?? officer.i ?? officer.user_id;
-                      const fullName = `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
+                      const fullName =
+                        `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
                       const label =
                         fullName ||
                         officer.name ||
@@ -1920,13 +2085,24 @@ const RegionSelection: React.FC = () => {
                   placeholder="Search"
                   value={mandalSearch}
                   onChange={(e) => setMandalSearch(e.target.value)}
-                  icon={<Search size={14} className="text-[var(--text-supporting)]" />}
+                  icon={
+                    <Search
+                      size={14}
+                      className="text-[var(--text-supporting)]"
+                    />
+                  }
                   className="pl-9 pr-3 text-sm h-10"
                 />
                 <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto pt-1 custom-scrollbar">
                   {selectedMandals
                     .filter((m) => {
-                      const name = (m.name || m.mandal_name || m.d || m.description || "").toLowerCase();
+                      const name = (
+                        m.name ||
+                        m.mandal_name ||
+                        m.d ||
+                        m.description ||
+                        ""
+                      ).toLowerCase();
                       return name.includes(mandalSearch.toLowerCase());
                     })
                     .map((m, i) => (
@@ -1935,7 +2111,9 @@ const RegionSelection: React.FC = () => {
                         onClick={() => handleRemoveMandal(m)}
                         className="px-3 py-1 rounded-[12px] bg-white border border-[var(--border-default)] text-teal-600 text-xs font-semibold flex items-center gap-1.5 hover:bg-slate-50 transition-all active:scale-95 group cursor-pointer"
                       >
-                        <span>{m.name || m.mandal_name || m.d || m.description}</span>
+                        <span>
+                          {m.name || m.mandal_name || m.d || m.description}
+                        </span>
                         <X className="w-3 h-3 text-slate-400 group-hover:text-red-500 transition-colors" />
                       </div>
                     ))}

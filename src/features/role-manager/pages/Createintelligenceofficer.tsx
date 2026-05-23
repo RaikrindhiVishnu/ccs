@@ -134,7 +134,7 @@ function UploadPictureField({
               )}
             >
               <span className="flex-1 text-left truncate mr-2 font-[family-name:var(--font-inter)] font-normal text-[clamp(0.6875rem,0.83vw,0.875rem)] text-[color:var(--text-muted)]">
-                {field.value?.name ?? (typeof field.value === "string" ? "Existing Picture" : "Supports JPEG, PNG and Other Formats")}
+                {field.value instanceof File ? field.value.name : typeof field.value === "string" ? "Existing Picture" : "Supports JPEG, PNG and Other Formats"}
               </span>
               <ImageUp className="shrink-0 text-[var(--text-primary)] w-[1.125rem] h-[1.125rem] stroke-[1.75]" />
               <input
@@ -323,7 +323,6 @@ export default function CreateIntelligenceOfficer() {
   const states = useSelector((state: any) => state.roleManager.states);
   const allDistricts = useSelector((state: any) => state.roleManager.districts);
   const allMandals = useSelector((state: any) => state.roleManager.mandals);
-  const stateOptions = states.map((item: any) => item.desc);
   const navigate = useNavigate();
   const location = useLocation();
   const { id: routeId, userId: routeUserId } = useParams();
