@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import farmlandCard from "@/assets/dashboard/farmland-card.png";
 
 type Props = {
@@ -9,6 +10,11 @@ type Props = {
 };
 
 export default function DraftCard({ name, farmId, amount, createdOn, isExpanded = false }: Props) {
+  const navigate = useNavigate();
+
+  // Extract pure ID suffix (e.g. "ID -4401" -> "4401")
+  const idValue = farmId.replace(/[^0-9]/g, "") || "8472";
+
   return (
     <div className="bg-white rounded-[32px] overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)] flex flex-col w-full aspect-[308/380]">
       {/* Image flush to top edges */}
@@ -48,7 +54,10 @@ export default function DraftCard({ name, farmId, amount, createdOn, isExpanded 
             <span className="text-[#3D4949] font-medium">{createdOn}</span>
           </div>
 
-          <button className={`w-full ${isExpanded ? 'bg-[#E2E8F0]' : 'bg-[#96C9ED]'} h-[44px] 2xl:h-[58px] rounded-full font-bold text-black hover:brightness-95 transition-all uppercase tracking-wider text-sm 2xl:text-[18px]`}>
+          <button 
+            onClick={() => navigate(`/field-officer/draft-details/${idValue}`)}
+            className={`w-full ${isExpanded ? 'bg-[#E2E8F0] hover:bg-gray-300' : 'bg-[#96C9ED] hover:brightness-95'} h-[44px] 2xl:h-[58px] rounded-full font-bold text-black transition-all uppercase tracking-wider text-sm 2xl:text-[18px] cursor-pointer`}
+          >
             VIEW
           </button>
         </div>
