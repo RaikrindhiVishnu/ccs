@@ -4,7 +4,7 @@ import Successcard from "@/components/ui/Successcard";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { decompressGeoJSON } from "../utils/utils";
-import { Maximize2, ChevronLeft, Plus, X, Loader2, MapPin } from "lucide-react";
+import { Maximize2, ChevronLeft, X, Loader2, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -320,6 +320,7 @@ const RegionSelection: React.FC = () => {
   const [regionName, setRegionName] = useState("");
   const [regionCode, setRegionCode] = useState("");
   const [hoveredDistrictName, setHoveredDistrictName] = useState<string | null>(null);
+  const [districtSearch, setDistrictSearch] = useState("");
 
   // Area Creation States
   const [selectedMandals, setSelectedMandals] = useState<any[]>([]);
@@ -327,6 +328,16 @@ const RegionSelection: React.FC = () => {
   const [areaName, setAreaName] = useState("");
   const [areaCode, setAreaCode] = useState("");
   const [hoveredMandalName, setHoveredMandalName] = useState<string | null>(null);
+  const [mandalSearch, setMandalSearch] = useState("");
+
+  // Automatically open/close modals based on selections
+  useEffect(() => {
+    setIsModalOpen(selectedDistricts.length > 0);
+  }, [selectedDistricts.length]);
+
+  useEffect(() => {
+    setIsAreaModalOpen(selectedMandals.length > 0);
+  }, [selectedMandals.length]);
 
   const { data: allGeoJsonData } = useGetAllGeoJsonDataQuery();
   const regionsQuery = useGetRegionsByCountryIdQuery({ country_id: 1 }, { refetchOnMountOrArgChange: true });
@@ -1384,6 +1395,17 @@ const RegionSelection: React.FC = () => {
     }
   };
 
+  const handleRemoveMandal = (mandal: any) => {
+    const mId = mandal.id ?? mandal.featureId;
+    setSelectedMandals((prev) => prev.filter((m) => (m.id ?? m.featureId) !== mId));
+    if (mandal.featureId !== undefined && map.current) {
+      map.current.setFeatureState(
+        { source: "mandals-source", id: mandal.featureId },
+        { selected: false }
+      );
+    }
+  };
+
   const handleCreateRegion = async () => {
     if (
       !regionName ||
@@ -1609,40 +1631,6 @@ const RegionSelection: React.FC = () => {
             </div>
           )}
         </div>
-
-        {mode === "region" && selectedDistricts.length > 0 && (
-          <Button
-            onClick={() => setIsModalOpen(true)}
-            className="pointer-events-auto rounded-2xl bg-slate-900 text-white px-8 py-7 shadow-2xl hover:bg-slate-800 transition-all flex items-center gap-4 animate-in fade-in slide-in-from-right-4 duration-300"
-          >
-            <Plus className="w-5 h-5" />
-            <div className="flex flex-col items-start">
-              <span className="text-xs font-bold uppercase tracking-wider">
-                Create Region
-              </span>
-              <span className="text-[10px] opacity-70">
-                {selectedDistricts.length} Districts Selected
-              </span>
-            </div>
-          </Button>
-        )}
-
-        {mode === "area" && selectedMandals.length > 0 && (
-          <Button
-            onClick={() => setIsAreaModalOpen(true)}
-            className="pointer-events-auto rounded-2xl bg-teal-900 text-white px-8 py-7 shadow-2xl hover:bg-teal-800 transition-all flex items-center gap-4 animate-in fade-in slide-in-from-right-4 duration-300"
-          >
-            <Plus className="w-5 h-5" />
-            <div className="flex flex-col items-start">
-              <span className="text-xs font-bold uppercase tracking-wider">
-                Create Area
-              </span>
-              <span className="text-[10px] opacity-70">
-                {selectedMandals.length} Mandals Selected
-              </span>
-            </div>
-          </Button>
-        )}
       </div>
 
       {/* Main Map Container */}
@@ -1671,147 +1659,166 @@ const RegionSelection: React.FC = () => {
 
       {/* Custom Creation Modal */}
       {isModalOpen && (
-        <div className="fixed inset-y-0 right-0 z-[100] flex items-center p-8 pointer-events-none">
-          <div className="relative w-full max-w-md max-h-[90vh] flex flex-col bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in slide-in-from-right duration-300 p-8 pointer-events-auto">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 transition-colors"
-            >
-              <X className="w-5 h-5 text-slate-400" />
-            </button>
-
-            <div className="flex items-center gap-3.5 mb-6">
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center">
-                <MapPin className="w-6 h-6 text-slate-600" />
-              </div>
+        <div className="fixed inset-y-0 right-0 z-[100] flex items-center p-6 pointer-events-none">
+          <div className="relative w-full max-w-[460px] max-h-[90vh] flex flex-col bg-white rounded-[24px] border border-[var(--border-default)] shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden animate-in slide-in-from-right duration-300 p-6 pointer-events-auto">
+            
+            <div className="flex items-center justify-between mb-5">
               <div className="flex flex-col">
-                <h3 className="text-xl font-bold text-slate-800 tracking-tight leading-none mb-1">
+                <h3 className="text-base font-bold text-[var(--text-primary)] font-heading leading-tight">
                   Create Region
                 </h3>
-                <p className="text-xs text-slate-500 font-medium">
-                  Creating regions in {selectedState?.properties?.name || selectedState?.properties?.STNAME || "Andhra Pradesh"}
+                <p className="text-[10px] text-[var(--text-secondary)] font-sans">
+                  {selectedState?.properties?.name || selectedState?.properties?.STNAME || "Andhra Pradesh"} state
                 </p>
               </div>
+              <button
+                onClick={() => {
+                  // Clear all selected districts on the map, which automatically closes the modal
+                  selectedDistricts.forEach((d) => {
+                    const featId = d.featureId !== undefined ? d.featureId : d.id;
+                    if (featId !== undefined && map.current) {
+                      map.current.setFeatureState(
+                        { source: "districts-source", id: featId },
+                        { selected: false }
+                      );
+                    }
+                  });
+                  setSelectedDistricts([]);
+                }}
+                className="p-1.5 rounded-full hover:bg-[var(--surface-page)] transition-colors border border-[var(--border-default)] shadow-sm cursor-pointer"
+              >
+                <X className="w-4 h-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)]" />
+              </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 mb-6">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-700 ml-1">
-                  Enter Region Name
-                </label>
-                <Input
-                  placeholder="e.g. Nellore"
-                  value={regionName}
-                  onChange={(e) => setRegionName(e.target.value)}
-                  className="rounded-2xl border-slate-200 h-12 px-4 text-sm focus:ring-blue-500"
-                />
-              </div>
+            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 mb-5 custom-scrollbar">
+              <Input
+                variant="form"
+                label="Enter Region Name"
+                placeholder="e.g. Nellore"
+                value={regionName}
+                onChange={(e) => setRegionName(e.target.value)}
+                className="px-3 text-sm h-10"
+              />
+
+              <Input
+                variant="form"
+                label="Enter Region Code"
+                placeholder="e.g. SAH-01"
+                value={regionCode}
+                onChange={(e) => setRegionCode(e.target.value)}
+                className="px-3 text-sm h-10"
+              />
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-700 ml-1">
-                  Enter Region Code
-                </label>
-                <Input
-                  placeholder="e.g. SAH-01"
-                  value={regionCode}
-                  onChange={(e) => setRegionCode(e.target.value)}
-                  className="rounded-2xl border-slate-200 h-12 px-4 text-sm focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-700 ml-1">
+                <label className="text-xs font-semibold text-[var(--text-secondary)] font-sans ml-1">
                   Select Regional Officer
                 </label>
-                <select
-                  value={selectedRegionalOfficerId ?? ""}
-                  onChange={(e) =>
-                    setSelectedRegionalOfficerId(
-                      e.target.value ? Number(e.target.value) : null,
-                    )
-                  }
-                  className="rounded-2xl border border-slate-200 h-12 px-4 bg-white text-slate-800 text-sm focus:ring-blue-500"
-                >
-                  <option value="">Select Regional Officer</option>
-                  {regionalOfficers.map((officer, index) => {
-                    const id = officer.id ?? officer.i ?? officer.user_id;
-                    const fullName = `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
-                    const label =
-                      fullName ||
-                      officer.name ||
-                      officer.d ||
-                      officer.fullName ||
-                      officer.username ||
-                      officer.email ||
-                      `Regional Officer ${index + 1}`;
-                    return (
-                      <option key={id ?? index} value={id ?? index}>
-                        {label}
-                      </option>
-                    );
-                  })}
-                </select>
+                <div className="relative flex items-center shrink-0 h-10 bg-[var(--surface-card)] border border-[var(--border-default)] rounded-[12px]">
+                  <select
+                    value={selectedRegionalOfficerId ?? ""}
+                    onChange={(e) =>
+                      setSelectedRegionalOfficerId(
+                        e.target.value ? Number(e.target.value) : null,
+                      )
+                    }
+                    className="w-full h-full border-none outline-none bg-transparent px-3 text-[var(--profile-text)] font-sans text-sm cursor-pointer"
+                  >
+                    <option value="">Select Regional Officer</option>
+                    {regionalOfficers.map((officer, index) => {
+                      const id = officer.id ?? officer.i ?? officer.user_id;
+                      const fullName = `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
+                      const label =
+                        fullName ||
+                        officer.name ||
+                        officer.d ||
+                        officer.fullName ||
+                        officer.username ||
+                        officer.email ||
+                        `Regional Officer ${index + 1}`;
+                      return (
+                        <option key={id ?? index} value={id ?? index}>
+                          {label}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-700 ml-1">
+                <label className="text-xs font-semibold text-[var(--text-secondary)] font-sans ml-1">
                   Select Intelligence Officer
                 </label>
-                <select
-                  value={selectedIntelligenceOfficerId ?? ""}
-                  onChange={(e) =>
-                    setSelectedIntelligenceOfficerId(
-                      e.target.value ? Number(e.target.value) : null,
-                    )
-                  }
-                  className="rounded-2xl border border-slate-200 h-12 px-4 bg-white text-slate-800 text-sm focus:ring-blue-500"
-                >
-                  <option value="">Select Intelligence Officer</option>
-                  {intelligenceOfficers.map((officer, index) => {
-                    const id = officer.id ?? officer.i ?? officer.user_id;
-                    const fullName = `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
-                    const label =
-                      fullName ||
-                      officer.name ||
-                      officer.d ||
-                      officer.fullName ||
-                      officer.username ||
-                      officer.email ||
-                      `Intelligence Officer ${index + 1}`;
-                    return (
-                      <option key={id ?? index} value={id ?? index}>
-                        {label}
-                      </option>
-                    );
-                  })}
-                </select>
+                <div className="relative flex items-center shrink-0 h-10 bg-[var(--surface-card)] border border-[var(--border-default)] rounded-[12px]">
+                  <select
+                    value={selectedIntelligenceOfficerId ?? ""}
+                    onChange={(e) =>
+                      setSelectedIntelligenceOfficerId(
+                        e.target.value ? Number(e.target.value) : null,
+                      )
+                    }
+                    className="w-full h-full border-none outline-none bg-transparent px-3 text-[var(--profile-text)] font-sans text-sm cursor-pointer"
+                  >
+                    <option value="">Select Intelligence Officer</option>
+                    {intelligenceOfficers.map((officer, index) => {
+                      const id = officer.id ?? officer.i ?? officer.user_id;
+                      const fullName = `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
+                      const label =
+                        fullName ||
+                        officer.name ||
+                        officer.d ||
+                        officer.fullName ||
+                        officer.username ||
+                        officer.email ||
+                        `Intelligence Officer ${index + 1}`;
+                      return (
+                        <option key={id ?? index} value={id ?? index}>
+                          {label}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-slate-700 ml-1">
-                  Tag Sub-Regions
-                </label>
-                <div className="flex flex-wrap gap-2 p-3.5 rounded-2xl bg-slate-50 border border-slate-100 max-h-32 overflow-y-auto">
-                  {selectedDistricts.map((d, i) => (
-                    <div
-                      key={i}
-                      onClick={() => handleRemoveDistrict(d)}
-                      className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-[#2B82C9] text-xs font-bold shadow-sm flex items-center gap-2 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95 group cursor-pointer"
-                    >
-                      <span>{d.name || d.dtname || d.d}</span>
-                      <X className="w-3.5 h-3.5 text-slate-400 group-hover:text-red-500 transition-colors" />
-                    </div>
-                  ))}
+                <Input
+                  variant="form"
+                  label="Tag Sub-Regions"
+                  placeholder="Search"
+                  value={districtSearch}
+                  onChange={(e) => setDistrictSearch(e.target.value)}
+                  icon={<Search size={14} className="text-[var(--text-supporting)]" />}
+                  className="pl-9 pr-3 text-sm h-10"
+                />
+                <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto pt-1 custom-scrollbar">
+                  {selectedDistricts
+                    .filter((d) => {
+                      const name = (d.name || d.dtname || d.d || "").toLowerCase();
+                      return name.includes(districtSearch.toLowerCase());
+                    })
+                    .map((d, i) => (
+                      <div
+                        key={i}
+                        onClick={() => handleRemoveDistrict(d)}
+                        className="px-3 py-1 rounded-[12px] bg-white border border-[var(--border-default)] text-[var(--brand-500)] text-xs font-semibold flex items-center gap-1.5 hover:bg-slate-50 transition-all active:scale-95 group cursor-pointer"
+                      >
+                        <span>{d.name || d.dtname || d.d}</span>
+                        <X className="w-3 h-3 text-[var(--brand-300)] group-hover:text-red-500 transition-colors" />
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>
 
             <Button
-              disabled={isCreating}
+              variant="primary"
+              fullWidth
+              loading={isCreating}
               onClick={handleCreateRegion}
-              className="w-full rounded-full bg-[#2B82C9] py-6 text-white font-bold text-sm hover:bg-[#206fae] transition-all active:scale-[0.98] shadow-lg shadow-blue-500/10 flex items-center justify-center gap-2"
+              className="mt-2 text-xs"
             >
-              {isCreating && <Loader2 className="w-4 h-4 animate-spin" />}
               Save Region
             </Button>
           </div>
@@ -1820,105 +1827,129 @@ const RegionSelection: React.FC = () => {
 
       {/* Custom Area Creation Modal */}
       {isAreaModalOpen && (
-        <div className="fixed inset-y-0 right-0 z-[100] flex items-center p-8 pointer-events-none">
-          <div className="relative w-full max-w-md max-h-[90vh] flex flex-col bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in slide-in-from-right duration-300 p-8 pointer-events-auto">
-            <button
-              onClick={() => setIsAreaModalOpen(false)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 transition-colors"
-            >
-              <X className="w-5 h-5 text-slate-400" />
-            </button>
-
-            <div className="flex flex-col gap-1 mb-5">
-              <span className="text-[10px] font-bold text-teal-500 uppercase tracking-[0.2em]">
-                Area Setup
-              </span>
-              <p className="text-2xl font-black text-slate-800 tracking-tight">
-                Create New Area
-              </p>
+        <div className="fixed inset-y-0 right-0 z-[100] flex items-center p-6 pointer-events-none">
+          <div className="relative w-full max-w-[390px] max-h-[90vh] flex flex-col bg-white rounded-[24px] border border-[var(--border-default)] shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden animate-in slide-in-from-right duration-300 p-6 pointer-events-auto">
+            
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex flex-col">
+                <h3 className="text-base font-bold text-[var(--text-primary)] font-heading leading-tight">
+                  Create New Area
+                </h3>
+                <p className="text-[10px] text-[var(--text-secondary)] font-sans">
+                  Area Setup for Region
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  // Clear all selected mandals on the map, which automatically closes the modal
+                  selectedMandals.forEach((m) => {
+                    const featId = m.featureId !== undefined ? m.featureId : m.id;
+                    if (featId !== undefined && map.current) {
+                      map.current.setFeatureState(
+                        { source: "mandals-source", id: featId },
+                        { selected: false }
+                      );
+                    }
+                  });
+                  setSelectedMandals([]);
+                }}
+                className="p-1.5 rounded-full hover:bg-[var(--surface-page)] transition-colors border border-[var(--border-default)] shadow-sm cursor-pointer"
+              >
+                <X className="w-4 h-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)]" />
+              </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 mb-6">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-700 ml-1">
-                  Area Name
-                </label>
-                <Input
-                  placeholder="e.g. West Godavari Hub"
-                  value={areaName}
-                  onChange={(e) => setAreaName(e.target.value)}
-                  className="rounded-2xl border-slate-200 h-11 px-4 text-sm focus:ring-teal-500"
-                />
-              </div>
+            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 mb-5 custom-scrollbar">
+              <Input
+                variant="form"
+                label="Area Name"
+                placeholder="e.g. West Godavari Hub"
+                value={areaName}
+                onChange={(e) => setAreaName(e.target.value)}
+                className="px-3 text-sm h-10"
+              />
+
+              <Input
+                variant="form"
+                label="Area Code"
+                placeholder="e.g. WGH-01"
+                value={areaCode}
+                onChange={(e) => setAreaCode(e.target.value)}
+                className="px-3 text-sm h-10"
+              />
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-700 ml-1">
-                  Area Code
-                </label>
-                <Input
-                  placeholder="e.g. WGH-01"
-                  value={areaCode}
-                  onChange={(e) => setAreaCode(e.target.value)}
-                  className="rounded-2xl border-slate-200 h-11 px-4 text-sm focus:ring-teal-500"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-slate-700 ml-1">
+                <label className="text-xs font-semibold text-[var(--text-secondary)] font-sans ml-1">
                   Field Officer
                 </label>
-                <select
-                  value={selectedFieldOfficerId ?? ""}
-                  onChange={(e) =>
-                    setSelectedFieldOfficerId(
-                      e.target.value ? Number(e.target.value) : null,
-                    )
-                  }
-                  className="rounded-2xl border border-slate-200 h-11 px-4 bg-white text-slate-800 text-sm focus:ring-teal-500"
-                >
-                  <option value="">Select Field Officer</option>
-                  {fieldOfficers.map((officer, index) => {
-                    const id = officer.id ?? officer.i ?? officer.user_id;
-                    const fullName = `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
-                    const label =
-                      fullName ||
-                      officer.name ||
-                      officer.d ||
-                      officer.username ||
-                      officer.email ||
-                      `Field Officer ${index + 1}`;
-                    return (
-                      <option key={id ?? index} value={id ?? index}>
-                        {label}
-                      </option>
-                    );
-                  })}
-                </select>
+                <div className="relative flex items-center shrink-0 h-10 bg-[var(--surface-card)] border border-[var(--border-default)] rounded-[12px]">
+                  <select
+                    value={selectedFieldOfficerId ?? ""}
+                    onChange={(e) =>
+                      setSelectedFieldOfficerId(
+                        e.target.value ? Number(e.target.value) : null,
+                      )
+                    }
+                    className="w-full h-full border-none outline-none bg-transparent px-3 text-[var(--profile-text)] font-sans text-sm cursor-pointer"
+                  >
+                    <option value="">Select Field Officer</option>
+                    {fieldOfficers.map((officer, index) => {
+                      const id = officer.id ?? officer.i ?? officer.user_id;
+                      const fullName = `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
+                      const label =
+                        fullName ||
+                        officer.name ||
+                        officer.d ||
+                        officer.username ||
+                        officer.email ||
+                        `Field Officer ${index + 1}`;
+                      return (
+                        <option key={id ?? index} value={id ?? index}>
+                          {label}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">
-                  Linked Mandals
-                </span>
-                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-                  {selectedMandals.map((m, i) => (
-                    <div
-                      key={i}
-                      className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-[10px] font-bold shadow-sm"
-                    >
-                      {m.name || m.mandal_name || m.d || m.description}
-                    </div>
-                  ))}
+              <div className="flex flex-col gap-2">
+                <Input
+                  variant="form"
+                  label="Linked Mandals"
+                  placeholder="Search"
+                  value={mandalSearch}
+                  onChange={(e) => setMandalSearch(e.target.value)}
+                  icon={<Search size={14} className="text-[var(--text-supporting)]" />}
+                  className="pl-9 pr-3 text-sm h-10"
+                />
+                <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto pt-1 custom-scrollbar">
+                  {selectedMandals
+                    .filter((m) => {
+                      const name = (m.name || m.mandal_name || m.d || m.description || "").toLowerCase();
+                      return name.includes(mandalSearch.toLowerCase());
+                    })
+                    .map((m, i) => (
+                      <div
+                        key={i}
+                        onClick={() => handleRemoveMandal(m)}
+                        className="px-3 py-1 rounded-[12px] bg-white border border-[var(--border-default)] text-teal-600 text-xs font-semibold flex items-center gap-1.5 hover:bg-slate-50 transition-all active:scale-95 group cursor-pointer"
+                      >
+                        <span>{m.name || m.mandal_name || m.d || m.description}</span>
+                        <X className="w-3 h-3 text-slate-400 group-hover:text-red-500 transition-colors" />
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>
 
             <Button
-              disabled={isCreatingArea}
+              variant="primary"
+              fullWidth
+              loading={isCreatingArea}
               onClick={handleCreateArea}
-              className="w-full rounded-2xl bg-teal-900 py-5 text-white font-bold uppercase tracking-widest text-xs hover:bg-teal-800 transition-all active:scale-95 shadow-xl"
+              className="mt-2 text-xs"
             >
-              {isCreatingArea && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               Save Area Configuration
             </Button>
           </div>
