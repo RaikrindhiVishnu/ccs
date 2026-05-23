@@ -22,11 +22,11 @@ import {
   type RegionalOfficerFormValues,
 } from "@/components/validations/RegionalofficerSchema";
 import { RHFTextField } from "@/components/form/RHFTextField";
-import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
-import { useGetRegionalOfficerByIdMutation, useGetLocationHierarchyDetailsMutation } from "@/features/role-manager/api/roleManagerApi";
+import { uploadUserDocument } from "@/core/utils/fileUpload";
+import { useGetRegionalOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
 import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
 import SectionCard from "../components/ui/SectionCard";
 import InfoField from "../components/ui/InfoField";
@@ -172,6 +172,7 @@ function DocUploadField({
   disabled?: boolean;
 }) {
   const ref = useRef<HTMLInputElement>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   return (
     <Controller
@@ -186,34 +187,62 @@ function DocUploadField({
           >
             {label}
           </Typography>
-          <button
-            type="button"
-            onClick={() => !disabled && ref.current?.click()}
-            disabled={disabled}
+          <div
             className={cn(
               "relative flex flex-col items-center justify-center gap-[clamp(0.375rem,0.56vw,0.5rem)] h-[clamp(5rem,8.89vw,8rem)] bg-[color:var(--surface-page)] border-2 border-dashed rounded-[clamp(0.5rem,0.83vw,0.75rem)] transition-colors duration-200 overflow-hidden",
               disabled
                 ? "opacity-60 cursor-not-allowed border-gray-200"
-                : "cursor-pointer border-[color:var(--border-default)] hover:border-[color:var(--brand-500)] hover:bg-[color:var(--brand-tint)]",
+                : "border-[color:var(--border-default)]",
               fieldState.error && "border-red-500 bg-red-50/30",
             )}
           >
             {field.value ? (
               <>
                 <ImagePreview file={field.value} className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-300" />
-                <div className="absolute inset-0 bg-slate-950/40 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white">
-                  <FileImage className="w-5 h-5 text-white stroke-[2]" />
-                  <span className="text-xs font-semibold">Change File</span>
-                  <span className="text-[10px] opacity-80 max-w-[90%] truncate">
-                    {typeof field.value === "string" ? "Existing Document" : field.value.name}
-                  </span>
+                <div className="absolute inset-0 bg-slate-950/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3 text-white">
+                  {!disabled && (
+                    <button
+                      type="button"
+                      onClick={() => ref.current?.click()}
+                      className="flex flex-col items-center gap-0.5 hover:scale-110 transition-transform"
+                      title="Change"
+                    >
+                      <FileImage className="w-4 h-4 stroke-[2]" />
+                      <span className="text-[10px] font-semibold">Change</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
+                    className="flex flex-col items-center gap-0.5 hover:scale-110 transition-transform"
+                    title="View"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <span className="text-[10px] font-semibold">View</span>
+                  </button>
+                  {!disabled && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); field.onChange(undefined); }}
+                      className="flex flex-col items-center gap-0.5 hover:scale-110 transition-transform text-red-300 hover:text-red-100"
+                      title="Remove"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                      <span className="text-[10px] font-semibold">Remove</span>
+                    </button>
+                  )}
                 </div>
                 <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium pointer-events-none">
                   {typeof field.value === "string" ? "Uploaded" : "Selected"}
                 </div>
               </>
             ) : (
-              <>
+              <button
+                type="button"
+                onClick={() => !disabled && ref.current?.click()}
+                disabled={disabled}
+                className="flex flex-col items-center justify-center gap-[clamp(0.375rem,0.56vw,0.5rem)] w-full h-full cursor-pointer disabled:cursor-not-allowed"
+              >
                 <FileImage className="shrink-0 text-[var(--text-primary)] w-[1rem] h-[1rem] stroke-[1.75]" />
                 <Typography
                   as="span"
@@ -222,21 +251,40 @@ function DocUploadField({
                 >
                   Click to Upload
                 </Typography>
-              </>
+              </button>
             )}
             <input
               ref={ref}
               type="file"
               disabled={disabled}
-              accept=".jpg,.jpeg,.png,.pdf"
+              accept="image/*"
               className="hidden"
               onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
             />
-          </button>
+          </div>
           {fieldState.error && (
             <span className="text-red-500 text-[0.75rem] leading-none">
               {fieldState.error.message}
             </span>
+          )}
+
+          {/* ── Lightbox overlay ── */}
+          {lightboxOpen && field.value && (
+            <div
+              className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
+              onClick={() => setLightboxOpen(false)}
+            >
+              <div className="relative max-w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+                <ImagePreview file={field.value} className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl" />
+                <button
+                  type="button"
+                  onClick={() => setLightboxOpen(false)}
+                  className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white/90 text-gray-800 flex items-center justify-center shadow-lg hover:bg-white transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+            </div>
           )}
         </div>
       )}
@@ -289,8 +337,6 @@ export default function CreateRegionalOfficer() {
   const stateOptions = states.map((item) => item.desc);
   const [createRegionalOfficer, { isLoading }] =
     useCreateRegionalOfficerMutation();
-  const [getLocationHierarchyDetails] = useGetLocationHierarchyDetailsMutation();
-  const [hierarchy, setHierarchy] = useState<any>(null);
 
   const [updateRegionalOfficer] = useUpdateRegionalOfficerMutation();
   const { data: masterData } = useGetAllMasterDataQuery();
@@ -298,7 +344,7 @@ export default function CreateRegionalOfficer() {
     masterData?.data?.userRolesResult || [],
     "RO",
   );
-  const { control, handleSubmit, reset, watch, setValue } = useForm<RegionalOfficerFormValues>({
+  const { control, handleSubmit, reset, watch } = useForm<RegionalOfficerFormValues>({
     resolver: zodResolver(regionalOfficerSchema),
     defaultValues: {
       firstName: "",
@@ -310,9 +356,6 @@ export default function CreateRegionalOfficer() {
       addressState: "",
       city: "",
       pincode: "",
-      state: "",
-      district: "",
-      mandal: "",
       // ── file fields ──
       profilePicture: undefined,
       aadharFront: undefined,
@@ -321,81 +364,11 @@ export default function CreateRegionalOfficer() {
     },
   });
 
-  const selectedState = watch("state");
-  const selectedDistrict = watch("district");
-  const selectedMandal = watch("mandal");
-
-  const prevStateRef = useRef(selectedState);
-  const prevDistrictRef = useRef(selectedDistrict);
-
-  // Cascading logic
-  const selectedStateObj = states.find((s: any) => s.desc === selectedState);
-  const districtOptions = selectedStateObj
-    ? allDistricts.filter((d: any) => d.state_id === selectedStateObj.id).map((d: any) => d.desc)
-    : [];
-
-  const selectedDistrictObj = allDistricts.find((d: any) => d.desc === selectedDistrict);
-  const mandalOptions = selectedDistrictObj
-    ? allMandals.filter((m: any) => m.districts_id === selectedDistrictObj.id).map((m: any) => m.desc)
-    : [];
-
-  useEffect(() => {
-    if (selectedState !== prevStateRef.current) {
-      setValue("district", "");
-      setValue("mandal", "");
-      prevStateRef.current = selectedState;
-    }
-  }, [selectedState, setValue]);
-
-  useEffect(() => {
-    if (selectedDistrict !== prevDistrictRef.current) {
-      setValue("mandal", "");
-      prevDistrictRef.current = selectedDistrict;
-    }
-  }, [selectedDistrict, setValue]);
-
-  useEffect(() => {
-    if (selectedDistrict && selectedMandal) {
-      const selectedDistrictObj = allDistricts.find((d: any) => d.desc === selectedDistrict);
-      const selectedMandalObj = allMandals.find((m: any) => m.desc === selectedMandal);
-      if (selectedDistrictObj?.id && selectedMandalObj?.id) {
-        getLocationHierarchyDetails({
-          district_id: Number(selectedDistrictObj.id),
-          mandal_id: Number(selectedMandalObj.id),
-        })
-          .unwrap()
-          .then((res) => {
-            if (res?.success) {
-              setHierarchy(res.data);
-            } else {
-              setHierarchy(null);
-            }
-          })
-          .catch(() => {
-            setHierarchy(null);
-          });
-      } else {
-        setHierarchy(null);
-      }
-    } else {
-      setHierarchy(null);
-    }
-  }, [selectedDistrict, selectedMandal, allDistricts, allMandals, getLocationHierarchyDetails]);
-
   const getGeoNames = (srcData: any) => {
     const geo = srcData?.geo_assignments;
     const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === srcData?.state || s.desc === srcData?.address?.state);
     const stateVal = stateObj?.desc || srcData?.state || srcData?.address?.state || "";
-
-    const districtsForState = stateObj ? allDistricts.filter((d: any) => d.state_id === stateObj.id) : allDistricts;
-    const districtObj = districtsForState.find((d: any) => d.id === geo?.district_id || d.desc === srcData?.district);
-    const districtVal = districtObj?.desc || srcData?.district || "";
-
-    const mandalsForDistrict = districtObj ? allMandals.filter((m: any) => m.districts_id === districtObj.id) : allMandals;
-    const mandalObj = mandalsForDistrict.find((m: any) => m.id === geo?.mandal_id || m.desc === srcData?.mandal || m.desc === srcData?.area);
-    const mandalVal = mandalObj?.desc || srcData?.mandal || srcData?.area || "";
-
-    return { stateVal, districtVal, mandalVal };
+    return { stateVal };
   };
 
   const [getRegionalOfficerById, { data: regionalOfficerData }] =
@@ -412,10 +385,8 @@ export default function CreateRegionalOfficer() {
 
   // 1. Immediate pre-fill using initialData as fallback/instant load
   useEffect(() => {
-    if (initialData && states.length && allDistricts.length && allMandals.length) {
-      const { stateVal, districtVal, mandalVal } = getGeoNames(initialData);
-      prevStateRef.current = stateVal;
-      prevDistrictRef.current = districtVal;
+    if (initialData && states.length) {
+      const { stateVal } = getGeoNames(initialData);
       reset({
         firstName: initialData.first_name || initialData.firstName || "",
         lastName: initialData.last_name || initialData.lastName || "",
@@ -426,23 +397,18 @@ export default function CreateRegionalOfficer() {
         addressState: stateVal || "",
         city: initialData.city || "",
         pincode: initialData.pincode || "",
-        state: stateVal,
-        district: districtVal,
-        mandal: mandalVal,
         aadharFront: initialData.id_proof_front_url || initialData.id_proof?.id_proof_frontUrl || undefined,
         aadharBack: initialData.id_proof_back_url || initialData.id_proof?.id_proof_backUrl || undefined,
         panCard: initialData.pan_card_url || initialData.id_proof?.pan_card_url || undefined,
       });
     }
-  }, [initialData, reset, states, allDistricts, allMandals]);
+  }, [initialData, reset, states]);
 
   // 2. Prefill/reset the form using server-fetched regionalOfficerData
   useEffect(() => {
-    if (regionalOfficerData?.data && states.length && allDistricts.length && allMandals.length) {
+    if (regionalOfficerData?.data && states.length) {
       const data = regionalOfficerData.data;
-      const { stateVal, districtVal, mandalVal } = getGeoNames(data);
-      prevStateRef.current = stateVal;
-      prevDistrictRef.current = districtVal;
+      const { stateVal } = getGeoNames(data);
       reset({
         firstName: data.firstName || data.first_name || "",
         lastName: data.lastName || data.last_name || "",
@@ -453,30 +419,62 @@ export default function CreateRegionalOfficer() {
         addressState: stateVal || "",
         city: data.address?.city || data.city || "",
         pincode: data.address?.pincode || data.pincode || "",
-        state: stateVal,
-        district: districtVal,
-        mandal: mandalVal,
         aadharFront: data.id_proof_front_url || data.id_proof?.id_proof_frontUrl || undefined,
         aadharBack: data.id_proof_back_url || data.id_proof?.id_proof_backUrl || undefined,
         panCard: data.pan_card_url || data.id_proof?.pan_card_url || undefined,
       });
     }
-  }, [regionalOfficerData, reset, states, allDistricts, allMandals]);
-
-
+  }, [regionalOfficerData, reset, states]);
 
   const handleCreateRegionalOfficer = async (
     values: RegionalOfficerFormValues,
   ) => {
     try {
-      const selectedStateObj = states.find((s: any) => s.desc === values.state);
-      const stateIdVal = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
+      // ── Resolve S3 keys (upload new files, keep existing string keys) ────────
+      let aadharFrontKey = typeof values.aadharFront === "string" ? values.aadharFront : "";
+      let aadharBackKey  = typeof values.aadharBack  === "string" ? values.aadharBack  : "";
+      let panCardKey     = typeof values.panCard      === "string" ? values.panCard      : "";
 
-      const selectedDistrictObj = allDistricts.find((d: any) => d.desc === values.district);
-      const districtIdVal = selectedDistrictObj?.id ? Number(selectedDistrictObj.id) : 1;
+      const uploadPromises: Promise<any>[] = [];
+      const uploadFields: ("aadharFront" | "aadharBack" | "panCard")[] = [];
 
-      const selectedMandalObj = allMandals.find((m: any) => m.desc === values.mandal);
-      const mandalIdVal = selectedMandalObj?.id ? Number(selectedMandalObj.id) : 1;
+      if (values.aadharFront instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.aadharFront, values.email, "aadhar_front"));
+        uploadFields.push("aadharFront");
+      }
+      if (values.aadharBack instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.aadharBack, values.email, "aadhar_back"));
+        uploadFields.push("aadharBack");
+      }
+      if (values.panCard instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.panCard, values.email, "pan"));
+        uploadFields.push("panCard");
+      }
+
+      if (uploadPromises.length > 0) {
+        const uploadToastId = toast.loading("Uploading documents, please wait...");
+        try {
+          const uploadResults = await Promise.all(uploadPromises);
+          uploadResults.forEach((res, index) => {
+            const field = uploadFields[index];
+            if (field === "aadharFront") aadharFrontKey = res.key;
+            if (field === "aadharBack")  aadharBackKey  = res.key;
+            if (field === "panCard")     panCardKey     = res.key;
+          });
+          toast.dismiss(uploadToastId);
+        } catch (uploadError) {
+          toast.dismiss(uploadToastId);
+          toast.error("Document upload failed. Please try again.");
+          return;
+        }
+      }
+
+      const selectedStateObj = states.find(
+        (s: any) => s.desc?.toLowerCase().trim() === values.addressState?.toLowerCase().trim()
+      );
+      const stateIdVal   = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
+      const districtIdVal = 1;
+      const mandalIdVal   = 1;
 
       const payload = {
         firstName: values.firstName,
@@ -501,18 +499,15 @@ export default function CreateRegionalOfficer() {
           areas_id: 1,
         },
         id_proof: {
-          id_proof_frontUrl: "front.png",
-          id_proof_backUrl: "back.png",
-          pan_card_number: "ABCDE1234F",
-          pan_card_url: "pan.png",
+          id_proof_frontUrl: aadharFrontKey,
+          id_proof_backUrl:  aadharBackKey,
+          pan_card_number:   "ABCDE1234F",
+          pan_card_url:      panCardKey,
         },
       };
 
       const response = isEditMode
-        ? await updateRegionalOfficer({
-          ...payload,
-          userId,
-        }).unwrap()
+        ? await updateRegionalOfficer({ ...payload, userId }).unwrap()
         : await createRegionalOfficer(payload).unwrap();
       toast.success(response?.message || "Regional Officer created successfully");
       navigate(fromPath);
@@ -543,9 +538,9 @@ export default function CreateRegionalOfficer() {
     const phone = watch("mobile") || data?.phoneNumber || data?.phone || data?.mobile || "N/A";
     const dateOfBirth = watch("dob") || data?.dob ? new Date(watch("dob") || data.dob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' }) : "N/A";
     
-    const stateObj = states.find((s: any) => s.desc === watch("state") || s.id === data?.geo_assignments?.state_id || s.desc === data?.state);
-    const districtObj = allDistricts.find((d: any) => d.desc === watch("district") || d.id === data?.geo_assignments?.district_id || d.desc === data?.district);
-    const mandalObj = allMandals.find((m: any) => m.desc === watch("mandal") || m.id === data?.geo_assignments?.mandal_id || m.desc === data?.mandal);
+    const stateObj = states.find((s: any) => s.desc === watch("addressState") || s.id === data?.geo_assignments?.state_id || s.desc === data?.state);
+    const districtObj = allDistricts.find((d: any) => d.id === data?.geo_assignments?.district_id || d.desc === data?.district);
+    const mandalObj = allMandals.find((m: any) => m.id === data?.geo_assignments?.mandal_id || m.desc === data?.mandal || m.desc === data?.area);
 
     const stateName = stateObj?.desc || data?.state || "N/A";
     const districtName = districtObj?.desc || data?.district || "N/A";
@@ -725,78 +720,7 @@ export default function CreateRegionalOfficer() {
             </div>
           </SectionPanel>
 
-          {/* ── Section 2 ── */}
-          <SectionPanel title="Select State, District, Mandal">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-[clamp(1rem,2.7vw,2.4375rem)] gap-y-[clamp(1rem,2.7vw,2.4375rem)] w-full">
-              <RHFDropdown
-                name="state"
-                control={control}
-                label="State"
-                placeholder="Select State"
-                options={stateOptions}
-                containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
-                className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
-                disabled={isViewMode}
-              />
-              <div className="flex flex-col gap-1 w-full">
-                <RHFDropdown
-                  name="district"
-                  control={control}
-                  label="District"
-                  placeholder="Select District"
-                  options={districtOptions}
-                  containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
-                  className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
-                  disabled={isViewMode}
-                />
-                {(hierarchy?.region || hierarchy?.regional_officer || hierarchy?.intelligence_officer) && (
-                  <div className="mt-1 px-1 flex flex-col">
-                    {hierarchy.region && (
-                      <span className="text-xs font-semibold text-slate-500">
-                        Region: {hierarchy.region.name || "N/A"}
-                      </span>
-                    )}
-                    {hierarchy.regional_officer && (
-                      <span className="text-[13px] font-medium text-[#16a34a] mt-1.5 flex items-center gap-1">
-                        RO : {hierarchy.regional_officer.first_name} {hierarchy.regional_officer.last_name} {hierarchy.regional_officer.id ? `(${hierarchy.regional_officer.id})` : ""}
-                      </span>
-                    )}
-                    {hierarchy.intelligence_officer && (
-                      <span className="text-[13px] font-medium text-[#16a34a] mt-0.5 flex items-center gap-1">
-                        IO : {hierarchy.intelligence_officer.first_name} {hierarchy.intelligence_officer.last_name} {hierarchy.intelligence_officer.id ? `(${hierarchy.intelligence_officer.id})` : ""}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-col gap-1 w-full">
-                <RHFDropdown
-                  name="mandal"
-                  control={control}
-                  label="Mandal"
-                  placeholder="Select Mandal"
-                  options={mandalOptions}
-                  containerClassName="gap-[clamp(0.375rem,0.5vw,0.625rem)]"
-                  className="h-[clamp(2rem,2.78vw,2.5rem)] rounded-[clamp(0.5rem,0.83vw,0.75rem)] text-[clamp(0.6875rem,0.83vw,0.875rem)] px-[clamp(0.625rem,0.97vw,0.875rem)]"
-                  disabled={isViewMode}
-                />
-                {(hierarchy?.area || hierarchy?.field_officer) && (
-                  <div className="mt-1 px-1 flex flex-col">
-                    {hierarchy.area && (
-                      <span className="text-xs font-semibold text-slate-500">
-                        Area: {hierarchy.area.name || hierarchy.area || "N/A"}
-                      </span>
-                    )}
-                    {hierarchy.field_officer && (
-                      <span className="text-[13px] font-medium text-[#16a34a] mt-1.5 flex items-center gap-1">
-                        FO : {hierarchy.field_officer.first_name} {hierarchy.field_officer.last_name} {hierarchy.field_officer.id ? `(${hierarchy.field_officer.id})` : ""}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </SectionPanel>
+
 
           {/* ── Section 3 ── only change: pass name + control ── */}
           <SectionPanel title="Upload Documents">

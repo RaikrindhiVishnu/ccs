@@ -26,10 +26,11 @@ interface AgentDetail {
     email: string;
     phone: string;
     dateOfBirth: string;
-    operatingTerritory: string;
-    bankName: string;
-    accountNumber: string;
-    ifscCode: string;
+    address: string;
+    city: string;
+    stateName: string;
+    pincode: string;
+    panNumber: string;
     aadhaarImageUrl?: string;
     panImageUrl?: string;
 }
@@ -103,21 +104,15 @@ const agent: AgentDetail = {
     ? new Date(apiData.dob).toLocaleDateString()
     : "N/A",
 
-  operatingTerritory:
-    [
-      apiData?.address,
-      apiData?.city,
-      apiData?.pincode,
-    ]
-      .filter(Boolean)
-      .join(", ") || "N/A",
+  address: apiData?.address?.address || apiData?.address || "N/A",
 
-  bankName: apiData?.bank_name || "N/A",
+  city: apiData?.address?.city || apiData?.city || "N/A",
 
-  accountNumber:
-    apiData?.account_number || "N/A",
+  stateName: apiData?.address?.state || apiData?.state || "N/A",
 
-  ifscCode: apiData?.ifsc_code || "N/A",
+  pincode: apiData?.address?.pincode || apiData?.pincode || "N/A",
+
+  panNumber: apiData?.pan_card_number || apiData?.id_proof?.pan_card_number || "N/A",
 
   aadhaarImageUrl:
     apiData?.id_proof_front_url || "",
@@ -215,7 +210,7 @@ const agent: AgentDetail = {
                                   ">
                     <ProfileHeaderCard agent={agent}/>
 
-                    <SectionCard title="Info">
+                    <SectionCard title="Personal Information">
                         <div className="
                                                 grid
                                                 grid-cols-2
@@ -239,15 +234,14 @@ const agent: AgentDetail = {
                                 value={
                                     agent.dateOfBirth
                                 }/>
-                            <InfoField label="Operating Territory"
+                            <InfoField label="PAN Number"
                                 value={
-                                    agent.operatingTerritory
-                                }
-                                className="col-span-2 xl:col-span-3"/>
+                                    agent.panNumber
+                                }/>
                         </div>
                     </SectionCard>
 
-                    <SectionCard title="Bank Details">
+                    <SectionCard title="Address Information">
                         <div className="
                                                 grid
                                                 grid-cols-2
@@ -258,17 +252,21 @@ const agent: AgentDetail = {
                                                 gap-y-[1.25rem]
                                                 lg:gap-y-[1.5rem]
                                               ">
-                            <InfoField label="Bank Name"
+                            <InfoField label="Address"
                                 value={
-                                    agent.bankName
+                                    agent.address
+                                } className="col-span-2 xl:col-span-3"/>
+                            <InfoField label="City / Village"
+                                value={
+                                    agent.city
                                 }/>
-                            <InfoField label="Account Number"
+                            <InfoField label="State"
                                 value={
-                                    agent.accountNumber
+                                    agent.stateName
                                 }/>
-                            <InfoField label="IFSC Code"
+                            <InfoField label="Pin Code"
                                 value={
-                                    agent.ifscCode
+                                    agent.pincode
                                 }/>
                         </div>
                     </SectionCard>
