@@ -6,6 +6,7 @@ import { BackButton } from "@/components/ui/BackButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
+import Successcard from "@/components/ui/Successcard";
 import {
   useCreateRegionalOfficerMutation,
   useUpdateRegionalOfficerMutation,
@@ -324,6 +325,14 @@ export default function CreateRegionalOfficer() {
   const location = useLocation();
   const { id } = useParams<{ id?: string }>();
 
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successDetails, setSuccessDetails] = useState({
+    name: "",
+    assignedId: "",
+    createdDate: "",
+    createdTime: "",
+  });
+
   const userId = id || location.state?.userId;
   const isViewMode = location.state?.isViewMode || false;
   const fromPath = location.state?.from || BACK_ROUTE;
@@ -509,8 +518,27 @@ export default function CreateRegionalOfficer() {
       const response = isEditMode
         ? await updateRegionalOfficer({ ...payload, userId }).unwrap()
         : await createRegionalOfficer(payload).unwrap();
-      toast.success(response?.message || "Regional Officer created successfully");
-      navigate(fromPath);
+      
+      if (!isEditMode) {
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString("en-US");
+        const formattedTime = now.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const generatedId = response?.data?.id || response?.id || Math.floor(10000 + Math.random() * 90000);
+        
+        setSuccessDetails({
+          name: `${values.firstName} ${values.lastName}`,
+          assignedId: typeof generatedId === "number" ? `GLC RO${generatedId}` : String(generatedId),
+          createdDate: formattedDate,
+          createdTime: formattedTime,
+        });
+        setShowSuccess(true);
+      } else {
+        toast.success(response?.message || "Regional Officer updated successfully");
+        navigate(fromPath);
+      }
     } catch (err: any) {
       console.error(err);
       toast.error(
@@ -518,6 +546,24 @@ export default function CreateRegionalOfficer() {
       );
     }
   };
+
+  if (showSuccess) {
+    return (
+      <Successcard
+        badgeLabel="Regional Officer Creation"
+        titleLine1="Regional Officer"
+        titleLine2="Created Successfully!"
+        redirectText="Redirecting to User Directory..."
+        regionName={successDetails.name}
+        assignedId={successDetails.assignedId}
+        createdDate={successDetails.createdDate}
+        createdTime={successDetails.createdTime}
+        mapImage={null}
+        onRedirect={() => navigate("/role-manager/user-directory")}
+        redirectDelay={3000}
+      />
+    );
+  }
 
   if (isViewMode) {
     const data = regionalOfficerData?.data || initialData;

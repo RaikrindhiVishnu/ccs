@@ -5,6 +5,7 @@ import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
 import SuccessIcon from "@/assets/sucess.svg";
 import { Upload, FileText, ArrowLeft, User, Camera } from "lucide-react";
+import Successcard from "@/components/ui/Successcard";
 import {
   useCreateAgentMutation,
   useUpdateAgentDetailsMutation,
@@ -97,6 +98,14 @@ export default function AgentForm({
   const states = useSelector((state: any) => state.roleManager.states);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successDetails, setSuccessDetails] = useState({
+    name: "",
+    assignedId: "",
+    createdDate: "",
+    createdTime: "",
+  });
 
   const { userId: locUserId } = location.state || {};
 
@@ -239,6 +248,7 @@ export default function AgentForm({
 
       toast.dismiss(loadingToastId);
 
+      let createdResponse = null;
       if (isEdit) {
         const userId =
           locUserId ||
@@ -317,15 +327,30 @@ export default function AgentForm({
           },
         };
 
-        await createAgent(payload).unwrap();
+        createdResponse = await createAgent(payload).unwrap();
       }
 
-      toast.success(
-        isEdit ? "Profile Updated Successfully" : "Agent Created Successfully",
-      );
+      if (!isEdit) {
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString("en-US");
+        const formattedTime = now.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const generatedId = createdResponse?.data?.id || createdResponse?.id || Math.floor(10000 + Math.random() * 90000);
 
-      if (onCancel) {
-        onCancel();
+        setSuccessDetails({
+          name: `${values.firstName} ${values.lastName}`,
+          assignedId: typeof generatedId === "number" ? `GLC AG${generatedId}` : String(generatedId),
+          createdDate: formattedDate,
+          createdTime: formattedTime,
+        });
+        setShowSuccess(true);
+      } else {
+        toast.success("Profile Updated Successfully");
+        if (onCancel) {
+          onCancel();
+        }
       }
     } catch (err) {
       console.error("Failed to save:", err);
@@ -423,6 +448,24 @@ export default function AgentForm({
           </div>
         </div>
       </main>
+    );
+  }
+
+  if (showSuccess) {
+    return (
+      <Successcard
+        badgeLabel="Agent Creation"
+        titleLine1="Agent"
+        titleLine2="Created Successfully!"
+        redirectText="Redirecting to User Directory..."
+        regionName={successDetails.name}
+        assignedId={successDetails.assignedId}
+        createdDate={successDetails.createdDate}
+        createdTime={successDetails.createdTime}
+        mapImage={null}
+        onRedirect={() => navigate("/role-manager/user-directory")}
+        redirectDelay={3000}
+      />
     );
   }
 
