@@ -1523,34 +1523,39 @@ const RegionSelection: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden bg-slate-50/50 relative">
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-50/50 relative">
       {/* Dynamic Header */}
       <div className="absolute top-8 left-8 right-8 z-20 flex items-center justify-between pointer-events-none">
         <div className="flex items-center gap-4 pointer-events-auto">
-          {selectedState || selectedRegion ? (
-            <button
-              onClick={resetView}
-              className="p-3 rounded-2xl bg-white border border-slate-200 shadow-xl hover:bg-slate-50 transition-all active:scale-95 group"
-            >
-              <ChevronLeft className="w-5 h-5 text-slate-600 group-hover:-translate-x-0.5 transition-transform" />
-            </button>
-          ) : (
-            <div className="bg-white/90 backdrop-blur-xl px-4 py-2 rounded-3xl border border-white/50 shadow-2xl">
-              <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-[0.24em] block mb-1">
-                Selection mode
-              </span>
-              <p className="text-sm font-semibold text-slate-800 tracking-tight leading-none">
-                {mode === "area" ? "Area dashboard" : "Regional dashboard"}
-              </p>
-            </div>
-          )}
+          <button
+            onClick={() => {
+              if (selectedState || selectedRegion) {
+                resetView();
+              } else {
+                navigate("/role-manager/create-regions-and-areas");
+              }
+            }}
+            className="p-2.5 rounded-full bg-white/70 backdrop-blur-md border border-white/40 shadow-lg hover:bg-white/90 hover:scale-105 active:scale-95 transition-all pointer-events-auto flex items-center justify-center"
+            title={selectedState || selectedRegion ? "Back to States" : "Back to Menu"}
+          >
+            <ChevronLeft className="w-4 h-4 text-slate-700 group-hover:-translate-x-0.5 transition-transform" />
+          </button>
+
+          <div className="bg-white/75 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/45 shadow-md flex flex-col gap-0.5">
+            <span className="text-[9px] font-bold text-blue-600 uppercase tracking-[0.18em] block leading-none mb-0.5">
+              {mode === "area" ? "Area Management" : "Region Management"}
+            </span>
+            <p className="text-sm font-extrabold text-slate-800 tracking-tight leading-none uppercase">
+              {mode === "area" ? "Create Area" : "Create Region"}
+            </p>
+          </div>
 
           {mode === "region" && selectedState && (
-            <div className="bg-white/90 backdrop-blur-xl px-6 py-3 rounded-[1.5rem] border border-white/50 shadow-2xl animate-in slide-in-from-left-4 duration-500">
-              <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] block mb-0.5">
+            <div className="bg-white/75 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/45 shadow-md animate-in slide-in-from-left-4 duration-500 flex flex-col gap-0.5">
+              <span className="text-[9px] font-bold text-blue-600 uppercase tracking-[0.18em] block leading-none mb-0.5">
                 Viewing State
               </span>
-              <p className="text-lg font-black text-slate-800 tracking-tight uppercase">
+              <p className="text-sm font-extrabold text-slate-800 tracking-tight leading-none uppercase">
                 {selectedState.properties?.name ||
                   selectedState.properties?.STNAME ||
                   ""}
@@ -1559,22 +1564,22 @@ const RegionSelection: React.FC = () => {
           )}
 
           {mode === "region" && selectedState && hoveredDistrictName && (
-            <div className="bg-blue-600/90 backdrop-blur-xl px-6 py-3 rounded-[1.5rem] border border-blue-500/50 shadow-2xl animate-in slide-in-from-left-4 duration-300">
-              <span className="text-[10px] font-bold text-white/80 uppercase tracking-[0.2em] block mb-0.5">
+            <div className="bg-blue-500/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-blue-500/30 shadow-md animate-in slide-in-from-left-4 duration-300 flex flex-col gap-0.5">
+              <span className="text-[9px] font-bold text-blue-700 uppercase tracking-[0.18em] block leading-none mb-0.5">
                 Hovering District
               </span>
-              <p className="text-lg font-black text-white tracking-tight uppercase">
+              <p className="text-sm font-extrabold text-blue-900 tracking-tight leading-none uppercase">
                 {hoveredDistrictName}
               </p>
             </div>
           )}
 
           {mode === "area" && selectedState && !selectedRegion && (
-            <div className="bg-white/90 backdrop-blur-xl px-6 py-3 rounded-[1.5rem] border border-white/50 shadow-2xl animate-in slide-in-from-left-4 duration-500">
-              <span className="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] block mb-0.5">
+            <div className="bg-white/75 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/45 shadow-md animate-in slide-in-from-left-4 duration-500 flex flex-col gap-0.5">
+              <span className="text-[9px] font-bold text-blue-600 uppercase tracking-[0.18em] block leading-none mb-0.5">
                 Viewing State
               </span>
-              <p className="text-lg font-black text-slate-800 tracking-tight uppercase">
+              <p className="text-sm font-extrabold text-slate-800 tracking-tight leading-none uppercase">
                 {selectedState.properties?.name ||
                   selectedState.properties?.STNAME ||
                   ""}
@@ -1583,22 +1588,22 @@ const RegionSelection: React.FC = () => {
           )}
 
           {mode === "area" && selectedRegion && (
-            <div className="bg-purple-600/90 backdrop-blur-xl px-6 py-3 rounded-[1.5rem] border border-purple-500/50 shadow-2xl animate-in slide-in-from-left-4 duration-500">
-              <span className="text-[10px] font-bold text-white/80 uppercase tracking-[0.2em] block mb-0.5">
+            <div className="bg-purple-500/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-purple-500/30 shadow-md animate-in slide-in-from-left-4 duration-500 flex flex-col gap-0.5">
+              <span className="text-[9px] font-bold text-purple-700 uppercase tracking-[0.18em] block leading-none mb-0.5">
                 Viewing Region
               </span>
-              <p className="text-lg font-black text-white tracking-tight uppercase">
+              <p className="text-sm font-extrabold text-purple-900 tracking-tight leading-none uppercase">
                 {selectedRegion.properties?.region_name || "Operational Region"}
               </p>
             </div>
           )}
 
           {mode === "area" && selectedRegion && hoveredMandalName && (
-            <div className="bg-teal-600/90 backdrop-blur-xl px-6 py-3 rounded-[1.5rem] border border-teal-500/50 shadow-2xl animate-in slide-in-from-left-4 duration-300">
-              <span className="text-[10px] font-bold text-white/80 uppercase tracking-[0.2em] block mb-0.5">
+            <div className="bg-teal-500/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-teal-500/30 shadow-md animate-in slide-in-from-left-4 duration-300 flex flex-col gap-0.5">
+              <span className="text-[9px] font-bold text-teal-700 uppercase tracking-[0.18em] block leading-none mb-0.5">
                 Hovering Mandal
               </span>
-              <p className="text-lg font-black text-white tracking-tight uppercase">
+              <p className="text-sm font-extrabold text-teal-900 tracking-tight leading-none uppercase">
                 {hoveredMandalName}
               </p>
             </div>
@@ -1641,39 +1646,33 @@ const RegionSelection: React.FC = () => {
       </div>
 
       {/* Main Map Container */}
-      <div className="flex-1 flex flex-col min-h-0 w-full relative">
-        <div className="flex-1 m-8 mt-24 relative rounded-[2.5rem] overflow-hidden border border-slate-200 shadow-2xl bg-white">
-          <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
+      <div className="absolute inset-0 w-full h-full z-0">
+        <div ref={mapContainer} className="absolute inset-0 w-full h-full bg-white" />
 
-          {isLoadingGeoData && (
-            <div className="absolute inset-0 z-10 bg-white/40 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-300">
-              <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
-            </div>
-          )}
-
-          {/* Map Overlay Controls */}
-          <div className="absolute bottom-8 right-8 flex flex-col gap-3 pointer-events-none">
-            {isZoomed && (
-              <button
-                onClick={resetView}
-                className="pointer-events-auto bg-white/90 backdrop-blur-xl p-4 rounded-2xl border border-slate-200 shadow-xl hover:bg-slate-50 transition-all active:scale-95 group"
-                title="Reset View"
-              >
-                <Maximize2 className="w-5 h-5 text-slate-600 group-hover:scale-110 transition-transform" />
-              </button>
-            )}
+        {isLoadingGeoData && (
+          <div className="absolute inset-0 z-10 bg-white/40 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-300">
+            <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
           </div>
+        )}
+
+        {/* Map Overlay Controls */}
+        <div className="absolute bottom-8 right-8 flex flex-col gap-3 pointer-events-none">
+          {isZoomed && (
+            <button
+              onClick={resetView}
+              className="pointer-events-auto bg-white/90 backdrop-blur-xl p-4 rounded-2xl border border-slate-200 shadow-xl hover:bg-slate-50 transition-all active:scale-95 group"
+              title="Reset View"
+            >
+              <Maximize2 className="w-5 h-5 text-slate-600 group-hover:scale-110 transition-transform" />
+            </button>
+          )}
         </div>
       </div>
 
       {/* Custom Creation Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300"
-            onClick={() => setIsModalOpen(false)}
-          />
-          <div className="relative w-full max-w-md max-h-[90vh] flex flex-col bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-8">
+        <div className="fixed inset-y-0 right-0 z-[100] flex items-center p-8 pointer-events-none">
+          <div className="relative w-full max-w-md max-h-[90vh] flex flex-col bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in slide-in-from-right duration-300 p-8 pointer-events-auto">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 transition-colors"
@@ -1821,12 +1820,8 @@ const RegionSelection: React.FC = () => {
 
       {/* Custom Area Creation Modal */}
       {isAreaModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300"
-            onClick={() => setIsAreaModalOpen(false)}
-          />
-          <div className="relative w-full max-w-md max-h-[90vh] flex flex-col bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-8">
+        <div className="fixed inset-y-0 right-0 z-[100] flex items-center p-8 pointer-events-none">
+          <div className="relative w-full max-w-md max-h-[90vh] flex flex-col bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in slide-in-from-right duration-300 p-8 pointer-events-auto">
             <button
               onClick={() => setIsAreaModalOpen(false)}
               className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 transition-colors"
