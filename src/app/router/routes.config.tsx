@@ -47,12 +47,14 @@ export const ActiveVerifications = lazy(
 export const GeospatialAudit = lazy(
   () => import("../../features/ccs/pages/Geospatialauditscreen"),
 );
-export const SendPaymentLink = lazy(     // ← ADD
+export const SendPaymentLink = lazy(
   () => import("../../features/ccs/pages/payment"),
 );
 export const ProcessingFeeScreen = lazy(
   () => import("../../features/ccs/pages/ProcessingFeeScreen"),
 );
+
+// Intelligence Officer (from upstream)
 export const IODashboard = lazy(
   () => import("../../features/io/pages/Dashboard"),
 );
@@ -85,3 +87,44 @@ export const EditIntelligenceOfficer = lazy(
 export const EditRegionalOfficer = lazy(
   () => import("../../features/role-manager/pages/Createregionalofficer"),
 );
+
+// Regional Officer
+export const RegionalOfficerDashboard = lazy(
+  () => import("../../features/regional-officer/pages/RegionalOfficerDashboard"),
+);
+export const RegionalOfficerLayout = lazy(
+  () => import("../../components/common/layouts/Regionalofficerlayout"),
+);
+
+// Field Officer
+export const FieldOfficerDashboard = lazy(
+  () => import("../../features/field-officer/pages/FieldOfficerDashboard"),
+);
+export const DraftsPage = lazy(
+  () => import("../../features/field-officer/pages/DraftsPage"),
+);
+export const FieldOfficerLayout = lazy(
+  () => import("../../components/common/layouts/FieldOfficerLayout"),
+);
+export const RequestInfoPage = lazy(
+  () => import("../../features/field-officer/pages/RequestInfoPage"),
+);
+export const FarmlandAlertsPage = lazy(
+  () => import("../../features/field-officer/pages/FarmlandAlertsPage"),
+);
+export const TopPerformerDetailsPage = lazy(
+  () => import("../../features/field-officer/pages/TopPerformerDetailsPage"),
+);
+export const AgentDetailsPage = lazy(
+  () => import("../../features/field-officer/pages/AgentDetailsPage"),
+);
+export const AssignedFarmlandPage = lazy(
+  () => import("../../features/field-officer/pages/AssignedFarmlandPage"),
+);
+export const FarmlandWorkflowPage = lazy(
+  () => import("../../features/field-officer/pages/FarmlandWorkflowPage"),
+);
+export const DraftsDetailPage = lazy(
+  () => import("../../features/field-officer/pages/DraftsDetailPage"),
+);
+

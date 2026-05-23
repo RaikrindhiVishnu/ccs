@@ -4,6 +4,7 @@ import { RoleManagerLayout } from './RoleManagerLayout';
 import { CcsOfficerLayout } from './CcsOfficerLayout';
 import { FieldOfficerLayout } from './FieldOfficerLayout';
 import { IntelligenceOfficerLayout } from './IntelligenceOfficerLayout';
+import { RegionalOfficerLayout } from './Regionalofficerlayout';
 import type { LayoutVariant } from '@/core/config/layoutConfig';
 
 // ─── Map every LayoutVariant to its shell component ──────────────────────────
@@ -12,6 +13,7 @@ const LAYOUT_MAP: Record<LayoutVariant, ComponentType> = {
   'sidebar-role-manager': RoleManagerLayout,
   'sidebar-ccs-officer':  CcsOfficerLayout,
   'sidebar-intelligence-officer': IntelligenceOfficerLayout,
+  'sidebar-regional-officer': RegionalOfficerLayout,
   'header-only':          FieldOfficerLayout,
 };
 
