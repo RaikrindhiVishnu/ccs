@@ -6,6 +6,7 @@ import { BackButton } from "@/components/ui/BackButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
+import Successcard from "@/components/ui/Successcard";
 import {
   useCreateRegionalOfficerMutation,
   useUpdateRegionalOfficerMutation,
@@ -134,7 +135,7 @@ function UploadPictureField({
               )}
             >
               <span className="flex-1 text-left truncate mr-2 font-[family-name:var(--font-inter)] font-normal text-[clamp(0.6875rem,0.83vw,0.875rem)] text-[color:var(--text-muted)]">
-                {field.value?.name ?? (typeof field.value === "string" ? "Existing Picture" : "Supports JPEG, PNG and Other Formats")}
+                {field.value instanceof File ? field.value.name : typeof field.value === "string" ? "Existing Picture" : "Supports JPEG, PNG and Other Formats"}
               </span>
               <ImageUp className="shrink-0 text-[var(--text-primary)] w-[1.125rem] h-[1.125rem] stroke-[1.75]" />
               <input
@@ -324,6 +325,14 @@ export default function CreateRegionalOfficer() {
   const location = useLocation();
   const { id } = useParams<{ id?: string }>();
 
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successDetails, setSuccessDetails] = useState({
+    name: "",
+    assignedId: "",
+    createdDate: "",
+    createdTime: "",
+  });
+
   const userId = id || location.state?.userId;
   const isViewMode = location.state?.isViewMode || false;
   const fromPath = location.state?.from || BACK_ROUTE;
@@ -334,7 +343,6 @@ export default function CreateRegionalOfficer() {
   const allDistricts = useAppSelector((state) => state.roleManager.districts);
   const allMandals = useAppSelector((state) => state.roleManager.mandals);
 
-  const stateOptions = states.map((item) => item.desc);
   const [createRegionalOfficer, { isLoading }] =
     useCreateRegionalOfficerMutation();
 
@@ -509,8 +517,27 @@ export default function CreateRegionalOfficer() {
       const response = isEditMode
         ? await updateRegionalOfficer({ ...payload, userId }).unwrap()
         : await createRegionalOfficer(payload).unwrap();
-      toast.success(response?.message || "Regional Officer created successfully");
-      navigate(fromPath);
+      
+      if (!isEditMode) {
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString("en-US");
+        const formattedTime = now.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const generatedId = response?.data?.id || response?.id || Math.floor(10000 + Math.random() * 90000);
+        
+        setSuccessDetails({
+          name: `${values.firstName} ${values.lastName}`,
+          assignedId: typeof generatedId === "number" ? `GLC RO${generatedId}` : String(generatedId),
+          createdDate: formattedDate,
+          createdTime: formattedTime,
+        });
+        setShowSuccess(true);
+      } else {
+        toast.success(response?.message || "Regional Officer updated successfully");
+        navigate(fromPath);
+      }
     } catch (err: any) {
       console.error(err);
       toast.error(
@@ -518,6 +545,24 @@ export default function CreateRegionalOfficer() {
       );
     }
   };
+
+  if (showSuccess) {
+    return (
+      <Successcard
+        badgeLabel="Regional Officer Creation"
+        titleLine1="Regional Officer"
+        titleLine2="Created Successfully!"
+        redirectText="Redirecting to User Directory..."
+        regionName={successDetails.name}
+        assignedId={successDetails.assignedId}
+        createdDate={successDetails.createdDate}
+        createdTime={successDetails.createdTime}
+        mapImage={null}
+        onRedirect={() => navigate("/role-manager/user-directory")}
+        redirectDelay={3000}
+      />
+    );
+  }
 
   if (isViewMode) {
     const data = regionalOfficerData?.data || initialData;
