@@ -149,11 +149,23 @@ const CreateRegionsAndAreas: React.FC = () => {
   const isViewMode = mode === "view";
 
   const handleNavigateToRegion = () => {
-    navigate("/role-manager/region-creation?mode=region");
+    if (isViewMode) {
+      // View mode → full-screen MapLibre map showing created regions + district boundaries
+      navigate("/role-manager/region-area-edit");
+    } else {
+      // Create mode → GIS map creation screen
+      navigate("/role-manager/region-creation?mode=region");
+    }
   };
 
   const handleNavigateToArea = () => {
-    navigate("/role-manager/region-creation?mode=area");
+    if (isViewMode) {
+      // View mode → go to region-area-edit?mode=area
+      navigate("/role-manager/region-area-edit?mode=area");
+    } else {
+      // Create mode → go to the GIS map creation screen
+      navigate("/role-manager/region-creation?mode=area");
+    }
   };
 
   return (
