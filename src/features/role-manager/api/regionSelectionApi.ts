@@ -62,9 +62,11 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
     createArea: builder.mutation<any, {
       areaName: string;
       area_code: string;
-      field_officer_id: number;
+      field_officer_id?: number | null;
       regional_officer_id?: number | null;
       intelligence_officer_id?: number | null;
+      region_id?: number;
+      roleManagerId?: number;
       assignments: {
         district_id: number;
         mandal_id: number;
@@ -72,6 +74,17 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
     }>({
       query: (body) => ({
         url: "areas/create_area",
+        method: "POST",
+        body,
+      }),
+    }),
+    assignFieldOfficer: builder.mutation<any, {
+      area_id: number;
+      field_officer_id: number;
+      regional_officer_id: number;
+    }>({
+      query: (body) => ({
+        url: "areas/assign_fo",
         method: "POST",
         body,
       }),
@@ -101,6 +114,7 @@ export const {
   useCreateRegionMutation,
   useAssignOfficersMutation,
   useCreateAreaMutation,
+  useAssignFieldOfficerMutation,
   useGetAllGeoJsonDataQuery,
   useGetAllAreasByRegionIdQuery,
 } = regionSelectionApi;

@@ -45,6 +45,7 @@ import {
   FarmlandWorkflowPage,
   DraftsDetailPage,
   AssignOfficersPage,
+  AssignFieldOfficerPage,
 } from './routes.config';
 
 
@@ -123,6 +124,10 @@ export const authRoutes: RouteObject[] = [
   {
     path: "/role-manager/assign-officers",
     element: <AssignOfficersPage />,
+  },
+  {
+    path: "/role-manager/assign-field-officer",
+    element: <AssignFieldOfficerPage />,
   },
   {
     element: <FieldOfficerLayout />,

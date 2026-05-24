@@ -130,4 +130,7 @@ export const DraftsDetailPage = lazy(
 export const AssignOfficersPage = lazy(
   () => import("../../features/role-manager/pages/AssignOfficers"),
 );
+export const AssignFieldOfficerPage = lazy(
+  () => import("../../features/role-manager/pages/AssignFieldOfficer"),
+);
 
