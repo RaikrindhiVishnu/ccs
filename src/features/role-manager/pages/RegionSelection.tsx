@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Successcard from "@/components/ui/Successcard";
+import { useAppSelector } from "@/core/hooks";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { decompressGeoJSON } from "../utils/utils";
@@ -305,6 +306,7 @@ const getFeatureBounds = (feature: any): maplibregl.LngLatBoundsLike => {
 };
 
 const RegionSelection: React.FC = () => {
+  const currentUser = useAppSelector((state) => state.auth.user);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const popup = useRef<maplibregl.Popup | null>(null);
@@ -1540,10 +1542,9 @@ const RegionSelection: React.FC = () => {
     if (
       !regionName ||
       !regionCode ||
-      !selectedRegionalOfficerId ||
-      !selectedIntelligenceOfficerId
+      selectedDistricts.length === 0
     ) {
-      toast.error("Please fill in all fields");
+      toast.error("Please fill in all fields and select districts");
       return;
     }
 
@@ -1555,8 +1556,7 @@ const RegionSelection: React.FC = () => {
       const res = await createRegion({
         regionName,
         regionCode,
-        regionalOfficerId: selectedRegionalOfficerId,
-        inteligenceOfficerId: selectedIntelligenceOfficerId,
+        roleManagerId: Number(currentUser?.id || 10),
         district_ids: districtIds,
         stateId: Number(selectedStateId),
       }).unwrap();
@@ -1574,20 +1574,16 @@ const RegionSelection: React.FC = () => {
           );
         }
       });
-      setSelectedDistricts([]);
-      setIsModalOpen(false);
-      setRegionName("");
-      setRegionCode("");
-      setSelectedRegionalOfficerId(null);
-      setSelectedIntelligenceOfficerId(null);
+
+      const now = new Date();
+      const createdRegionId = res?.data?.region_id || res?.region_id || res?.data?.id || res?.id || 1;
 
       // Show Successcard
-      const now = new Date();
       setSuccessCardProps({
         badgeLabel: "Region Creation",
         titleLine1: "Region",
         titleLine2: "Created Successfully!",
-        redirectText: "Redirecting to Dashboard...",
+        redirectText: "Redirecting to the Assigning Officers Page...",
         regionName: regionName,
         assignedId: res?.data?.region_code || res?.regionCode || regionCode,
         createdDate: now.toLocaleDateString(),
@@ -1595,7 +1591,16 @@ const RegionSelection: React.FC = () => {
           hour: "2-digit",
           minute: "2-digit",
         }),
+        regionId: createdRegionId,
+        selectedDistricts: [...selectedDistricts],
       });
+
+      setSelectedDistricts([]);
+      setIsModalOpen(false);
+      setRegionName("");
+      setRegionCode("");
+      setSelectedRegionalOfficerId(null);
+      setSelectedIntelligenceOfficerId(null);
     } catch (err) {
       console.error("Failed to create region:", err);
       toast.error("Failed to create region");
@@ -1681,7 +1686,23 @@ const RegionSelection: React.FC = () => {
     return (
       <Successcard
         {...successCardProps}
-        onRedirect={() => navigate("/role-manager/region-area-dashboard")}
+        onRedirect={() => {
+          if (successCardProps.badgeLabel === "Region Creation") {
+            navigate("/role-manager/assign-officers", {
+              state: {
+                regionId: successCardProps.regionId,
+                regionName: successCardProps.regionName,
+                assignedId: successCardProps.assignedId,
+                createdDate: successCardProps.createdDate,
+                createdTime: successCardProps.createdTime,
+                selectedDistricts: successCardProps.selectedDistricts,
+                stateId: selectedStateId,
+              },
+            });
+          } else {
+            navigate("/role-manager/region-area-dashboard");
+          }
+        }}
       />
     );
   }
@@ -1861,80 +1882,6 @@ const RegionSelection: React.FC = () => {
                 onChange={(e) => setRegionCode(e.target.value)}
                 className="px-3 text-sm h-10"
               />
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-[var(--text-secondary)] font-sans ml-1">
-                  Select Regional Officer
-                </label>
-                <div className="relative flex items-center shrink-0 h-10 bg-[var(--surface-card)] border border-[var(--border-default)] rounded-[12px]">
-                  <select
-                    value={selectedRegionalOfficerId ?? ""}
-                    onChange={(e) =>
-                      setSelectedRegionalOfficerId(
-                        e.target.value ? Number(e.target.value) : null,
-                      )
-                    }
-                    className="w-full h-full border-none outline-none bg-transparent px-3 text-[var(--profile-text)] font-sans text-sm cursor-pointer"
-                  >
-                    <option value="">Select Regional Officer</option>
-                    {regionalOfficers.map((officer, index) => {
-                      const id = officer.id ?? officer.i ?? officer.user_id;
-                      const fullName =
-                        `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
-                      const label =
-                        fullName ||
-                        officer.name ||
-                        officer.d ||
-                        officer.fullName ||
-                        officer.username ||
-                        officer.email ||
-                        `Regional Officer ${index + 1}`;
-                      return (
-                        <option key={id ?? index} value={id ?? index}>
-                          {label}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-[var(--text-secondary)] font-sans ml-1">
-                  Select Intelligence Officer
-                </label>
-                <div className="relative flex items-center shrink-0 h-10 bg-[var(--surface-card)] border border-[var(--border-default)] rounded-[12px]">
-                  <select
-                    value={selectedIntelligenceOfficerId ?? ""}
-                    onChange={(e) =>
-                      setSelectedIntelligenceOfficerId(
-                        e.target.value ? Number(e.target.value) : null,
-                      )
-                    }
-                    className="w-full h-full border-none outline-none bg-transparent px-3 text-[var(--profile-text)] font-sans text-sm cursor-pointer"
-                  >
-                    <option value="">Select Intelligence Officer</option>
-                    {intelligenceOfficers.map((officer, index) => {
-                      const id = officer.id ?? officer.i ?? officer.user_id;
-                      const fullName =
-                        `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
-                      const label =
-                        fullName ||
-                        officer.name ||
-                        officer.d ||
-                        officer.fullName ||
-                        officer.username ||
-                        officer.email ||
-                        `Intelligence Officer ${index + 1}`;
-                      return (
-                        <option key={id ?? index} value={id ?? index}>
-                          {label}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-              </div>
 
               <div className="flex flex-col gap-2">
                 <Input

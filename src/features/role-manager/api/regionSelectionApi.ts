@@ -36,13 +36,25 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
     createRegion: builder.mutation<any, {
       regionName: string;
       regionCode: string;
-      regionalOfficerId: number;
-      inteligenceOfficerId: number;
+      roleManagerId?: number;
+      regionalOfficerId?: number;
+      inteligenceOfficerId?: number;
       district_ids: number[];
       stateId?: number;
     }>({
       query: (body) => ({
         url: "region/create_region",
+        method: "POST",
+        body,
+      }),
+    }),
+    assignOfficers: builder.mutation<any, {
+      region_id: number;
+      regionalOfficerId: number;
+      inteligenceOfficerId: number;
+    }>({
+      query: (body) => ({
+        url: "region/assign_officers",
         method: "POST",
         body,
       }),
@@ -87,6 +99,7 @@ export const {
   useGetRegionsByCountryIdQuery,
   useGetDistrictsByStateIdQuery,
   useCreateRegionMutation,
+  useAssignOfficersMutation,
   useCreateAreaMutation,
   useGetAllGeoJsonDataQuery,
   useGetAllAreasByRegionIdQuery,
