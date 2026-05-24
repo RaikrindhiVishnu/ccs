@@ -39,7 +39,13 @@ import {
   FieldOfficerLayout,
   RequestInfoPage,
   FarmlandAlertsPage,
+  TopPerformerDetailsPage,
+  AgentDetailsPage,
+  AssignedFarmlandPage,
+  FarmlandWorkflowPage,
+  DraftsDetailPage,
 } from './routes.config';
+
 
 export const guestRoutes: RouteObject[] = [
   {
@@ -117,6 +123,11 @@ export const authRoutes: RouteObject[] = [
       { path: '/field-officer/drafts',          element: <DraftsPage /> },
       { path: '/field-officer/request-info',    element: <RequestInfoPage /> },
       { path: '/field-officer/alerts',          element: <FarmlandAlertsPage /> },
+      { path: '/field-officer/top-performer/:id', element: <TopPerformerDetailsPage /> },
+      { path: '/field-officer/agent-details/:id', element: <AgentDetailsPage /> },
+      { path: '/field-officer/assigned-farmland/:id', element: <AssignedFarmlandPage /> },
+      { path: '/field-officer/farmland-workflow/:id', element: <FarmlandWorkflowPage /> },
+      { path: '/field-officer/draft-details/:id', element: <DraftsDetailPage /> },
     ],
   },
   {
