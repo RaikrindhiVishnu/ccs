@@ -161,6 +161,13 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
         body: {},
       }),
     }),
+    getAreaGeoJson: builder.query<any, { area_id: number }>({
+  query: (body) => ({
+    url: "areas/get_area_geojson",
+    method: "POST",
+    body,
+  }),
+}),
 
     // ─── PLACEHOLDER: Get Area By ID ──────────────────────────────────────────
     getAreaById: builder.query<any, { area_id: number }>({
@@ -312,4 +319,5 @@ export const {
   useGetAllAreasQuery,
   useGetAreaByIdQuery,
   useUpdateAreaMutation,
+  useGetAreaGeoJsonQuery,
 } = regionSelectionApi;
