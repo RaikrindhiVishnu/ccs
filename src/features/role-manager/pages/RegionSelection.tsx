@@ -17,11 +17,7 @@ import {
   useGetRegionsByCountryIdQuery,
   useGetAllAreasByRegionIdQuery,
 } from "../api/regionSelectionApi";
-import {
-  useGetAllRegionalOfficersMutation,
-  useGetAllIntelligenceOfficersMutation,
-  useGetAllFieldOfficersMutation,
-} from "../api/roleManagerApi";
+
 import { useGetRegionOfficerDetailsQuery } from "../api/userDirectoryApi";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -344,7 +340,6 @@ const RegionSelection: React.FC = () => {
   const [hoveredMandalName, setHoveredMandalName] = useState<string | null>(
     null,
   );
-  const [mandalSearch, setMandalSearch] = useState("");
 
   // Automatically open/close modals based on selections
   useEffect(() => {
@@ -442,63 +437,7 @@ const RegionSelection: React.FC = () => {
   const [createRegion, { isLoading: isCreating }] = useCreateRegionMutation();
   const [createArea, { isLoading: isCreatingArea }] = useCreateAreaMutation();
 
-  const [regionalOfficers, setRegionalOfficers] = useState<any[]>([]);
-  const [intelligenceOfficers, setIntelligenceOfficers] = useState<any[]>([]);
-  const [fieldOfficers, setFieldOfficers] = useState<any[]>([]);
-  const [selectedRegionalOfficerId, setSelectedRegionalOfficerId] = useState<
-    number | null
-  >(null);
-  const [selectedIntelligenceOfficerId, setSelectedIntelligenceOfficerId] =
-    useState<number | null>(null);
-  const [selectedFieldOfficerId, setSelectedFieldOfficerId] = useState<
-    number | null
-  >(null);
 
-  const [getAllRegionalOfficers] = useGetAllRegionalOfficersMutation();
-  const [getAllIntelligenceOfficers] = useGetAllIntelligenceOfficersMutation();
-  const [getAllFieldOfficers] = useGetAllFieldOfficersMutation();
-
-  useEffect(() => {
-    const fetchOfficerLists = async () => {
-      try {
-        const regionalResult = await getAllRegionalOfficers().unwrap();
-        const regionalList = Array.isArray(regionalResult?.data)
-          ? regionalResult.data
-          : Array.isArray(regionalResult)
-            ? regionalResult
-            : [];
-        setRegionalOfficers(regionalList);
-      } catch (err) {
-        console.error("Failed to load regional officers:", err);
-      }
-
-      try {
-        const intelligenceResult = await getAllIntelligenceOfficers().unwrap();
-        const intelligenceList = Array.isArray(intelligenceResult?.data)
-          ? intelligenceResult.data
-          : Array.isArray(intelligenceResult)
-            ? intelligenceResult
-            : [];
-        setIntelligenceOfficers(intelligenceList);
-      } catch (err) {
-        console.error("Failed to load intelligence officers:", err);
-      }
-
-      try {
-        const fieldResult = await getAllFieldOfficers().unwrap();
-        const fieldList = Array.isArray(fieldResult?.data)
-          ? fieldResult.data
-          : Array.isArray(fieldResult)
-            ? fieldResult
-            : [];
-        setFieldOfficers(fieldList);
-      } catch (err) {
-        console.error("Failed to load field officers:", err);
-      }
-    };
-
-    fetchOfficerLists();
-  }, [getAllRegionalOfficers, getAllIntelligenceOfficers]);
 
   const selectedStateId: number | undefined =
     selectedState?.properties?.id ??
@@ -1525,18 +1464,7 @@ const RegionSelection: React.FC = () => {
     }
   };
 
-  const handleRemoveMandal = (mandal: any) => {
-    const mId = mandal.id ?? mandal.featureId;
-    setSelectedMandals((prev) =>
-      prev.filter((m) => (m.id ?? m.featureId) !== mId),
-    );
-    if (mandal.featureId !== undefined && map.current) {
-      map.current.setFeatureState(
-        { source: "mandals-source", id: mandal.featureId },
-        { selected: false },
-      );
-    }
-  };
+
 
   const handleCreateRegion = async () => {
     if (
@@ -1599,8 +1527,6 @@ const RegionSelection: React.FC = () => {
       setIsModalOpen(false);
       setRegionName("");
       setRegionCode("");
-      setSelectedRegionalOfficerId(null);
-      setSelectedIntelligenceOfficerId(null);
     } catch (err) {
       console.error("Failed to create region:", err);
       toast.error("Failed to create region");
@@ -1674,7 +1600,6 @@ const RegionSelection: React.FC = () => {
       setIsAreaModalOpen(false);
       setAreaName("");
       setAreaCode("");
-      setSelectedFieldOfficerId(null);
     } catch (err) {
       console.error("Failed to create area:", err);
       toast.error("Failed to create area");

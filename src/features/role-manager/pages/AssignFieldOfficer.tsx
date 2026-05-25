@@ -116,10 +116,10 @@ const AssignFieldOfficer: React.FC = () => {
 
   // Construct FeatureCollection of the area's mandals to draw on the mini-map
   const areaGeoJSON = useMemo(() => {
-    if (!geoMasterData) return { type: "FeatureCollection", features: [] };
+    if (!geoMasterData) return { type: "FeatureCollection", features: [] } as any;
 
     const selectedIds = new Set(
-      areaState.selectedMandals.map((m) => Number(m.id ?? m.featureId))
+      areaState.selectedMandals.map((m: any) => Number(m.id ?? m.featureId))
     );
 
     const matchedMandals: any[] = [];
@@ -202,7 +202,7 @@ const AssignFieldOfficer: React.FC = () => {
       if (!map.current.getSource("selected-area-mandals")) {
         map.current.addSource("selected-area-mandals", {
           type: "geojson",
-          data: areaGeoJSON,
+          data: areaGeoJSON as any,
         });
 
         // Fill Layer - GORGEOUS GREEN THEME matching the mockup screenshot
@@ -228,7 +228,7 @@ const AssignFieldOfficer: React.FC = () => {
         });
       } else {
         const source = map.current.getSource("selected-area-mandals") as maplibregl.GeoJSONSource;
-        source.setData(areaGeoJSON);
+        source.setData(areaGeoJSON as any);
       }
 
       // Fit map view to the selected mandals bounds

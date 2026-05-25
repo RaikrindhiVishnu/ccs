@@ -132,10 +132,10 @@ const AssignOfficers: React.FC = () => {
 
   // Construct FeatureCollection of the region's districts to draw on the mini-map
   const regionGeoJSON = useMemo(() => {
-    if (!geoMasterData) return { type: "FeatureCollection", features: [] };
+    if (!geoMasterData) return { type: "FeatureCollection", features: [] } as any;
 
     const selectedIds = new Set(
-      regionState.selectedDistricts.map((d) => Number(d.id ?? d.featureId))
+      regionState.selectedDistricts.map((d: any) => Number(d.id ?? d.featureId))
     );
 
     const matchedDistricts: any[] = [];
@@ -216,7 +216,7 @@ const AssignOfficers: React.FC = () => {
       if (!map.current.getSource("selected-region-districts")) {
         map.current.addSource("selected-region-districts", {
           type: "geojson",
-          data: regionGeoJSON,
+          data: regionGeoJSON as any,
         });
 
         // Fill Layer
@@ -242,7 +242,7 @@ const AssignOfficers: React.FC = () => {
         });
       } else {
         const source = map.current.getSource("selected-region-districts") as maplibregl.GeoJSONSource;
-        source.setData(regionGeoJSON);
+        source.setData(regionGeoJSON as any);
       }
 
       // Fit map view to the selected districts bounds

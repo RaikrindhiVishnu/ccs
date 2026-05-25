@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { decompressGeoJSON } from "../utils/utils";
-import { getRegionColors } from "../utils/colorPalette";
+import { getRegionColors, getAreaColors } from "../utils/colorPalette";
 import { ChevronLeft, X, Loader2, Search, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -129,7 +129,7 @@ function extractMandalsGeoJSON(
 
   if (Array.isArray(areasList)) {
     areasList.forEach((area, idx) => {
-      const color = getRegionColors(regionId, idx).fill;
+      const color = getAreaColors(regionId, idx);
       if (Array.isArray(area.mandal_ids || area.mandalIds)) {
         const mIds = area.mandal_ids || area.mandalIds || [];
         mIds.forEach((mId: any) => {
@@ -313,6 +313,10 @@ const RegionAreaEdit: React.FC = () => {
   const [geoMasterData, setGeoMasterData] = useState<GeoMasterData | null>(
     null,
   );
+  const geoMasterDataRef = useRef<GeoMasterData | null>(null);
+  useEffect(() => {
+    geoMasterDataRef.current = geoMasterData;
+  }, [geoMasterData]);
   const [isLoadingGeoData, setIsLoadingGeoData] = useState(false);
   const [selectedState, setSelectedState] = useState<any | null>(null);
   const [isZoomed, setIsZoomed] = useState(false);
@@ -339,6 +343,7 @@ const RegionAreaEdit: React.FC = () => {
 
   useEffect(() => {
     (window as any).__selectedStateId = selectedState?.properties?.id ?? null;
+    (window as any).__selectedState = selectedState;
   }, [selectedState]);
 
   useEffect(() => {
@@ -535,7 +540,7 @@ const RegionAreaEdit: React.FC = () => {
     return assigned;
   }, [regionsByCountryData, geoMasterData]);
 
-  const { otherAssignedDistrictIds, currentRegionDistrictIds } = useMemo(() => {
+  const { otherAssignedDistrictIds } = useMemo(() => {
     const otherIds = new Set<number>();
     const currentIds = new Set<number>();
     if (!regionsByCountryData || !geoMasterData || !editRegionId) {
@@ -932,7 +937,7 @@ const RegionAreaEdit: React.FC = () => {
         });
 
         // Hover tooltip or cursor logic
-        map.current.on("mousemove", "districts-fill", (e) => {
+        map.current.on("mousemove", "districts-fill", () => {
           const searchParamsLocal = new URLSearchParams(window.location.search);
           const isEditModeLocal = !!searchParamsLocal.get("editRegionId");
 
@@ -1607,7 +1612,45 @@ const RegionAreaEdit: React.FC = () => {
                 });
               }
             } else {
-              // REGION MODE: Direct navigation to Region Details view!
+              // REGION MODE: Check if parent state is already selected. If not, zoom to state first.
+              const stateId = Number(feature.properties?.state_id);
+              const currentSelectedStateId = (window as any).__selectedStateId;
+
+              if (!currentSelectedStateId || currentSelectedStateId !== stateId) {
+                const masterData = geoMasterDataRef.current;
+                if (masterData && stateId) {
+                  const stateObj = masterData.countries
+                    .flatMap((c) => c.states ?? [])
+                    .find((s) => s.i === stateId);
+                  if (stateObj) {
+                    const stateFeature = {
+                      type: "Feature" as const,
+                      geometry: stateObj.g as any,
+                      properties: {
+                        id: stateObj.i,
+                        name: stateObj.d,
+                        code: stateObj.c,
+                      },
+                    };
+
+                    setSelectedState(stateFeature);
+                    map.current?.fitBounds(getFeatureBounds(stateFeature), {
+                      padding: 100,
+                      duration: 1200,
+                    });
+                    setIsZoomed(true);
+
+                    // First click: open assign/unassign panel
+                    setAssignPanelOpen(true);
+                    setAssignMode(null);
+                    setSelectedRegionForAssign(null);
+                    setRegionSearch("");
+                    return; // Zoom to state first, do not navigate yet
+                  }
+                }
+              }
+
+              // Direct navigation to Region Details view if state is already selected!
               if (map.current) {
                 const center = map.current.getCenter();
                 sessionStorage.setItem(
@@ -1618,10 +1661,11 @@ const RegionAreaEdit: React.FC = () => {
                   "region_map_zoom",
                   map.current.getZoom().toString(),
                 );
-                if (selectedState) {
+                const activeState = (window as any).__selectedState;
+                if (activeState) {
                   sessionStorage.setItem(
                     "region_map_selected_state",
-                    JSON.stringify(selectedState),
+                    JSON.stringify(activeState),
                   );
                 }
                 sessionStorage.setItem(

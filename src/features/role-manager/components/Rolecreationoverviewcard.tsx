@@ -165,7 +165,7 @@ export function RoleCreationOverviewCard({
             variant="p"
             className="m-0 font-medium text-[clamp(0.875rem,1.5vw,1.25rem)] leading-[110%] text-[color:var(--text-primary)] font-[family-name:'Plus_Jakarta_Sans',sans-serif]"
           >
-            Region Creation Overview
+            {title}
           </Typography>
 
           <Typography
@@ -173,7 +173,7 @@ export function RoleCreationOverviewCard({
             variant="p"
             className="m-0 font-normal text-[clamp(0.6875rem,1vw,0.875rem)] leading-[110%] text-[color:var(--text-primary)] opacity-60 font-[family-name:'Plus_Jakarta_Sans',sans-serif]"
           >
-            Breakdown of role creation by role type
+            {subtitle}
           </Typography>
         </div>
 
