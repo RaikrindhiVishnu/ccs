@@ -127,7 +127,7 @@ const RegionDetailsView: React.FC = () => {
     { skip: !geoMasterData }
   );
 
-  const { data: mockData, isLoading: isDetailsLoading } = useGetRegionDetailsMockQuery(regionId);
+  const { data: mockData } = useGetRegionDetailsMockQuery(regionId);
 
   // Fetch geo master data
   useEffect(() => {
@@ -316,7 +316,7 @@ const RegionDetailsView: React.FC = () => {
             {/* Metadata Grid */}
             <div className="grid grid-cols-2 gap-y-6 gap-x-4 mt-2">
               <div>
-                <Typography variant="small" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
+                <Typography variant="span" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
                   Region Name
                 </Typography>
                 <Typography variant="h4" className="text-[#0F172A] font-bold text-[16px]">
@@ -325,7 +325,7 @@ const RegionDetailsView: React.FC = () => {
               </div>
               
               <div>
-                <Typography variant="small" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
+                <Typography variant="span" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
                   Assigned ID
                 </Typography>
                 <Typography variant="h4" className="text-[#0F172A] font-bold uppercase font-mono tracking-tight text-[16px]">
@@ -334,7 +334,7 @@ const RegionDetailsView: React.FC = () => {
               </div>
 
               <div>
-                <Typography variant="small" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
+                <Typography variant="span" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
                   Created Date
                 </Typography>
                 <Typography variant="p" className="text-[#1E293B] font-bold text-[15px]">
@@ -343,7 +343,7 @@ const RegionDetailsView: React.FC = () => {
               </div>
 
               <div>
-                <Typography variant="small" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
+                <Typography variant="span" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
                   Created Time
                 </Typography>
                 <Typography variant="p" className="text-[#1E293B] font-bold text-[15px]">
@@ -368,7 +368,7 @@ const RegionDetailsView: React.FC = () => {
             <div className="flex flex-col gap-8">
               {/* Regional Officer */}
               <div>
-                <Typography variant="small" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-4 block">
+                <Typography variant="span" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-4 block">
                   Regional Officer
                 </Typography>
                 <div className="flex items-center gap-4">
@@ -387,7 +387,7 @@ const RegionDetailsView: React.FC = () => {
                     <Typography variant="p" className="text-[#0F172A] font-bold text-[16px] mb-0.5">
                       {mockData?.regional_officer?.name || "Unassigned"}
                     </Typography>
-                    <Typography variant="small" className="text-[#64748B] font-medium text-[13px]">
+                    <Typography variant="span" className="text-[#64748B] font-medium text-[13px]">
                       Officer Code: {mockData?.regional_officer?.code || "—"}
                     </Typography>
                   </div>
@@ -399,7 +399,7 @@ const RegionDetailsView: React.FC = () => {
 
               {/* Intelligence Officer */}
               <div>
-                <Typography variant="small" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-4 block">
+                <Typography variant="span" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-4 block">
                   Intelligence Officer
                 </Typography>
                 <div className="flex items-center gap-4">
@@ -418,7 +418,7 @@ const RegionDetailsView: React.FC = () => {
                     <Typography variant="p" className="text-[#0F172A] font-bold text-[16px] mb-0.5">
                       {mockData?.intelligence_officer?.name || "Unassigned"}
                     </Typography>
-                    <Typography variant="small" className="text-[#64748B] font-medium text-[13px]">
+                    <Typography variant="span" className="text-[#64748B] font-medium text-[13px]">
                       Officer Code: {mockData?.intelligence_officer?.code || "—"}
                     </Typography>
                   </div>

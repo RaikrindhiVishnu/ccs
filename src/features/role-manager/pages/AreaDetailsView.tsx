@@ -18,7 +18,7 @@ const AreaDetailsView: React.FC = () => {
 
   // Queries
   const { data: allGeoJsonData } = useGetAllGeoJsonDataQuery();
-  const { data: areaDetailsData, isLoading: isDetailsLoading } = useGetAreaByIdQuery({ area_id: Number(areaId) }, { skip: !areaId });
+  const { data: areaDetailsData } = useGetAreaByIdQuery({ area_id: Number(areaId) }, { skip: !areaId });
 
   // Dynamically resolve real backend area details using regionId & get_all_areas_by_region_id
   const regionId = areaDetailsData?.data?.regionId || areaDetailsData?.data?.region_id;
@@ -304,7 +304,7 @@ const AreaDetailsView: React.FC = () => {
             {/* Metadata Grid */}
             <div className="grid grid-cols-2 gap-y-6 gap-x-4 mt-2">
               <div>
-                <Typography variant="small" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
+                <Typography variant="span" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
                   Area Name
                 </Typography>
                 <Typography variant="h4" className="text-[#0F172A] font-bold text-[16px]">
@@ -313,7 +313,7 @@ const AreaDetailsView: React.FC = () => {
               </div>
               
               <div>
-                <Typography variant="small" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
+                <Typography variant="span" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
                   Assigned ID
                 </Typography>
                 <Typography variant="h4" className="text-[#0F172A] font-bold uppercase font-mono tracking-tight text-[16px]">
@@ -322,7 +322,7 @@ const AreaDetailsView: React.FC = () => {
               </div>
 
               <div>
-                <Typography variant="small" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
+                <Typography variant="span" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
                   Created Date
                 </Typography>
                 <Typography variant="p" className="text-[#1E293B] font-bold text-[15px]">
@@ -331,7 +331,7 @@ const AreaDetailsView: React.FC = () => {
               </div>
 
               <div>
-                <Typography variant="small" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
+                <Typography variant="span" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
                   Created Time
                 </Typography>
                 <Typography variant="p" className="text-[#1E293B] font-bold text-[15px]">
@@ -356,7 +356,7 @@ const AreaDetailsView: React.FC = () => {
             <div className="flex flex-col gap-8">
               {/* Field Officer */}
               <div>
-                <Typography variant="small" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-4 block">
+                <Typography variant="span" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-4 block">
                   Field Officer
                 </Typography>
                 <div className="flex items-center gap-4">
@@ -375,7 +375,7 @@ const AreaDetailsView: React.FC = () => {
                     <Typography variant="p" className="text-[#0F172A] font-bold text-[16px] mb-0.5">
                       {fieldOfficer.name || "Unassigned"}
                     </Typography>
-                    <Typography variant="small" className="text-[#64748B] font-medium text-[13px]">
+                    <Typography variant="span" className="text-[#64748B] font-medium text-[13px]">
                       Officer Code: {fieldOfficer.code || "—"}
                     </Typography>
                   </div>
