@@ -17,6 +17,7 @@ import {
   useGetAllAreasByRegionIdQuery,
   useGetRegionsByStateIdQuery,
   useGetRegionGeoJsonQuery,
+  useLazyGetRegionGeoJsonQuery,
 } from "../api/regionSelectionApi";
 import {
   useGetAllRegionalOfficersMutation,
@@ -429,11 +430,12 @@ const RegionAreaEdit: React.FC = () => {
   const [updateRegion, { isLoading: isSavingRegion }] =
     useUpdateRegionMutation();
   const [updateArea, { isLoading: isSavingArea }] = useUpdateAreaMutation();
+  const [triggerGetRegionGeoJson] = useLazyGetRegionGeoJsonQuery();
 
   const isSaving = isSavingRegion || isSavingArea;
 
   const { data: allGeoJsonData } = useGetAllGeoJsonDataQuery();
-  const { data: regionsByCountryData } = useGetRegionsByCountryIdQuery(
+  const { data: regionsByCountryData, refetch: refetchRegionsByCountry } = useGetRegionsByCountryIdQuery(
     { country_id: 1 },
     { refetchOnMountOrArgChange: true },
   );
@@ -456,7 +458,7 @@ const RegionAreaEdit: React.FC = () => {
   }, [editedRegionGeoJson]);
 
   const selectedStateId = selectedState?.properties?.id;
-  const { data: regionsByStateData } = useGetRegionsByStateIdQuery(
+  const { data: regionsByStateData, refetch: refetchRegionsByState } = useGetRegionsByStateIdQuery(
     { state_id: Number(selectedStateId) },
     { skip: !selectedStateId }
   );
@@ -892,8 +894,6 @@ const RegionAreaEdit: React.FC = () => {
           (f: any) => Number(f.properties?.is_assigned) === 0
         );
       }
-
-      console.log(finalFeatures, "mappedFeatures and filtered");
       return { type: "FeatureCollection" as const, features: finalFeatures };
     } catch {
       return { type: "FeatureCollection" as const, features: filtered };
@@ -2224,6 +2224,21 @@ const RegionAreaEdit: React.FC = () => {
       )) {
         const sourceRegionId = Number(sourceRegionIdStr);
         const fromRegionProps = data.rawFeature.properties || {};
+        console.log("From Region Props", fromRegionProps);
+
+        // Dynamic fetch to retrieve real active regional and intelligence officer assignments from db
+        let activeProps = { ...fromRegionProps };
+        try {
+          const detailsRes = await triggerGetRegionGeoJson({ region_id: sourceRegionId }).unwrap();
+          const fetchedProps = detailsRes?.features?.[0]?.properties || detailsRes?.data?.features?.[0]?.properties;
+          if (fetchedProps) {
+            console.log(`Successfully fetched fresh details for source region ${sourceRegionId}:`, fetchedProps);
+            activeProps = { ...activeProps, ...fetchedProps };
+          }
+        } catch (fetchErr) {
+          console.warn(`Failed to fetch fresh properties for background region ${sourceRegionId}:`, fetchErr);
+        }
+
         const oldIds = getDistrictIdsFromRegion(data.rawFeature, geoMasterData);
         const newIds = oldIds.filter(
           (id) => !data.lostDistrictIds.includes(id),
@@ -2231,20 +2246,12 @@ const RegionAreaEdit: React.FC = () => {
 
         const silentPayload = {
           region_id: sourceRegionId,
-          regionName: fromRegionProps.region_name || fromRegionProps.name,
-          regionCode: fromRegionProps.region_code || fromRegionProps.code,
+          regionName: activeProps.region_name || activeProps.name,
+          regionCode: activeProps.region_code || activeProps.code,
           district_ids: newIds,
-          stateId: Number(fromRegionProps.state_id),
-          ...(fromRegionProps.regional_officer_id
-            ? { regionalOfficerId: Number(fromRegionProps.regional_officer_id) }
-            : {}),
-          ...(fromRegionProps.intelligence_officer_id
-            ? {
-                inteligenceOfficerId: Number(
-                  fromRegionProps.intelligence_officer_id,
-                ),
-              }
-            : {}),
+          stateId: Number(activeProps.state_id),
+          regional_officer_id: activeProps.regional_officer_id ? Number(activeProps.regional_officer_id) : null,
+          intelligence_officer_id: activeProps.intelligence_officer_id ? Number(activeProps.intelligence_officer_id) : null,
         };
 
         console.log(
@@ -2268,12 +2275,8 @@ const RegionAreaEdit: React.FC = () => {
         regionCode,
         district_ids: districtIds,
         stateId: Number(selectedState?.properties?.id),
-        ...(selectedRegionalOfficerId
-          ? { regionalOfficerId: Number(selectedRegionalOfficerId) }
-          : {}),
-        ...(selectedIntelligenceOfficerId
-          ? { inteligenceOfficerId: Number(selectedIntelligenceOfficerId) }
-          : {}),
+        regional_officer_id: selectedRegionalOfficerId ? Number(selectedRegionalOfficerId) : null,
+        intelligence_officer_id: selectedIntelligenceOfficerId ? Number(selectedIntelligenceOfficerId) : null,
       };
 
       console.log(
@@ -2289,20 +2292,31 @@ const RegionAreaEdit: React.FC = () => {
       await updateRegion(targetPayload).unwrap();
 
       toast.success("Region details and reassignments updated successfully!");
-      // Clean up search parameters and go back replacing entry
+
+      // 1. Fetch the updated regions again (refetch caches)
+      refetchRegionsByCountry();
+      if (refetchRegionsByState) {
+        refetchRegionsByState();
+      }
+
+      // 2. Select "assigned" in active filter dropdown
+      setActiveFilter("assigned");
+
+      // 3. Clear everything (reset state & search params)
+      setSelectedDistricts([]);
+      setReassignedDistricts([]);
+      setRegionName("");
+      setRegionCode("");
+      setSelectedRegionalOfficerId(null);
+      setSelectedIntelligenceOfficerId(null);
       setSearchParams({});
-      navigate(`/role-manager/region-details/${editRegionId}`, {
-        replace: true,
-      });
-    } catch (err) {
+
+      // 4. Navigate back to previous state selection view
+      navigate("/role-manager/create-regions-and-areas?mode=view");
+    } catch (err: any) {
       console.error("RegionAreaEdit: Update failed:", err);
-      toast.success(
-        "Region details and reassignments updated successfully! (Sandbox)",
-      );
-      setSearchParams({});
-      navigate(`/role-manager/region-details/${editRegionId}`, {
-        replace: true,
-      });
+      const errMsg = err?.data?.message || err?.message || "Failed to update region. Please try again.";
+      toast.error(errMsg);
     }
   };
 

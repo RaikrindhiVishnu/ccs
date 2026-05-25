@@ -249,7 +249,7 @@ const RegionDetailsView: React.FC = () => {
         }
       } catch {}
     }
-    return mockData?.created_date || "—";
+    // return mockData?.created_date || "—";
   }, [apiProperties?.created_on, mockData?.created_date]);
 
   const createdTimeVal = useMemo(() => {
@@ -261,46 +261,64 @@ const RegionDetailsView: React.FC = () => {
         }
       } catch {}
     }
-    return mockData?.created_time || "—";
+    // return mockData?.created_time || "—";
   }, [apiProperties?.created_on, mockData?.created_time]);
 
   const districtNames = apiProperties?.district || resolvedFeature?.properties?.district || resolvedFeature?.properties?.districts || "";
 
   // Resolve assigned officer details
   const regOfficer = useMemo(() => {
-    if (!apiProperties?.regional_officer_id) return mockData?.regional_officer;
-    const matched = regionalOfficersList.find(o => Number(o.id) === Number(apiProperties.regional_officer_id));
-    if (matched) {
-      const fullName = `${matched.first_name || ""} ${matched.last_name || ""}`.trim();
-      const officerCode = matched.code && matched.id ? `${matched.code}-${matched.id}` : `RO-${matched.id}`;
-      return {
-        name: fullName || "Unnamed Officer",
-        code: officerCode,
-        avatar_url: matched.avatar_url || null,
-      };
+    const rawId = apiProperties?.regional_officer_id;
+    const hasId = rawId && Number(rawId) !== 0 && String(rawId) !== "null";
+    
+    if (hasId) {
+      const matched = regionalOfficersList.find(o => Number(o.id) === Number(rawId));
+      if (matched) {
+        const fullName = `${matched.first_name || ""} ${matched.last_name || ""}`.trim();
+        const officerCode = matched.code && matched.id ? `${matched.code}-${matched.id}` : `RO-${matched.id}`;
+        return {
+          name: fullName || "Unnamed Officer",
+          code: officerCode,
+          avatar_url: matched.avatar_url || null,
+        };
+      }
     }
+    
+    // if (mockData?.regional_officer) {
+    //   return mockData.regional_officer;
+    // }
+
     return {
-      name: `Officer (ID: ${apiProperties.regional_officer_id})`,
-      code: `RO-${apiProperties.regional_officer_id}`,
+      name: "Unassigned",
+      code: "—",
       avatar_url: null,
     };
   }, [apiProperties?.regional_officer_id, regionalOfficersList, mockData?.regional_officer]);
 
   const intelOfficer = useMemo(() => {
-    if (!apiProperties?.intelligence_officer_id) return mockData?.intelligence_officer;
-    const matched = intelligenceOfficersList.find(o => Number(o.id) === Number(apiProperties.intelligence_officer_id));
-    if (matched) {
-      const fullName = `${matched.first_name || ""} ${matched.last_name || ""}`.trim();
-      const officerCode = matched.code && matched.id ? `${matched.code}-${matched.id}` : `IO-${matched.id}`;
-      return {
-        name: fullName || "Unnamed Officer",
-        code: officerCode,
-        avatar_url: matched.avatar_url || null,
-      };
+    const rawId = apiProperties?.intelligence_officer_id;
+    const hasId = rawId && Number(rawId) !== 0 && String(rawId) !== "null";
+    
+    if (hasId) {
+      const matched = intelligenceOfficersList.find(o => Number(o.id) === Number(rawId));
+      if (matched) {
+        const fullName = `${matched.first_name || ""} ${matched.last_name || ""}`.trim();
+        const officerCode = matched.code && matched.id ? `${matched.code}-${matched.id}` : `IO-${matched.id}`;
+        return {
+          name: fullName || "Unnamed Officer",
+          code: officerCode,
+          avatar_url: matched.avatar_url || null,
+        };
+      }
     }
+    
+    // if (mockData?.intelligence_officer) {
+    //   return mockData.intelligence_officer;
+    // }
+
     return {
-      name: `Officer (ID: ${apiProperties.intelligence_officer_id})`,
-      code: `IO-${apiProperties.intelligence_officer_id}`,
+      name: "Unassigned",
+      code: "—",
       avatar_url: null,
     };
   }, [apiProperties?.intelligence_officer_id, intelligenceOfficersList, mockData?.intelligence_officer]);
