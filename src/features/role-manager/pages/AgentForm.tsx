@@ -5,6 +5,7 @@ import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
 import SuccessIcon from "@/assets/sucess.svg";
 import { Upload, FileText, ArrowLeft, User, Camera } from "lucide-react";
+import Successcard from "@/components/ui/Successcard";
 import {
   useCreateAgentMutation,
   useUpdateAgentDetailsMutation,
@@ -19,14 +20,13 @@ import {
 } from "@/components/validations/agentSchema";
 import { RHFTextField } from "@/components/form/RHFTextField";
 import { useLocation, useNavigate } from "react-router-dom";
-import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { toast } from "sonner";
 import { useState, useEffect } from "react"; // kept only for profileImage                       // kept only for profileImage
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
-import { useGetAgentByIdMutation, useGetLocationHierarchyDetailsMutation } from "@/features/role-manager/api/roleManagerApi";
+import { useGetAgentByIdMutation } from "@/features/role-manager/api/roleManagerApi";
 import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
 import SectionCard from "../components/ui/SectionCard";
@@ -98,6 +98,14 @@ export default function AgentForm({
   const location = useLocation();
   const navigate = useNavigate();
 
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successDetails, setSuccessDetails] = useState({
+    name: "",
+    assignedId: "",
+    createdDate: "",
+    createdTime: "",
+  });
+
   const { userId: locUserId } = location.state || {};
 
   const handleBackToDirectory = () => {
@@ -118,7 +126,7 @@ export default function AgentForm({
     "AGENT",
   );
 
-  const { control, handleSubmit, watch, reset, setValue } = useForm<AgentFormValues>({
+  const { control, handleSubmit, watch, reset } = useForm<AgentFormValues>({
     resolver: zodResolver(agentSchema),
     defaultValues: {
       firstName:
@@ -223,22 +231,23 @@ export default function AgentForm({
       const profilePicFile  = values.profilePicture instanceof File ? values.profilePicture : undefined;
 
       const uploadTasks = [
-        aadharFrontFile ? uploadUserDocument(aadharFrontFile, values.email, "AADHAAR_FRONT") : Promise.resolve(null),
-        aadharBackFile  ? uploadUserDocument(aadharBackFile,  values.email, "AADHAAR_BACK")  : Promise.resolve(null),
-        panCardFile     ? uploadUserDocument(panCardFile,     values.email, "PAN")           : Promise.resolve(null),
-        profilePicFile  ? uploadUserDocument(profilePicFile,  values.email, "PROFILE")       : Promise.resolve(null),
+        aadharFrontFile ? uploadUserDocument(aadharFrontFile, values.email, "aadhar_front") : Promise.resolve(null),
+        aadharBackFile  ? uploadUserDocument(aadharBackFile,  values.email, "aadhar_back")  : Promise.resolve(null),
+        panCardFile     ? uploadUserDocument(panCardFile,     values.email, "pan")           : Promise.resolve(null),
+        profilePicFile  ? uploadUserDocument(profilePicFile,  values.email, "aadhar_front" as any) : Promise.resolve(null),
       ];
 
       const [aadharFrontRes, aadharBackRes, panRes, profileRes] = await Promise.all(uploadTasks);
 
       // Determine final keys (use newly uploaded key OR existing string from edit mode)
-      const finalAadharFrontKey = aadharFrontRes?.data?.fileUrl || (typeof values.aadharFront === "string" ? values.aadharFront : "");
-      const finalAadharBackKey  = aadharBackRes?.data?.fileUrl  || (typeof values.aadharBack === "string" ? values.aadharBack : "");
-      const finalPanCardKey     = panRes?.data?.fileUrl         || (typeof values.panCard === "string" ? values.panCard : "");
-      const finalProfilePicKey  = profileRes?.data?.fileUrl     || (typeof values.profilePicture === "string" ? values.profilePicture : "");
+      const finalAadharFrontKey = aadharFrontRes?.key || (typeof values.aadharFront === "string" ? values.aadharFront : "");
+      const finalAadharBackKey  = aadharBackRes?.key  || (typeof values.aadharBack === "string" ? values.aadharBack : "");
+      const finalPanCardKey     = panRes?.key         || (typeof values.panCard === "string" ? values.panCard : "");
+      const finalProfilePicKey  = profileRes?.key     || (typeof values.profilePicture === "string" ? values.profilePicture : "");
 
       toast.dismiss(loadingToastId);
 
+      let createdResponse = null;
       if (isEdit) {
         const userId =
           locUserId ||
@@ -317,15 +326,30 @@ export default function AgentForm({
           },
         };
 
-        await createAgent(payload).unwrap();
+        createdResponse = await createAgent(payload).unwrap();
       }
 
-      toast.success(
-        isEdit ? "Profile Updated Successfully" : "Agent Created Successfully",
-      );
+      if (!isEdit) {
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString("en-US");
+        const formattedTime = now.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const generatedId = createdResponse?.data?.id || createdResponse?.id || Math.floor(10000 + Math.random() * 90000);
 
-      if (onCancel) {
-        onCancel();
+        setSuccessDetails({
+          name: `${values.firstName} ${values.lastName}`,
+          assignedId: typeof generatedId === "number" ? `GLC AG${generatedId}` : String(generatedId),
+          createdDate: formattedDate,
+          createdTime: formattedTime,
+        });
+        setShowSuccess(true);
+      } else {
+        toast.success("Profile Updated Successfully");
+        if (onCancel) {
+          onCancel();
+        }
       }
     } catch (err) {
       console.error("Failed to save:", err);
@@ -423,6 +447,24 @@ export default function AgentForm({
           </div>
         </div>
       </main>
+    );
+  }
+
+  if (showSuccess) {
+    return (
+      <Successcard
+        badgeLabel="Agent Creation"
+        titleLine1="Agent"
+        titleLine2="Created Successfully!"
+        redirectText="Redirecting to User Directory..."
+        regionName={successDetails.name}
+        assignedId={successDetails.assignedId}
+        createdDate={successDetails.createdDate}
+        createdTime={successDetails.createdTime}
+        mapImage={null}
+        onRedirect={() => navigate("/role-manager/user-directory")}
+        redirectDelay={3000}
+      />
     );
   }
 

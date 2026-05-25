@@ -158,6 +158,7 @@ export interface UpdateAgentRequest {
   dob: string;
   role_id: number;
   isVerified?: number;
+  profile_image?: string;
   address: {
     address: string;
     state_id: number;

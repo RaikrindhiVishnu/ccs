@@ -7,6 +7,7 @@ import { BackButton } from "@/components/ui/BackButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
+import Successcard from "@/components/ui/Successcard";
 import {
   useCreateFieldOfficerMutation,
   useUpdateFieldOfficerMutation,
@@ -131,7 +132,7 @@ function UploadPictureField({
               )}
             >
               <span className="flex-1 text-left truncate mr-2 font-[family-name:var(--font-inter)] font-normal text-[clamp(0.6875rem,0.83vw,0.875rem)] text-[color:var(--text-muted)]">
-                {field.value?.name ?? (typeof field.value === "string" ? "Existing Picture" : "Supports JPEG, PNG and Other Formats")}
+                {field.value instanceof File ? field.value.name : typeof field.value === "string" ? "Existing Picture" : "Supports JPEG, PNG and Other Formats"}
               </span>
               <ImageUp className="shrink-0 text-[var(--text-primary)] w-[1.125rem] h-[1.125rem] stroke-[1.75]" />
               <input
@@ -320,6 +321,14 @@ const CreateFieldOfficer = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id: routeId, userId: routeUserId } = useParams();
+
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successDetails, setSuccessDetails] = useState({
+    name: "",
+    assignedId: "",
+    createdDate: "",
+    createdTime: "",
+  });
 
   const routeParamId = routeId || routeUserId;
   const userId = routeParamId || location.state?.userId;
@@ -512,8 +521,27 @@ const CreateFieldOfficer = () => {
           userId,
         }).unwrap()
         : await createFieldOfficer(payload).unwrap();
-      toast.success(response?.message || "Field Officer created successfully");
-      navigate(fromPath);
+
+      if (!isEditMode) {
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString("en-US");
+        const formattedTime = now.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const generatedId = response?.data?.id || response?.id || Math.floor(10000 + Math.random() * 90000);
+        
+        setSuccessDetails({
+          name: `${values.firstName} ${values.lastName}`,
+          assignedId: typeof generatedId === "number" ? `GLC FO${generatedId}` : String(generatedId),
+          createdDate: formattedDate,
+          createdTime: formattedTime,
+        });
+        setShowSuccess(true);
+      } else {
+        toast.success("Field Officer updated successfully");
+        navigate(fromPath);
+      }
     } catch (err: any) {
       console.error(err);
       toast.error(
@@ -521,6 +549,24 @@ const CreateFieldOfficer = () => {
       );
     }
   };
+
+  if (showSuccess) {
+    return (
+      <Successcard
+        badgeLabel="Field Officer Creation"
+        titleLine1="Field Officer"
+        titleLine2="Created Successfully!"
+        redirectText="Redirecting to User Directory..."
+        regionName={successDetails.name}
+        assignedId={successDetails.assignedId}
+        createdDate={successDetails.createdDate}
+        createdTime={successDetails.createdTime}
+        mapImage={null}
+        onRedirect={() => navigate("/role-manager/user-directory")}
+        redirectDelay={3000}
+      />
+    );
+  }
 
   if (isViewMode) {
     const data = fieldOfficerData?.data || initialData;

@@ -4,6 +4,7 @@ import {
   useGetFieldOfficerDetailsQuery,
   useGetAgentDetailsQuery,
 } from "../api/userDirectoryApi";
+import { useGetAllAreasByRegionIdQuery } from "../api/regionSelectionApi";
 import { useDispatch, useSelector } from "react-redux";
 import { setRegions } from "../store/roleManagerSlice";
 import { useGetAllRegionsByStateIdMutation } from "../api/masterDataApi";
@@ -31,6 +32,7 @@ const UserDirectory: React.FC = () => {
   const [selectedRegionId, setSelectedRegionId] = React.useState<string>(
     regions?.[0]?.id?.toString() || ""
   );
+  const [selectedAreaId, setSelectedAreaId] = React.useState<string>("");
 
   const [
     getRegionsByStateId,
@@ -52,28 +54,54 @@ const UserDirectory: React.FC = () => {
   const regionalOfficerId = regionOfficerData?.data?.regional_officer_id;
   const intelligenceOfficerId = regionOfficerData?.data?.intelligence_officer_id;
 
+  // Fetch Areas of selected Region
+  const { data: areasData, isLoading: isAreasLoading } = useGetAllAreasByRegionIdQuery(
+    { region_id: Number(selectedRegionId) },
+    { skip: !selectedRegionId }
+  );
+
+  const areasList = areasData?.data || [];
+
+  useEffect(() => {
+    const firstAreaId = areasList[0]?.area_id ?? areasList[0]?.id;
+    if (areasList.length > 0 && firstAreaId !== undefined && firstAreaId !== null) {
+      setSelectedAreaId(firstAreaId.toString());
+    } else {
+      setSelectedAreaId("");
+    }
+  }, [areasList]);
+
   // 2. Fetch Field Officers under these regional/intelligence officers (pass 0 if null/undefined)
   const { data: fieldOfficerData, isLoading: isFieldLoading } = useGetFieldOfficerDetailsQuery(
     {
+      state_id: selectedStateId,
+      region_id: selectedRegionId,
       regional_officer_id: regionalOfficerId || 0,
       intelligence_officer_id: intelligenceOfficerId || 0,
+      area_id: selectedAreaId || 0,
     },
     { 
-      skip: !regionOfficerData,
+      skip: !regionOfficerData || !selectedAreaId,
       refetchOnMountOrArgChange: true,
     }
   );
 
   const fieldOfficersList = fieldOfficerData?.data || [];
-  const firstFieldOfficerId = fieldOfficersList.length > 0 
-    ? (fieldOfficersList[0].role_id || fieldOfficersList[0].id) 
+  const firstFieldOfficer = fieldOfficersList[0];
+  const firstFieldOfficerId = firstFieldOfficer 
+    ? (firstFieldOfficer.role_id || firstFieldOfficer.id) 
     : 0;
 
   // 3. Fetch Agents under the first Field Officer automatically
   const { data: agentData, isLoading: isAgentLoading } = useGetAgentDetailsQuery(
-    firstFieldOfficerId,
+    {
+      state_id: selectedStateId,
+      region_id: selectedRegionId,
+      area_id: selectedAreaId || 0,
+      field_officer_id: firstFieldOfficerId,
+    },
     { 
-      skip: !fieldOfficerData,
+      skip: !fieldOfficerData || fieldOfficersList.length === 0 || !selectedAreaId,
       refetchOnMountOrArgChange: true,
     }
   );
@@ -121,7 +149,7 @@ const UserDirectory: React.FC = () => {
     };
   }, []);
 
-  const isUpdating = isRegionsLoading || isRegionLoading || isFieldLoading || isAgentLoading;
+  const isUpdating = isRegionsLoading || isRegionLoading || isAreasLoading || isFieldLoading || isAgentLoading;
 
   return (
     <div className="flex flex-col py-16 px-4 gap-6 box-border min-h-full bg-( --surface-page)">
@@ -161,14 +189,19 @@ const UserDirectory: React.FC = () => {
           {/* Right Side: Dropdowns */}
           <div className="flex gap-2 items-center">
             <PillDropdown
-              options={states?.length > 0 ? states.map((s: any) => ({ label: s.desc, value: s.id.toString() })) : []}
+              options={states?.length > 0 ? states.map((s: any) => ({ label: s.desc, value: s.id?.toString() || "" })) : []}
               value={selectedStateId}
               onChange={handleStateChange}
             />
             <PillDropdown
-              options={regions?.length > 0 ? regions.map((r: any) => ({ label: r.region_name || r.desc, value: r.id.toString() })) : []}
+              options={regions?.length > 0 ? regions.map((r: any) => ({ label: r.region_name || r.desc, value: r.id?.toString() || "" })) : []}
               value={selectedRegionId}
               onChange={handleRegionChange}
+            />
+            <PillDropdown
+              options={areasList?.length > 0 ? areasList.map((a: any) => ({ label: a.area_name || a.desc, value: (a.area_id ?? a.id)?.toString() || "" })) : []}
+              value={selectedAreaId}
+              onChange={(areaId) => setSelectedAreaId(areaId)}
             />
           </div>
         </div>
@@ -187,6 +220,9 @@ const UserDirectory: React.FC = () => {
             regionOfficerData={regionOfficerData}
             fieldOfficerData={fieldOfficerData}
             agentData={agentData}
+            stateId={selectedStateId}
+            regionId={selectedRegionId}
+            areaId={selectedAreaId}
           />
         </div>
       </div>

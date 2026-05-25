@@ -14,12 +14,18 @@ interface RoleFlowProps {
   regionOfficerData?: any;
   fieldOfficerData?: any;
   agentData?: any;
+  stateId: string;
+  regionId: string;
+  areaId: string;
 }
 
 export const RoleFlow: React.FC<RoleFlowProps> = ({
   regionOfficerData,
   fieldOfficerData,
   agentData,
+  stateId,
+  regionId,
+  areaId,
 }) => {
   const navigate = useNavigate();
 
@@ -158,9 +164,12 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
     try {
       const targetId = officer.role_id;
 
-      const response = await getAgentDetails(
-        targetId
-      ).unwrap();
+      const response = await getAgentDetails({
+        state_id: stateId,
+        region_id: regionId,
+        area_id: areaId || officer.area_id || 0,
+        field_officer_id: targetId,
+      }).unwrap();
 
       setLocalAgents(response?.data || []);
     } catch (error) {

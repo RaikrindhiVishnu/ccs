@@ -44,6 +44,7 @@ import {
   AssignedFarmlandPage,
   FarmlandWorkflowPage,
   DraftsDetailPage,
+  AssignOfficersPage,
 } from './routes.config';
 
 
@@ -78,7 +79,6 @@ export const authRoutes: RouteObject[] = [
         path: "/role-manager/region-area-dashboard",
         element: <RegionAndArea />,
       },
-      { path: "/role-manager/region-creation", element: <RegionSelection /> },
       { path: "/io/dashboard", element: <IODashboard /> },
       { path: "/io/Assignedfarmland", element: <Assignedfarmland /> },
       { path: "/io/assigned-farmland/list", element: <AssignedFarmlandList /> },
@@ -115,6 +115,14 @@ export const authRoutes: RouteObject[] = [
       { path: "/role-manager/agent-approvals", element: <AgentApprovals /> },
       { path: "/role-manager/agent-details/:id", element: <Agentdetailpage /> },   
  ],
+  },
+  {
+    path: "/role-manager/region-creation",
+    element: <RegionSelection />,
+  },
+  {
+    path: "/role-manager/assign-officers",
+    element: <AssignOfficersPage />,
   },
   {
     element: <FieldOfficerLayout />,
