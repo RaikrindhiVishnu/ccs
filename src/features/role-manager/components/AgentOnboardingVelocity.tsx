@@ -13,7 +13,6 @@ interface Props {
 }
 
 const AgentOnboardingVelocity: React.FC<Props> = ({
-  activeLabel,
   title = "Agent Onboarding Velocity",
   subtitle = "Weekly overview of Onboarding of Agents",
 }) => {
