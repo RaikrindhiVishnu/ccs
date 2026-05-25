@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
@@ -144,13 +144,28 @@ const InfoCard: React.FC<InfoCardProps> = ({
 
 const CreateRegionsAndAreas: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get("mode") || "create";
+  const isViewMode = mode === "view";
 
   const handleNavigateToRegion = () => {
-    navigate("/role-manager/region-creation?mode=region");
+    if (isViewMode) {
+      // View mode → full-screen MapLibre map showing created regions + district boundaries
+      navigate("/role-manager/region-area-edit");
+    } else {
+      // Create mode → GIS map creation screen
+      navigate("/role-manager/region-creation?mode=region");
+    }
   };
 
   const handleNavigateToArea = () => {
-    navigate("/role-manager/region-creation?mode=area");
+    if (isViewMode) {
+      // View mode → go to region-area-edit?mode=area
+      navigate("/role-manager/region-area-edit?mode=area");
+    } else {
+      // Create mode → go to the GIS map creation screen
+      navigate("/role-manager/region-creation?mode=area");
+    }
   };
 
   return (
@@ -204,7 +219,7 @@ const CreateRegionsAndAreas: React.FC = () => {
                 "leading-[1.875rem]",
               )}
             >
-              Create Regions and Areas
+              {isViewMode ? "View Regions and Areas" : "Create Regions and Areas"}
             </Typography>
           </div>
 
@@ -224,7 +239,7 @@ const CreateRegionsAndAreas: React.FC = () => {
             )}
           >
             <InfoCard
-              title="Region"
+              title={isViewMode ? "View Region" : "Region"}
               description="A broad strategic territory managed by the Regional Officer, comprising multiple operational clusters."
               imageSrc={regionImg}
               imageAlt="Region illustration"
@@ -232,7 +247,7 @@ const CreateRegionsAndAreas: React.FC = () => {
             />
 
             <InfoCard
-              title="Area"
+              title={isViewMode ? "View Area" : "Area"}
               description="A specific locality or zone within a Region where daily land sourcing operations take place."
               imageSrc={areasImg}
               imageAlt="Area illustration"

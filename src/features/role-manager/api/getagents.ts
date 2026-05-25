@@ -4,6 +4,7 @@ export interface GetAgentsRequest {
   registration_status_id: number;
   limit: number;
   offset: number;
+  is_assigned?: number;
 }
 
 export interface AgentResponse {
@@ -54,12 +55,15 @@ export const getAgentsApi = roleManagerApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllAgents: builder.mutation<
       GetAgentsApiResponse,
-      GetAgentsRequest
+      GetAgentsRequest & { is_assigned?: number }
     >({
       query: (body) => ({
         url: "agents/getAllAgents",
         method: "POST",
-        body,
+        body: {
+          ...body,
+          is_assigned: body?.is_assigned !== undefined ? body.is_assigned : 0,
+        },
       }),
     }),
 

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { ImageUp, FileImage } from "lucide-react";
+import Successcard from "@/components/ui/Successcard";
 import { useForm, Controller } from "react-hook-form"; // added Controller
 import type { Control } from "react-hook-form"; // type-only import
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -133,7 +134,7 @@ function UploadPictureField({
               )}
             >
               <span className="flex-1 text-left truncate mr-2 font-[family-name:var(--font-inter)] font-normal text-[clamp(0.6875rem,0.83vw,0.875rem)] text-[color:var(--text-muted)]">
-                {field.value?.name ?? (typeof field.value === "string" ? "Existing Picture" : "Supports JPEG, PNG and Other Formats")}
+                {field.value instanceof File ? field.value.name : typeof field.value === "string" ? "Existing Picture" : "Supports JPEG, PNG and Other Formats"}
               </span>
               <ImageUp className="shrink-0 text-[var(--text-primary)] w-[1.125rem] h-[1.125rem] stroke-[1.75]" />
               <input
@@ -322,10 +323,17 @@ export default function CreateIntelligenceOfficer() {
   const states = useSelector((state: any) => state.roleManager.states);
   const allDistricts = useSelector((state: any) => state.roleManager.districts);
   const allMandals = useSelector((state: any) => state.roleManager.mandals);
-  const stateOptions = states.map((item: any) => item.desc);
   const navigate = useNavigate();
   const location = useLocation();
   const { id: routeId, userId: routeUserId } = useParams();
+
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successDetails, setSuccessDetails] = useState({
+    name: "",
+    assignedId: "",
+    createdDate: "",
+    createdTime: "",
+  });
 
   const routeParamId = routeId || routeUserId;
   const userId = routeParamId || location.state?.userId;
@@ -503,17 +511,53 @@ export default function CreateIntelligenceOfficer() {
         },
       };
 
-      isEditMode
+      const response = isEditMode
         ? await updateRegionalOfficer({ ...payload, userId }).unwrap()
         : await createRegionalOfficer(payload).unwrap();
 
-      toast.success("Intelligence Officer created successfully");
-      navigate(fromPath);
+      if (!isEditMode) {
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString("en-US");
+        const formattedTime = now.toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const generatedId = response?.data?.id || response?.id || Math.floor(10000 + Math.random() * 90000);
+        
+        setSuccessDetails({
+          name: `${values.firstName} ${values.lastName}`,
+          assignedId: typeof generatedId === "number" ? `GLC IO${generatedId}` : String(generatedId),
+          createdDate: formattedDate,
+          createdTime: formattedTime,
+        });
+        setShowSuccess(true);
+      } else {
+        toast.success("Intelligence Officer updated successfully");
+        navigate(fromPath);
+      }
     } catch (err: any) {
       console.error(err);
       toast.error(err?.data?.message || err?.data?.error || "Something went wrong");
     }
   };
+
+  if (showSuccess) {
+    return (
+      <Successcard
+        badgeLabel="Intelligence Officer Creation"
+        titleLine1="Intelligence Officer"
+        titleLine2="Created Successfully!"
+        redirectText="Redirecting to User Directory..."
+        regionName={successDetails.name}
+        assignedId={successDetails.assignedId}
+        createdDate={successDetails.createdDate}
+        createdTime={successDetails.createdTime}
+        mapImage={null}
+        onRedirect={() => navigate("/role-manager/user-directory")}
+        redirectDelay={3000}
+      />
+    );
+  }
 
   if (isViewMode) {
     const data = intelligenceOfficerData?.data || initialData;

@@ -44,6 +44,11 @@ import {
   AssignedFarmlandPage,
   FarmlandWorkflowPage,
   DraftsDetailPage,
+  AssignOfficersPage,
+  AssignFieldOfficerPage,
+  RegionDetailsView,
+  AreaDetailsView,
+  RegionAreaEdit,
 } from './routes.config';
 
 
@@ -78,7 +83,6 @@ export const authRoutes: RouteObject[] = [
         path: "/role-manager/region-area-dashboard",
         element: <RegionAndArea />,
       },
-      { path: "/role-manager/region-creation", element: <RegionSelection /> },
       { path: "/io/dashboard", element: <IODashboard /> },
       { path: "/io/Assignedfarmland", element: <Assignedfarmland /> },
       { path: "/io/assigned-farmland/list", element: <AssignedFarmlandList /> },
@@ -115,6 +119,37 @@ export const authRoutes: RouteObject[] = [
       { path: "/role-manager/agent-approvals", element: <AgentApprovals /> },
       { path: "/role-manager/agent-details/:id", element: <Agentdetailpage /> },   
  ],
+  },
+  {
+    path: "/role-manager/region-creation",
+    element: <RegionSelection />,
+  },
+  {
+    path: "/role-manager/assign-officers",
+    element: <AssignOfficersPage />,
+  },
+  {
+    path: "/role-manager/assign-field-officer",
+    element: <AssignFieldOfficerPage />,
+  },
+  {
+    path: "/role-manager/region-edit/:regionId",
+    element: <RegionAreaEdit />,
+  },
+  {
+    // Full-screen map for viewing/editing regions — no sidebar layout
+    path: "/role-manager/region-area-edit",
+    element: <RegionAreaEdit />,
+  },
+  {
+    // Full-screen details view for a specific region
+    path: "/role-manager/region-details/:regionId",
+    element: <RegionDetailsView />,
+  },
+  {
+    // Full-screen details view for a specific area
+    path: "/role-manager/area-details/:areaId",
+    element: <AreaDetailsView />,
   },
   {
     element: <FieldOfficerLayout />,
