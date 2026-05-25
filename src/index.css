@@ -338,3 +338,15 @@ h1 {
   height: 100%;
   object-fit: cover;
 }
+
+/* ─── MAPLIBRE POPUP OVERRIDES ─────────────────────────────────── */
+.region-hover-popup .maplibregl-popup-content {
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.region-hover-popup .maplibregl-popup-tip {
+  display: none;
+}

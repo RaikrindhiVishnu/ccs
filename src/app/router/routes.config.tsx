@@ -130,4 +130,20 @@ export const DraftsDetailPage = lazy(
 export const AssignOfficersPage = lazy(
   () => import("../../features/role-manager/pages/AssignOfficers"),
 );
+export const AssignFieldOfficerPage = lazy(
+  () => import("../../features/role-manager/pages/AssignFieldOfficer"),
+);
 
+// ─── Region & Area View / Edit pages (placeholder — wire to API when ready) ───
+export const RegionEdit = lazy(
+  () => import("../../features/role-manager/pages/RegionAreaEdit"),
+);
+export const RegionDetailsView = lazy(
+  () => import("../../features/role-manager/pages/RegionDetailsView"),
+);
+export const AreaDetailsView = lazy(
+  () => import("../../features/role-manager/pages/AreaDetailsView"),
+);
+export const RegionAreaEdit = lazy(
+  () => import("../../features/role-manager/pages/RegionAreaEdit"),
+);
