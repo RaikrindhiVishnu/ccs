@@ -45,6 +45,10 @@ import {
   FarmlandWorkflowPage,
   DraftsDetailPage,
   AssignOfficersPage,
+  AssignFieldOfficerPage,
+  RegionDetailsView,
+  AreaDetailsView,
+  RegionAreaEdit,
 } from './routes.config';
 
 
@@ -123,6 +127,29 @@ export const authRoutes: RouteObject[] = [
   {
     path: "/role-manager/assign-officers",
     element: <AssignOfficersPage />,
+  },
+  {
+    path: "/role-manager/assign-field-officer",
+    element: <AssignFieldOfficerPage />,
+  },
+  {
+    path: "/role-manager/region-edit/:regionId",
+    element: <RegionAreaEdit />,
+  },
+  {
+    // Full-screen map for viewing/editing regions — no sidebar layout
+    path: "/role-manager/region-area-edit",
+    element: <RegionAreaEdit />,
+  },
+  {
+    // Full-screen details view for a specific region
+    path: "/role-manager/region-details/:regionId",
+    element: <RegionDetailsView />,
+  },
+  {
+    // Full-screen details view for a specific area
+    path: "/role-manager/area-details/:areaId",
+    element: <AreaDetailsView />,
   },
   {
     element: <FieldOfficerLayout />,

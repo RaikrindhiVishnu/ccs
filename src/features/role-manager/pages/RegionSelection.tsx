@@ -1607,8 +1607,8 @@ const RegionSelection: React.FC = () => {
     }
   };
   const handleCreateArea = async () => {
-    if (!areaName || !areaCode || !selectedFieldOfficerId) {
-      toast.error("Please fill in all area fields and select a Field Officer");
+    if (!areaName || !areaCode || selectedMandals.length === 0) {
+      toast.error("Please fill in all area fields and select mandals");
       return;
     }
 
@@ -1620,19 +1620,12 @@ const RegionSelection: React.FC = () => {
 
       const fetchedRegionalOfficerId =
         regionOfficerDetailsRes?.data?.regional_officer_id;
-      const fetchedIntelligenceOfficerId =
-        regionOfficerDetailsRes?.data?.intelligence_officer_id;
 
       const res = await createArea({
         areaName,
         area_code: areaCode,
-        field_officer_id: selectedFieldOfficerId!,
-        regional_officer_id: fetchedRegionalOfficerId
-          ? Number(fetchedRegionalOfficerId)
-          : null,
-        intelligence_officer_id: fetchedIntelligenceOfficerId
-          ? Number(fetchedIntelligenceOfficerId)
-          : null,
+        region_id: Number(selectedRegionId),
+        roleManagerId: Number(currentUser?.id || 10),
         assignments,
       }).unwrap();
 
@@ -1655,19 +1648,16 @@ const RegionSelection: React.FC = () => {
           );
         }
       });
-      setSelectedMandals([]);
-      setIsAreaModalOpen(false);
-      setAreaName("");
-      setAreaCode("");
-      setSelectedFieldOfficerId(null);
+
+      const now = new Date();
+      const createdAreaId = res?.data?.area_id || res?.area_id || res?.data?.id || res?.id || 1;
 
       // Show Successcard
-      const now = new Date();
       setSuccessCardProps({
         badgeLabel: "Area Creation",
         titleLine1: "Area",
         titleLine2: "Created Successfully!",
-        redirectText: "Redirecting to Dashboard...",
+        redirectText: "Redirecting to the Assigning Field Officer Page...",
         regionName: areaName,
         assignedId: res?.data?.area_code || res?.areaCode || areaCode,
         createdDate: now.toLocaleDateString(),
@@ -1675,7 +1665,16 @@ const RegionSelection: React.FC = () => {
           hour: "2-digit",
           minute: "2-digit",
         }),
+        areaId: createdAreaId,
+        selectedMandals: [...selectedMandals],
+        regionalOfficerId: fetchedRegionalOfficerId ? Number(fetchedRegionalOfficerId) : 2,
       });
+
+      setSelectedMandals([]);
+      setIsAreaModalOpen(false);
+      setAreaName("");
+      setAreaCode("");
+      setSelectedFieldOfficerId(null);
     } catch (err) {
       console.error("Failed to create area:", err);
       toast.error("Failed to create area");
@@ -1700,7 +1699,20 @@ const RegionSelection: React.FC = () => {
               },
             });
           } else {
-            navigate("/role-manager/region-area-dashboard");
+            const roleManagerFullName = `${currentUser?.first_name || ""} ${currentUser?.last_name || ""}`.trim() || "RM Sravan Kumar";
+            navigate("/role-manager/assign-field-officer", {
+              state: {
+                areaId: successCardProps.areaId,
+                areaName: successCardProps.regionName,
+                assignedId: successCardProps.assignedId,
+                createdDate: successCardProps.createdDate,
+                createdTime: successCardProps.createdTime,
+                selectedMandals: successCardProps.selectedMandals,
+                regionalOfficerId: successCardProps.regionalOfficerId,
+                roleManagerName: roleManagerFullName,
+                stateId: selectedStateId,
+              },
+            });
           }
         }}
       />
@@ -1989,83 +2001,7 @@ const RegionSelection: React.FC = () => {
                 className="px-3 text-sm h-10"
               />
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-[var(--text-secondary)] font-sans ml-1">
-                  Field Officer
-                </label>
-                <div className="relative flex items-center shrink-0 h-10 bg-[var(--surface-card)] border border-[var(--border-default)] rounded-[12px]">
-                  <select
-                    value={selectedFieldOfficerId ?? ""}
-                    onChange={(e) =>
-                      setSelectedFieldOfficerId(
-                        e.target.value ? Number(e.target.value) : null,
-                      )
-                    }
-                    className="w-full h-full border-none outline-none bg-transparent px-3 text-[var(--profile-text)] font-sans text-sm cursor-pointer"
-                  >
-                    <option value="">Select Field Officer</option>
-                    {fieldOfficers.map((officer, index) => {
-                      const id = officer.id ?? officer.i ?? officer.user_id;
-                      const fullName =
-                        `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
-                      const label =
-                        fullName ||
-                        officer.name ||
-                        officer.d ||
-                        officer.username ||
-                        officer.email ||
-                        `Field Officer ${index + 1}`;
-                      return (
-                        <option key={id ?? index} value={id ?? index}>
-                          {label}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-              </div>
 
-              <div className="flex flex-col gap-2">
-                <Input
-                  variant="form"
-                  label="Linked Mandals"
-                  placeholder="Search"
-                  value={mandalSearch}
-                  onChange={(e) => setMandalSearch(e.target.value)}
-                  icon={
-                    <Search
-                      size={14}
-                      className="text-[var(--text-supporting)]"
-                    />
-                  }
-                  className="pl-9 pr-3 text-sm h-10"
-                />
-                <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto pt-1 custom-scrollbar">
-                  {selectedMandals
-                    .filter((m) => {
-                      const name = (
-                        m.name ||
-                        m.mandal_name ||
-                        m.d ||
-                        m.description ||
-                        ""
-                      ).toLowerCase();
-                      return name.includes(mandalSearch.toLowerCase());
-                    })
-                    .map((m, i) => (
-                      <div
-                        key={i}
-                        onClick={() => handleRemoveMandal(m)}
-                        className="px-3 py-1 rounded-[12px] bg-white border border-[var(--border-default)] text-teal-600 text-xs font-semibold flex items-center gap-1.5 hover:bg-slate-50 transition-all active:scale-95 group cursor-pointer"
-                      >
-                        <span>
-                          {m.name || m.mandal_name || m.d || m.description}
-                        </span>
-                        <X className="w-3 h-3 text-slate-400 group-hover:text-red-500 transition-colors" />
-                      </div>
-                    ))}
-                </div>
-              </div>
             </div>
 
             <Button
@@ -2075,7 +2011,7 @@ const RegionSelection: React.FC = () => {
               onClick={handleCreateArea}
               className="mt-2 text-xs"
             >
-              Save Area Configuration
+              Save Area
             </Button>
           </div>
         </div>
