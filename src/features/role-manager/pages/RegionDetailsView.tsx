@@ -11,6 +11,10 @@ import { BackButton } from "@/components/ui/BackButton";
 
 import { useGetAllGeoJsonDataQuery, useGetRegionsByCountryIdQuery, useGetRegionGeoJsonQuery } from "../api/regionSelectionApi";
 import { decompressGeoJSON } from "../utils/utils";
+import {
+  useGetAllRegionalOfficersMutation,
+  useGetAllIntelligenceOfficersMutation,
+} from "../api/roleManagerApi";
 
 // Mock API Hook for Region Details
 const useGetRegionDetailsMockQuery = (regionId: string | undefined) => {
@@ -144,6 +148,29 @@ const RegionDetailsView: React.FC = () => {
 
   const { data: mockData } = useGetRegionDetailsMockQuery(regionId);
 
+  // Fetch officer lists to match IDs with name & code
+  const [getAllRegionalOfficers] = useGetAllRegionalOfficersMutation();
+  const [getAllIntelligenceOfficers] = useGetAllIntelligenceOfficersMutation();
+  const [regionalOfficersList, setRegionalOfficersList] = useState<any[]>([]);
+  const [intelligenceOfficersList, setIntelligenceOfficersList] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchOfficers = async () => {
+      try {
+        const regRes = await getAllRegionalOfficers({ is_assigned: 1 }).unwrap();
+        const regData = Array.isArray(regRes?.data) ? regRes.data : Array.isArray(regRes) ? regRes : [];
+        setRegionalOfficersList(regData);
+
+        const intRes = await getAllIntelligenceOfficers({ is_assigned: 1 }).unwrap();
+        const intData = Array.isArray(intRes?.data) ? intRes.data : Array.isArray(intRes) ? intRes : [];
+        setIntelligenceOfficersList(intData);
+      } catch (err) {
+        console.error("Failed to load officers directories:", err);
+      }
+    };
+    fetchOfficers();
+  }, [getAllRegionalOfficers, getAllIntelligenceOfficers]);
+
   // Fetch geo master data
   useEffect(() => {
     if (!allGeoJsonData?.success || !allGeoJsonData?.data) return;
@@ -184,8 +211,76 @@ const RegionDetailsView: React.FC = () => {
     return location.state?.feature || null;
   }, [regionsByCountryData, geoMasterData, regionId, location.state]);
 
-  const regionName = mockData?.region_name || resolvedFeature?.properties?.region_name || resolvedFeature?.properties?.regionName || "Loading...";
-  const regionCode = mockData?.region_code || resolvedFeature?.properties?.region_code || resolvedFeature?.properties?.regionCode || "—";
+  const apiProperties = regionGeoJsonData?.features?.[0]?.properties;
+
+  const regionName = apiProperties?.name || mockData?.region_name || resolvedFeature?.properties?.region_name || resolvedFeature?.properties?.regionName || "Loading...";
+  const regionCode = apiProperties?.region_code || mockData?.region_code || resolvedFeature?.properties?.region_code || resolvedFeature?.properties?.regionCode || "—";
+
+  // Parse created_on
+  const createdDateVal = useMemo(() => {
+    if (apiProperties?.created_on) {
+      try {
+        const d = new Date(apiProperties.created_on);
+        if (!isNaN(d.getTime())) {
+          return d.toLocaleDateString("en-US", { month: "numeric", day: "numeric", year: "numeric" });
+        }
+      } catch {}
+    }
+    return mockData?.created_date || "—";
+  }, [apiProperties?.created_on, mockData?.created_date]);
+
+  const createdTimeVal = useMemo(() => {
+    if (apiProperties?.created_on) {
+      try {
+        const d = new Date(apiProperties.created_on);
+        if (!isNaN(d.getTime())) {
+          return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+        }
+      } catch {}
+    }
+    return mockData?.created_time || "—";
+  }, [apiProperties?.created_on, mockData?.created_time]);
+
+  const districtNames = apiProperties?.district || resolvedFeature?.properties?.district || resolvedFeature?.properties?.districts || "";
+
+  // Resolve assigned officer details
+  const regOfficer = useMemo(() => {
+    if (!apiProperties?.regional_officer_id) return mockData?.regional_officer;
+    const matched = regionalOfficersList.find(o => Number(o.id) === Number(apiProperties.regional_officer_id));
+    if (matched) {
+      const fullName = `${matched.first_name || ""} ${matched.last_name || ""}`.trim();
+      const officerCode = matched.code && matched.id ? `${matched.code}-${matched.id}` : `RO-${matched.id}`;
+      return {
+        name: fullName || "Unnamed Officer",
+        code: officerCode,
+        avatar_url: matched.avatar_url || null,
+      };
+    }
+    return {
+      name: `Officer (ID: ${apiProperties.regional_officer_id})`,
+      code: `RO-${apiProperties.regional_officer_id}`,
+      avatar_url: null,
+    };
+  }, [apiProperties?.regional_officer_id, regionalOfficersList, mockData?.regional_officer]);
+
+  const intelOfficer = useMemo(() => {
+    if (!apiProperties?.intelligence_officer_id) return mockData?.intelligence_officer;
+    const matched = intelligenceOfficersList.find(o => Number(o.id) === Number(apiProperties.intelligence_officer_id));
+    if (matched) {
+      const fullName = `${matched.first_name || ""} ${matched.last_name || ""}`.trim();
+      const officerCode = matched.code && matched.id ? `${matched.code}-${matched.id}` : `IO-${matched.id}`;
+      return {
+        name: fullName || "Unnamed Officer",
+        code: officerCode,
+        avatar_url: matched.avatar_url || null,
+      };
+    }
+    return {
+      name: `Officer (ID: ${apiProperties.intelligence_officer_id})`,
+      code: `IO-${apiProperties.intelligence_officer_id}`,
+      avatar_url: null,
+    };
+  }, [apiProperties?.intelligence_officer_id, intelligenceOfficersList, mockData?.intelligence_officer]);
 
   // Initialize MapLibre Mini Map
   useEffect(() => {
@@ -353,7 +448,7 @@ const RegionDetailsView: React.FC = () => {
                   Created Date
                 </Typography>
                 <Typography variant="p" className="text-[#1E293B] font-bold text-[15px]">
-                  {mockData?.created_date || "—"}
+                  {createdDateVal}
                 </Typography>
               </div>
 
@@ -362,9 +457,20 @@ const RegionDetailsView: React.FC = () => {
                   Created Time
                 </Typography>
                 <Typography variant="p" className="text-[#1E293B] font-bold text-[15px]">
-                  {mockData?.created_time || "—"}
+                  {createdTimeVal}
                 </Typography>
               </div>
+
+              {districtNames && (
+                <div className="col-span-2">
+                  <Typography variant="span" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
+                    Assigned Districts
+                  </Typography>
+                  <Typography variant="p" className="text-[#1E293B] font-bold text-[15px]">
+                    {districtNames}
+                  </Typography>
+                </div>
+              )}
             </div>
           </div>
 
@@ -387,9 +493,9 @@ const RegionDetailsView: React.FC = () => {
                   Regional Officer
                 </Typography>
                 <div className="flex items-center gap-4">
-                  {mockData?.regional_officer?.avatar_url ? (
+                  {regOfficer?.avatar_url ? (
                     <img 
-                      src={mockData.regional_officer.avatar_url} 
+                      src={regOfficer.avatar_url} 
                       alt="Regional Officer"
                       className="w-12 h-12 rounded-full object-cover border border-[#E2E8F0] shadow-sm"
                     />
@@ -400,10 +506,10 @@ const RegionDetailsView: React.FC = () => {
                   )}
                   <div>
                     <Typography variant="p" className="text-[#0F172A] font-bold text-[16px] mb-0.5">
-                      {mockData?.regional_officer?.name || "Unassigned"}
+                      {regOfficer?.name || "Unassigned"}
                     </Typography>
                     <Typography variant="span" className="text-[#64748B] font-medium text-[13px]">
-                      Officer Code: {mockData?.regional_officer?.code || "—"}
+                      Officer Code: {regOfficer?.code || "—"}
                     </Typography>
                   </div>
                 </div>
@@ -418,9 +524,9 @@ const RegionDetailsView: React.FC = () => {
                   Intelligence Officer
                 </Typography>
                 <div className="flex items-center gap-4">
-                  {mockData?.intelligence_officer?.avatar_url ? (
+                  {intelOfficer?.avatar_url ? (
                     <img 
-                      src={mockData.intelligence_officer.avatar_url} 
+                      src={intelOfficer.avatar_url} 
                       alt="Intelligence Officer"
                       className="w-12 h-12 rounded-full object-cover border border-[#E2E8F0] shadow-sm"
                     />
@@ -431,10 +537,10 @@ const RegionDetailsView: React.FC = () => {
                   )}
                   <div>
                     <Typography variant="p" className="text-[#0F172A] font-bold text-[16px] mb-0.5">
-                      {mockData?.intelligence_officer?.name || "Unassigned"}
+                      {intelOfficer?.name || "Unassigned"}
                     </Typography>
                     <Typography variant="span" className="text-[#64748B] font-medium text-[13px]">
-                      Officer Code: {mockData?.intelligence_officer?.code || "—"}
+                      Officer Code: {intelOfficer?.code || "—"}
                     </Typography>
                   </div>
                 </div>
