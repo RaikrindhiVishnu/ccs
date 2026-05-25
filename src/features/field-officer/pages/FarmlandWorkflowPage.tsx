@@ -168,7 +168,7 @@ export default function FarmlandWorkflowPage() {
                 {activeStep === "land" && (
                   <LandDetails
                     onBack={() => setActiveStep("family")}
-                    onSubmit={() => navigate(-1)}
+                    onSubmit={() => navigate(`/field-officer/land-documents/${id || 'GLCSOS 01'}`)}
                   />
                 )}
               </div>

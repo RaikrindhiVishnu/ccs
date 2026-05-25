@@ -1,16 +1,18 @@
-export const documentsTabs = [
-  "Land Document",
-  "Pattadhar Passbook",
-  "Link Document",
-  "Kasara Pahani & Proceeding Copies",
-  "Revenue Record",
-  "Lease Agreement",
-  "Death Certificate",
-  "Partition Deed",
-  "Encumbrance Certificate",
-  "Land Coordinates",
-  "Owner KYC Video",
+export const documentTabs = [
+  { name: "Land Document", verified: true },
+  { name: "Pattadhar Passbook", verified: true },
+  { name: "Link Document", verified: true },
+  { name: "Kasara Pahani & Proceeding Copies", verified: true },
+  { name: "Revenue Record", verified: true },
+  { name: "Lease Agreement", verified: true },
+  { name: "Death Certificate", verified: true },
+  { name: "Partition Deed", verified: true },
+  { name: "Encumbrance Certificate", verified: true },
+  { name: "Land Coordinates", verified: true },
+  { name: "Owner KYC Video", verified: true },
 ];
+
+export const documentsTabs = documentTabs.map(t => t.name);
 
 export const timelineData = [
   {
