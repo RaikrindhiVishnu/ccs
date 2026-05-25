@@ -146,14 +146,22 @@ const AreaDetailsView: React.FC = () => {
     areaGeoJson?.features?.[0] || areaGeoJson?.data?.features?.[0];
 
   const geoProps = firstFeature?.properties || {};
-  const matchedFieldOfficer = useMemo(() => {
-    const officers = fieldOfficersData?.data || [];
-    return officers.find(
-      (officer: any) =>
-        String(officer.area_name).trim().toLowerCase() ===
-        String(geoProps?.name).trim().toLowerCase(),
-    );
-  }, [fieldOfficersData, geoProps]);
+
+ // FIXED — match by area_id (reliable, backend-driven):
+const matchedFieldOfficer = useMemo(() => {
+  const officers = fieldOfficersData?.data || [];
+  return officers.find(
+    (officer: any) => Number(officer.area_id) === Number(areaId),
+  );
+}, [fieldOfficersData, areaId]);
+
+useEffect(() => {
+  if (fieldOfficersData?.data) {
+    console.log("FIELD OFFICERS SAMPLE:", fieldOfficersData.data[0]);
+    console.log("Current areaId:", areaId);
+  }
+}, [fieldOfficersData, areaId]);
+
   fieldOfficersData?.data?.forEach((o: any) => {
     console.log("OFFICER OBJECT", o);
   });
@@ -180,15 +188,21 @@ const AreaDetailsView: React.FC = () => {
     ? new Date(createdOn).toLocaleTimeString()
     : "—";
 
-  const fieldOfficer = {
-    name: matchedFieldOfficer
-      ? `${matchedFieldOfficer.first_name} ${matchedFieldOfficer.last_name || ""}`
-      : "Unassigned",
-
-    code: matchedFieldOfficer?.code || "—",
-
-    avatar_url: null,
-  };
+ const fieldOfficer = {
+  name: geoProps?.field_officer_name || "Unassigned",
+  code: geoProps?.field_officer_id 
+    ? `FO-${geoProps.field_officer_id}` 
+    : "—",
+  avatar_url: null,
+};
+useEffect(() => {
+  if (areaGeoJson) {
+    const features = areaGeoJson?.data?.features || areaGeoJson?.features || [];
+    features.forEach((f: any) => {
+      console.log("GeoJSON props for area", areaId, ":", f.properties);
+    });
+  }
+}, [areaGeoJson]);
 
   const handleEditClick = () => {
     navigate(`/role-manager/region-area-edit?editAreaId=${areaId}`);
