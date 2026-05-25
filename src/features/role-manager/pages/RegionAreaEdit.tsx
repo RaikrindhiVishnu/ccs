@@ -16,6 +16,7 @@ import {
   useUpdateAreaMutation,
   useGetAllAreasByRegionIdQuery,
   useGetRegionsByStateIdQuery,
+  useGetRegionGeoJsonQuery,
 } from "../api/regionSelectionApi";
 import {
   useGetAllRegionalOfficersMutation,
@@ -385,9 +386,12 @@ const RegionAreaEdit: React.FC = () => {
   >([]);
 
   // Officer Assignment lists and selection states
-  const [regionalOfficers, setRegionalOfficers] = useState<any[]>([]);
-  const [intelligenceOfficers, setIntelligenceOfficers] = useState<any[]>([]);
+  const [unassignedRegionalOfficers, setUnassignedRegionalOfficers] = useState<any[]>([]);
+  const [assignedRegionalOfficers, setAssignedRegionalOfficers] = useState<any[]>([]);
+  const [unassignedIntelligenceOfficers, setUnassignedIntelligenceOfficers] = useState<any[]>([]);
+  const [assignedIntelligenceOfficers, setAssignedIntelligenceOfficers] = useState<any[]>([]);
   const [fieldOfficers, setFieldOfficers] = useState<any[]>([]);
+
   const [selectedRegionalOfficerId, setSelectedRegionalOfficerId] = useState<
     number | null
   >(null);
@@ -396,6 +400,28 @@ const RegionAreaEdit: React.FC = () => {
   const [selectedFieldOfficerId, setSelectedFieldOfficerId] = useState<
     number | null
   >(null);
+
+  const regionalOfficers = useMemo(() => {
+    const list = [...unassignedRegionalOfficers];
+    if (selectedRegionalOfficerId) {
+      const current = assignedRegionalOfficers.find(o => Number(o.id) === Number(selectedRegionalOfficerId));
+      if (current && !list.some(o => Number(o.id) === Number(current.id))) {
+        list.unshift(current);
+      }
+    }
+    return list;
+  }, [unassignedRegionalOfficers, assignedRegionalOfficers, selectedRegionalOfficerId]);
+
+  const intelligenceOfficers = useMemo(() => {
+    const list = [...unassignedIntelligenceOfficers];
+    if (selectedIntelligenceOfficerId) {
+      const current = assignedIntelligenceOfficers.find(o => Number(o.id) === Number(selectedIntelligenceOfficerId));
+      if (current && !list.some(o => Number(o.id) === Number(current.id))) {
+        list.unshift(current);
+      }
+    }
+    return list;
+  }, [unassignedIntelligenceOfficers, assignedIntelligenceOfficers, selectedIntelligenceOfficerId]);
 
   const [getAllRegionalOfficers] = useGetAllRegionalOfficersMutation();
   const [getAllIntelligenceOfficers] = useGetAllIntelligenceOfficersMutation();
@@ -411,6 +437,23 @@ const RegionAreaEdit: React.FC = () => {
     { country_id: 1 },
     { refetchOnMountOrArgChange: true },
   );
+
+  const { data: editedRegionGeoJson } = useGetRegionGeoJsonQuery(
+    { region_id: Number(editRegionId) },
+    { skip: !editRegionId }
+  );
+
+  useEffect(() => {
+    if (editedRegionGeoJson?.features?.[0]?.properties) {
+      const props = editedRegionGeoJson.features[0].properties;
+      if (props.regional_officer_id) {
+        setSelectedRegionalOfficerId(Number(props.regional_officer_id));
+      }
+      if (props.intelligence_officer_id) {
+        setSelectedIntelligenceOfficerId(Number(props.intelligence_officer_id));
+      }
+    }
+  }, [editedRegionGeoJson]);
 
   const selectedStateId = selectedState?.properties?.id;
   const { data: regionsByStateData } = useGetRegionsByStateIdQuery(
@@ -480,26 +523,44 @@ const RegionAreaEdit: React.FC = () => {
   // ── Load Officers lists on mount ──────────────────────────────────────────
   useEffect(() => {
     const fetchOfficers = async () => {
+      // 1. Fetch Regional Officers (Unassigned & Assigned)
       try {
-        const regionalResult = await getAllRegionalOfficers().unwrap();
-        const regionalList = Array.isArray(regionalResult?.data)
-          ? regionalResult.data
-          : Array.isArray(regionalResult)
-            ? regionalResult
+        const unassignedResult = await getAllRegionalOfficers({ is_assigned: 0 }).unwrap();
+        const unassignedList = Array.isArray(unassignedResult?.data)
+          ? unassignedResult.data
+          : Array.isArray(unassignedResult)
+            ? unassignedResult
             : [];
-        setRegionalOfficers(regionalList);
+        setUnassignedRegionalOfficers(unassignedList);
+
+        const assignedResult = await getAllRegionalOfficers({ is_assigned: 1 }).unwrap();
+        const assignedList = Array.isArray(assignedResult?.data)
+          ? assignedResult.data
+          : Array.isArray(assignedResult)
+            ? assignedResult
+            : [];
+        setAssignedRegionalOfficers(assignedList);
       } catch (err) {
         console.error("RegionAreaEdit: Failed to load regional officers:", err);
       }
 
+      // 2. Fetch Intelligence Officers (Unassigned & Assigned)
       try {
-        const intelligenceResult = await getAllIntelligenceOfficers().unwrap();
-        const intelligenceList = Array.isArray(intelligenceResult?.data)
-          ? intelligenceResult.data
-          : Array.isArray(intelligenceResult)
-            ? intelligenceResult
+        const unassignedResult = await getAllIntelligenceOfficers({ is_assigned: 0 }).unwrap();
+        const unassignedList = Array.isArray(unassignedResult?.data)
+          ? unassignedResult.data
+          : Array.isArray(unassignedResult)
+            ? unassignedResult
             : [];
-        setIntelligenceOfficers(intelligenceList);
+        setUnassignedIntelligenceOfficers(unassignedList);
+
+        const assignedResult = await getAllIntelligenceOfficers({ is_assigned: 1 }).unwrap();
+        const assignedList = Array.isArray(assignedResult?.data)
+          ? assignedResult.data
+          : Array.isArray(assignedResult)
+            ? assignedResult
+            : [];
+        setAssignedIntelligenceOfficers(assignedList);
       } catch (err) {
         console.error(
           "RegionAreaEdit: Failed to load intelligence officers:",
@@ -507,6 +568,7 @@ const RegionAreaEdit: React.FC = () => {
         );
       }
 
+      // 3. Fetch Field Officers
       try {
         const fieldResult = await getAllFieldOfficers().unwrap();
         const fieldList = Array.isArray(fieldResult?.data)

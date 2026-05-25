@@ -123,19 +123,22 @@ const RegionDetailsView: React.FC = () => {
 
   const [geoMasterData, setGeoMasterData] = useState<any | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [isLoadingOfficers, setIsLoadingOfficers] = useState(true);
 
   // Queries to fetch the same master data already cached in the app
-  const { data: allGeoJsonData } = useGetAllGeoJsonDataQuery();
+  const { data: allGeoJsonData, isLoading: isLoadingGeoJson } = useGetAllGeoJsonDataQuery();
   const { data: regionsByCountryData } = useGetRegionsByCountryIdQuery(
     { country_id: 1 },
     { skip: !geoMasterData }
   );
 
   // Call the region/get_region_geojson API dynamically based on route param
-  const { data: regionGeoJsonData } = useGetRegionGeoJsonQuery(
+  const { data: regionGeoJsonData, isLoading: isLoadingRegionGeo } = useGetRegionGeoJsonQuery(
     { region_id: Number(regionId) },
     { skip: !regionId }
   );
+
+  const isPageLoading = isLoadingRegionGeo || isLoadingOfficers || !regionGeoJsonData;
 
   useEffect(() => {
     if (regionGeoJsonData) {
@@ -157,6 +160,7 @@ const RegionDetailsView: React.FC = () => {
   useEffect(() => {
     const fetchOfficers = async () => {
       try {
+        setIsLoadingOfficers(true);
         const regRes = await getAllRegionalOfficers({ is_assigned: 1 }).unwrap();
         const regData = Array.isArray(regRes?.data) ? regRes.data : Array.isArray(regRes) ? regRes : [];
         setRegionalOfficersList(regData);
@@ -166,6 +170,8 @@ const RegionDetailsView: React.FC = () => {
         setIntelligenceOfficersList(intData);
       } catch (err) {
         console.error("Failed to load officers directories:", err);
+      } finally {
+        setIsLoadingOfficers(false);
       }
     };
     fetchOfficers();
@@ -188,9 +194,25 @@ const RegionDetailsView: React.FC = () => {
     fetchGeoData();
   }, [allGeoJsonData]);
 
+  // Parse the geojson response whether it is nested inside "data" or raw
+  const geojsonObj = useMemo(() => {
+    if (!regionGeoJsonData) return null;
+    if (regionGeoJsonData.type === "FeatureCollection" || regionGeoJsonData.type === "Feature") {
+      return regionGeoJsonData;
+    }
+    if (regionGeoJsonData.data?.type === "FeatureCollection" || regionGeoJsonData.data?.type === "Feature" || regionGeoJsonData.data?.features) {
+      return regionGeoJsonData.data;
+    }
+    return regionGeoJsonData;
+  }, [regionGeoJsonData]);
+
   // Extract the decompressed regions and reconstruct full geometry
   const resolvedFeature = useMemo(() => {
-    // 1. Try to find region in decompressed data
+    // 1. Try to use the dynamic GeoJSON feature from geojsonObj first!
+    if (geojsonObj?.features?.[0]) {
+      return geojsonObj.features[0];
+    }
+    // 2. Try to find region in decompressed data
     if (regionsByCountryData && geoMasterData && regionId) {
       try {
         const decompressed = decompressGeoJSON(regionsByCountryData);
@@ -207,11 +229,12 @@ const RegionDetailsView: React.FC = () => {
         console.error("Failed to reconstruct full region geometry:", err);
       }
     }
-    // 2. Fallback to router state feature
+    // 3. Fallback to router state feature
     return location.state?.feature || null;
-  }, [regionsByCountryData, geoMasterData, regionId, location.state]);
+  }, [geojsonObj, regionsByCountryData, geoMasterData, regionId, location.state]);
 
-  const apiProperties = regionGeoJsonData?.features?.[0]?.properties;
+  const apiProperties = geojsonObj?.features?.[0]?.properties;
+
 
   const regionName = apiProperties?.name || mockData?.region_name || resolvedFeature?.properties?.region_name || resolvedFeature?.properties?.regionName || "Loading...";
   const regionCode = apiProperties?.region_code || mockData?.region_code || resolvedFeature?.properties?.region_code || resolvedFeature?.properties?.regionCode || "—";
@@ -304,24 +327,15 @@ const RegionDetailsView: React.FC = () => {
 
     map.current = mapInstance;
 
-    mapInstance.on("style.load", () => {
-      // Add world land layer for context
-      mapInstance.addSource("world-land", {
-        type: "geojson",
-        data: "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_land.geojson",
-      });
-      mapInstance.addLayer({
-        id: "world-land-fill",
-        type: "fill",
-        source: "world-land",
-        paint: {
-          "fill-color": "#F0EEF0",
-          "fill-opacity": 1,
-        },
-      });
-
+    const handleStyleLoad = () => {
       setMapLoaded(true);
-    });
+    };
+
+    if (mapInstance.isStyleLoaded()) {
+      handleStyleLoad();
+    } else {
+      mapInstance.on("style.load", handleStyleLoad);
+    }
 
     return () => {
       if (map.current) {
@@ -329,7 +343,7 @@ const RegionDetailsView: React.FC = () => {
         map.current = null;
       }
     };
-  }, []);
+  }, [isPageLoading]);
 
   // Update map source & layer when style is loaded and resolvedFeature is ready
   useEffect(() => {
@@ -383,6 +397,17 @@ const RegionDetailsView: React.FC = () => {
       console.error("Failed to render region on mini-map:", err);
     }
   }, [resolvedFeature, mapLoaded]);
+
+
+
+  if (isPageLoading) {
+    return (
+      <div className="min-h-screen bg-[#f1f5f9] flex flex-col items-center justify-center gap-4">
+        <Loader2 className="w-12 h-12 text-[#217bc4] animate-spin" />
+        <span className="text-sm font-semibold text-slate-500">Loading region details...</span>
+      </div>
+    );
+  }
 
   const handleEditClick = () => {
     navigate(`/role-manager/region-area-edit?editRegionId=${regionId}`);
