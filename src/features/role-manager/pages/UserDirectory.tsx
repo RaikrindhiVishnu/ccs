@@ -197,11 +197,17 @@ const UserDirectory: React.FC = () => {
               options={regions?.length > 0 ? regions.map((r: any) => ({ label: r.region_name || r.desc, value: r.id?.toString() || "" })) : []}
               value={selectedRegionId}
               onChange={handleRegionChange}
+              disabled={!regions || regions.length === 0}
+              title={(!regions || regions.length === 0) ? "No region data available for this state" : undefined}
+              placeholder="No Regions"
             />
             <PillDropdown
               options={areasList?.length > 0 ? areasList.map((a: any) => ({ label: a.area_name || a.desc, value: (a.area_id ?? a.id)?.toString() || "" })) : []}
               value={selectedAreaId}
               onChange={(areaId) => setSelectedAreaId(areaId)}
+              disabled={!areasList || areasList.length === 0}
+              title={(!areasList || areasList.length === 0) ? "No area data available for this region" : undefined}
+              placeholder="No Areas"
             />
           </div>
         </div>

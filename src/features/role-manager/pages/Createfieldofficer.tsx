@@ -22,6 +22,7 @@ import {
   type OfficerFormValues,
 } from "@/components/validations/officerSchema";
 import { RHFTextField } from "@/components/form/RHFTextField";
+import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
@@ -739,12 +740,12 @@ const CreateFieldOfficer = () => {
                 maxLength={150}
                 disabled={isViewMode}
               />
-              <RHFTextField
+              <RHFDropdown
                 name="state"
                 control={control}
                 label="State"
-                placeholder="Enter State"
-                maxLength={50}
+                placeholder="Select State"
+                options={states?.map((s: any) => s.desc) || []}
                 disabled={isViewMode}
               />
               <RHFTextField
