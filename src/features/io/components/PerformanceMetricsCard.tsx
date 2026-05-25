@@ -213,11 +213,11 @@ export const PerformanceMetricsCard = () => {
               leading-[110%]
               text-[var(--text-primary)]
               text-[1.1rem]
-              sm:text-[1.25rem]
-              lg:text-[1.35rem]
-              xl:text-[1.68rem]
-              2xl:text-[1.8rem]
-            "
+            sm:text-[1.25rem]
+            lg:text-[1.35rem]
+            xl:text-[1.6625rem]
+            2xl:text-[1.8rem]
+                        "
           >
             Performance metrics
           </Typography>
@@ -229,9 +229,9 @@ export const PerformanceMetricsCard = () => {
               font-[var(--font-sans)]
               text-[var(--text-secondary)]
               text-[0.75rem]
-              sm:text-[0.82rem]
+             sm:text-[0.82rem]
               lg:text-[0.88rem]
-              xl:text-[1.05rem]
+              xl:text-[1.1625rem]
             "
           >
             Approval vs Rejection

@@ -39,7 +39,7 @@ const MOCK_API_USERS = [
   },
   {
     login_id: "ccs@glc.com",
-    password: "ccs@123",
+    password: "ccs@123456",
     response: {
       id: 103,
       login_id: "ccs@glc.com",
@@ -67,7 +67,7 @@ const MOCK_API_USERS = [
   },
   {
     login_id: "io@glc.com",
-    password: "io@123",
+    password: "io@123456",
     response: {
       id: 105,
       login_id: "io@glc.com",
@@ -148,7 +148,7 @@ export default function Login() {
       
       // Navigate based on role
       if (roleCode === "CCS") {
-        navigate("/");
+        navigate("/ccs/dashboard");
       } else if (roleCode === "RO") {
         navigate("/regional-officer/dashboard");
       } else if (roleCode === "FO") {
