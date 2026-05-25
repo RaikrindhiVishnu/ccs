@@ -389,6 +389,12 @@ const RegionAreaEdit: React.FC = () => {
   const [regionCode, setRegionCode] = useState("");
   const [districtSearch, setDistrictSearch] = useState("");
   const [selectedDistricts, setSelectedDistricts] = useState<any[]>([]);
+  // Ref so the one-time map click handler always reads the latest selectedDistricts
+  // without needing to re-register (avoids stale closure → duplicate selection bug)
+  const selectedDistrictsRef = useRef<any[]>([]);
+  useEffect(() => {
+    selectedDistrictsRef.current = selectedDistricts;
+  }, [selectedDistricts]);
 
   // Reassignment and Confirmation Modal states
   const [reassignModalOpen, setReassignModalOpen] = useState(false);
@@ -416,7 +422,10 @@ const RegionAreaEdit: React.FC = () => {
     useState<any[]>([]);
   const [assignedIntelligenceOfficers, setAssignedIntelligenceOfficers] =
     useState<any[]>([]);
-  const [fieldOfficers, setFieldOfficers] = useState<any[]>([]);
+  const [unassignedFieldOfficers, setUnassignedFieldOfficers] = useState<
+    any[]
+  >([]);
+  const [assignedFieldOfficers, setAssignedFieldOfficers] = useState<any[]>([]);
 
   const [selectedRegionalOfficerId, setSelectedRegionalOfficerId] = useState<
     number | null
@@ -459,6 +468,23 @@ const RegionAreaEdit: React.FC = () => {
     unassignedIntelligenceOfficers,
     assignedIntelligenceOfficers,
     selectedIntelligenceOfficerId,
+  ]);
+
+  const fieldOfficers = useMemo(() => {
+    const list = [...unassignedFieldOfficers];
+    if (selectedFieldOfficerId) {
+      const current = assignedFieldOfficers.find(
+        (o) => Number(o.id) === Number(selectedFieldOfficerId),
+      );
+      if (current && !list.some((o) => Number(o.id) === Number(current.id))) {
+        list.unshift(current);
+      }
+    }
+    return list;
+  }, [
+    unassignedFieldOfficers,
+    assignedFieldOfficers,
+    selectedFieldOfficerId,
   ]);
 
   const [getAllRegionalOfficers] = useGetAllRegionalOfficersMutation();
@@ -626,15 +652,27 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
         );
       }
 
-      // 3. Fetch Field Officers
+      // 3. Fetch Field Officers (Unassigned & Assigned)
       try {
-        const fieldResult = await getAllFieldOfficers().unwrap();
-        const fieldList = Array.isArray(fieldResult?.data)
-          ? fieldResult.data
-          : Array.isArray(fieldResult)
-            ? fieldResult
+        const unassignedResult = await getAllFieldOfficers({
+          is_assigned: 0,
+        }).unwrap();
+        const unassignedList = Array.isArray(unassignedResult?.data)
+          ? unassignedResult.data
+          : Array.isArray(unassignedResult)
+            ? unassignedResult
             : [];
-        setFieldOfficers(fieldList);
+        setUnassignedFieldOfficers(unassignedList);
+
+        const assignedResult = await getAllFieldOfficers({
+          is_assigned: 1,
+        }).unwrap();
+        const assignedList = Array.isArray(assignedResult?.data)
+          ? assignedResult.data
+          : Array.isArray(assignedResult)
+            ? assignedResult
+            : [];
+        setAssignedFieldOfficers(assignedList);
       } catch (err) {
         console.error("RegionAreaEdit: Failed to load field officers:", err);
       }
@@ -1343,7 +1381,7 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
 
     try {
       let districtIds: number[] = [];
-      let parentRegionId = 1;
+      let parentRegionId = 0; // 0 = no region selected; truthy check below uses this correctly
       let areasList: any[] = [];
 
       if (editModeType === "area") {
@@ -1398,18 +1436,30 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
       }
 
       if (map.current.getLayer("regions-fill")) {
-        map.current.setFilter("regions-fill", [
-          "!=",
-          ["coalesce", ["get", "region_id"], ["get", "id"]],
-          parentRegionId,
-        ]);
+        if (parentRegionId) {
+          // A region is selected — hide it from the fill layer (mandals take over rendering)
+          map.current.setFilter("regions-fill", [
+            "!=",
+            ["coalesce", ["get", "region_id"], ["get", "id"]],
+            parentRegionId,
+          ]);
+        } else {
+          // No region selected yet — show all regions normally
+          map.current.setFilter("regions-fill", null);
+        }
       }
       if (map.current.getLayer("regions-line")) {
-        map.current.setFilter("regions-line", [
-          "==",
-          ["coalesce", ["get", "region_id"], ["get", "id"]],
-          parentRegionId,
-        ]);
+        if (parentRegionId) {
+          // A region is selected — highlight only that region's border
+          map.current.setFilter("regions-line", [
+            "==",
+            ["coalesce", ["get", "region_id"], ["get", "id"]],
+            parentRegionId,
+          ]);
+        } else {
+          // No region selected yet — show ALL region borders
+          map.current.setFilter("regions-line", null);
+        }
       }
 
       const existingSource = map.current.getSource(
@@ -1565,7 +1615,13 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
             }
 
             // AREA EDIT MODE CLICK HANDLER
-            const isAlreadySelected = selectedIds.has(mId);
+            // Read from ref so we always get the latest selection, not the stale closure value
+            const currentSelectedIds = new Set<number>(
+              selectedDistrictsRef.current.map((d) =>
+                Number(d.id ?? d.featureId),
+              ),
+            );
+            const isAlreadySelected = currentSelectedIds.has(mId);
 
             if (isAlreadySelected) {
               setSelectedDistricts((prev) =>
@@ -1802,7 +1858,15 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
                 ["get", "regionBorderColor"],
                 "#059669",
               ],
-              "line-width": 2,
+              "line-width": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                3, 2,
+                5, 3,
+                7, 4,
+              ],
+              "line-opacity": 0.9,
             },
           },
           "states-border-line",
@@ -2425,8 +2489,9 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
 
         toast.success("Area updated successfully!");
 
-        // Return to state-selection view by clearing editAreaId + region_id params
-        setSearchParams({});
+        // Return to country view by clearing params and resetting the map state
+        // Force a full refresh to completely clear map layers and state
+        window.location.href = "/role-manager/region-area-edit?mode=area";
       } catch (err: any) {
         console.error("RegionAreaEdit: Area update failed:", err);
         toast.error(

@@ -87,7 +87,7 @@ const AssignFieldOfficer: React.FC = () => {
     const fetchFieldOfficers = async () => {
       try {
         const result = await getAllFieldOfficers({
-          is_assigned: 1,
+          is_assigned: 0,
         }).unwrap();
 
         console.log("FIELD OFFICERS:", result);
