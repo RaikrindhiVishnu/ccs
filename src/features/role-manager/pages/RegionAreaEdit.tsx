@@ -313,6 +313,10 @@ const RegionAreaEdit: React.FC = () => {
   const [geoMasterData, setGeoMasterData] = useState<GeoMasterData | null>(
     null,
   );
+  const geoMasterDataRef = useRef<GeoMasterData | null>(null);
+  useEffect(() => {
+    geoMasterDataRef.current = geoMasterData;
+  }, [geoMasterData]);
   const [isLoadingGeoData, setIsLoadingGeoData] = useState(false);
   const [selectedState, setSelectedState] = useState<any | null>(null);
   const [isZoomed, setIsZoomed] = useState(false);
@@ -339,6 +343,7 @@ const RegionAreaEdit: React.FC = () => {
 
   useEffect(() => {
     (window as any).__selectedStateId = selectedState?.properties?.id ?? null;
+    (window as any).__selectedState = selectedState;
   }, [selectedState]);
 
   useEffect(() => {
@@ -1607,7 +1612,45 @@ const RegionAreaEdit: React.FC = () => {
                 });
               }
             } else {
-              // REGION MODE: Direct navigation to Region Details view!
+              // REGION MODE: Check if parent state is already selected. If not, zoom to state first.
+              const stateId = Number(feature.properties?.state_id);
+              const currentSelectedStateId = (window as any).__selectedStateId;
+
+              if (!currentSelectedStateId || currentSelectedStateId !== stateId) {
+                const masterData = geoMasterDataRef.current;
+                if (masterData && stateId) {
+                  const stateObj = masterData.countries
+                    .flatMap((c) => c.states ?? [])
+                    .find((s) => s.i === stateId);
+                  if (stateObj) {
+                    const stateFeature = {
+                      type: "Feature" as const,
+                      geometry: stateObj.g as any,
+                      properties: {
+                        id: stateObj.i,
+                        name: stateObj.d,
+                        code: stateObj.c,
+                      },
+                    };
+
+                    setSelectedState(stateFeature);
+                    map.current?.fitBounds(getFeatureBounds(stateFeature), {
+                      padding: 100,
+                      duration: 1200,
+                    });
+                    setIsZoomed(true);
+
+                    // First click: open assign/unassign panel
+                    setAssignPanelOpen(true);
+                    setAssignMode(null);
+                    setSelectedRegionForAssign(null);
+                    setRegionSearch("");
+                    return; // Zoom to state first, do not navigate yet
+                  }
+                }
+              }
+
+              // Direct navigation to Region Details view if state is already selected!
               if (map.current) {
                 const center = map.current.getCenter();
                 sessionStorage.setItem(
@@ -1618,10 +1661,11 @@ const RegionAreaEdit: React.FC = () => {
                   "region_map_zoom",
                   map.current.getZoom().toString(),
                 );
-                if (selectedState) {
+                const activeState = (window as any).__selectedState;
+                if (activeState) {
                   sessionStorage.setItem(
                     "region_map_selected_state",
-                    JSON.stringify(selectedState),
+                    JSON.stringify(activeState),
                   );
                 }
                 sessionStorage.setItem(
