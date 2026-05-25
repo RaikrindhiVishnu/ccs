@@ -89,9 +89,10 @@ const FarmlandStatCard = ({
         leading-snug
         opacity-70
         text-[0.8rem]
+        text-[0.75rem]
         sm:text-[0.875rem]
-        lg:text-[0.75rem]
-        xl:text-[1.0625rem]
+        lg:text-[1rem]
+        xl:text-[1.125rem]
         2xl:text-[1.125rem]
       "
     >
@@ -109,10 +110,11 @@ const FarmlandStatCard = ({
         tracking-[0.0625rem]
         leading-none
         text-[1.5rem]
-        sm:text-[1.75rem]
-        lg:text-[1.25rem]
-        xl:text-[2.25rem]
-        2xl:text-[2.75rem]
+      text-[1.5rem]
+      sm:text-[1.75rem]
+      lg:text-[2rem]
+      xl:text-[2.75rem]
+      2xl:text-[2.75rem]
       "
     >
       {typeof value === "number" ? value.toLocaleString() : value}
