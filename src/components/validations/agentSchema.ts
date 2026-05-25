@@ -5,10 +5,10 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 /**
  * Accepts either a freshly-selected File OR an existing S3 key / URL string
- * (populated when loading an officer in edit mode). Returns a meaningful
+ * (populated when loading an agent in edit mode). Returns a meaningful
  * "required" message when the value is undefined / null / empty.
  */
-const fileSchema = (label: string) =>
+const fileSchema = (accepted: string[], label: string) =>
   z
     .custom<File | string>(
       (v) => v instanceof File || (typeof v === "string" && v.length > 0),
@@ -19,8 +19,8 @@ const fileSchema = (label: string) =>
       `${label}: max size is 5 MB`,
     )
     .refine(
-      (v) => !(v instanceof File) || ACCEPTED_IMAGE_TYPES.includes((v as File).type),
-      `${label}: only JPG, PNG, or WebP images are allowed`,
+      (v) => !(v instanceof File) || accepted.includes((v as File).type),
+      `${label}: invalid file type`,
     );
 
 export const agentSchema = z.object({
@@ -34,16 +34,19 @@ export const agentSchema = z.object({
   city: z.string().min(1, "City is required"),
   pincode: z.string().min(6, "Pincode must be 6 digits"),
   panNumber: z.string().min(1, "PAN Number is required"),
+  state: z.string().min(1, "State is required"),
+  district: z.string().min(1, "District is required"),
+  mandal: z.string().min(1, "Mandal is required"),
+  bankName: z.string().min(1, "Bank Name is required"),
+  accountNumber: z.string().min(1, "Account Number is required"),
+  ifscCode: z.string().min(1, "IFSC Code is required"),
+  bankBranch: z.string().min(1, "Bank Branch is required"),
 
-  // ── File fields ──────────────────────────────────────────────────────────────
-  profilePicture: z
-    .custom<File | string>(
-      (v) => !v || v instanceof File || (typeof v === "string" && v.length > 0),
-    )
-    .optional(),
-  aadharFront: fileSchema("Aadhaar Front"),
-  aadharBack: fileSchema("Aadhaar Back"),
-  panCard: fileSchema("PAN Card"),
+  // ── File fields ──────────────────────────────────────────
+  profilePicture: fileSchema(ACCEPTED_IMAGE_TYPES, "Profile picture").optional(),
+  aadharFront: fileSchema(ACCEPTED_IMAGE_TYPES, "Aadhaar Front").optional(),
+  aadharBack: fileSchema(ACCEPTED_IMAGE_TYPES, "Aadhaar Back").optional(),
+  panCard: fileSchema(ACCEPTED_IMAGE_TYPES, "PAN Card").optional(),
 });
 
 export type AgentFormValues = z.infer<typeof agentSchema>;

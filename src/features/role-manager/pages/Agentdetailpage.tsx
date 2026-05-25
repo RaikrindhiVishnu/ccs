@@ -26,12 +26,12 @@ interface AgentDetail {
     email: string;
     phone: string;
     dateOfBirth: string;
-    address: string;
-    city: string;
-    stateName: string;
-    pincode: string;
-    panNumber: string;
+    operatingTerritory: string;
+    bankName: string;
+    accountNumber: string;
+    ifscCode: string;
     aadhaarImageUrl?: string;
+    aadhaarBackImageUrl?: string;
     panImageUrl?: string;
 }
 interface AgentDetailPageProps {
@@ -104,18 +104,27 @@ const agent: AgentDetail = {
     ? new Date(apiData.dob).toLocaleDateString()
     : "N/A",
 
-  address: apiData?.address?.address || apiData?.address || "N/A",
+  operatingTerritory:
+    [
+      apiData?.address,
+      apiData?.city,
+      apiData?.pincode,
+    ]
+      .filter(Boolean)
+      .join(", ") || "N/A",
 
-  city: apiData?.address?.city || apiData?.city || "N/A",
+  bankName: apiData?.bank_name || "N/A",
 
-  stateName: apiData?.address?.state || apiData?.state || "N/A",
+  accountNumber:
+    apiData?.account_number || "N/A",
 
-  pincode: apiData?.address?.pincode || apiData?.pincode || "N/A",
-
-  panNumber: apiData?.pan_card_number || apiData?.id_proof?.pan_card_number || "N/A",
+  ifscCode: apiData?.ifsc_code || "N/A",
 
   aadhaarImageUrl:
     apiData?.id_proof_front_url || "",
+
+  aadhaarBackImageUrl:
+    apiData?.id_proof_back_url || "",
 
   panImageUrl:
     apiData?.pan_card_url || "",
@@ -210,7 +219,7 @@ const agent: AgentDetail = {
                                   ">
                     <ProfileHeaderCard agent={agent}/>
 
-                    <SectionCard title="Personal Information">
+                    <SectionCard title="Info">
                         <div className="
                                                 grid
                                                 grid-cols-2
@@ -234,14 +243,15 @@ const agent: AgentDetail = {
                                 value={
                                     agent.dateOfBirth
                                 }/>
-                            <InfoField label="PAN Number"
+                            <InfoField label="Operating Territory"
                                 value={
-                                    agent.panNumber
-                                }/>
+                                    agent.operatingTerritory
+                                }
+                                className="col-span-2 xl:col-span-3"/>
                         </div>
                     </SectionCard>
 
-                    <SectionCard title="Address Information">
+                    <SectionCard title="Bank Details">
                         <div className="
                                                 grid
                                                 grid-cols-2
@@ -252,36 +262,35 @@ const agent: AgentDetail = {
                                                 gap-y-[1.25rem]
                                                 lg:gap-y-[1.5rem]
                                               ">
-                            <InfoField label="Address"
+                            <InfoField label="Bank Name"
                                 value={
-                                    agent.address
-                                } className="col-span-2 xl:col-span-3"/>
-                            <InfoField label="City / Village"
-                                value={
-                                    agent.city
+                                    agent.bankName
                                 }/>
-                            <InfoField label="State"
+                            <InfoField label="Account Number"
                                 value={
-                                    agent.stateName
+                                    agent.accountNumber
                                 }/>
-                            <InfoField label="Pin Code"
+                            <InfoField label="IFSC Code"
                                 value={
-                                    agent.pincode
+                                    agent.ifscCode
                                 }/>
                         </div>
                     </SectionCard>
 
                     <SectionCard title="Documents Provided">
                         <div className="
-                                                grid grid-cols-2
+                                                grid grid-cols-1 md:grid-cols-3
                                                 gap-[1.25rem]
                                                 lg:gap-[1.5rem]
                                                 xl:gap-[2rem]
-                                                max-w-[48.75rem]
                                               ">
-                            <DocumentCard label="Aadhaar card"
+                            <DocumentCard label="Aadhaar card (Front)"
                                 imageUrl={
                                     agent.aadhaarImageUrl
+                                }/>
+                            <DocumentCard label="Aadhaar card (Back)"
+                                imageUrl={
+                                    agent.aadhaarBackImageUrl
                                 }/>
                             <DocumentCard label="Pan card"
                                 imageUrl={
