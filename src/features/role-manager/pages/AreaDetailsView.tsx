@@ -205,7 +205,12 @@ useEffect(() => {
 }, [areaGeoJson]);
 
   const handleEditClick = () => {
-    navigate(`/role-manager/region-area-edit?editAreaId=${areaId}`);
+    // Read the region ID that was stored in sessionStorage when user clicked the region
+    // on the RegionAreaEdit map (area view mode) before navigating to this details page
+    const storedRegionId = sessionStorage.getItem("selected_region_id") || "";
+    navigate(
+      `/role-manager/region-area-edit?editAreaId=${areaId}&region_id=${storedRegionId}`,
+    );
   };
 
   return (
