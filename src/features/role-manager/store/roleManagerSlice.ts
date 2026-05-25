@@ -3,6 +3,7 @@ import type { GeoMasterData } from "../types/masterDataTypes";
 
 interface RoleManagerState extends GeoMasterData {
   regions: any[];
+   createdArea: any | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -15,6 +16,7 @@ const initialState: RoleManagerState = {
   regions: [],
   isLoading: false,
   error: null,
+  createdArea: null,
 };
 
 const roleManagerSlice = createSlice({
@@ -36,8 +38,17 @@ const roleManagerSlice = createSlice({
     setRegions: (state, action: PayloadAction<any[]>) => {
       state.regions = action.payload;
     },
+    setCreatedArea: (state, action: PayloadAction<any>) => {
+  state.createdArea = action.payload;
+},
   },
 });
 
-export const { setGeoMasterData, setLoading, setError, setRegions } = roleManagerSlice.actions;
+export const {
+  setGeoMasterData,
+  setLoading,
+  setError,
+  setRegions,
+  setCreatedArea,
+} = roleManagerSlice.actions;
 export default roleManagerSlice.reducer;

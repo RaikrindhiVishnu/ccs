@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BackButton } from "@/components/ui/BackButton";
 import { toast } from "sonner";
+import { useAppSelector } from "@/core/hooks";
 import {
   useAssignFieldOfficerMutation,
   useGetAllGeoJsonDataQuery,
@@ -15,7 +16,7 @@ import { useGetAllFieldOfficersMutation } from "../api/roleManagerApi";
 // Helper to calculate bounds of geometry
 const getFeatureBounds = (features: any[]): maplibregl.LngLatBoundsLike => {
   const bounds = new maplibregl.LngLatBounds();
-  
+
   const extendBounds = (coords: any[]) => {
     coords.forEach((coord) => {
       if (Array.isArray(coord[0])) {
@@ -50,29 +51,33 @@ const AssignFieldOfficer: React.FC = () => {
   // Retrieve state passed from the Success Card
   const areaState = useMemo(() => {
     const defaultData = {
-      areaId: 1,
-      areaName: "Prakasam Area",
-      assignedId: "GLC R00012",
-      createdDate: new Date().toLocaleDateString(),
-      createdTime: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      areaId: null,
+      areaName: "",
+      assignedId: "",
+      createdDate: "",
+      createdTime: "",
       selectedMandals: [] as any[],
-      regionalOfficerId: 2,
-      roleManagerName: "RM Sravan Kumar",
-      stateId: 1,
+      regionalOfficerId: null,
+      roleManagerName: "",
+      stateId: null,
     };
     return {
       ...defaultData,
       ...(location.state || {}),
     };
   }, [location.state]);
-
+  const createdArea = useAppSelector((state) => state.roleManager.createdArea);
   const [fieldOfficers, setFieldOfficers] = useState<any[]>([]);
-  const [selectedFieldOfficerId, setSelectedFieldOfficerId] = useState<number | null>(null);
+  const [selectedFieldOfficerId, setSelectedFieldOfficerId] = useState<
+    number | null
+  >(null);
   const [isMapReady, setIsMapReady] = useState(false);
 
   // Mutation and Query Hooks
-  const [assignFieldOfficer, { isLoading: isAssigning }] = useAssignFieldOfficerMutation();
-  const [getAllFieldOfficers, { isLoading: loadingField }] = useGetAllFieldOfficersMutation();
+  const [assignFieldOfficer, { isLoading: isAssigning }] =
+    useAssignFieldOfficerMutation();
+  const [getAllFieldOfficers, { isLoading: loadingField }] =
+    useGetAllFieldOfficersMutation();
   const { data: allGeoJsonData } = useGetAllGeoJsonDataQuery();
 
   const [geoMasterData, setGeoMasterData] = useState<any | null>(null);
@@ -81,12 +86,18 @@ const AssignFieldOfficer: React.FC = () => {
   useEffect(() => {
     const fetchFieldOfficers = async () => {
       try {
-        const result = await getAllFieldOfficers().unwrap();
+        const result = await getAllFieldOfficers({
+          is_assigned: 1,
+        }).unwrap();
+
+        console.log("FIELD OFFICERS:", result);
+
         const fieldList = Array.isArray(result?.data)
           ? result.data
           : Array.isArray(result)
-          ? result
-          : [];
+            ? result
+            : [];
+
         setFieldOfficers(fieldList);
       } catch (err) {
         console.error("Failed to load field officers:", err);
@@ -116,10 +127,11 @@ const AssignFieldOfficer: React.FC = () => {
 
   // Construct FeatureCollection of the area's mandals to draw on the mini-map
   const areaGeoJSON = useMemo(() => {
-    if (!geoMasterData) return { type: "FeatureCollection", features: [] } as any;
+    if (!geoMasterData)
+      return { type: "FeatureCollection", features: [] } as any;
 
     const selectedIds = new Set(
-      areaState.selectedMandals.map((m: any) => Number(m.id ?? m.featureId))
+      areaState.selectedMandals.map((m: any) => Number(m.id ?? m.featureId)),
     );
 
     const matchedMandals: any[] = [];
@@ -227,7 +239,9 @@ const AssignFieldOfficer: React.FC = () => {
           },
         });
       } else {
-        const source = map.current.getSource("selected-area-mandals") as maplibregl.GeoJSONSource;
+        const source = map.current.getSource(
+          "selected-area-mandals",
+        ) as maplibregl.GeoJSONSource;
         source.setData(areaGeoJSON as any);
       }
 
@@ -249,19 +263,44 @@ const AssignFieldOfficer: React.FC = () => {
       return;
     }
 
+    const resolvedAreaId = createdArea?.area_id ?? areaState.areaId;
+    if (!resolvedAreaId) {
+      toast.error("Area ID missing — please recreate the area");
+      console.error("createdArea from Redux:", createdArea);
+      console.error("areaState from nav:", areaState);
+      return;
+    }
+
     try {
-      await assignFieldOfficer({
-        area_id: Number(areaState.areaId),
+      console.log("ASSIGN PAYLOAD", {
+        area_id: Number(createdArea?.area_id || areaState.areaId),
         field_officer_id: Number(selectedFieldOfficerId),
         regional_officer_id: Number(areaState.regionalOfficerId),
+      });
+
+      const resolvedAreaId = createdArea?.area_id ?? areaState.areaId;
+
+      if (!resolvedAreaId) {
+        toast.error("Area ID missing — please recreate the area");
+        console.error("createdArea from Redux:", createdArea);
+        console.error("areaState from nav:", areaState);
+        return;
+      }
+
+      await assignFieldOfficer({
+        area_id: Number(resolvedAreaId),
+        field_officer_id: Number(selectedFieldOfficerId),
+        regional_officer_id: Number(
+          createdArea?.regional_officer_id ?? areaState.regionalOfficerId,
+        ),
       }).unwrap();
 
       toast.success("Field Officer assigned successfully!");
-      // Redirect back to Dashboard
+
       navigate("/role-manager/region-area-dashboard");
     } catch (err) {
       console.error("Failed to assign field officer:", err);
-      toast.error("Failed to assign field officer. Please try again.");
+      toast.error("Failed to assign field officer.");
     }
   };
 
@@ -278,7 +317,6 @@ const AssignFieldOfficer: React.FC = () => {
 
       {/* Main Container */}
       <div className="flex-1 w-full max-w-6xl mx-auto flex flex-col items-center justify-center gap-6">
-        
         {/* Title */}
         <h1 className="text-[22px] sm:text-[28px] font-black text-slate-900 tracking-tight text-center leading-snug mb-2 font-heading">
           Assign Field Officers For The Area
@@ -286,16 +324,20 @@ const AssignFieldOfficer: React.FC = () => {
 
         {/* Dual Panel Grid */}
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch mt-2">
-          
           {/* LEFT PANEL - Area Details Card */}
           <div className="w-full flex flex-col bg-white rounded-[32px] border border-slate-200 shadow-md p-6 sm:p-8 justify-between">
             {/* Map Container */}
             <div className="w-full aspect-[220/190] sm:h-[260px] rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 relative mb-6">
-              <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
+              <div
+                ref={mapContainer}
+                className="absolute inset-0 w-full h-full"
+              />
               {(!isMapReady || !geoMasterData) && (
                 <div className="absolute inset-0 z-10 bg-slate-50 flex items-center justify-center gap-3">
                   <Loader2 className="w-6 h-6 text-emerald-600 animate-spin" />
-                  <span className="text-xs font-semibold text-slate-400">Loading Map Geometry...</span>
+                  <span className="text-xs font-semibold text-slate-400">
+                    Loading Map Geometry...
+                  </span>
                 </div>
               )}
             </div>
@@ -310,7 +352,7 @@ const AssignFieldOfficer: React.FC = () => {
                   {areaState.areaName}
                 </span>
               </div>
-              
+
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                   Assigned ID
@@ -342,7 +384,6 @@ const AssignFieldOfficer: React.FC = () => {
 
           {/* RIGHT PANEL - Assignment Form Card */}
           <div className="w-full flex flex-col bg-white rounded-[32px] border border-slate-200 shadow-md p-6 sm:p-8 justify-between relative overflow-hidden">
-            
             {/* Form Fields */}
             <div className="flex flex-col gap-6 w-full">
               <div className="flex flex-col gap-1">
@@ -364,14 +405,25 @@ const AssignFieldOfficer: React.FC = () => {
                 <div className="relative flex items-center h-12 bg-slate-50 border border-slate-200 rounded-xl focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
                   <select
                     value={selectedFieldOfficerId ?? ""}
-                    onChange={(e) => setSelectedFieldOfficerId(e.target.value ? Number(e.target.value) : null)}
+                    onChange={(e) =>
+                      setSelectedFieldOfficerId(
+                        e.target.value ? Number(e.target.value) : null,
+                      )
+                    }
                     className="w-full h-full border-none outline-none bg-transparent px-4 text-slate-800 text-sm font-semibold cursor-pointer"
                   >
                     <option value="">Select Field Officer</option>
                     {fieldOfficers.map((officer, index) => {
                       const id = officer.id ?? officer.i ?? officer.user_id;
-                      const fullName = `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
-                      const label = fullName || officer.name || officer.d || officer.username || officer.email || `Field Officer ${index + 1}`;
+                      const fullName =
+                        `${officer.first_name || officer.fname || ""} ${officer.last_name || officer.lname || ""}`.trim();
+                      const label =
+                        fullName ||
+                        officer.name ||
+                        officer.d ||
+                        officer.username ||
+                        officer.email ||
+                        `Field Officer ${index + 1}`;
                       return (
                         <option key={id ?? index} value={id ?? index}>
                           {label}

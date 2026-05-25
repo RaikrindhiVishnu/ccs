@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Briefcase, Pencil, UserCircle, Layers } from "lucide-react";
-
+import { useGetAllFieldOfficersMutation } from "../api/roleManagerApi";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
@@ -17,7 +17,8 @@ const AreaDetailsView: React.FC = () => {
   const { areaId } = useParams<{ areaId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-
+  const [getAllFieldOfficers, { data: fieldOfficersData }] =
+    useGetAllFieldOfficersMutation();
   const { data: areaGeoJson } = useGetAreaGeoJsonQuery(
     { area_id: Number(areaId) },
     { skip: !areaId },
@@ -28,6 +29,11 @@ const AreaDetailsView: React.FC = () => {
     { skip: !areaId },
   );
 
+  useEffect(() => {
+    getAllFieldOfficers({
+      is_assigned: 1,
+    });
+  }, []);
   // Dynamically resolve real backend area details using regionId & get_all_areas_by_region_id
   const regionId =
     areaDetailsData?.data?.regionId || areaDetailsData?.data?.region_id;
@@ -141,6 +147,24 @@ const AreaDetailsView: React.FC = () => {
 
   const geoProps = firstFeature?.properties || {};
 
+ // FIXED — match by area_id (reliable, backend-driven):
+const matchedFieldOfficer = useMemo(() => {
+  const officers = fieldOfficersData?.data || [];
+  return officers.find(
+    (officer: any) => Number(officer.area_id) === Number(areaId),
+  );
+}, [fieldOfficersData, areaId]);
+
+useEffect(() => {
+  if (fieldOfficersData?.data) {
+    console.log("FIELD OFFICERS SAMPLE:", fieldOfficersData.data[0]);
+    console.log("Current areaId:", areaId);
+  }
+}, [fieldOfficersData, areaId]);
+
+  fieldOfficersData?.data?.forEach((o: any) => {
+    console.log("OFFICER OBJECT", o);
+  });
   const cachedArea = (window as any).__areaCache?.[Number(areaId)];
   const areaName =
     geoProps?.name ||
@@ -164,11 +188,21 @@ const AreaDetailsView: React.FC = () => {
     ? new Date(createdOn).toLocaleTimeString()
     : "—";
 
-  const fieldOfficer = {
-    name: geoProps?.field_officer_name || "Unassigned",
-    code: geoProps?.field_officer_id || "—",
-    avatar_url: null,
-  };
+ const fieldOfficer = {
+  name: geoProps?.field_officer_name || "Unassigned",
+  code: geoProps?.field_officer_id 
+    ? `FO-${geoProps.field_officer_id}` 
+    : "—",
+  avatar_url: null,
+};
+useEffect(() => {
+  if (areaGeoJson) {
+    const features = areaGeoJson?.data?.features || areaGeoJson?.features || [];
+    features.forEach((f: any) => {
+      console.log("GeoJSON props for area", areaId, ":", f.properties);
+    });
+  }
+}, [areaGeoJson]);
 
   const handleEditClick = () => {
     navigate(`/role-manager/region-area-edit?editAreaId=${areaId}`);
@@ -354,6 +388,21 @@ const AreaDetailsView: React.FC = () => {
                     </Typography>
                   </div>
                 </div>
+              </div>
+              <div>
+                <Typography
+                  variant="span"
+                  className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-4 block"
+                >
+                  Mandals
+                </Typography>
+
+                <Typography
+                  variant="p"
+                  className="text-[#0F172A] font-medium text-[14px] leading-6"
+                >
+                  {geoProps?.mandal || "—"}
+                </Typography>
               </div>
             </div>
           </div>
