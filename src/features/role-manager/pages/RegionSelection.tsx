@@ -10,6 +10,9 @@ import { Maximize2, ChevronLeft, X, Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { setCreatedArea } from "../store/roleManagerSlice";
+
 import {
   useCreateRegionMutation,
   useCreateAreaMutation,
@@ -302,6 +305,7 @@ const getFeatureBounds = (feature: any): maplibregl.LngLatBoundsLike => {
 };
 
 const RegionSelection: React.FC = () => {
+  const dispatch = useDispatch();
   const currentUser = useAppSelector((state) => state.auth.user);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -436,8 +440,6 @@ const RegionSelection: React.FC = () => {
 
   const [createRegion, { isLoading: isCreating }] = useCreateRegionMutation();
   const [createArea, { isLoading: isCreatingArea }] = useCreateAreaMutation();
-
-
 
   const selectedStateId: number | undefined =
     selectedState?.properties?.id ??
@@ -1311,7 +1313,11 @@ const RegionSelection: React.FC = () => {
                 type: "line",
                 source: "country-regions-source",
                 paint: {
-                  "line-color": ["coalesce", ["get", "regionBorderColor"], "#6d28d9"],
+                  "line-color": [
+                    "coalesce",
+                    ["get", "regionBorderColor"],
+                    "#6d28d9",
+                  ],
                   "line-width": 1.5,
                 },
               },
@@ -1464,14 +1470,8 @@ const RegionSelection: React.FC = () => {
     }
   };
 
-
-
   const handleCreateRegion = async () => {
-    if (
-      !regionName ||
-      !regionCode ||
-      selectedDistricts.length === 0
-    ) {
+    if (!regionName || !regionCode || selectedDistricts.length === 0) {
       toast.error("Please fill in all fields and select districts");
       return;
     }
@@ -1504,7 +1504,8 @@ const RegionSelection: React.FC = () => {
       });
 
       const now = new Date();
-      const createdRegionId = res?.data?.region_id || res?.region_id || res?.data?.id || res?.id || 1;
+      const createdRegionId =
+        res?.data?.region_id || res?.region_id || res?.data?.id || res?.id || 1;
 
       // Show Successcard
       setSuccessCardProps({
@@ -1576,7 +1577,28 @@ const RegionSelection: React.FC = () => {
       });
 
       const now = new Date();
-      const createdAreaId = res?.data?.area_id || res?.area_id || res?.data?.id || res?.id || 1;
+      const createdAreaId =
+        res?.responseData?.area_id ||
+        res?.data?.area_id ||
+        res?.area_id ||
+        res?.data?.id ||
+        res?.id;
+
+      if (!createdAreaId) {
+        toast.error("Area created but ID missing in response");
+        return;
+      }
+
+      dispatch(
+        setCreatedArea({
+          area_id: createdAreaId,
+          area_name:
+            res?.responseData?.area_name || res?.data?.area_name || areaName,
+          area_code:
+            res?.responseData?.area_code || res?.data?.area_code || areaCode,
+          regional_officer_id: fetchedRegionalOfficerId,
+        }),
+      );
 
       // Show Successcard
       setSuccessCardProps({
@@ -1591,9 +1613,11 @@ const RegionSelection: React.FC = () => {
           hour: "2-digit",
           minute: "2-digit",
         }),
-        areaId: createdAreaId,
+        areaId: createdAreaId, // already correct now since createdAreaId is fixed above
         selectedMandals: [...selectedMandals],
-        regionalOfficerId: fetchedRegionalOfficerId ? Number(fetchedRegionalOfficerId) : 2,
+        regionalOfficerId: fetchedRegionalOfficerId
+          ? Number(fetchedRegionalOfficerId)
+          : 2,
       });
 
       setSelectedMandals([]);
@@ -1624,7 +1648,9 @@ const RegionSelection: React.FC = () => {
               },
             });
           } else {
-            const roleManagerFullName = `${currentUser?.first_name || ""} ${currentUser?.last_name || ""}`.trim() || "RM Sravan Kumar";
+            const roleManagerFullName =
+              `${currentUser?.first_name || ""} ${currentUser?.last_name || ""}`.trim() ||
+              "RM Sravan Kumar";
             navigate("/role-manager/assign-field-officer", {
               state: {
                 areaId: successCardProps.areaId,
@@ -1925,8 +1951,6 @@ const RegionSelection: React.FC = () => {
                 onChange={(e) => setAreaCode(e.target.value)}
                 className="px-3 text-sm h-10"
               />
-
-
             </div>
 
             <Button

@@ -33,56 +33,69 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
         body,
       }),
     }),
-    createRegion: builder.mutation<any, {
-      regionName: string;
-      regionCode: string;
-      roleManagerId?: number;
-      regionalOfficerId?: number;
-      inteligenceOfficerId?: number;
-      district_ids: number[];
-      stateId?: number;
-    }>({
+    createRegion: builder.mutation<
+      any,
+      {
+        regionName: string;
+        regionCode: string;
+        roleManagerId?: number;
+        regionalOfficerId?: number;
+        inteligenceOfficerId?: number;
+        district_ids: number[];
+        stateId?: number;
+      }
+    >({
       query: (body) => ({
         url: "region/create_region",
         method: "POST",
         body,
       }),
     }),
-    assignOfficers: builder.mutation<any, {
-      region_id: number;
-      regionalOfficerId: number;
-      inteligenceOfficerId: number;
-    }>({
+    assignOfficers: builder.mutation<
+      any,
+      {
+        region_id: number;
+        regionalOfficerId: number;
+        inteligenceOfficerId: number;
+      }
+    >({
       query: (body) => ({
         url: "region/assign_officers",
         method: "POST",
         body,
       }),
     }),
-    createArea: builder.mutation<any, {
-      areaName: string;
-      area_code: string;
-      field_officer_id?: number | null;
-      regional_officer_id?: number | null;
-      intelligence_officer_id?: number | null;
-      region_id?: number;
-      roleManagerId?: number;
-      assignments: {
-        district_id: number;
-        mandal_id: number;
-      }[];
-    }>({
+    createArea: builder.mutation<
+      any,
+      {
+        areaName: string;
+        area_code: string;
+        field_officer_id?: number | null;
+        regional_officer_id?: number | null;
+        intelligence_officer_id?: number | null;
+        region_id?: number;
+        roleManagerId?: number;
+        assignments: {
+          district_id: number;
+          mandal_id: number;
+        }[];
+      }
+    >({
       query: (body) => ({
         url: "areas/create_area",
         method: "POST",
         body,
       }),
     }),
-    assignFieldOfficer: builder.mutation<any, {
-      area_id: number;
-      field_officer_id: number;
-      regional_officer_id: number;
-    }>({
+
+    assignFieldOfficer: builder.mutation<
+      any,
+      {
+        area_id: number;
+        field_officer_id: number;
+        regional_officer_id: number;
+      }
+    >({
       query: (body) => ({
         url: "areas/assign_fo",
         method: "POST",
@@ -128,15 +141,18 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
       }),
     }),
 
-    updateRegion: builder.mutation<any, {
-      region_id: number;
-      regionName: string;
-      regionCode: string;
-      district_ids: number[];
-      stateId?: number;
-      regionalOfficerId?: number | null;
-      inteligenceOfficerId?: number | null;
-    }>({
+    updateRegion: builder.mutation<
+      any,
+      {
+        region_id: number;
+        regionName: string;
+        regionCode: string;
+        district_ids: number[];
+        stateId?: number;
+        regionalOfficerId?: number | null;
+        inteligenceOfficerId?: number | null;
+      }
+    >({
       async queryFn(body) {
         console.log("Mocked updateRegion mutation called with body:", body);
         await new Promise((resolve) => setTimeout(resolve, 800));
@@ -162,32 +178,38 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
       }),
     }),
     getAreaGeoJson: builder.query<any, { area_id: number }>({
-  query: (body) => ({
-    url: "areas/get_area_geojson",
-    method: "POST",
-    body,
-  }),
-}),
+      query: (body) => ({
+        url: "areas/get_area_geojson",
+        method: "POST",
+        body,
+      }),
+    }),
 
     // ─── PLACEHOLDER: Get Area By ID ──────────────────────────────────────────
     getAreaById: builder.query<any, { area_id: number }>({
       async queryFn(body) {
         console.log("Mocked getAreaById called with:", body);
         await new Promise((resolve) => setTimeout(resolve, 300));
-        
+
         // Dynamic lookup from global cache populated by real backend loads
         const cache = (window as any).__areaCache || {};
         const cached = cache[Number(body.area_id)];
 
-        let areaName = cached?.area_name || cached?.areaName || `Area_${body.area_id}`;
-        let areaCode = cached?.area_code || cached?.areaCode || `AREA-CODE-00${body.area_id}`;
+        let areaName =
+          cached?.area_name || cached?.areaName || `Area_${body.area_id}`;
+        let areaCode =
+          cached?.area_code ||
+          cached?.areaCode ||
+          `AREA-CODE-00${body.area_id}`;
         let regionId = cached?.region_id || cached?.regionId || 1;
         let regionName = cached?.regionName || "AP - North";
         let districtId = cached?.district_id || 1;
-        
+
         let mandalIds = [101, 102];
         if (cached?.assignments) {
-          mandalIds = cached.assignments.map((a: any) => Number(a.mandal_id || a.mandalId));
+          mandalIds = cached.assignments.map((a: any) =>
+            Number(a.mandal_id || a.mandalId),
+          );
         } else if (cached?.mandal_ids || cached?.mandalIds) {
           mandalIds = (cached.mandal_ids || cached.mandalIds).map(Number);
         } else {
@@ -215,13 +237,21 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
             mandalIds = [203, 204];
           } else {
             regionId = (body.area_id % 3) + 1;
-            regionName = regionId === 1 ? "AP - North" : regionId === 2 ? "AP - South" : "AP - East";
+            regionName =
+              regionId === 1
+                ? "AP - North"
+                : regionId === 2
+                  ? "AP - South"
+                  : "AP - East";
             districtId = regionId;
             mandalIds = [101 + body.area_id * 10, 102 + body.area_id * 10];
           }
         }
 
-        const assignments = mandalIds.map(mId => ({ district_id: districtId, mandal_id: mId }));
+        const assignments = mandalIds.map((mId) => ({
+          district_id: districtId,
+          mandal_id: mId,
+        }));
 
         return {
           data: {
@@ -244,24 +274,27 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
                 name: "Anil Reddy",
                 code: "AR-9931",
                 avatar_url: "https://i.pravatar.cc/150?u=anil",
-              }
-            }
-          }
+              },
+            },
+          },
         };
-      }
+      },
     }),
 
     // ─── PLACEHOLDER: Update Area ─────────────────────────────────────────────
-    updateArea: builder.mutation<any, {
-      area_id: number;
-      areaName: string;
-      area_code: string;
-      region_id: number;
-      assignments: { district_id: number; mandal_id: number }[];
-      field_officer_id?: number | null;
-      regional_officer_id?: number | null;
-      intelligence_officer_id?: number | null;
-    }>({
+    updateArea: builder.mutation<
+      any,
+      {
+        area_id: number;
+        areaName: string;
+        area_code: string;
+        region_id: number;
+        assignments: { district_id: number; mandal_id: number }[];
+        field_officer_id?: number | null;
+        regional_officer_id?: number | null;
+        intelligence_officer_id?: number | null;
+      }
+    >({
       async queryFn(body) {
         console.log("Mocked updateArea mutation called with body:", body);
         await new Promise((resolve) => setTimeout(resolve, 800));
@@ -298,8 +331,8 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
   }),
 });
 
-export const { 
-  useGetCountryByIdQuery, 
+export const {
+  useGetCountryByIdQuery,
   useGetStatesByCountryIdQuery,
   useGetRegionsByCountryIdQuery,
   useGetDistrictsByStateIdQuery,
