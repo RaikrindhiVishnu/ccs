@@ -267,6 +267,27 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
         };
       },
     }),
+    getAllRegionsByStateId: builder.mutation<any, { state_id: number }>({
+      query: (body) => ({
+        url: "master/get_all_regions_by_state_id",
+        method: "POST",
+        body,
+      }),
+    }),
+    getRegionsByStateId: builder.query<any, { state_id: number }>({
+      query: (body) => ({
+        url: "master/get_all_regions_by_state_id",
+        method: "POST",
+        body,
+      }),
+    }),
+    getRegionGeoJson: builder.query<any, { region_id: number }>({
+      query: (body) => ({
+        url: "region/get_region_geojson",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -281,6 +302,9 @@ export const {
   useAssignFieldOfficerMutation,
   useGetAllGeoJsonDataQuery,
   useGetAllAreasByRegionIdQuery,
+  useGetAllRegionsByStateIdMutation,
+  useGetRegionsByStateIdQuery,
+  useGetRegionGeoJsonQuery,
   // ─── Placeholder hooks (wire to real APIs when available) ─────────────────
   useGetAllRegionsQuery,
   useGetRegionByIdQuery,

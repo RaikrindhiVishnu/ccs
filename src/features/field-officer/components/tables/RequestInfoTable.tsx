@@ -1,5 +1,6 @@
+import { useNavigate } from "react-router-dom";
 import avatars from "../../../../assets/dashboard/avatars.png";
-import { TABLE_DATA } from "../../data/farmlandsData";
+import { requestInfoData } from "../../data/requestInfoData";
 
 type Props = {
   isExpanded?: boolean;
@@ -7,6 +8,8 @@ type Props = {
 };
 
 export default function RequestInfoTable({ isExpanded = false, onViewMore }: Props) {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-white shadow-[0px_20px_40px_rgba(0,105,107,0.06)] w-full overflow-hidden rounded-[24px]">
       <div className="overflow-x-auto">
@@ -21,31 +24,49 @@ export default function RequestInfoTable({ isExpanded = false, onViewMore }: Pro
             </tr>
           </thead>
           <tbody className="divide-y divide-[#E2E2E4]/30">
-            {TABLE_DATA.map((row, idx) => (
+            {requestInfoData.map((row, idx) => (
               <tr key={idx} className="h-[88.5px] hover:bg-gray-50 transition-colors">
+                {/* Agent Name */}
                 <td className="px-8">
                   <div className="flex items-center gap-3">
                     <img 
                       src={avatars} 
                       className="w-10 h-10 rounded-full object-cover" 
                       style={{ objectPosition: `${(row.faceIdx % 2) * 100}% ${Math.floor(row.faceIdx / 2) * 50}%` }} 
-                      alt={row.agent}
+                      alt={row.agentName}
                     />
-                    <span className="font-bold text-[#1A1C1D]">{row.agent}</span>
+                    <span className="font-bold text-[#1A1C1D]">{row.agentName}</span>
                   </div>
                 </td>
-                <td className="px-8 text-[#3D4949]">{row.id}</td>
-                <td className="px-8 text-[#3D4949]">{row.time}</td>
+                
+                {/* Alert ID */}
+                <td className="px-8 text-[#3D4949]">{row.alertId}</td>
+                
+                {/* Created Time */}
+                <td className="px-8 text-[#3D4949]">{row.createdTime}</td>
+                
+                {/* Amount */}
                 <td className="px-8 font-bold text-[#1A1C1D]">{row.amount}</td>
+                
+                {/* Project Status */}
                 <td className="px-8">
-                  <span className="bg-[#B45309] text-white px-3 py-1 rounded-full text-[12px] font-bold">
-                    Returned
+                  <span className="bg-[#78350f] text-white px-4 py-1.5 rounded-full text-[12px] font-bold tracking-wide shadow-sm">
+                    {row.status}
                   </span>
                 </td>
-                <td className="px-8 text-[#3D4949] font-medium">{row.farmId}</td>
-                <td className="px-8 text-[#3D4949]">{row.pubTime}</td>
+                
+                {/* Farmland ID */}
+                <td className="px-8 text-[#3D4949] font-medium">{row.farmlandId}</td>
+                
+                {/* Published Time */}
+                <td className="px-8 text-[#3D4949]">{row.publishedTime}</td>
+                
+                {/* Actions */}
                 <td className="px-8">
-                  <button className="bg-[#96C9ED] text-black text-[12px] font-bold px-4 py-1.5 rounded-full hover:brightness-90 transition-all uppercase">
+                  <button 
+                    onClick={() => navigate(`/field-officer/request-info/${row.id}`)}
+                    className="bg-[#96C9ED] text-black text-[12px] font-bold px-5 py-2 rounded-full hover:brightness-95 transition-all uppercase tracking-wide cursor-pointer"
+                  >
                     View
                   </button>
                 </td>
@@ -57,7 +78,7 @@ export default function RequestInfoTable({ isExpanded = false, onViewMore }: Pro
       
       {!isExpanded ? (
         <div className="h-[65px] flex items-center justify-center border-t border-gray-100 bg-white">
-          <button onClick={onViewMore} className="text-[18px] font-bold hover:opacity-70 transition-opacity">
+          <button onClick={onViewMore} className="text-[18px] font-bold hover:opacity-70 transition-opacity cursor-pointer">
             View More
           </button>
         </div>
