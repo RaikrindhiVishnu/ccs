@@ -97,8 +97,8 @@ const MOCK_API_USERS = [
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [loginId, setLoginId] = useState("john.doe@example.com");
-  const [password, setPassword] = useState("MySecret@123");
+  const [loginId, setLoginId] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<{
     login_id?: string;
@@ -145,7 +145,7 @@ export default function Login() {
           refreshToken,
         }),
       );
-      
+
       // Navigate based on role
       if (roleCode === "CCS") {
         navigate("/ccs/dashboard");
@@ -175,7 +175,7 @@ export default function Login() {
           refreshToken,
         }),
       );
-      
+
       // Navigate based on role
       if (roleCode === "CCS") {
         navigate("/");
@@ -209,7 +209,8 @@ export default function Login() {
         <div
           className="shrink-0 flex flex-col w-[clamp(380px,38.1250vw,732px)] rounded-[clamp(20px,2.2222vw,32px)] bg-[var(--surface-card)] shadow-[0px_1px_3.5px_rgba(0,0,0,0.06)] p-[clamp(32px,3.6111vw,60px)_clamp(28px,3.3333vw,56px)_clamp(24px,2.7778vw,40px)]"
           style={{
-            aspectRatio: "clamp(0.784,calc(0.784 + (0.907 - 0.784) * ((100vw - 1024px) / (1280px - 1024px))),0.907)",
+            aspectRatio:
+              "clamp(0.784,calc(0.784 + (0.907 - 0.784) * ((100vw - 1024px) / (1280px - 1024px))),0.907)",
           }}
         >
           {/* HEADING */}

@@ -123,16 +123,19 @@ const CustomBar = ({
           strokeWidth={1.26}
         />
 
-        {/* Active Day label circle */}
         <foreignObject
-          x={centerX - 18}
-          y={y + height - 2}
-          width={36}
-          height={36}
+          x={centerX - 22}
+          y={y + height - 4}
+          width={44}
+          height={44}
         >
-          <div className="w-9 h-9 bg-[var(--brand-500)] rounded-full flex justify-center items-center shadow-[var(--shadow-card-sm)]">
-            <span className="font-[var(--font-sans)] font-medium text-[10.7px] text-white">
-              {label}
+          <div className="w-11 h-11 bg-[var(--brand-500)] rounded-full flex flex-col justify-center items-center shadow-[var(--shadow-card-sm)] leading-none">
+            <span className="text-[10px] text-white font-medium">
+              {label.split(" ")[0]}
+            </span>
+
+            <span className="text-[10px] text-white font-medium mt-[1px]">
+              {label.split(" ")[1]}
             </span>
           </div>
         </foreignObject>
@@ -156,10 +159,13 @@ const CustomBar = ({
       />
 
       {/* Inactive Day label circle */}
-      <foreignObject x={centerX - 20} y={y + height - 2} width={40} height={40}>
-        <div className="w-10 h-10 bg-[var(--surface-page)] rounded-full flex justify-center items-center">
-          <span className="font-[var(--font-sans)] font-medium text-xs text-[var(--text-primary)]">
-            {label}
+      <foreignObject x={centerX - 22} y={y + height - 4} width={44} height={44}>
+        <div className="w-11 h-11 bg-[var(--surface-page)] rounded-full flex flex-col justify-center items-center leading-none">
+          <span
+            className="font-[var(--font-sans)] font-medium text-[10px] text-[var(--text-primary)] text-center"
+            style={{ whiteSpace: "pre-line" }}
+          >
+            {label.replace(" ", "\n")}
           </span>
         </div>
       </foreignObject>
