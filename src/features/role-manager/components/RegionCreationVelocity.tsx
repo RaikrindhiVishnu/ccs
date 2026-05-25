@@ -71,10 +71,10 @@ const PeakDot = (props: any) => {
       <circle
         cx={cx}
         cy={cy}
-        r={9}
+        r={6}
         fill="url(#peakDotGrad)"
         stroke="var(--brand-200)"
-        strokeWidth={4}
+        strokeWidth={3}
       />
     </g>
   );

@@ -365,10 +365,10 @@ export function RoleCreationOverviewCard({
               )}
               style={{
                 left: Math.min(
-                  tooltip.x + 12,
-                  (chartRef.current?.clientWidth || 0) - 140,
+                  Math.max(tooltip.x - 70, 12),
+                  (chartRef.current?.clientWidth || 0) - 150,
                 ),
-                top: Math.max(tooltip.y, 8),
+                top: Math.max(tooltip.y - 70, 12),
               }}
             >
               <Typography
