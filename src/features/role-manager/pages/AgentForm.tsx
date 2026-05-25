@@ -19,6 +19,7 @@ import {
   type AgentFormValues,
 } from "@/components/validations/agentSchema";
 import { RHFTextField } from "@/components/form/RHFTextField";
+import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useState, useEffect } from "react"; // kept only for profileImage                       // kept only for profileImage
@@ -686,12 +687,12 @@ export default function AgentForm({
               maxLength={150}
               disabled={isViewMode}
             />
-            <RHFTextField
+            <RHFDropdown
               name="addressState"
               control={control}
               label="State"
-              placeholder="Enter State"
-              maxLength={30}
+              placeholder="Select State"
+              options={states?.map((s: any) => s.desc) || []}
               disabled={isViewMode}
             />
             <RHFTextField

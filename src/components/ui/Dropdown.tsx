@@ -133,6 +133,9 @@ export interface PillDropdownProps {
   value?: string;
   onChange?: (value: string) => void;
   className?: string;
+  disabled?: boolean;
+  title?: string;
+  placeholder?: string;
 }
 
 export function PillDropdown({
@@ -141,6 +144,9 @@ export function PillDropdown({
   value,
   onChange,
   className,
+  disabled = false,
+  title,
+  placeholder,
 }: PillDropdownProps) {
   const normalized = options.map((o) =>
     typeof o === "string" ? { label: o, value: o } : o,
@@ -152,7 +158,7 @@ export function PillDropdown({
   const selected = value ?? internal;
 
   const selectedLabel =
-    normalized.find((o) => o.value === selected)?.label ?? selected;
+    normalized.find((o) => o.value === selected)?.label ?? (selected || placeholder || "");
 
   const pick = (val: string) => {
     setInternal(val);
@@ -161,9 +167,10 @@ export function PillDropdown({
   };
 
   return (
-    <div ref={ref} className={cn("relative inline-block", className)}>
+    <div ref={ref} className={cn("relative inline-block", className)} title={title}>
       <button
-        onClick={() => setOpen(!open)}
+        onClick={() => !disabled && setOpen(!open)}
+        disabled={disabled}
         className={cn(
           "flex items-center gap-[clamp(6px,0.5vw,10px)]",
           "h-[clamp(32px,2.5vw,44px)] min-w-[clamp(100px,7.5vw,140px)]",
@@ -174,8 +181,10 @@ export function PillDropdown({
           "text-[length:clamp(11px,0.8vw,15px)] font-medium",
           "font-[family-name:var(--font-inter)]",
           "text-[color:var(--text-primary)]",
-          "transition-colors duration-150 cursor-pointer",
-          "hover:bg-[color:var(--brand-tint)]",
+          "transition-colors duration-150",
+          disabled
+            ? "opacity-60 cursor-not-allowed bg-gray-50 border-gray-200 text-gray-400"
+            : "cursor-pointer hover:bg-[color:var(--brand-tint)]"
         )}
       >
         <span className="flex-1 text-left whitespace-nowrap">{selectedLabel}</span>
@@ -184,7 +193,7 @@ export function PillDropdown({
         />
       </button>
 
-      {open && (
+      {open && !disabled && (
         <DropdownMenu>
           {normalized.map((opt) => (
             <MenuItem
