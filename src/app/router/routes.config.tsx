@@ -127,6 +127,12 @@ export const FarmlandWorkflowPage = lazy(
 export const DraftsDetailPage = lazy(
   () => import("../../features/field-officer/pages/DraftsDetailPage"),
 );
+export const RequestInfoDetailsPage = lazy(
+  () => import("../../features/field-officer/pages/RequestInfoDetailsPage"),
+);
+export const LandDocumentsPage = lazy(
+  () => import("../../features/field-officer/pages/LandDocumentsPage"),
+);
 export const AssignOfficersPage = lazy(
   () => import("../../features/role-manager/pages/AssignOfficers"),
 );

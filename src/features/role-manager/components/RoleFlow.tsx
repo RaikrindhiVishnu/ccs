@@ -237,43 +237,54 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
       <div className="flex items-center w-1/3">
         <FlowCard>
           <div className="flex flex-col gap-4">
-            {roAndIo.map((role, idx) => (
-              <React.Fragment key={role.id}>
-                <FlowItem
-                  {...role}
-                  variant="detailed"
-                  active={idx === 0}
-                  onEdit={() =>
-                    navigate(
-                      role.roleId === "IO"
-                        ? "/role-manager/edit-intelligence-officer"
-                        : `/role-manager/edit-regional-officer/${role.originalId}`,
-                      {
-                        state: {
-                          initialData: role,
-                          roleType: role.roleId,
-                          userId: role.originalId,
-                          from: "/role-manager/user-directory",
-                          isViewMode: false,
-                        },
-                      }
-                    )
-                  }
-                  onView={() =>
-                    handleView(
-                      role,
-                      role.roleId === "IO"
-                        ? "IO"
-                        : "RO"
-                    )
-                  }
-                />
+            {roAndIo.length > 0 ? (
+              roAndIo.map((role, idx) => (
+                <React.Fragment key={role.id}>
+                  <FlowItem
+                    {...role}
+                    variant="detailed"
+                    active={idx === 0}
+                    onEdit={() =>
+                      navigate(
+                        role.roleId === "IO"
+                          ? "/role-manager/edit-intelligence-officer"
+                          : `/role-manager/edit-regional-officer/${role.originalId}`,
+                        {
+                          state: {
+                            initialData: role,
+                            roleType: role.roleId,
+                            userId: role.originalId,
+                            from: "/role-manager/user-directory",
+                            isViewMode: false,
+                          },
+                        }
+                      )
+                    }
+                    onView={() =>
+                      handleView(
+                        role,
+                        role.roleId === "IO"
+                          ? "IO"
+                          : "RO"
+                      )
+                    }
+                  />
 
-                {idx < roAndIo.length - 1 && (
-                  <div className="h-px bg-gray-100 w-full" />
-                )}
-              </React.Fragment>
-            ))}
+                  {idx < roAndIo.length - 1 && (
+                    <div className="h-px bg-gray-100 w-full" />
+                  )}
+                </React.Fragment>
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-start pt-[134px] h-[280px] opacity-40">
+                <Typography
+                  variant="p"
+                  className="text-sm"
+                >
+                  No data available
+                </Typography>
+              </div>
+            )}
           </div>
         </FlowCard>
 
@@ -301,35 +312,46 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
           }
         >
           <div className="flex flex-col gap-2 mt-2">
-            {filteredFOs.map((fo: any, index: number) => (
-              <FlowItem
-                key={fo.id}
-                {...fo}
-                active={
-                  selectedFieldOfficerIndex === index
-                }
-                onClick={() =>
-                  handleFieldOfficerClick(fo, index)
-                }
-                onEdit={() =>
-                  navigate(
-                    "/role-manager/edit-field-officer",
-                    {
-                      state: {
-                        initialData: fo,
-                        roleType: "FO",
-                        userId: fo.originalId,
-                        from: "/role-manager/user-directory",
-                        isViewMode: false,
-                      },
-                    }
-                  )
-                }
-                onView={() =>
-                  handleView(fo, "FO")
-                }
-              />
-            ))}
+            {filteredFOs.length > 0 ? (
+              filteredFOs.map((fo: any, index: number) => (
+                <FlowItem
+                  key={fo.id}
+                  {...fo}
+                  active={
+                    selectedFieldOfficerIndex === index
+                  }
+                  onClick={() =>
+                    handleFieldOfficerClick(fo, index)
+                  }
+                  onEdit={() =>
+                    navigate(
+                      "/role-manager/edit-field-officer",
+                      {
+                        state: {
+                          initialData: fo,
+                          roleType: "FO",
+                          userId: fo.originalId,
+                          from: "/role-manager/user-directory",
+                          isViewMode: false,
+                        },
+                      }
+                    )
+                  }
+                  onView={() =>
+                    handleView(fo, "FO")
+                  }
+                />
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-start pt-[78px] h-[240px] opacity-40">
+                <Typography
+                  variant="p"
+                  className="text-sm"
+                >
+                  No data available
+                </Typography>
+              </div>
+            )}
           </div>
         </FlowCard>
 
@@ -382,12 +404,12 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                 />
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center h-40 opacity-40">
+              <div className="flex flex-col items-center justify-start pt-[78px] h-[240px] opacity-40">
                 <Typography
                   variant="p"
                   className="text-sm"
                 >
-                  No agents found
+                  No data available
                 </Typography>
               </div>
             )}

@@ -15,6 +15,7 @@ import {
   useGetAreaByIdQuery,
   useUpdateAreaMutation,
   useGetAllAreasByRegionIdQuery,
+  useGetRegionsByStateIdQuery,
 } from "../api/regionSelectionApi";
 import {
   useGetAllRegionalOfficersMutation,
@@ -411,6 +412,22 @@ const RegionAreaEdit: React.FC = () => {
     { refetchOnMountOrArgChange: true },
   );
 
+  const selectedStateId = selectedState?.properties?.id;
+  const { data: regionsByStateData } = useGetRegionsByStateIdQuery(
+    { state_id: Number(selectedStateId) },
+    { skip: !selectedStateId }
+  );
+
+  useEffect(() => {
+    console.log(regionsByStateData,"regionsByStateData");
+    if (regionsByStateData) {
+      console.log(
+        `[RegionAreaEdit] get_all_regions_by_state_id response for state_id ${selectedStateId}:`,
+        regionsByStateData
+      );
+    }
+  }, [regionsByStateData, selectedStateId]);
+
   const { data: areaDetailsData } = useGetAreaByIdQuery(
     { area_id: Number(editAreaId) },
     { skip: !editAreaId },
@@ -787,7 +804,35 @@ const RegionAreaEdit: React.FC = () => {
           stateDistrictIds.has(id),
         ),
       );
-      return { type: "FeatureCollection" as const, features: stateFiltered };
+
+      const apiRegions = regionsByStateData?.data || [];
+      const mappedFeatures = stateFiltered.map((f: any) => {
+        const regionId = f.properties?.region_id || f.id;
+        const matchingApiRegion = apiRegions.find(
+          (r: any) => Number(r.id) === Number(regionId)
+        );
+        return {
+          ...f,
+          properties: {
+            ...f.properties,
+            is_assigned: matchingApiRegion ? Number(matchingApiRegion.is_assigned) : 0,
+          },
+        };
+      });
+
+      let finalFeatures = mappedFeatures;
+      if (activeFilter === "assigned") {
+        finalFeatures = mappedFeatures.filter(
+          (f: any) => Number(f.properties?.is_assigned) === 1
+        );
+      } else if (activeFilter === "unassigned") {
+        finalFeatures = mappedFeatures.filter(
+          (f: any) => Number(f.properties?.is_assigned) === 0
+        );
+      }
+
+      console.log(finalFeatures, "mappedFeatures and filtered");
+      return { type: "FeatureCollection" as const, features: finalFeatures };
     } catch {
       return { type: "FeatureCollection" as const, features: filtered };
     }
@@ -797,6 +842,8 @@ const RegionAreaEdit: React.FC = () => {
     regionsByCountryData,
     geoMasterData,
     editRegionId,
+    regionsByStateData,
+    activeFilter,
   ]);
 
   // ── Update region overlays whenever stateRegionsData changes ─────────────
@@ -832,7 +879,6 @@ const RegionAreaEdit: React.FC = () => {
   ]);
 
   // ── Render district boundaries when a state is selected ──────────────────
-  const selectedStateId: number | undefined = selectedState?.properties?.id;
 
   useEffect(() => {
     if (
@@ -1230,7 +1276,7 @@ const RegionAreaEdit: React.FC = () => {
               // VIEW MODE click -> Navigate directly to Area Details or notify if unassigned
               if (mProps.areaId) {
                 const clickedArea = regionAreasData?.data?.find(
-                  (a: any) => Number(a.id) === Number(mProps.areaId),
+                  (a: any) => Number(a.areaId) === Number(mProps.areaId),
                 );
                 navigate(`/role-manager/area-details/${mProps.areaId}`, {
                   state: {
@@ -1835,31 +1881,47 @@ const RegionAreaEdit: React.FC = () => {
             (f: any) => Number(f.properties?.state_id) === currentStateId,
           )
         : features;
-      const assigned = stateFeatures
-        .filter(
-          (f: any) => getDistrictIdsFromRegion(f, geoMasterData).length > 0,
-        )
+
+      const apiRegions = regionsByStateData?.data || [];
+
+      const mappedFeatures = stateFeatures.map((f: any) => {
+        const regionId = f.properties?.region_id || f.id;
+        const matchingApiRegion = apiRegions.find(
+          (r: any) => Number(r.id) === Number(regionId)
+        );
+        // Match from API is_assigned, fallback to local district counting if API hasn't loaded yet
+        const isAssigned = matchingApiRegion
+          ? Number(matchingApiRegion.is_assigned) === 1
+          : getDistrictIdsFromRegion(f, geoMasterData).length > 0;
+        return {
+          ...f,
+          isAssignedFromApi: isAssigned,
+        };
+      });
+
+      const assigned = mappedFeatures
+        .filter((f: any) => f.isAssignedFromApi)
         .map((f: any) => ({
           id: f.properties?.region_id || f.id,
           name: f.properties?.region_name || f.properties?.name || "Region",
           code: f.properties?.region_code || f.properties?.code || "",
           rawFeature: f,
         }));
-      const unassigned = stateFeatures
-        .filter(
-          (f: any) => getDistrictIdsFromRegion(f, geoMasterData).length === 0,
-        )
+
+      const unassigned = mappedFeatures
+        .filter((f: any) => !f.isAssignedFromApi)
         .map((f: any) => ({
           id: f.properties?.region_id || f.id,
           name: f.properties?.region_name || f.properties?.name || "Region",
           code: f.properties?.region_code || f.properties?.code || "",
           rawFeature: f,
         }));
+
       return { assignedRegions: assigned, unassignedRegions: unassigned };
     } catch {
       return { assignedRegions: [], unassignedRegions: [] };
     }
-  }, [regionsByCountryData, geoMasterData, selectedState]);
+  }, [regionsByCountryData, geoMasterData, selectedState, regionsByStateData]);
 
   const resetView = () => {
     map.current?.flyTo({

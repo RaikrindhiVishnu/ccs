@@ -44,6 +44,8 @@ import {
   AssignedFarmlandPage,
   FarmlandWorkflowPage,
   DraftsDetailPage,
+  RequestInfoDetailsPage,
+  LandDocumentsPage,
   AssignOfficersPage,
   AssignFieldOfficerPage,
   RegionDetailsView,
@@ -163,6 +165,8 @@ export const authRoutes: RouteObject[] = [
       { path: '/field-officer/assigned-farmland/:id', element: <AssignedFarmlandPage /> },
       { path: '/field-officer/farmland-workflow/:id', element: <FarmlandWorkflowPage /> },
       { path: '/field-officer/draft-details/:id', element: <DraftsDetailPage /> },
+      { path: '/field-officer/request-info/:id', element: <RequestInfoDetailsPage /> },
+      { path: '/field-officer/land-documents/:id', element: <LandDocumentsPage /> },
     ],
   },
   {

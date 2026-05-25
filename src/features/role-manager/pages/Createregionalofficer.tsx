@@ -23,6 +23,7 @@ import {
   type RegionalOfficerFormValues,
 } from "@/components/validations/RegionalofficerSchema";
 import { RHFTextField } from "@/components/form/RHFTextField";
+import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
@@ -734,12 +735,12 @@ export default function CreateRegionalOfficer() {
                 maxLength={150}
                 disabled={isViewMode}
               />
-              <RHFTextField
+              <RHFDropdown
                 name="addressState"
                 control={control}
                 label="State"
-                placeholder="Enter State"
-                maxLength={30}
+                placeholder="Select State"
+                options={states?.map((s: any) => s.desc) || []}
                 disabled={isViewMode}
               />
               <RHFTextField

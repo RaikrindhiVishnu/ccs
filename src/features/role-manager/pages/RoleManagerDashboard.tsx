@@ -18,6 +18,7 @@ import {
   useGetAllRegionalOfficersMutation,
   useGetAllFieldOfficersMutation,
 } from "@/features/role-manager/api/roleManagerApi";
+import { useGetAllRegionsByStateIdMutation } from "@/features/role-manager/api/regionSelectionApi";
 
 // import RegionalCreationTargetVsActual from "@/pages/Dashboard/RegionalCreationTargetVsActual";
 
@@ -173,6 +174,7 @@ const RoleManagerDashboard: React.FC = () => {
   const [getIntelligence] = useGetAllIntelligenceOfficersMutation();
   const [getRegional] = useGetAllRegionalOfficersMutation();
   const [getField] = useGetAllFieldOfficersMutation();
+  const [getAllRegionsByState] = useGetAllRegionsByStateIdMutation();
 
   React.useEffect(() => {
     const fetchAll = async () => {
@@ -196,10 +198,17 @@ const RoleManagerDashboard: React.FC = () => {
       } catch (error) {
         console.error("[RoleManagerDashboard] Error fetching field officers:", error);
       }
+
+      try {
+        const regionsByState = await getAllRegionsByState({ state_id: 1 }).unwrap();
+        console.log("[RoleManagerDashboard] get_all_regions_by_state_id response:", regionsByState);
+      } catch (error) {
+        console.error("[RoleManagerDashboard] Error fetching regions by state:", error);
+      }
     };
 
     fetchAll();
-  }, [getIntelligence, getRegional, getField]);
+  }, [getIntelligence, getRegional, getField, getAllRegionsByState]);
 
   return (
 <div className="box-border flex min-h-full flex-col gap-[clamp(12px,0.5vw,16px)] p-[clamp(6px,0.83vw,12px)] py-[clamp(16px,1.5vw,32px)]">          {/* Header */}

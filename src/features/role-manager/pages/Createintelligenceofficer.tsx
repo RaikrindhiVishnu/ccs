@@ -15,6 +15,7 @@ import {
   type IntelligenceOfficerFormValues,
 } from "@/components/validations/intelligenceOfficerSchema";
 import { RHFTextField } from "@/components/form/RHFTextField";
+import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { toast } from "sonner";
 import {
   useCreateRegionalOfficerMutation,
@@ -730,12 +731,12 @@ export default function CreateIntelligenceOfficer() {
                 maxLength={150}
                 disabled={isViewMode}
               />
-              <RHFTextField
+              <RHFDropdown
                 name="addressState"
                 control={control}
                 label="State"
-                placeholder="Enter State"
-                maxLength={50}
+                placeholder="Select State"
+                options={states?.map((s: any) => s.desc) || []}
                 disabled={isViewMode}
               />
               <RHFTextField

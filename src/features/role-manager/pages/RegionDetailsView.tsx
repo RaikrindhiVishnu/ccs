@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { BackButton } from "@/components/ui/BackButton";
 
-import { useGetAllGeoJsonDataQuery, useGetRegionsByCountryIdQuery } from "../api/regionSelectionApi";
+import { useGetAllGeoJsonDataQuery, useGetRegionsByCountryIdQuery, useGetRegionGeoJsonQuery } from "../api/regionSelectionApi";
 import { decompressGeoJSON } from "../utils/utils";
 
 // Mock API Hook for Region Details
@@ -126,6 +126,21 @@ const RegionDetailsView: React.FC = () => {
     { country_id: 1 },
     { skip: !geoMasterData }
   );
+
+  // Call the region/get_region_geojson API dynamically based on route param
+  const { data: regionGeoJsonData } = useGetRegionGeoJsonQuery(
+    { region_id: Number(regionId) },
+    { skip: !regionId }
+  );
+
+  useEffect(() => {
+    if (regionGeoJsonData) {
+      console.log(
+        `[RegionDetailsView] get_region_geojson response for region_id ${regionId}:`,
+        regionGeoJsonData
+      );
+    }
+  }, [regionGeoJsonData, regionId]);
 
   const { data: mockData } = useGetRegionDetailsMockQuery(regionId);
 
