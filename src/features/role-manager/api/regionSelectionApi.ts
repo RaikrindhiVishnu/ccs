@@ -141,29 +141,28 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
       }),
     }),
 
-    updateRegion: builder.mutation<
-      any,
-      {
-        region_id: number;
-        regionName: string;
-        regionCode: string;
-        district_ids: number[];
-        stateId?: number;
-        regionalOfficerId?: number | null;
-        inteligenceOfficerId?: number | null;
-      }
-    >({
-      async queryFn(body) {
-        console.log("Mocked updateRegion mutation called with body:", body);
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        return {
-          data: {
-            success: true,
-            message: "Region updated successfully (Mock)",
-            data: body,
-          },
-        };
-      },
+    updateRegion: builder.mutation<any, {
+      region_id: number;
+      regionName: string;
+      regionCode?: string;
+      district_ids: number[];
+      stateId?: number;
+      regionalOfficerId?: number | null;
+      inteligenceOfficerId?: number | null;
+      regional_officer_id?: number | null;
+      intelligence_officer_id?: number | null;
+    }>({
+      query: (body) => ({
+        url: "region/edit_region",
+        method: "POST",
+        body: {
+          region_id: body.region_id,
+          regionName: body.regionName,
+          regional_officer_id: body.regional_officer_id !== undefined ? body.regional_officer_id : (body.regionalOfficerId ?? null),
+          intelligence_officer_id: body.intelligence_officer_id !== undefined ? body.intelligence_officer_id : (body.inteligenceOfficerId ?? null),
+          district_ids: body.district_ids,
+        },
+      }),
     }),
 
     // ─── PLACEHOLDER: Get All Areas ───────────────────────────────────────────
@@ -345,6 +344,7 @@ export const {
   useGetAllRegionsByStateIdMutation,
   useGetRegionsByStateIdQuery,
   useGetRegionGeoJsonQuery,
+  useLazyGetRegionGeoJsonQuery,
   // ─── Placeholder hooks (wire to real APIs when available) ─────────────────
   useGetAllRegionsQuery,
   useGetRegionByIdQuery,
