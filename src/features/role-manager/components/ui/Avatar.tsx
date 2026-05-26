@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 
 interface AvatarProps {
   url?: string;
@@ -16,6 +17,11 @@ export const Avatar: React.FC<AvatarProps> = ({
   variant = "list",
   className,
 }) => {
+  const isS3Key = Boolean(url && !url.startsWith("http") && !url.startsWith("data:"));
+  const { data: s3Data } = useGeneratePresignedUrlQuery(url || "", { skip: !isS3Key });
+  
+  const finalUrl = isS3Key ? s3Data?.url : url;
+
   return (
     <div
       className={cn(
@@ -26,8 +32,8 @@ export const Avatar: React.FC<AvatarProps> = ({
         className
       )}
     >
-      {url ? (
-        <img src={url} alt={name} className="w-full h-full object-cover" />
+      {finalUrl ? (
+        <img src={finalUrl} alt={name} className="w-full h-full object-cover" />
       ) : (
         <span
           className={cn(

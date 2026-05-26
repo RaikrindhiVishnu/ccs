@@ -1505,7 +1505,12 @@ const RegionSelection: React.FC = () => {
 
       const now = new Date();
       const createdRegionId =
-        res?.data?.region_id || res?.region_id || res?.data?.id || res?.id || 1;
+        res?.responseData?.region_id ||
+        res?.data?.region_id ||
+        res?.region_id ||
+        res?.data?.id ||
+        res?.id ||
+        1;
 
       // Show Successcard
       setSuccessCardProps({

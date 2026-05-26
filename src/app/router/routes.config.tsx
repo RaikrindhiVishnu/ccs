@@ -6,6 +6,9 @@ export const CcsDashboard = lazy(
 export const RoleManagerDetails = lazy(
   () => import("../../features/role-manager/pages/RoleManagerDetails"),
 );
+export const UpdatePassword = lazy(
+  () => import("../../features/role-manager/pages/UpdatePassword"),
+);
 export const AgentApprovals = lazy(
   () => import("../../features/role-manager/pages/Agentapprovals"),
 );
@@ -111,6 +114,9 @@ export const RequestInfoPage = lazy(
 );
 export const FarmlandAlertsPage = lazy(
   () => import("../../features/field-officer/pages/FarmlandAlertsPage"),
+);
+export const FarmlandAlertDetailsPage = lazy(
+  () => import("../../features/field-officer/pages/FarmlandAlertDetailsPage"),
 );
 export const TopPerformerDetailsPage = lazy(
   () => import("../../features/field-officer/pages/TopPerformerDetailsPage"),

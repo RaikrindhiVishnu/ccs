@@ -1,43 +1,101 @@
-import { documentsTabs } from "../../data/landDocumentsData";
+import { Check } from "lucide-react";
+import { documentTabs } from "../../data/landDocumentsData";
 
 type Props = {
   activeTab: string;
   setActiveTab: (tab: string) => void;
 };
 
-const DocumentsTabs = ({ activeTab, setActiveTab }: Props) => {
+const DocumentsTabs = ({
+  activeTab,
+  setActiveTab,
+}: Props) => {
   return (
-    <div className="flex flex-wrap gap-3 2xl:gap-4.5 bg-white">
-      {documentsTabs.map((tab) => {
-        const isActive = tab === activeTab;
-        
+    <div
+      className="
+        flex
+        flex-wrap
+        content-start
+        gap-[14px]
+      "
+    >
+      {documentTabs.map((tab) => {
+        const isActive = activeTab === tab.name;
+
         return (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
+            key={tab.name}
+            onClick={() => setActiveTab(tab.name)}
             className={`
-              flex items-center gap-2 rounded-full border transition-all duration-300 font-medium font-plus-jakarta cursor-pointer
-              px-5 py-2.5 2xl:px-7 2xl:py-3.5
-              text-[14px] 2xl:text-[18px]
+              h-[40px]
+              px-[18px]
+              whitespace-nowrap
+              rounded-full
+              border
+              flex
+              items-center
+              gap-[8px]
+              transition-all
+              cursor-pointer
               ${
                 isActive
-                  ? "border-[#1C5F9D] bg-[#F0F6FC] text-[#1C5F9D]"
-                  : "border-[#E2E2E4] bg-white text-[#3D4949] hover:bg-gray-50"
+                  ? `
+                    border-[#2E8FFF]
+                    text-[#2E8FFF]
+                    bg-white
+                  `
+                  : `
+                    border-[#D8E4B2]
+                    text-[#6B6B6B]
+                    bg-white
+                  `
               }
             `}
           >
-            {/* Left dot if active */}
+            {/* Active Dot */}
             {isActive && (
-              <span className="w-2 h-2 rounded-full bg-[#1C5F9D] inline-block flex-shrink-0" />
+              <div
+                className="
+                  w-[10px]
+                  h-[10px]
+                  rounded-full
+                  bg-[#2E8FFF]
+                "
+              />
             )}
 
-            <span>{tab}</span>
+            {/* Tab Name */}
+            <span
+              className="
+                text-[14px]
+                font-medium
+                whitespace-nowrap
+                font-plus-jakarta
+              "
+            >
+              {tab.name}
+            </span>
 
-            {/* Right checkmark if inactive (representing uploaded status) */}
-            {!isActive && (
-              <span className="w-4.5 h-4.5 2xl:w-6 2xl:h-6 rounded-full bg-[#E0F2FE] text-[#0284C7] flex items-center justify-center text-[10px] 2xl:text-[13px] font-bold flex-shrink-0">
-                ✓
-              </span>
+            {/* Verified Tick */}
+            {tab.verified && (
+              <div
+                className="
+                  w-[14px]
+                  h-[14px]
+                  rounded-full
+                  bg-[#2E8FFF]
+                  flex
+                  items-center
+                  justify-center
+                  flex-shrink-0
+                "
+              >
+                <Check
+                  size={10}
+                  className="text-white"
+                  strokeWidth={3}
+                />
+              </div>
             )}
           </button>
         );

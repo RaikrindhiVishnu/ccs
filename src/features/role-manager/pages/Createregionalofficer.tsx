@@ -6,7 +6,6 @@ import { BackButton } from "@/components/ui/BackButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
-import Successcard from "@/components/ui/Successcard";
 import {
   useCreateRegionalOfficerMutation,
   useUpdateRegionalOfficerMutation,
@@ -53,7 +52,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 
 // ─── Image Preview Helper ───────────────────────────────────────────────────
 
-function ImagePreview({ file, className }: { file: any; className?: string }) {
+function ImagePreview({ file, className, onUrlReady }: { file: any; className?: string; onUrlReady?: (url: string) => void }) {
   const [src, setSrc] = useState<string>("");
 
   const isS3Key = typeof file === "string" && !file.startsWith("http") && !file.startsWith("data:");
@@ -74,6 +73,7 @@ function ImagePreview({ file, className }: { file: any; className?: string }) {
       }
       const objectUrl = URL.createObjectURL(file);
       setSrc(objectUrl);
+      onUrlReady?.(objectUrl);
       return () => {
         URL.revokeObjectURL(objectUrl);
       };
@@ -81,12 +81,14 @@ function ImagePreview({ file, className }: { file: any; className?: string }) {
       if (isS3Key) {
         if (s3Data?.url) {
           setSrc(s3Data.url);
+          onUrlReady?.(s3Data.url);
         }
       } else {
         setSrc(file);
+        onUrlReady?.(file);
       }
     }
-  }, [file, s3Data, isS3Key]);
+  }, [file, s3Data, isS3Key, onUrlReady]);
 
   if (!src) return null;
 
@@ -136,7 +138,7 @@ function UploadPictureField({
               )}
             >
               <span className="flex-1 text-left truncate mr-2 font-[family-name:var(--font-inter)] font-normal text-[clamp(0.6875rem,0.83vw,0.875rem)] text-[color:var(--text-muted)]">
-                {field.value instanceof File ? field.value.name : typeof field.value === "string" ? "Existing Picture" : "Supports JPEG, PNG and Other Formats"}
+                {(field.value instanceof File ? field.value.name : null) ?? (typeof field.value === "string" ? "Existing Picture" : "Supports JPEG, PNG and Other Formats")}
               </span>
               <ImageUp className="shrink-0 text-[var(--text-primary)] w-[1.125rem] h-[1.125rem] stroke-[1.75]" />
               <input
@@ -174,7 +176,7 @@ function DocUploadField({
   disabled?: boolean;
 }) {
   const ref = useRef<HTMLInputElement>(null);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
 
   return (
     <Controller
@@ -191,60 +193,40 @@ function DocUploadField({
           </Typography>
           <div
             className={cn(
-              "relative flex flex-col items-center justify-center gap-[clamp(0.375rem,0.56vw,0.5rem)] h-[clamp(5rem,8.89vw,8rem)] bg-[color:var(--surface-page)] border-2 border-dashed rounded-[clamp(0.5rem,0.83vw,0.75rem)] transition-colors duration-200 overflow-hidden",
+              "relative flex flex-col items-center justify-center gap-[clamp(0.375rem,0.56vw,0.5rem)] h-[clamp(5rem,8.89vw,8rem)] bg-[color:var(--surface-page)] border-2 border-dashed rounded-[clamp(0.5rem,0.83vw,0.75rem)] transition-colors duration-200 overflow-hidden group cursor-pointer",
               disabled
                 ? "opacity-60 cursor-not-allowed border-gray-200"
-                : "border-[color:var(--border-default)]",
+                : "border-[color:var(--border-default)] hover:border-[color:var(--brand-500)] hover:bg-[color:var(--brand-tint)]",
               fieldState.error && "border-red-500 bg-red-50/30",
             )}
+            onClick={(e) => {
+              if (disabled) return;
+              if ((e.target as HTMLElement).closest('.action-btn')) return;
+              ref.current?.click();
+            }}
           >
             {field.value ? (
               <>
-                <ImagePreview file={field.value} className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-300" />
-                <div className="absolute inset-0 bg-slate-950/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3 text-white">
-                  {!disabled && (
-                    <button
-                      type="button"
-                      onClick={() => ref.current?.click()}
-                      className="flex flex-col items-center gap-0.5 hover:scale-110 transition-transform"
-                      title="Change"
-                    >
-                      <FileImage className="w-4 h-4 stroke-[2]" />
-                      <span className="text-[10px] font-semibold">Change</span>
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
-                    className="flex flex-col items-center gap-0.5 hover:scale-110 transition-transform"
-                    title="View"
-                  >
+                <ImagePreview file={field.value} onUrlReady={setPreviewUrl} className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-300" />
+                <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white cursor-default">
+                  <button type="button" className="action-btn p-[clamp(0.25rem,0.5vw,0.375rem)] hover:bg-white/20 rounded-full transition-colors" title="View File" onClick={() => {
+                    if (previewUrl) window.open(previewUrl, "_blank");
+                  }}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                    <span className="text-[10px] font-semibold">View</span>
                   </button>
-                  {!disabled && (
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); field.onChange(undefined); }}
-                      className="flex flex-col items-center gap-0.5 hover:scale-110 transition-transform text-red-300 hover:text-red-100"
-                      title="Remove"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                      <span className="text-[10px] font-semibold">Remove</span>
-                    </button>
-                  )}
+                  <button type="button" className="action-btn p-[clamp(0.25rem,0.5vw,0.375rem)] hover:bg-white/20 rounded-full transition-colors" title="Change File" onClick={() => !disabled && ref.current?.click()}>
+                    <FileImage className="w-4 h-4" />
+                  </button>
+                  <button type="button" className="action-btn p-[clamp(0.25rem,0.5vw,0.375rem)] hover:bg-white/20 rounded-full transition-colors" title="Remove File" onClick={() => field.onChange(undefined)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                  </button>
                 </div>
                 <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium pointer-events-none">
                   {typeof field.value === "string" ? "Uploaded" : "Selected"}
                 </div>
               </>
             ) : (
-              <button
-                type="button"
-                onClick={() => !disabled && ref.current?.click()}
-                disabled={disabled}
-                className="flex flex-col items-center justify-center gap-[clamp(0.375rem,0.56vw,0.5rem)] w-full h-full cursor-pointer disabled:cursor-not-allowed"
-              >
+              <>
                 <FileImage className="shrink-0 text-[var(--text-primary)] w-[1rem] h-[1rem] stroke-[1.75]" />
                 <Typography
                   as="span"
@@ -253,13 +235,13 @@ function DocUploadField({
                 >
                   Click to Upload
                 </Typography>
-              </button>
+              </>
             )}
             <input
               ref={ref}
               type="file"
               disabled={disabled}
-              accept="image/*"
+              accept=".jpg,.jpeg,.png,.webp"
               className="hidden"
               onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
             />
@@ -268,25 +250,6 @@ function DocUploadField({
             <span className="text-red-500 text-[0.75rem] leading-none">
               {fieldState.error.message}
             </span>
-          )}
-
-          {/* ── Lightbox overlay ── */}
-          {lightboxOpen && field.value && (
-            <div
-              className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
-              onClick={() => setLightboxOpen(false)}
-            >
-              <div className="relative max-w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
-                <ImagePreview file={field.value} className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl" />
-                <button
-                  type="button"
-                  onClick={() => setLightboxOpen(false)}
-                  className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white/90 text-gray-800 flex items-center justify-center shadow-lg hover:bg-white transition-colors"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </button>
-              </div>
-            </div>
           )}
         </div>
       )}
@@ -326,14 +289,6 @@ export default function CreateRegionalOfficer() {
   const location = useLocation();
   const { id } = useParams<{ id?: string }>();
 
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [successDetails, setSuccessDetails] = useState({
-    name: "",
-    assignedId: "",
-    createdDate: "",
-    createdTime: "",
-  });
-
   const userId = id || location.state?.userId;
   const isViewMode = location.state?.isViewMode || false;
   const fromPath = location.state?.from || BACK_ROUTE;
@@ -343,6 +298,7 @@ export default function CreateRegionalOfficer() {
   const states = useAppSelector((state) => state.roleManager.states);
   const allDistricts = useAppSelector((state) => state.roleManager.districts);
   const allMandals = useAppSelector((state) => state.roleManager.mandals);
+
 
   const [createRegionalOfficer, { isLoading }] =
     useCreateRegionalOfficerMutation();
@@ -518,27 +474,8 @@ export default function CreateRegionalOfficer() {
       const response = isEditMode
         ? await updateRegionalOfficer({ ...payload, userId }).unwrap()
         : await createRegionalOfficer(payload).unwrap();
-      
-      if (!isEditMode) {
-        const now = new Date();
-        const formattedDate = now.toLocaleDateString("en-US");
-        const formattedTime = now.toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-        const generatedId = response?.data?.id || response?.id || Math.floor(10000 + Math.random() * 90000);
-        
-        setSuccessDetails({
-          name: `${values.firstName} ${values.lastName}`,
-          assignedId: typeof generatedId === "number" ? `GLC RO${generatedId}` : String(generatedId),
-          createdDate: formattedDate,
-          createdTime: formattedTime,
-        });
-        setShowSuccess(true);
-      } else {
-        toast.success(response?.message || "Regional Officer updated successfully");
-        navigate(fromPath);
-      }
+      toast.success(response?.message || "Regional Officer created successfully");
+      navigate(fromPath);
     } catch (err: any) {
       console.error(err);
       toast.error(
@@ -546,24 +483,6 @@ export default function CreateRegionalOfficer() {
       );
     }
   };
-
-  if (showSuccess) {
-    return (
-      <Successcard
-        badgeLabel="Regional Officer Creation"
-        titleLine1="Regional Officer"
-        titleLine2="Created Successfully!"
-        redirectText="Redirecting to User Directory..."
-        regionName={successDetails.name}
-        assignedId={successDetails.assignedId}
-        createdDate={successDetails.createdDate}
-        createdTime={successDetails.createdTime}
-        mapImage={null}
-        onRedirect={() => navigate("/role-manager/user-directory")}
-        redirectDelay={3000}
-      />
-    );
-  }
 
   if (isViewMode) {
     const data = regionalOfficerData?.data || initialData;

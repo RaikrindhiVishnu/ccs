@@ -1,14 +1,15 @@
 import { z } from "zod";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+const ACCEPTED_DOC_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 /**
  * Accepts either a freshly-selected File OR an existing S3 key / URL string
  * (populated when loading an officer in edit mode). Returns a meaningful
  * "required" message when the value is undefined / null / empty.
  */
-const fileSchema = (label: string) =>
+const fileSchema = (accepted: string[], label: string) =>
   z
     .custom<File | string>(
       (v) => v instanceof File || (typeof v === "string" && v.length > 0),
@@ -19,8 +20,8 @@ const fileSchema = (label: string) =>
       `${label}: max size is 5 MB`,
     )
     .refine(
-      (v) => !(v instanceof File) || ACCEPTED_IMAGE_TYPES.includes((v as File).type),
-      `${label}: only JPG, PNG, or WebP images are allowed`,
+      (v) => !(v instanceof File) || accepted.includes((v as File).type),
+      `${label}: invalid file type`,
     );
 
 export const officerSchema = z.object({
@@ -35,14 +36,15 @@ export const officerSchema = z.object({
   pincode: z.string().min(6, "Pincode must be 6 digits"),
 
   // ── File fields ──────────────────────────────────────────────────────────────
+  // profilePicture is optional — it may be absent in edit mode
   profilePicture: z
     .custom<File | string>(
       (v) => !v || v instanceof File || (typeof v === "string" && v.length > 0),
     )
     .optional(),
-  aadharFront: fileSchema("Aadhaar Front"),
-  aadharBack: fileSchema("Aadhaar Back"),
-  panCard: fileSchema("PAN Card"),
+  aadharFront: fileSchema(ACCEPTED_DOC_TYPES, "Aadhaar Front"),
+  aadharBack: fileSchema(ACCEPTED_DOC_TYPES, "Aadhaar Back"),
+  panCard: fileSchema(ACCEPTED_DOC_TYPES, "PAN Card"),
 });
 
 export type OfficerFormValues = z.infer<typeof officerSchema>;

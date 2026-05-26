@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
 import SuccessIcon from "@/assets/sucess.svg";
-import { Upload, FileText, ArrowLeft, User, Camera } from "lucide-react";
-import Successcard from "@/components/ui/Successcard";
+import { Upload, ArrowLeft, User, Camera } from "lucide-react";
 import {
   useCreateAgentMutation,
   useUpdateAgentDetailsMutation,
@@ -27,7 +26,7 @@ import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterData
 
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
-import { useGetAgentByIdMutation } from "@/features/role-manager/api/roleManagerApi";
+import { useGetAgentByIdMutation, useGetLocationHierarchyDetailsMutation } from "@/features/role-manager/api/roleManagerApi";
 import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
 import SectionCard from "../components/ui/SectionCard";
@@ -37,9 +36,18 @@ import ProfileBackButton from "../components/ui/BackButton";
 import { uploadUserDocument } from "@/core/utils/fileUpload";
 // ─── Dropdown option lists ────────────────────────────────────────────────────
 
+const BANK_OPTIONS = [
+  "HDFC Bank",
+  "SBI",
+  "ICICI Bank",
+  "Axis Bank",
+  "Bank of Baroda",
+  "Canara Bank",
+];
+
 // ─── Image Preview Helper ───────────────────────────────────────────────────
 
-function ImagePreview({ file, className }: { file: any; className?: string }) {
+function ImagePreview({ file, className, onUrlReady }: { file: any; className?: string; onUrlReady?: (url: string) => void }) {
   const [src, setSrc] = useState<string>("");
 
   const isS3Key = typeof file === "string" && !file.startsWith("http") && !file.startsWith("data:");
@@ -60,6 +68,7 @@ function ImagePreview({ file, className }: { file: any; className?: string }) {
       }
       const objectUrl = URL.createObjectURL(file);
       setSrc(objectUrl);
+      onUrlReady?.(objectUrl);
       return () => {
         URL.revokeObjectURL(objectUrl);
       };
@@ -67,12 +76,14 @@ function ImagePreview({ file, className }: { file: any; className?: string }) {
       if (isS3Key) {
         if (s3Data?.url) {
           setSrc(s3Data.url);
+          onUrlReady?.(s3Data.url);
         }
       } else {
         setSrc(file);
+        onUrlReady?.(file);
       }
     }
-  }, [file, s3Data, isS3Key]);
+  }, [file, s3Data, isS3Key, onUrlReady]);
 
   if (!src) return null;
 
@@ -96,16 +107,12 @@ export default function AgentForm({
   isViewMode = false,
 }: AgentFormProps) {
   const states = useSelector((state: any) => state.roleManager.states);
+  const allDistricts = useSelector((state: any) => state.roleManager.districts);
+  const allMandals = useSelector((state: any) => state.roleManager.mandals);
+
+  const stateOptions = states.map((item: any) => item.desc);
   const location = useLocation();
   const navigate = useNavigate();
-
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [successDetails, setSuccessDetails] = useState({
-    name: "",
-    assignedId: "",
-    createdDate: "",
-    createdTime: "",
-  });
 
   const { userId: locUserId } = location.state || {};
 
@@ -127,7 +134,7 @@ export default function AgentForm({
     "AGENT",
   );
 
-  const { control, handleSubmit, watch, reset } = useForm<AgentFormValues>({
+  const { control, handleSubmit, watch, reset, setValue } = useForm<AgentFormValues>({
     resolver: zodResolver(agentSchema),
     defaultValues: {
       firstName:
@@ -152,6 +159,32 @@ export default function AgentForm({
         initialData?.panNumber ??
         (initialData as any)?.id_proof?.pan_card_number ??
         "",
+      state:
+        initialData?.state ??
+        (initialData as any)?.geo_assignments?.state_id ??
+        "",
+      district:
+        initialData?.district ??
+        (initialData as any)?.geo_assignments?.district_id ??
+        "",
+      mandal:
+        initialData?.mandal ??
+        (initialData as any)?.geo_assignments?.mandal_id ??
+        "",
+      bankName:
+        initialData?.bankName ??
+        (initialData as any)?.id_proof?.bank_name ??
+        "",
+      accountNumber:
+        initialData?.accountNumber ??
+        (initialData as any)?.id_proof?.bank_account_number ??
+        "",
+      ifscCode:
+        initialData?.ifscCode ??
+        (initialData as any)?.id_proof?.ifsc_code ??
+        "",
+      bankBranch:
+        initialData?.bankBranch ?? (initialData as any)?.id_proof?.branch ?? "",
       // ── file fields ──
       profilePicture: undefined,
       aadharFront: undefined,
@@ -162,6 +195,8 @@ export default function AgentForm({
 
   const userId = locUserId || (initialData as any)?.originalId || (initialData as any)?.id;
   const [getAgentById, { data: agentData }] = useGetAgentByIdMutation();
+  const [getLocationHierarchyDetails] = useGetLocationHierarchyDetailsMutation();
+  const [hierarchy, setHierarchy] = useState<any>(null);
 
   const fetchedRef = useRef<any>(null);
 
@@ -172,7 +207,116 @@ export default function AgentForm({
     }
   }, [userId, getAgentById]);
 
-  // Geo and cascading logic removed as requested by the user
+  const selectedStateName = watch("state");
+  const selectedDistrictName = watch("district");
+  const selectedMandalName = watch("mandal");
+
+  const selectedStateObj = states.find((s: any) => s.desc === selectedStateName);
+
+  // Cascading district & mandal options
+  const districtOptions = selectedStateObj
+    ? allDistricts.filter((d: any) => d.state_id === selectedStateObj.id).map((d: any) => d.desc)
+    : [];
+
+  const selectedDistrictObj = allDistricts.find((d: any) => d.desc === selectedDistrictName);
+  const mandalOptions = selectedDistrictObj
+    ? allMandals.filter((m: any) => m.districts_id === selectedDistrictObj.id).map((m: any) => m.desc)
+    : [];
+
+  // Reset child fields when parent changes
+  const prevStateRef = useRef(selectedStateName);
+  const prevDistrictRef = useRef(selectedDistrictName);
+
+  useEffect(() => {
+    if (selectedStateName !== prevStateRef.current) {
+      setValue("district", "");
+      setValue("mandal", "");
+      prevStateRef.current = selectedStateName;
+    }
+  }, [selectedStateName, setValue]);
+
+  useEffect(() => {
+    if (selectedDistrictName !== prevDistrictRef.current) {
+      setValue("mandal", "");
+      prevDistrictRef.current = selectedDistrictName;
+    }
+  }, [selectedDistrictName, setValue]);
+
+  useEffect(() => {
+    if (selectedDistrictName && selectedMandalName) {
+      const selectedDistrictObj = allDistricts.find((d: any) => d.desc === selectedDistrictName);
+      const selectedMandalObj = allMandals.find((m: any) => m.desc === selectedMandalName);
+      if (selectedDistrictObj?.id && selectedMandalObj?.id) {
+        getLocationHierarchyDetails({
+          district_id: Number(selectedDistrictObj.id),
+          mandal_id: Number(selectedMandalObj.id),
+        })
+          .unwrap()
+          .then((res) => {
+            if (res?.success) {
+              setHierarchy(res.data);
+            } else {
+              setHierarchy(null);
+            }
+          })
+          .catch(() => {
+            setHierarchy(null);
+          });
+      } else {
+        setHierarchy(null);
+      }
+    } else {
+      setHierarchy(null);
+    }
+  }, [selectedDistrictName, selectedMandalName, allDistricts, allMandals, getLocationHierarchyDetails]);
+
+  // Pre-fill geo fields from agentData (resolving IDs to names)
+  useEffect(() => {
+    if (agentData?.data && states.length > 0) {
+      const data = agentData.data;
+      const geo = data.geo_assignments;
+
+      const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === data.state);
+      const stateVal = stateObj?.desc || data.state || "";
+
+      const districtsForState = stateObj ? allDistricts.filter((d: any) => d.state_id === stateObj.id) : allDistricts;
+      const districtObj = districtsForState.find((d: any) => d.id === geo?.district_id || d.desc === data.district);
+      const districtVal = districtObj?.desc || data.district || "";
+
+      const mandalsForDistrict = districtObj ? allMandals.filter((m: any) => m.districts_id === districtObj.id) : allMandals;
+      const mandalObj = mandalsForDistrict.find((m: any) => m.id === geo?.mandal_id || m.desc === data.mandal || m.desc === data.area);
+      const mandalVal = mandalObj?.desc || data.mandal || data.area || "";
+
+      prevStateRef.current = stateVal;
+      prevDistrictRef.current = districtVal;
+      setValue("state", stateVal);
+      setValue("district", districtVal);
+      setValue("mandal", mandalVal);
+    }
+  }, [agentData, states, allDistricts, allMandals, setValue]);
+
+  // Pre-fill geo fields from initialData
+  useEffect(() => {
+    if (initialData && states.length > 0) {
+      const geo = (initialData as any).geo_assignments;
+
+      const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === initialData.state);
+      const stateVal = stateObj?.desc || initialData.state || "";
+
+      const districtsForState = stateObj ? allDistricts.filter((d: any) => d.state_id === stateObj.id) : allDistricts;
+      const districtObj = districtsForState.find((d: any) => d.id === geo?.district_id || d.desc === (initialData as any).district);
+      const districtVal = districtObj?.desc || (initialData as any).district || "";
+
+      const mandalsForDistrict = districtObj ? allMandals.filter((m: any) => m.districts_id === districtObj.id) : allMandals;
+      const mandalObj = mandalsForDistrict.find((m: any) => m.id === geo?.mandal_id || m.desc === (initialData as any).mandal || m.desc === (initialData as any).area);
+      const mandalVal = mandalObj?.desc || (initialData as any).mandal || (initialData as any).area || "";
+      prevStateRef.current = stateVal;
+      prevDistrictRef.current = districtVal;
+      setValue("state", stateVal);
+      setValue("district", districtVal);
+      setValue("mandal", mandalVal);
+    }
+  }, [initialData, states, allDistricts, allMandals, setValue]);
 
 
 
@@ -190,6 +334,13 @@ export default function AgentForm({
         city: data.city || data.address?.city || "",
         pincode: data.pincode || data.address?.pincode || "",
         panNumber: data.panCardNumber || data.id_proof?.pan_card_number || "",
+        state: "",
+        district: "",
+        mandal: "",
+        bankName: data.bankName || data.id_proof?.bank_name || "",
+        accountNumber: data.accountNumber || data.id_proof?.bank_account_number || "",
+        ifscCode: data.ifscCode || data.id_proof?.ifsc_code || "",
+        bankBranch: data.bankBranch || data.id_proof?.branch || "",
       });
       setDobState(data.dob || "");
       setAddressState(data.address || data.address?.address || "");
@@ -215,40 +366,15 @@ export default function AgentForm({
 
   const handleSave = async (values: AgentFormValues) => {
     try {
-      // Find the state ID corresponding to the entered addressState
-      const addressStateObj = states.find(
-        (s: any) => s.desc?.toLowerCase() === values.addressState?.toLowerCase(),
-      );
-      const stateIdVal = addressStateObj ? Number(addressStateObj.id) : 1;
+      const selectedStateObj = states.find((s: any) => s.desc === values.state);
+      const stateIdVal = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
 
-      const loadingToastId = toast.loading(
-        "Uploading documents & saving profile...",
-      );
+      const selectedDistrictObj = allDistricts.find((d: any) => d.desc === values.district);
+      const districtIdVal = selectedDistrictObj?.id ? Number(selectedDistrictObj.id) : 1;
 
-      // Extract raw File values from RHF
-      const aadharFrontFile = values.aadharFront instanceof File ? values.aadharFront : undefined;
-      const aadharBackFile  = values.aadharBack  instanceof File ? values.aadharBack  : undefined;
-      const panCardFile     = values.panCard     instanceof File ? values.panCard     : undefined;
-      const profilePicFile  = values.profilePicture instanceof File ? values.profilePicture : undefined;
+      const selectedMandalObj = allMandals.find((m: any) => m.desc === values.mandal);
+      const mandalIdVal = selectedMandalObj?.id ? Number(selectedMandalObj.id) : 1;
 
-      const uploadTasks = [
-        aadharFrontFile ? uploadUserDocument(aadharFrontFile, values.email, "aadhar_front") : Promise.resolve(null),
-        aadharBackFile  ? uploadUserDocument(aadharBackFile,  values.email, "aadhar_back")  : Promise.resolve(null),
-        panCardFile     ? uploadUserDocument(panCardFile,     values.email, "pan")           : Promise.resolve(null),
-        profilePicFile  ? uploadUserDocument(profilePicFile,  values.email, "aadhar_front" as any) : Promise.resolve(null),
-      ];
-
-      const [aadharFrontRes, aadharBackRes, panRes, profileRes] = await Promise.all(uploadTasks);
-
-      // Determine final keys (use newly uploaded key OR existing string from edit mode)
-      const finalAadharFrontKey = aadharFrontRes?.key || (typeof values.aadharFront === "string" ? values.aadharFront : "");
-      const finalAadharBackKey  = aadharBackRes?.key  || (typeof values.aadharBack === "string" ? values.aadharBack : "");
-      const finalPanCardKey     = panRes?.key         || (typeof values.panCard === "string" ? values.panCard : "");
-      const finalProfilePicKey  = profileRes?.key     || (typeof values.profilePicture === "string" ? values.profilePicture : "");
-
-      toast.dismiss(loadingToastId);
-
-      let createdResponse = null;
       if (isEdit) {
         const userId =
           locUserId ||
@@ -265,7 +391,6 @@ export default function AgentForm({
             phoneNumber: values.phone || "",
             dob: values.dob || dobState || "",
             role_id: Number(roleIdState || agentRoleId),
-            profile_image: finalProfilePicKey,
 
             address: {
               address: values.address || addressState || "",
@@ -276,8 +401,8 @@ export default function AgentForm({
 
             geo_assignments: {
               state_id: stateIdVal,
-              district_id: 1, // Reset as we don't have assigned territory anymore
-              mandal_id: 1,
+              district_id: districtIdVal,
+              mandal_id: mandalIdVal,
             },
           };
 
@@ -287,6 +412,39 @@ export default function AgentForm({
           return;
         }
       } else {
+        const docUploadToastId = toast.loading("Uploading documents...");
+        
+        let aadharFrontKey = "front.png";
+        let aadharBackKey = "back.png";
+        let panKey = "pan.png";
+        let profilePicKey = "profile.png";
+
+        try {
+          const uploadPromises = [];
+
+          if (values.aadharFront instanceof File) {
+            uploadPromises.push(uploadUserDocument(values.aadharFront, values.email, "aadhar_front").then(res => { aadharFrontKey = res.key || "front.png"; }));
+          }
+          if (values.aadharBack instanceof File) {
+            uploadPromises.push(uploadUserDocument(values.aadharBack, values.email, "aadhar_back").then(res => { aadharBackKey = res.key || "back.png"; }));
+          }
+          if (values.panCard instanceof File) {
+            uploadPromises.push(uploadUserDocument(values.panCard, values.email, "pan").then(res => { panKey = res.key || "pan.png"; }));
+          }
+          if (values.profilePicture instanceof File) {
+            uploadPromises.push(uploadUserDocument(values.profilePicture, values.email, "profile_image").then(res => { profilePicKey = res.key || "profile.png"; }));
+          }
+
+          if (uploadPromises.length > 0) {
+            await Promise.all(uploadPromises);
+          }
+          toast.success("Documents uploaded successfully!", { id: docUploadToastId });
+        } catch (error) {
+          toast.error("Failed to upload one or more documents. Please try again.", { id: docUploadToastId });
+          console.error("Document upload failed:", error);
+          return;
+        }
+
         const payload = {
           firstName: values.firstName,
           lastName: values.lastName,
@@ -294,7 +452,6 @@ export default function AgentForm({
           emailAddress: values.email,
           phoneNumber: values.phone,
           dob: values.dob,
-          profile_image: finalProfilePicKey,
 
           role_id: agentRoleId,
 
@@ -308,49 +465,36 @@ export default function AgentForm({
           geo_assignments: {
             country_id: 1,
             state_id: stateIdVal,
-            district_id: 1, // default
-            mandal_id: 1, // default
+            district_id: districtIdVal,
+            mandal_id: mandalIdVal,
             region_id: 1,
             areas_id: 1,
           },
 
+          avatar: profilePicKey !== "profile.png" ? profilePicKey : undefined,
+
           id_proof: {
             bank_account_name: `${values.firstName} ${values.lastName}`,
-            bank_account_number: "NA",
-            ifsc_code: "NA",
-            branch: "NA",
-            bank_name: "NA",
-            id_proof_frontUrl: finalAadharFrontKey,
-            id_proof_backUrl: finalAadharBackKey,
+            bank_account_number: values.accountNumber,
+            ifsc_code: values.ifscCode,
+            branch: values.bankBranch,
+            bank_name: values.bankName,
+            id_proof_frontUrl: aadharFrontKey,
+            id_proof_backUrl: aadharBackKey,
             pan_card_number: values.panNumber,
-            pan_card_url: finalPanCardKey,
+            pan_card_url: panKey,
           },
         };
 
-        createdResponse = await createAgent(payload).unwrap();
+        await createAgent(payload).unwrap();
       }
 
-      if (!isEdit) {
-        const now = new Date();
-        const formattedDate = now.toLocaleDateString("en-US");
-        const formattedTime = now.toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-        const generatedId = createdResponse?.data?.id || createdResponse?.id || Math.floor(10000 + Math.random() * 90000);
+      toast.success(
+        isEdit ? "Profile Updated Successfully" : "Agent Created Successfully",
+      );
 
-        setSuccessDetails({
-          name: `${values.firstName} ${values.lastName}`,
-          assignedId: typeof generatedId === "number" ? `GLC AG${generatedId}` : String(generatedId),
-          createdDate: formattedDate,
-          createdTime: formattedTime,
-        });
-        setShowSuccess(true);
-      } else {
-        toast.success("Profile Updated Successfully");
-        if (onCancel) {
-          onCancel();
-        }
+      if (onCancel) {
+        onCancel();
       }
     } catch (err) {
       console.error("Failed to save:", err);
@@ -383,11 +527,24 @@ export default function AgentForm({
     const phone = watch("phone") || data?.phone || data?.phoneNumber || data?.mobile || data?.contact || "N/A";
     const dateOfBirth = watch("dob") || data?.dob ? new Date(watch("dob") || data.dob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' }) : "N/A";
     
-    const address = watch("address") || data?.address || data?.address?.address || "N/A";
-    const city = watch("city") || data?.city || data?.address?.city || "N/A";
-    const pincode = watch("pincode") || data?.pincode || data?.address?.pincode || "N/A";
-    const stateName = watch("addressState") || data?.state || data?.address?.state || "N/A";
-    const panNumber = watch("panNumber") || data?.panCardNumber || data?.id_proof?.pan_card_number || "N/A";
+    const stateObj = states.find((s: any) => s.desc === watch("state") || s.id === data?.geo_assignments?.state_id);
+    const districtObj = allDistricts.find((d: any) => d.desc === watch("district") || d.id === data?.geo_assignments?.district_id);
+    const mandalObj = allMandals.find((m: any) => m.desc === watch("mandal") || m.id === data?.geo_assignments?.mandal_id);
+
+    const stateName = stateObj?.desc || data?.state || "N/A";
+    const districtName = districtObj?.desc || data?.district || "N/A";
+    const mandalName = mandalObj?.desc || data?.mandal || data?.area || "N/A";
+
+    // Operating Territory
+    const operatingTerritory = [
+      mandalName,
+      districtName,
+      stateName,
+    ].filter((val) => val && val !== "N/A").join(", ") || "N/A";
+
+    const bankName = watch("bankName") || data?.bankName || data?.id_proof?.bank_name || "N/A";
+    const accountNumber = watch("accountNumber") || data?.accountNumber || data?.id_proof?.bank_account_number || "N/A";
+    const ifscCode = watch("ifscCode") || data?.ifscCode || data?.id_proof?.ifsc_code || "N/A";
 
     const aadharFrontUrl = data?.id_proof_front_url || data?.id_proof?.id_proof_frontUrl || "";
     const aadharBackUrl = data?.id_proof_back_url || data?.id_proof?.id_proof_backUrl || "";
@@ -403,26 +560,33 @@ export default function AgentForm({
           <div className="bg-[color:var(--surface-card)] rounded-[1.75rem] lg:rounded-[2.25rem] xl:rounded-[2.875rem] px-[1.25rem] lg:px-[2rem] xl:px-[3.125rem] pt-[1.5rem] lg:pt-[1.75rem] xl:pt-[2rem] pb-[2rem] lg:pb-[2.5rem] xl:pb-[3rem] flex flex-col gap-[1rem] lg:gap-[1.125rem] xl:gap-[1.25rem]">
             <ProfileHeaderCard agent={agent} />
 
-            <SectionCard title="Personal Information">
+            <SectionCard title="Info">
               <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-[1.5rem] lg:gap-x-[2rem] xl:gap-x-[2.5rem] gap-y-[1.25rem] lg:gap-y-[1.5rem] xl:gap-y-[1.75rem]">
+                <InfoField label="First Name" value={watch("firstName") || data?.firstName || data?.first_name || "N/A"} />
+                <InfoField label="Last Name" value={watch("lastName") || data?.lastName || data?.last_name || "N/A"} />
                 <InfoField label="Email" value={email} />
                 <InfoField label="Phone number" value={phone} />
                 <InfoField label="Date Of Birth" value={dateOfBirth} />
-                <InfoField label="PAN Number" value={panNumber} />
+                <InfoField label="PAN Number" value={watch("panNumber") || data?.panCardNumber || data?.id_proof?.pan_card_number || "N/A"} />
+                <InfoField label="Address" value={watch("address") || data?.address || data?.address?.address || "N/A"} />
+                <InfoField label="State" value={watch("addressState") || data?.state || data?.address?.state || "N/A"} />
+                <InfoField label="City / Village" value={watch("city") || data?.city || data?.address?.city || "N/A"} />
+                <InfoField label="Pincode" value={watch("pincode") || data?.pincode || data?.address?.pincode || "N/A"} />
+                <InfoField label="Operating Territory" value={operatingTerritory} className="col-span-2 xl:col-span-3" />
               </div>
             </SectionCard>
 
-            <SectionCard title="Address Information">
-              <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-[1.5rem] lg:gap-x-[2rem] xl:gap-x-[2.5rem] gap-y-[1.25rem] lg:gap-y-[1.5rem] xl:gap-y-[1.75rem]">
-                <InfoField label="Address" value={address} className="col-span-2 xl:col-span-3" />
-                <InfoField label="City / Village" value={city} />
-                <InfoField label="State" value={stateName} />
-                <InfoField label="Pin Code" value={pincode} />
+            <SectionCard title="Bank Details">
+              <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-[1.5rem] lg:gap-x-[2rem] xl:gap-x-[2.5rem] gap-y-[1.25rem] lg:gap-y-[1.5rem]">
+                <InfoField label="Bank Name" value={bankName} />
+                <InfoField label="Account Number" value={accountNumber} />
+                <InfoField label="IFSC Code" value={ifscCode} />
+                <InfoField label="Bank Branch" value={watch("bankBranch") || data?.bankBranch || data?.id_proof?.branch || "N/A"} />
               </div>
             </SectionCard>
 
             <SectionCard title="Documents Provided">
-              <div className="grid grid-cols-2 gap-[1.25rem] lg:gap-[1.5rem] xl:gap-[2rem] max-w-[48.75rem]">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-[1.25rem] lg:gap-[1.5rem] xl:gap-[2rem]">
                 <DocumentCard label="Aadhaar card (Front)" imageUrl={aadharFrontUrl} />
                 <DocumentCard label="Aadhaar card (Back)" imageUrl={aadharBackUrl} />
                 <DocumentCard label="Pan card" imageUrl={panCardUrl} />
@@ -448,24 +612,6 @@ export default function AgentForm({
           </div>
         </div>
       </main>
-    );
-  }
-
-  if (showSuccess) {
-    return (
-      <Successcard
-        badgeLabel="Agent Creation"
-        titleLine1="Agent"
-        titleLine2="Created Successfully!"
-        redirectText="Redirecting to User Directory..."
-        regionName={successDetails.name}
-        assignedId={successDetails.assignedId}
-        createdDate={successDetails.createdDate}
-        createdTime={successDetails.createdTime}
-        mapImage={null}
-        onRedirect={() => navigate("/role-manager/user-directory")}
-        redirectDelay={3000}
-      />
     );
   }
 
@@ -722,6 +868,111 @@ export default function AgentForm({
           </div>
         </FormSection>
 
+        {/* ── SELECT STATE, DISTRICT & MANDAL ── */}
+        <FormSection title="Select State, District & Mandal">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
+            <RHFDropdown
+              name="state"
+              control={control}
+              label="State"
+              options={stateOptions}
+              placeholder="Select State"
+              disabled={isViewMode}
+            />
+            <div className="flex flex-col gap-1">
+              <RHFDropdown
+                name="district"
+                control={control}
+                label="District"
+                options={districtOptions}
+                placeholder="Select District"
+                disabled={isViewMode}
+              />
+              {(hierarchy?.region || hierarchy?.regional_officer || hierarchy?.intelligence_officer) && (
+                <div className="mt-1 px-1 flex flex-col">
+                  {hierarchy.region && (
+                    <span className="text-xs font-semibold text-slate-500">
+                      Region: {hierarchy.region.name || "N/A"}
+                    </span>
+                  )}
+                  {hierarchy.regional_officer && (
+                    <span className="text-[13px] font-medium text-[#16a34a] mt-1.5 flex items-center gap-1">
+                      RO : {hierarchy.regional_officer.first_name} {hierarchy.regional_officer.last_name} {hierarchy.regional_officer.id ? `(GLC 00${hierarchy.regional_officer.id})` : ""}
+                    </span>
+                  )}
+                  {hierarchy.intelligence_officer && (
+                    <span className="text-[13px] font-medium text-[#16a34a] mt-0.5 flex items-center gap-1">
+                      IO : {hierarchy.intelligence_officer.first_name} {hierarchy.intelligence_officer.last_name} {hierarchy.intelligence_officer.id ? `(GLC 00${hierarchy.intelligence_officer.id})` : ""}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              <RHFDropdown
+                name="mandal"
+                control={control}
+                label="Mandal"
+                options={mandalOptions}
+                placeholder="Select Mandal"
+                disabled={isViewMode}
+              />
+              {(hierarchy?.area || hierarchy?.field_officer) && (
+                <div className="mt-1 px-1 flex flex-col">
+                  {hierarchy.area && (
+                    <span className="text-xs font-semibold text-slate-500">
+                      Area: {hierarchy.area.name || hierarchy.area || "N/A"}
+                    </span>
+                  )}
+                  {hierarchy.field_officer && (
+                    <span className="text-[13px] font-medium text-[#16a34a] mt-1.5 flex items-center gap-1">
+                      FO : {hierarchy.field_officer.first_name} {hierarchy.field_officer.last_name} {hierarchy.field_officer.id ? `(${hierarchy.field_officer.id})` : ""}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </FormSection>
+
+        {/* ── BANK DETAILS ── */}
+        <FormSection title="Enter Bank Details">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
+            <RHFDropdown
+              name="bankName"
+              control={control}
+              label="Bank Name"
+              options={BANK_OPTIONS}
+              placeholder="Select Bank"
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="accountNumber"
+              control={control}
+              label="Account Number"
+              placeholder="Enter Account Number"
+              maxLength={30}
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="ifscCode"
+              control={control}
+              label="IFSC Code"
+              placeholder="Enter IFSC Code"
+              maxLength={30}
+              disabled={isViewMode}
+            />
+            <RHFTextField
+              name="bankBranch"
+              control={control}
+              label="Bank Branch"
+              placeholder="Enter Bank Branch"
+              maxLength={30}
+              disabled={isViewMode}
+            />
+          </div>
+        </FormSection>
+
         {/* ── UPLOAD DOCUMENTS — now RHF-controlled ── */}
         <FormSection title="Upload Documents">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,30px)]">
@@ -852,122 +1103,86 @@ function UploadBox({
   existingUrl?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
 
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field, fieldState }) => {
-        const fileValue = field.value || existingUrl;
-        return (
-          <div className="space-y-[clamp(8px,0.8vw,14px)]">
-            <p className="font-medium text-[length:clamp(12px,0.97vw,16px)] text-[color:var(--label-color)] font-[family-name:var(--font-sans)]">
-              {title}
-            </p>
-            <div
-              className={`
-                relative flex flex-col items-center justify-center gap-2
-                h-[clamp(100px,9vw,128px)]
-                border-2 border-dashed rounded-[var(--radius-dropdown)]
-                bg-[color:var(--input)]
-                transition-colors overflow-hidden
-                ${disabled ? "opacity-60 cursor-not-allowed border-gray-200" : "border-[color:var(--border-default)]"}
-                ${fieldState.error ? "border-red-500 bg-red-50/30" : ""}
-              `}
-            >
-              {fileValue ? (
-                <>
-                  <ImagePreview file={fileValue} className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-300" />
-                  <div className="absolute inset-0 bg-slate-950/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-3 text-white">
-                    {!disabled && (
-                      <button
-                        type="button"
-                        onClick={() => inputRef.current?.click()}
-                        className="flex flex-col items-center gap-0.5 hover:scale-110 transition-transform"
-                        title="Change"
-                      >
-                        <FileText className="w-4 h-4 stroke-[2]" />
-                        <span className="text-[10px] font-semibold">Change</span>
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
-                      className="flex flex-col items-center gap-0.5 hover:scale-110 transition-transform"
-                      title="View"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                      <span className="text-[10px] font-semibold">View</span>
-                    </button>
-                    {!disabled && (
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); field.onChange(undefined); }}
-                        className="flex flex-col items-center gap-0.5 hover:scale-110 transition-transform text-red-300 hover:text-red-100"
-                        title="Remove"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                        <span className="text-[10px] font-semibold">Remove</span>
-                      </button>
-                    )}
-                  </div>
-                  <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium pointer-events-none">
-                    {field.value ? "Selected" : "Uploaded"}
-                  </div>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => !disabled && inputRef.current?.click()}
-                  disabled={disabled}
-                  className="flex flex-col items-center justify-center gap-2 w-full h-full cursor-pointer disabled:cursor-not-allowed"
-                >
-                  <Upload
-                    strokeWidth={1.5}
-                    className="w-[clamp(18px,1.6vw,24px)] h-[clamp(18px,1.6vw,24px)] text-[color:var(--label-color)]"
-                  />
-                  <span className="font-medium text-[length:clamp(12px,0.9vw,16px)] text-[color:var(--profile-text)] font-[family-name:var(--font-sans)]">
-                    Upload File
-                  </span>
-                </button>
-              )}
-              <input
-                ref={inputRef}
-                type="file"
-                disabled={disabled}
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
-              />
-            </div>
-            {fieldState.error && (
-              <span className="text-red-500 text-[0.75rem] leading-none">
-                {fieldState.error.message}
-              </span>
-            )}
-
-            {/* ── Lightbox overlay ── */}
-            {lightboxOpen && fileValue && (
-              <div
-                className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
-                onClick={() => setLightboxOpen(false)}
-              >
-                <div className="relative max-w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
-                  <ImagePreview file={fileValue} className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl" />
-                  <button
-                    type="button"
-                    onClick={() => setLightboxOpen(false)}
-                    className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white/90 text-gray-800 flex items-center justify-center shadow-lg hover:bg-white transition-colors"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      render={({ field, fieldState }) => (
+        <div className="space-y-[clamp(8px,0.8vw,14px)]">
+          <p className="font-medium text-[length:clamp(12px,0.97vw,16px)] text-[color:var(--label-color)] font-[family-name:var(--font-sans)]">
+            {title}
+          </p>
+          <div
+            className={`
+                            relative flex flex-col items-center justify-center gap-2
+                            h-[clamp(100px,9vw,128px)]
+                            border-2 border-dashed rounded-[var(--radius-dropdown)]
+                            bg-[color:var(--input)]
+                            transition-colors overflow-hidden group cursor-pointer
+                            ${disabled
+                ? "opacity-60 cursor-not-allowed border-gray-200"
+                : "hover:brightness-95"
+              }
+                            ${fieldState.error
+                ? "border-red-500 bg-red-50/30"
+                : "border-[color:var(--border-default)]"
+              }
+                        `}
+            onClick={(e) => {
+              if (disabled) return;
+              if ((e.target as HTMLElement).closest('.action-btn')) return;
+              inputRef.current?.click();
+            }}
+          >
+            {field.value || existingUrl ? (
+              <>
+                <ImagePreview file={field.value || existingUrl} onUrlReady={setPreviewUrl} className="absolute inset-0 w-full h-full object-cover animate-in fade-in duration-300" />
+                <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white cursor-default">
+                  <button type="button" className="action-btn p-1.5 hover:bg-white/20 rounded-full transition-colors" title="View File" onClick={() => {
+                    if (previewUrl) window.open(previewUrl, "_blank");
+                  }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                  <button type="button" className="action-btn p-1.5 hover:bg-white/20 rounded-full transition-colors" title="Change File" onClick={() => !disabled && inputRef.current?.click()}>
+                    <Upload className="w-4 h-4" />
+                  </button>
+                  <button type="button" className="action-btn p-1.5 hover:bg-white/20 rounded-full transition-colors" title="Remove File" onClick={() => field.onChange(undefined)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                   </button>
                 </div>
-              </div>
+                <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium pointer-events-none">
+                  {field.value ? "Selected" : "Uploaded"}
+                </div>
+              </>
+            ) : (
+              <>
+                <Upload
+                  strokeWidth={1.5}
+                  className="w-[clamp(18px,1.6vw,24px)] h-[clamp(18px,1.6vw,24px)] text-[color:var(--label-color)]"
+                />
+                <span className="font-medium text-[length:clamp(12px,0.9vw,16px)] text-[color:var(--profile-text)] font-[family-name:var(--font-sans)]">
+                  Upload File
+                </span>
+              </>
             )}
           </div>
-        );
-      }}
+          {fieldState.error && (
+            <span className="text-red-500 text-[0.75rem] leading-none">
+              {fieldState.error.message}
+            </span>
+          )}
+          <input
+            ref={inputRef}
+            type="file"
+            disabled={disabled}
+            accept=".jpg,.jpeg,.png,.webp"
+            className="hidden"
+            onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
+          />
+        </div>
+      )}
     />
   );
 }

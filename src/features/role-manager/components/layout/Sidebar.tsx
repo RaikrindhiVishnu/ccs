@@ -1,6 +1,6 @@
 import * as Icons from "lucide-react";
 import sidebarImg from "@/assets/sidebar.png";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { type NavItem } from "@/core/config/layoutConfig";
 
 interface SidebarProps {
@@ -8,6 +8,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ navItems = [] }) => {
+  const navigate = useNavigate();
   const iconSize = "clamp(14px,1.39vw,20px)";
 
   const iconClass = `
@@ -65,7 +66,10 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems = [] }) => {
         </div>
 
         {/* Profile avatar */}
-        <div className="w-full aspect-square max-h-[clamp(36px,4.17vh,52px)] rounded-[clamp(8px,0.83vw,12px)] overflow-hidden bg-[var(--surface-sidebar-accent)] shrink-0">
+        <div
+          onClick={() => navigate("/role-manager/profile")}
+          className="w-full aspect-square max-h-[clamp(36px,4.17vh,52px)] rounded-[clamp(8px,0.83vw,12px)] overflow-hidden bg-[var(--surface-sidebar-accent)] shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
+        >
           <img src={sidebarImg} alt="profile" className="w-full h-full object-cover" />
         </div>
       </div>
