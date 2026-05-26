@@ -52,6 +52,7 @@ import {
   RegionDetailsView,
   AreaDetailsView,
   RegionAreaEdit,
+  UpdatePassword,
 } from './routes.config';
 
 
@@ -118,7 +119,9 @@ export const authRoutes: RouteObject[] = [
         path: "/role-manager/edit-regional-officer/:id",
         element: <EditRegionalOfficer />,
       },
+      { path: "/role-manager/profile", element: <RoleManagerDetails /> },
       { path: "/role-manager/profile/:id", element: <RoleManagerDetails /> },
+      { path: "/role-manager/update-password", element: <UpdatePassword /> },
       { path: "/role-manager/agent-approvals", element: <AgentApprovals /> },
       { path: "/role-manager/agent-details/:id", element: <Agentdetailpage /> },   
  ],
@@ -183,7 +186,6 @@ export const publicRoutes: RouteObject[] = [
   { path: '/design-system',                 element: <DesignSystem /> },
   { path: '/role-manager/agent-create',     element: <AgentCreate /> },
   { path: '/role-manager/agent-edit',       element: <AgentEdit /> },
-  { path: '/role-manager/profile',          element: <RoleManagerDetails /> },
   { path: '/role-manager/agent-approvals',  element: <AgentApprovals /> },
   { path: '/role-manager/agent-details',    element: <Agentdetailpage /> },
 ];

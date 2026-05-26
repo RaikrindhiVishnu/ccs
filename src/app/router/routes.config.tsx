@@ -6,6 +6,9 @@ export const CcsDashboard = lazy(
 export const RoleManagerDetails = lazy(
   () => import("../../features/role-manager/pages/RoleManagerDetails"),
 );
+export const UpdatePassword = lazy(
+  () => import("../../features/role-manager/pages/UpdatePassword"),
+);
 export const AgentApprovals = lazy(
   () => import("../../features/role-manager/pages/Agentapprovals"),
 );
