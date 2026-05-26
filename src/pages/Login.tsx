@@ -2,13 +2,11 @@ import { useState } from "react";
 import { Eye, EyeOff, Lock, User, ShieldCheck } from "lucide-react";
 import MainLoginBg from "@/assets/main login.svg";
 import GlcLogo from "@/assets/glc-logo.svg";
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch } from "@/app/store/store";
-import {
-  updatePassword,
-  selectUpdatePasswordLoading,
-  selectUpdatePasswordError,
-} from "../features/auth/store/authSlice";
+import { useUpdatePasswordMutation } from "@/features/auth/api/authApi";
+import { useNavigate } from "react-router-dom";
+import { useLoginMutation } from "@/features/auth/api/authApi";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "@/features/auth/store/authSlice";
 // ─── Design tokens (all derived from Figma 1440px baseline) ──────────────────
 //
 // Figma canvas: 1440 × 1024px
@@ -84,7 +82,10 @@ function InputField({
   id,
 }: InputFieldProps) {
   return (
-    <div className="flex flex-col w-full" style={{ gap: "clamp(6px,0.556vw,11px)" }}>
+    <div
+      className="flex flex-col w-full"
+      style={{ gap: "clamp(6px,0.556vw,11px)" }}
+    >
       {(label || labelRight) && (
         <div
           className="flex items-center justify-between"
@@ -224,7 +225,10 @@ function SecureFooter() {
   return (
     <div
       className="flex items-center mt-auto"
-      style={{ gap: "clamp(11px,1.111vw,21px)", paddingTop: "clamp(11px,1.111vw,21px)" }}
+      style={{
+        gap: "clamp(11px,1.111vw,21px)",
+        paddingTop: "clamp(11px,1.111vw,21px)",
+      }}
     >
       <ShieldCheck
         strokeWidth={1.8}
@@ -280,6 +284,8 @@ function LoginScreen({
 }: {
   onSuccess: (d: { is_first_login: number }) => void;
 }) {
+  const dispatch = useDispatch();
+  const [login] = useLoginMutation();
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -291,18 +297,57 @@ function LoginScreen({
     if (!loginId.trim()) e.loginId = "Login ID is required";
     else if (!/\S+@\S+\.\S+/.test(loginId)) e.loginId = "Enter a valid email";
     if (!password) e.password = "Password is required";
-    else if (password.length < 6) e.password = "Password must be at least 6 characters";
+    else if (password.length < 6)
+      e.password = "Password must be at least 6 characters";
     return e;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const errs = validate();
-    if (Object.keys(errs).length) { setErrors(errs); return; }
-    setErrors({});
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const errs = validate();
+
+  if (Object.keys(errs).length) {
+    setErrors(errs);
+    return;
+  }
+
+  setErrors({});
+
+  try {
     setLoading(true);
-    setTimeout(() => { setLoading(false); onSuccess({ is_first_login: 1 }); }, 900);
-  };
+
+    const response = await login({
+      login_id: loginId,
+      password,
+    }).unwrap();
+dispatch(
+  setCredentials({
+    user: {
+      id: response.id,
+      login_id: response.login_id,
+      first_name: response.first_name,
+      last_name: response.last_name,
+      role_id: response.role_id,
+      is_first_login: response.is_first_login,
+    },
+    accessToken: response.token,
+    refreshToken: response.refreshToken,
+  })
+);
+
+    onSuccess({
+      is_first_login: response.is_first_login,
+    });
+  } catch (err: any) {
+    setErrors({
+      password:
+        err?.data?.error || "Invalid credentials",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   const EyeBtn = () => (
     <button
@@ -485,11 +530,7 @@ function UpdateDefaultPasswordScreen({
 // input bg: #F4F4F5 (slightly different from login's #F3F3F5)
 // icon: #9CA3AF (grey, not #6D7A7A)
 function ChangePasswordScreen({ onDone }: { onDone: () => void }) {
-  const dispatch = useDispatch<AppDispatch>();
-
-const updateLoading = useSelector(selectUpdatePasswordLoading);
-
-const updateError = useSelector(selectUpdatePasswordError);
+  const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
   const [showNew, setShowNew] = useState(false);
@@ -500,34 +541,41 @@ const updateError = useSelector(selectUpdatePasswordError);
   const validate = () => {
     const e: Record<string, string> = {};
     if (!newPw) e.newPw = "New password is required";
-    else if (newPw.length < 8) e.newPw = "Password must be at least 8 characters";
+    else if (newPw.length < 8)
+      e.newPw = "Password must be at least 8 characters";
     if (!confirmPw) e.confirmPw = "Please confirm your password";
     else if (newPw !== confirmPw) e.confirmPw = "Passwords do not match";
     return e;
   };
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const errs = validate();
+    const errs = validate();
 
-  if (Object.keys(errs).length) {
-    setErrors(errs);
-    return;
-  }
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
 
-  setErrors({});
+    setErrors({});
 
-  const resultAction = await dispatch(updatePassword(newPw));
+    try {
+      await updatePassword({
+        new_password: newPw,
+      }).unwrap();
 
-  if (updatePassword.fulfilled.match(resultAction)) {
-    setSuccess(true);
+      setSuccess(true);
 
-    setTimeout(() => {
-      onDone();
-    }, 1400);
-  }
-};
+      setTimeout(() => {
+        onDone();
+      }, 1400);
+    } catch (err: any) {
+      setErrors({
+        confirmPw: err?.data?.error || "Failed to update password",
+      });
+    }
+  };
 
   const EyeToggle = ({
     show,
@@ -579,7 +627,10 @@ const updateError = useSelector(selectUpdatePasswordError);
         <label
           htmlFor={rest.id}
           className="font-sans font-normal text-[#424751]"
-          style={{ fontSize: "clamp(11px,1.111vw,21px)", lineHeight: "clamp(15px,1.667vw,24px)" }}
+          style={{
+            fontSize: "clamp(11px,1.111vw,21px)",
+            lineHeight: "clamp(15px,1.667vw,24px)",
+          }}
         >
           {fieldLabel}
         </label>
@@ -726,10 +777,7 @@ const updateError = useSelector(selectUpdatePasswordError);
             icon={Lock}
             error={errors.newPw}
             rightEl={
-              <EyeToggle
-                show={showNew}
-                toggle={() => setShowNew((v) => !v)}
-              />
+              <EyeToggle show={showNew} toggle={() => setShowNew((v) => !v)} />
             }
           />
 
@@ -752,9 +800,9 @@ const updateError = useSelector(selectUpdatePasswordError);
 
           {/* Button: 16px gap from last input per Figma actions gap */}
           <div style={{ marginTop: "clamp(4px,1.111vw,16px)" }}>
-          <PrimaryButton type="submit" disabled={updateLoading}>
-  {updateLoading ? "Updating..." : "Update Password"}
-</PrimaryButton>
+            <PrimaryButton type="submit" disabled={isLoading}>
+              {isLoading ? "Updating..." : "Update Password"}
+            </PrimaryButton>
           </div>
 
           <SecureFooter />
@@ -803,6 +851,7 @@ function Background() {
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
 export default function LoginFlow() {
+  const navigate = useNavigate();
   type Screen = "login" | "update-default" | "change-password" | "dashboard";
   const [screen, setScreen] = useState<Screen>("login");
 
@@ -811,7 +860,11 @@ export default function LoginFlow() {
   }: {
     is_first_login: number;
   }) => {
-    setScreen(is_first_login === 1 ? "update-default" : "dashboard");
+    if (is_first_login === 1) {
+  setScreen("update-default");
+} else {
+  navigate("/dashboard");
+}
   };
 
   return (
@@ -823,43 +876,15 @@ export default function LoginFlow() {
       {screen === "update-default" && (
         <UpdateDefaultPasswordScreen
           onSetNew={() => setScreen("change-password")}
-          onContinue={() => setScreen("dashboard")}
+          onContinue={() => navigate("/dashboard")}
         />
       )}
 
       {screen === "change-password" && (
-        <ChangePasswordScreen onDone={() => setScreen("dashboard")} />
+        <ChangePasswordScreen onDone={() => navigate("/dashboard")} />
       )}
 
-      {screen === "dashboard" && (
-        <LoginCard>
-          <CardLogo />
-          <div
-            className="font-sans font-bold text-[#111827] mt-4 mb-2"
-            style={{ fontSize: "clamp(13px,1.389vw,26px)" }}
-          >
-            Welcome to Dashboard!
-          </div>
-          <p
-            className="font-sans text-[#6B7280] mb-6"
-            style={{ fontSize: "clamp(11px,1.111vw,21px)" }}
-          >
-            You are now logged in successfully.
-          </p>
-          <button
-            onClick={() => setScreen("login")}
-            className="bg-transparent border border-[#2780C4] text-[#2780C4] font-semibold cursor-pointer self-start transition-opacity hover:opacity-75"
-            style={{
-              borderRadius: "clamp(16px,1.667vw,31px)",
-              fontSize: "clamp(10px,0.972vw,18px)",
-              padding:
-                "clamp(6px,0.556vw,10px) clamp(14px,1.736vw,33px)",
-            }}
-          >
-            ← Back to Login (demo reset)
-          </button>
-        </LoginCard>
-      )}
+     
     </div>
   );
 }
