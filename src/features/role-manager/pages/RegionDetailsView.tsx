@@ -126,7 +126,7 @@ const RegionDetailsView: React.FC = () => {
   const [isLoadingOfficers, setIsLoadingOfficers] = useState(true);
 
   // Queries to fetch the same master data already cached in the app
-  const { data: allGeoJsonData, isLoading: isLoadingGeoJson } = useGetAllGeoJsonDataQuery();
+  const { data: allGeoJsonData } = useGetAllGeoJsonDataQuery();
   const { data: regionsByCountryData } = useGetRegionsByCountryIdQuery(
     { country_id: 1 },
     { skip: !geoMasterData }
