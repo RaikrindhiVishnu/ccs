@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Briefcase, Pencil, UserCircle, Layers } from "lucide-react";
 import { useGetAllFieldOfficersMutation } from "../api/roleManagerApi";
@@ -147,13 +147,7 @@ const AreaDetailsView: React.FC = () => {
 
   const geoProps = firstFeature?.properties || {};
 
- // FIXED — match by area_id (reliable, backend-driven):
-const matchedFieldOfficer = useMemo(() => {
-  const officers = fieldOfficersData?.data || [];
-  return officers.find(
-    (officer: any) => Number(officer.area_id) === Number(areaId),
-  );
-}, [fieldOfficersData, areaId]);
+
 
 useEffect(() => {
   if (fieldOfficersData?.data) {
@@ -165,7 +159,7 @@ useEffect(() => {
   fieldOfficersData?.data?.forEach((o: any) => {
     console.log("OFFICER OBJECT", o);
   });
-  const cachedArea = (window as any).__areaCache?.[Number(areaId)];
+
   const areaName =
     geoProps?.name ||
     matchedArea?.area_name ||

@@ -37,10 +37,10 @@ const getMandalsBounds = (
     });
   };
 
-  geoMasterData.countries.forEach((country) => {
-    country.states?.forEach((state) => {
-      state.districts?.forEach((district) => {
-        district.mandals?.forEach((mandal) => {
+  geoMasterData.countries.forEach((country: any) => {
+    country.states?.forEach((state: any) => {
+      state.districts?.forEach((district: any) => {
+        district.mandals?.forEach((mandal: any) => {
           if (mandalIds.includes(Number(mandal.i))) {
             try {
               const decompressed = decompressGeoJSON(mandal.g);
@@ -138,7 +138,7 @@ export const AreaEditSelector: React.FC<AreaEditSelectorProps> = ({
 
     // 1. Isolate mandal boundaries directly using Feature ID checking (100% Bulletproof!)
     if (mandalIdNumbers.length > 0) {
-      const filterExpression = ["in", ["id"], ["literal", mandalIdNumbers]];
+      const filterExpression = ["in", ["id"], ["literal", mandalIdNumbers]] as maplibregl.FilterSpecification;
 
       if (mapRef.current.getLayer("mandals-fill")) {
         mapRef.current.setFilter("mandals-fill", filterExpression);

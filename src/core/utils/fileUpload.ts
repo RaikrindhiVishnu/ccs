@@ -1,6 +1,6 @@
 import { env } from "../config/env";
 
-export type DocType = 'aadhar_front' | 'aadhar_back' | 'pan';
+export type DocType = 'aadhar_front' | 'aadhar_back' | 'pan' | 'profile_image';
 
 export interface UploadResult {
   url: string;      

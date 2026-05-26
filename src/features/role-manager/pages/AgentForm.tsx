@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import Bannar from "@/assets/Bannar.svg";
 import SuccessIcon from "@/assets/sucess.svg";
-import { Upload, FileText, ArrowLeft, User, Camera } from "lucide-react";
+import { Upload, ArrowLeft, User, Camera } from "lucide-react";
 import {
   useCreateAgentMutation,
   useUpdateAgentDetailsMutation,
@@ -20,7 +20,6 @@ import {
 import { RHFTextField } from "@/components/form/RHFTextField";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { useLocation, useNavigate } from "react-router-dom";
-import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { toast } from "sonner";
 import { useState, useEffect } from "react"; // kept only for profileImage                       // kept only for profileImage
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
@@ -424,16 +423,16 @@ export default function AgentForm({
           const uploadPromises = [];
 
           if (values.aadharFront instanceof File) {
-            uploadPromises.push(uploadUserDocument(values.aadharFront).then(url => { aadharFrontKey = url || "front.png"; }));
+            uploadPromises.push(uploadUserDocument(values.aadharFront, values.email, "aadhar_front").then(res => { aadharFrontKey = res.key || "front.png"; }));
           }
           if (values.aadharBack instanceof File) {
-            uploadPromises.push(uploadUserDocument(values.aadharBack).then(url => { aadharBackKey = url || "back.png"; }));
+            uploadPromises.push(uploadUserDocument(values.aadharBack, values.email, "aadhar_back").then(res => { aadharBackKey = res.key || "back.png"; }));
           }
           if (values.panCard instanceof File) {
-            uploadPromises.push(uploadUserDocument(values.panCard).then(url => { panKey = url || "pan.png"; }));
+            uploadPromises.push(uploadUserDocument(values.panCard, values.email, "pan").then(res => { panKey = res.key || "pan.png"; }));
           }
           if (values.profilePicture instanceof File) {
-            uploadPromises.push(uploadUserDocument(values.profilePicture).then(url => { profilePicKey = url || "profile.png"; }));
+            uploadPromises.push(uploadUserDocument(values.profilePicture, values.email, "profile_image").then(res => { profilePicKey = res.key || "profile.png"; }));
           }
 
           if (uploadPromises.length > 0) {

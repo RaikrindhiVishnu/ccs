@@ -338,9 +338,7 @@ const RegionAreaEdit: React.FC = () => {
 
   // Assign/Unassign Panel States
   const [assignPanelOpen, setAssignPanelOpen] = useState(false);
-  const [assignMode, setAssignMode] = useState<
-    "assigned" | "unassigned" | "all" | null
-  >(null);
+
   const [selectedRegionForAssign, setSelectedRegionForAssign] = useState<
     any | null
   >(null);
@@ -2053,7 +2051,7 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
 
                     // First click: open assign/unassign panel
                     setAssignPanelOpen(true);
-                    setAssignMode(null);
+
                     setSelectedRegionForAssign(null);
                     setRegionSearch("");
                     return; // Zoom to state first, do not navigate yet
@@ -2144,7 +2142,7 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
 
             // First click: open assign/unassign panel
             setAssignPanelOpen(true);
-            setAssignMode(null);
+
             setSelectedRegionForAssign(null);
             setRegionSearch("");
           }
@@ -2307,7 +2305,7 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
     setSelectedState(null); // triggers stateRegionsData → allRegionsData → regions re-render
     // Clear district boundaries (only visible inside a selected state)
     setAssignPanelOpen(false);
-    setAssignMode(null);
+
     setSelectedRegionForAssign(null);
     setFilterDropdownOpen(false);
     setActiveFilter("assigned");
@@ -3113,7 +3111,7 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
                   <button
                     onClick={() => {
                       setAssignPanelOpen(false);
-                      setAssignMode(null);
+
                       setSelectedRegionForAssign(null);
                       setRegionSearch("");
                       setFilterDropdownOpen(false);

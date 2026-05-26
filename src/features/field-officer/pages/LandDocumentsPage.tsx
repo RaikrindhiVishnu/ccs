@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { requestInfoData } from "../data/requestInfoData";
+
 import DocumentsTabs from "../components/land-documents/DocumentsTabs";
 import UploadForm from "../components/land-documents/UploadForm";
 
@@ -34,8 +34,7 @@ const LandDocumentsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Find corresponding request item to display correct Farmland ID
-  const requestItem = requestInfoData.find((item) => item.id === Number(id)) || requestInfoData[0];
+
   const farmId = id ? id.toUpperCase() : "GLCSOS 01";
 
   // Active Tab state
