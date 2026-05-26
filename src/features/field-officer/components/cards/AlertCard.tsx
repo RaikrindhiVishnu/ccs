@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import farmlandCard from "@/assets/dashboard/farmland-card.png";
 import avatars from "@/assets/dashboard/avatars.png";
 
@@ -24,6 +25,8 @@ export default function AlertCard({
   publishedTime,
   faceIdx,
 }: Props) {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-white rounded-[32px] overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)] flex flex-col w-full aspect-[424/628]">
       {/* Image flush to top edges */}
@@ -86,7 +89,10 @@ export default function AlertCard({
         </div>
 
         <div className="mt-auto pt-6">
-          <button className="w-full bg-[#96C9ED] h-[44px] 2xl:h-[58px] rounded-full font-bold text-black hover:brightness-95 transition-all uppercase tracking-wider text-sm 2xl:text-[18px]">
+          <button 
+            onClick={() => navigate(`/field-officer/alerts/${alertId}`)}
+            className="w-full bg-[#96C9ED] h-[44px] 2xl:h-[58px] rounded-full font-bold text-black hover:brightness-95 transition-all uppercase tracking-wider text-sm 2xl:text-[18px] cursor-pointer"
+          >
             VIEW
           </button>
         </div>
