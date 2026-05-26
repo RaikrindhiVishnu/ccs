@@ -11,6 +11,14 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
+    updatePassword: builder.mutation<any, { old_password: string; new_password: string }>({
+      query: (body) => ({
+        url: "/auth/updatePassword",
+        method: "POST",
+        body,
+      }),
+    }),
+
     sendIssueMail: builder.mutation({
       query: (body) => ({
         url: "/mail/send",
@@ -42,4 +50,5 @@ export const {
   useSendIssueMailMutation,
   useApproveUserMutation,
   useGeneratePresignedUrlQuery,
+  useUpdatePasswordMutation,
 } = authApi;

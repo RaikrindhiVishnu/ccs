@@ -3,8 +3,9 @@ import { Typography } from "@/components/ui/typography";
 import { Input } from "@/components/ui/input";
 import role from "@/assets/role profile.svg";
 import SuccessIcon from "@/assets/sucess.svg";
-import { ArrowLeft, User } from "lucide-react";
+import { ArrowLeft, User, Pencil } from "lucide-react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useAppSelector } from "@/core/hooks";
 import {
   useGetAgentDetailsByUserIdMutation,
 } from "../api/roleManagerApi";
@@ -92,6 +93,8 @@ export default function RoleManagerDetails({
   const [profileData, setProfileData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const profileStoreData = useAppSelector((state) => state.roleManager.profileData);
+  const currentUser = useAppSelector((state) => state.auth.user);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -132,23 +135,43 @@ export default function RoleManagerDetails({
   const profile = profileData ? {
     firstName: profileData.first_name || "",
     lastName: profileData.last_name || "",
-    age: profileData.age || "N/A",
+    age: profileData.dob || profileData.date_of_birth || profileData.age || "23/01/1992",
     phone: profileData.phone_number || profileData.phone || "",
     email: profileData.email_address || profileData.email || "",
     role: roleType === "AG" ? "Agent" : roleType === "FO" ? "Field Officer" : roleType === "RO" ? "Regional Officer" : "Intelligence Officer",
     profileImage: profileData.profile_url,
     notificationsEnabled: true,
     smsEnabled: true,
-  } : (data ?? {
-    firstName: "Sravan",
-    lastName: "Kumar",
-    age: "32",
-    phone: "+91 9342848293",
-    email: "sravan@gmail.com",
+  } : (profileStoreData ? {
+    firstName: profileStoreData.first_name || "",
+    lastName: profileStoreData.last_name || "",
+    age: profileStoreData.dob || profileStoreData.date_of_birth || profileStoreData.age || "23/01/1992",
+    phone: profileStoreData.phone_number || profileStoreData.phone || "",
+    email: profileStoreData.email_address || profileStoreData.email || "",
+    role: profileStoreData.role || "Role Manager",
+    profileImage: profileStoreData.profile_url,
+    notificationsEnabled: true,
+    smsEnabled: true,
+  } : (currentUser ? {
+    firstName: currentUser.first_name || "Keshav",
+    lastName: currentUser.last_name || "Surigi",
+    age: (currentUser as any).dob || (currentUser as any).date_of_birth || (currentUser as any).age || "23/01/1992",
+    phone: (currentUser as any).phone_number || (currentUser as any).phone || "+9193428-48293",
+    email: currentUser.login_id || (currentUser as any).email || "keshavs@gmail.com",
+    role: currentUser.role || "Role Manager",
+    profileImage: undefined,
+    notificationsEnabled: true,
+    smsEnabled: true,
+  } : {
+    firstName: "Keshav",
+    lastName: "Surigi",
+    age: "23/01/1992",
+    phone: "+9193428-48293",
+    email: "keshavs@gmail.com",
     role: "Role Manager",
     notificationsEnabled: true,
     smsEnabled: true,
-  });
+  }));
 
   const handleBack = () => {
     if (onBack) {
@@ -346,11 +369,26 @@ export default function RoleManagerDetails({
               gap-y-[clamp(1rem,1.8vw,1.75rem)]
             "
           >
-            <Field label="First Name" value={profile.firstName} />
-            <Field label="Last Name" value={profile.lastName} />
-            <Field label="Age" value={profile.age} />
-            <Field label="Phone Number" value={profile.phone} />
-            <Field label="Email" value={profile.email} />
+            <Input variant="form" label="First name" value={profile.firstName} readOnly />
+            <Input variant="form" label="Last name" value={profile.lastName} readOnly />
+            <Input variant="form" label="Date Of Birth" value={profile.age} readOnly />
+            <Input variant="form" label="Phone number" value={profile.phone} readOnly />
+            <Input variant="form" label="Email" value={profile.email} readOnly />
+            <Input
+              variant="form"
+              label="Password"
+              value="XXXXXXXXXX"
+              readOnly
+              rightElement={
+                <button
+                  type="button"
+                  onClick={() => navigate("/role-manager/update-password")}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none cursor-pointer flex items-center justify-center"
+                >
+                  <Pencil size={15} />
+                </button>
+              }
+            />
           </div>
         </div>
 
