@@ -95,6 +95,20 @@ const MOCK_API_USERS = [
       refreshToken: "mock-refresh-token-ro",
     },
   },
+  {
+    login_id: "vo@glc.com",
+    password: "vo@123",
+    response: {
+      id: 107,
+      login_id: "vo@glc.com",
+      first_name: "Verification",
+      last_name: "Officer",
+      role_id: UserRole.VO1,
+      is_first_login: 0,
+      token: "mock-token-vo1",
+      refreshToken: "mock-refresh-token-vo1",
+    },
+  },
 ];
 
 export default function Login() {
@@ -137,6 +151,8 @@ export default function Login() {
         navigate("/regional-officer/dashboard");
       } else if (roleCode === "FO") {
         navigate("/field-officer/dashboard");
+      } else if (roleCode === "VO1") {
+        navigate("/verification-officer/dashboard");
       } else {
         navigate("/role-manager/dashboard");
       }
@@ -168,6 +184,8 @@ export default function Login() {
         navigate("/regional-officer/dashboard");
       } else if (roleCode === "FO") {
         navigate("/field-officer/dashboard");
+      } else if (roleCode === "VO1") {
+        navigate("/verification-officer/dashboard");
       } else {
         navigate("/role-manager/dashboard");
       }

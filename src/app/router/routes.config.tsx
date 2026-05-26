@@ -111,6 +111,29 @@ export const FieldOfficerDashboard = lazy(
   () => import("../../features/field-officer/pages/FieldOfficerDashboard"),
 );
 
+// Verification Officer
+export const VerificationOfficerDashboard = lazy(
+  () => import("../../features/verification-officer/pages/VerificationOfficerDashboard"),
+);
+export const VerificationOfficerAssignedFarmlands = lazy(
+  () => import("../../features/verification-officer/pages/AssignedFarmlands"),
+);
+export const VerificationOfficerInProgressFarmlands = lazy(
+  () => import("../../features/verification-officer/pages/InProgressFarmlands"),
+);
+export const VerificationOfficerCompletedFarmlands = lazy(
+  () => import("../../features/verification-officer/pages/CompletedFarmlands"),
+);
+export const VerificationOfficerCompletedFarmlandDetails = lazy(
+  () => import("../../features/verification-officer/pages/CompletedFarmlandDetails"),
+);
+export const VerificationOfficerAssignedFarmlandsOwnerDetails = lazy(
+  () => import("../../features/verification-officer/pages/AssignedFarmlandsOwnerDetails"),
+);
+export const VerificationOfficerLayout = lazy(
+  () => import("../../components/common/layouts/verificationofficer"),
+);
+
 // Dev Imports
 export const Assignedfarmland = lazy(
   () => import("../../features/io/pages/Assignedfarmland"),

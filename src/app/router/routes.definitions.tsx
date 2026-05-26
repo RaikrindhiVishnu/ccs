@@ -42,6 +42,13 @@ import {
   LandBoundaries,
   RegionalOfficerLayout,
   FieldOfficerDashboard,
+  VerificationOfficerDashboard,
+  VerificationOfficerAssignedFarmlands,
+  VerificationOfficerInProgressFarmlands,
+  VerificationOfficerCompletedFarmlands,
+  VerificationOfficerCompletedFarmlandDetails,
+  VerificationOfficerAssignedFarmlandsOwnerDetails,
+  VerificationOfficerLayout,
 
   // Dev imports
   Assignedfarmland,
@@ -110,6 +117,40 @@ export const authRoutes: RouteObject[] = [
       { path: '/regional-officer/drafts',             element: <Drafts /> },
       { path: '/regional-officer/farmlands-list',     element: <FarmlandsList /> },
     ],
+  },
+  {
+    path: "verification-officer",
+    element: <VerificationOfficerLayout />,
+    children: [
+      {
+        index: true,
+        element: <VerificationOfficerDashboard />,
+      },
+      {
+        path: "dashboard",
+        element: <VerificationOfficerDashboard />,
+      },
+      {
+        path: "assigned-farmlands",
+        element: <VerificationOfficerAssignedFarmlands />,
+      },
+      {
+        path: "in-progress-farmlands",
+        element: <VerificationOfficerInProgressFarmlands />,
+      },
+      {
+        path: "completed-farmland",
+        element: <VerificationOfficerCompletedFarmlands />,
+      },
+    ],
+  },
+  {
+    path: '/verification-officer/completed-farmland/:id',
+    element: <VerificationOfficerCompletedFarmlandDetails />,
+  },
+  {
+    path: '/verification-officer/assigned-farmlands-owner-details/:id',
+    element: <VerificationOfficerAssignedFarmlandsOwnerDetails />,
   },
   {
     path: '/regional-officer/requested-info-details/:id',
