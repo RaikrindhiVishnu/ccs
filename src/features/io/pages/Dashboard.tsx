@@ -8,90 +8,152 @@ const IODashboard = () => {
     <main
       className="
         relative
-
-        h-fit
         w-full
-
+        h-fit
         overflow-hidden
 
-        rounded-[1.25rem]
-        xl:rounded-[1.5rem]
-        2xl:rounded-[2rem]
+        rounded-[1rem]
+        sm:rounded-[1.2rem]
+        lg:rounded-[1.5rem]
+        xl:rounded-[2rem]
 
-        pt-[1rem]
-        lg:pt-[1.1rem]
+        pt-[0.9rem]
+        sm:pt-[1rem]
+        lg:pt-[1.2rem]
         xl:pt-[1.5rem]
         2xl:pt-[1.75rem]
 
-        px-[1rem]
-        lg:px-[1.1rem]
-        xl:px-[1.5rem]
-        2xl:px-[1.75rem]
+        px-[0.75rem]
+        sm:px-[1rem]
+        lg:px-[1.25rem]
+        xl:px-[1.8rem]
+        2xl:px-[2.3rem]
 
-        pb-[0.5rem]
-        lg:pb-[0.55rem]
-        xl:pb-[0.75rem]
-        2xl:pb-[0.875rem]
+        pb-[0.75rem]
+        sm:pb-[0.9rem]
+        lg:pb-[1rem]
+        xl:pb-[1.25rem]
       "
     >
       <div className="relative z-[1]">
-
         {/* HEADER */}
         <IODashboardHeader />
 
-        {/* WHITE DASHBOARD CARD */}
+        {/* MAIN DASHBOARD CARD */}
         <section
           className="
+            relative
+            overflow-hidden
+
             mt-[1rem]
-            lg:mt-[1.1rem]
-            xl:mt-[1.3rem]
-            2xl:mt-[1.5rem]
+            sm:mt-[1.1rem]
+            lg:mt-[1.25rem]
+            xl:mt-[1.5rem]
 
             rounded-[1.25rem]
-            xl:rounded-[1.5rem]
-            2xl:rounded-[2rem]
+            lg:rounded-[1.5rem]
+            xl:rounded-[2rem]
 
             bg-[var(--surface-card)]
 
-            p-[1rem]
-            lg:p-[1.1rem]
-            xl:p-[1.5rem]
-            2xl:p-[1.75rem]
+            p-[0.9rem]
+            sm:p-[1rem]
+            lg:p-[1.25rem]
+            xl:p-[1.4rem]
+            2xl:p-[1.5rem]
           "
         >
-          {/* STATS */}
-          <FarmlandStatsCards />
-
-          {/* SECOND ROW */}
+          {/* BACKGROUND BLURS */}
           <div
             className="
-              mt-[1rem]
-              lg:mt-[1.1rem]
-              xl:mt-[1.35rem]
-              2xl:mt-[1.5rem]
+              pointer-events-none
+              absolute
+              left-[-8%]
+              top-[12%]
 
-              grid
-              grid-cols-1
-              lg:grid-cols-[17rem_minmax(0,1fr)]
-              xl:grid-cols-[20rem_minmax(0,1fr)]
-              2xl:grid-cols-[21rem_minmax(0,1fr)]
+              w-[45rem]
+              h-[12rem]
 
-              gap-[1rem]
-              lg:gap-[1.1rem]
-              xl:gap-[1.35rem]
-              2xl:gap-[1.5rem]
-
-              items-stretch
+              rounded-full
+              bg-[#EBF5FB]
+              opacity-60
+              blur-[140px]
             "
-          >
-            {/* LEFT */}
-            <div className="h-full">
-              <Prioritydonutcards />
-            </div>
+          />
 
-            {/* RIGHT */}
-            <div className="h-full min-w-0">
-              <PerformanceMetricsCard />
+          <div
+            className="
+              pointer-events-none
+              absolute
+              right-[-10%]
+              top-[5%]
+
+              w-[45rem]
+              h-[12rem]
+
+              rounded-full
+              bg-[#F9FCE9]
+              opacity-60
+              blur-[140px]
+            "
+          />
+
+          {/* CONTENT */}
+          <div className="relative z-[1]">
+            {/* STATS CARDS */}
+            <FarmlandStatsCards />
+
+            {/* SECOND ROW */}
+            <div
+              className="
+                mt-[1rem]
+                sm:mt-[1.1rem]
+                lg:mt-[1.25rem]
+                xl:mt-[1.5rem]
+
+                grid
+                grid-cols-1
+
+                lg:grid-cols-[28%_1fr]
+                xl:grid-cols-[32%_1fr]
+                2xl:grid-cols-[437px_1fr]
+
+                gap-[0.9rem]
+                sm:gap-[1rem]
+                lg:gap-[1.1rem]
+                xl:gap-[1.25rem]
+                2xl:gap-[1.4rem]
+
+                items-stretch
+                w-full
+              "
+            >
+              {/* LEFT DONUT CARD */}
+              <div
+                className="
+                  min-h-[24rem]
+                  lg:min-h-[28rem]
+                  xl:min-h-[30.5rem]
+                  h-full
+                "
+              >
+                <Prioritydonutcards />
+              </div>
+
+              {/* RIGHT METRICS CARD */}
+              <div
+                className="
+                  min-w-0
+
+                  min-h-[24rem]
+                  lg:min-h-[28rem]
+                  xl:min-h-[30.5rem]
+
+                  h-full
+                "
+              >
+                <PerformanceMetricsCard />
+              </div>
             </div>
           </div>
         </section>

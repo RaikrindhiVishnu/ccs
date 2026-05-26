@@ -1,399 +1,865 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import logo from "@/assets/glc-logo.svg";
-import { User, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
-import { setCredentials } from "../features/auth/store/authSlice";
-import { useLoginMutation } from "../features/auth/api/authApi";
-import { UserRole, ROLE_CODES } from "../features/auth/types";
-import { useNavigate } from "react-router-dom";
-import { loginSchema } from "../components/validations/loginschema";
-import { toast } from "sonner";
-const MOCK_API_USERS = [
-  {
-    login_id: "sadmin@glc.com",
-    password: "sadmin@123",
-    response: {
-      id: 101,
-      login_id: "sadmin@glc.com",
-      first_name: "Super",
-      last_name: "Admin",
-      role_id: UserRole.SADMIN,
-      is_first_login: 0,
-      token: "mock-token-sadmin",
-      refreshToken: "mock-refresh-token-sadmin",
-    },
-  },
-  {
-    login_id: "manager@glc.com",
-    password: "manager@123",
-    response: {
-      id: 102,
-      login_id: "manager@glc.com",
-      first_name: "Role",
-      last_name: "Manager",
-      role_id: UserRole.ROLEMNGR,
-      is_first_login: 0,
-      token: "mock-token-rolemngr",
-      refreshToken: "mock-refresh-token-rolemngr",
-    },
-  },
-  {
-    login_id: "ccs@glc.com",
-    password: "ccs@123456",
-    response: {
-      id: 103,
-      login_id: "ccs@glc.com",
-      first_name: "CCS",
-      last_name: "Officer",
-      role_id: UserRole.CCS,
-      is_first_login: 0,
-      token: "mock-token-ccs",
-      refreshToken: "mock-refresh-token-ccs",
-    },
-  },
-  {
-    login_id: "field.officer@glc.com",
-    password: "field.officer@123",
-    response: {
-      id: 104,
-      login_id: "field.officer@glc.com",
-      first_name: "Field",
-      last_name: "Officer",
-      role_id: UserRole.FO,
-      is_first_login: 0,
-      token: "mock-token-fo",
-      refreshToken: "mock-refresh-token-fo",
-    },
-  },
-  {
-    login_id: "io@glc.com",
-    password: "io@123456",
-    response: {
-      id: 105,
-      login_id: "io@glc.com",
-      first_name: "Intelligence",
-      last_name: "Officer",
-      role_id: UserRole.IO,
-      is_first_login: 0,
-      token: "mock-token-io",
-      refreshToken: "mock-refresh-token-io",
-    },
-  },
-  {
-    login_id: "regional@glc.com",
-    password: "regional@123",
-    response: {
-      id: 106,
-      login_id: "regional@glc.com",
-      first_name: "Edward",
-      last_name: "Janowski",
-      role_id: UserRole.RO,
-      is_first_login: 0,
-      token: "mock-token-ro",
-      refreshToken: "mock-refresh-token-ro",
-    },
-  },
-];
+import { Eye, EyeOff, Lock, User, ShieldCheck } from "lucide-react";
+import MainLoginBg from "@/assets/main login.svg";
+import GlcLogo from "@/assets/glc-logo.svg";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch } from "@/app/store/store";
+import {
+  updatePassword,
+  selectUpdatePasswordLoading,
+  selectUpdatePasswordError,
+} from "../features/auth/store/authSlice";
+// ─── Design tokens (all derived from Figma 1440px baseline) ──────────────────
+//
+// Figma canvas: 1440 × 1024px
+// Card: 550px wide, left: 767px, height: 706px (login) / 508px (update) / 706px (change)
+// Card padding: 48px sides, 47px top, ~47px bottom
+// Logo: 151 × 73.26px, top: 47px, left: 48px
+// Heading block: top: 145px → 145-47=98px below logo area
+// Form block: top: 279px
+// Input height: 56px, radius: 32px, bg: #F3F3F5
+// Button height: 52px, radius: 48px, bg: #2780C4
+// Icon left inset: 16px, right inset: 16px
+// Input left padding (with icon): 48px, right padding (with icon): 48px
+// Footer: top: 614px from card top (login card)
+//
+// Responsive strategy:
+//   All sizes scale linearly from 1024px → 1900px viewport width
+//   clamp(min, preferred_vw, max) — preferred derived from Figma: value/1440*100vw
+//   For heights we use vh-based scaling from 768px → 1080px viewport height
+//
+// Quick reference clamp helpers (px at 1024 → px at 1440 → px at 1900):
+//   font 12 → clamp(9px, 0.833vw, 16px)
+//   font 14 → clamp(10px, 0.972vw, 18px)
+//   font 15 → clamp(11px, 1.042vw, 19px)
+//   font 16 → clamp(11px, 1.111vw, 21px)
+//   font 24 → clamp(17px, 1.667vw, 32px)
+//   font 48 → clamp(32px, 3.333vw, 62px)
+//   spacing 8  → clamp(6px, 0.556vw, 11px)
+//   spacing 12 → clamp(8px, 0.833vw, 16px)
+//   spacing 14 → clamp(10px, 0.972vw, 18px)
+//   spacing 16 → clamp(11px, 1.111vw, 21px)
+//   spacing 24 → clamp(17px, 1.667vw, 30px)
+//   spacing 48 → clamp(34px, 3.333vw, 62px)
+//   card-w 550 → clamp(390px, 38.194vw, 720px)
+//   card-right  → clamp(24px, 4.375vw, 83px)   (1440-767-550=123 → right edge 123px)
+//   input-h 56 → clamp(40px, 3.889vw, 73px)
+//   button-h 52 → clamp(37px, 3.611vw, 68px)
+//   logo-w 151  → clamp(107px, 10.486vw, 199px)
+//   logo-h 73   → clamp(52px, 5.069vw, 96px)
+// ─────────────────────────────────────────────────────────────────────────────
 
-export default function Login() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [loginId, setLoginId] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [errors, setErrors] = useState<{
-    login_id?: string;
-    password?: string;
-  }>({});
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [login, { isLoading }] = useLoginMutation();
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setErrors({});
-    const result = loginSchema.safeParse({
-      login_id: loginId,
-      password,
-    });
-
-    if (!result.success) {
-      const fieldErrors = result.error.flatten().fieldErrors;
-
-      setErrors({
-        login_id: fieldErrors.login_id?.[0],
-        password: fieldErrors.password?.[0],
-      });
-
-      // toast.error("Please fill all required fields");
-
-      return;
-    }
-
-    const mockUser = MOCK_API_USERS.find(
-      (u) => u.login_id === loginId && u.password === password,
-    );
-
-    if (mockUser) {
-      const { token, refreshToken, ...userData } = mockUser.response;
-      const roleCode = ROLE_CODES[userData.role_id];
-
-      dispatch(
-        setCredentials({
-          user: { ...userData, role: roleCode },
-          accessToken: token,
-          refreshToken,
-        }),
-      );
-
-      // Navigate based on role
-      if (roleCode === "CCS") {
-        navigate("/ccs/dashboard");
-      } else if (roleCode === "RO") {
-        navigate("/regional-officer/dashboard");
-      } else if (roleCode === "FO") {
-        navigate("/field-officer/dashboard");
-      } else {
-        navigate("/role-manager/dashboard");
-      }
-      return;
-    }
-
-    try {
-      const response = await login({
-        login_id: loginId,
-        password,
-      }).unwrap();
-
-      const { token, refreshToken, ...userData } = response;
-      const roleCode = ROLE_CODES[userData.role_id];
-
-      dispatch(
-        setCredentials({
-          user: { ...userData, role: roleCode },
-          accessToken: token,
-          refreshToken,
-        }),
-      );
-
-      // Navigate based on role
-      if (roleCode === "CCS") {
-        navigate("/");
-      } else if (roleCode === "RO") {
-        navigate("/regional-officer/dashboard");
-      } else if (roleCode === "FO") {
-        navigate("/field-officer/dashboard");
-      } else {
-        navigate("/role-manager/dashboard");
-      }
-    } catch (err: any) {
-      console.error("Login failed:", err);
-
-      toast.error(
-        err?.data?.message || "Login failed. Please check your credentials.",
-      );
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-[var(--surface-page)] font-[var(--font-sans)]">
-      <div className="flex flex-row items-center w-[clamp(800px,81.1826vw,1560px)] gap-[clamp(48px,6.7361vw,130px)]">
-        {/* LOGO */}
-        <div className="shrink-0 flex items-center justify-center w-[clamp(300px,36.3215vw,697px)]">
-          <img
-            src={logo}
-            alt="Green Land Capital"
-            className="w-full h-auto aspect-[523.03/253.75] object-contain block"
-          />
-        </div>
-        <div
-          className="shrink-0 flex flex-col w-[clamp(380px,38.1250vw,732px)] rounded-[clamp(20px,2.2222vw,32px)] bg-[var(--surface-card)] shadow-[0px_1px_3.5px_rgba(0,0,0,0.06)] p-[clamp(32px,3.6111vw,60px)_clamp(28px,3.3333vw,56px)_clamp(24px,2.7778vw,40px)]"
-          style={{
-            aspectRatio:
-              "clamp(0.784,calc(0.784 + (0.907 - 0.784) * ((100vw - 1024px) / (1280px - 1024px))),0.907)",
-          }}
-        >
-          {/* HEADING */}
-          <div className="flex flex-col shrink-0 gap-[clamp(8px,0.9722vw,16px)]">
-            <h1 className="m-0 font-bold font-[var(--font-heading)] text-[clamp(24px,2.5000vw,48px)] leading-[1.111] tracking-[-0.9px] text-[var(--text-strong)]">
-              Role Manager Login
-            </h1>
-
-            <p className="m-0 font-normal font-[var(--font-sans)] text-[clamp(13px,1.1111vw,21px)] leading-[1.625] text-[var(--text-muted)]">
-              Secure access for authorised role managers.
-              <br />
-              Please authenticate to continue.
-            </p>
-          </div>
-
-          {/* ERROR */}
-          {error && (
-            <div className="mt-[clamp(10px,0.6944vw,12px)] rounded-lg border border-red-200 bg-red-50 px-[clamp(12px,0.8333vw,14px)] py-[clamp(8px,0.5556vw,10px)] font-[var(--font-sans)] text-[clamp(11px,0.8333vw,14px)] text-red-600">
-              {error}
-            </div>
-          )}
-
-          {/* FORM */}
-          <form
-            className="flex flex-col flex-1 min-h-0 mt-[clamp(28px,2.7778vw,48px)]"
-            onSubmit={handleLogin}
-          >
-            <LoginField
-              id="login-id"
-              label="Login ID"
-              type="text"
-              placeholder="Enter your assigned ID"
-              autoComplete="username"
-              icon={
-                <User
-                  strokeWidth={1.8}
-                  className="opacity-40 w-[clamp(12px,0.9722vw,16px)] h-[clamp(12px,0.9722vw,16px)]"
-                />
-              }
-              value={loginId}
-              onChange={(e) => setLoginId(e.target.value)}
-            />
-            {errors.login_id && (
-              <p className="mt-1 text-sm text-red-500">{errors.login_id}</p>
-            )}
-
-            <div className="mt-[clamp(18px,1.6667vw,28px)]">
-              <LoginField
-                id="login-password"
-                label="Password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter Password"
-                autoComplete="current-password"
-                icon={
-                  <Lock
-                    strokeWidth={1.8}
-                    className="opacity-40 w-[clamp(12px,0.9722vw,16px)] h-[clamp(12px,0.9722vw,16px)]"
-                  />
-                }
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                labelRight={
-                  <button
-                    type="button"
-                    className="border-none bg-transparent cursor-pointer p-0 font-medium leading-[1.43] transition-opacity duration-150 hover:opacity-50 font-[var(--font-sans)] text-[clamp(12px,0.9722vw,18px)] text-[var(--text-muted)]"
-                  >
-                    Forgot Password?
-                  </button>
-                }
-                rightElement={
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((v) => !v)}
-                    aria-label={
-                      showPassword ? "Hide password" : "Show password"
-                    }
-                    className="border-none bg-transparent cursor-pointer p-0 flex items-center transition-opacity duration-150 hover:opacity-70 opacity-40"
-                  >
-                    {showPassword ? (
-                      <Eye
-                        strokeWidth={1.8}
-                        className="w-[clamp(15px,1.2500vw,20px)] h-[clamp(15px,1.2500vw,20px)]"
-                      />
-                    ) : (
-                      <EyeOff
-                        strokeWidth={1.8}
-                        className="w-[clamp(15px,1.2500vw,20px)] h-[clamp(15px,1.2500vw,20px)]"
-                      />
-                    )}
-                  </button>
-                }
-              />
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-500">{errors.password}</p>
-              )}
-            </div>
-
-            {/* BUTTON */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full shrink-0 flex items-center justify-center border-none cursor-pointer font-semibold uppercase transition-all duration-200 active:scale-[0.985] disabled:opacity-50 hover:brightness-90 hover:shadow-[0_4px_20px_rgba(39,128,196,0.28)] mt-[clamp(32px,3.3333vw,56px)] h-[clamp(50px,4.1667vw,80px)] rounded-[clamp(32px,3.3333vw,56px)] bg-[var(--brand-500)] text-white font-[var(--font-sans)] text-[clamp(13px,1.2500vw,24px)] tracking-[0.7px]"
-            >
-              {isLoading ? "Signing in…" : "Login"}
-            </button>
-
-            {/* FOOTER */}
-            <div className="flex items-center shrink-0 mt-auto gap-[clamp(10px,1.1111vw,16px)]">
-              <ShieldCheck
-                strokeWidth={1.8}
-                className="shrink-0 opacity-40 text-[var(--text-strong)] w-[clamp(13px,1.1111vw,18px)] h-[clamp(13px,1.1111vw,18px)]"
-              />
-
-              <span className="font-[var(--font-sans)] font-normal text-[clamp(11px,0.8333vw,16px)] leading-[1.333] text-[var(--text-muted-strong)]">
-                Secured by TechGy Innovations. End-to-end encrypted connection.
-              </span>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-interface LoginFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string;
-  icon?: React.ReactNode;
-  rightElement?: React.ReactNode;
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface InputFieldProps {
+  label?: string;
+  placeholder?: string;
+  type?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  icon?: React.ElementType;
+  rightEl?: React.ReactNode;
   labelRight?: React.ReactNode;
+  error?: string;
+  id: string;
 }
 
-function LoginField({
+// ─── InputField ───────────────────────────────────────────────────────────────
+// Figma: input height 56px, radius 32px, bg #F3F3F5
+// left icon inset 16px, icon size ~13.33px
+// left padding with icon: 48px, without: 16px
+// right padding with rightEl: 48px, without: 16px
+// label: 14px medium #3D4949, height 20px
+// placeholder: 16px regular rgba(109,122,122,0.6)
+// input text: 16px regular #1A1C1D
+function InputField({
   label,
-  icon,
-  rightElement,
+  placeholder,
+  type = "text",
+  value,
+  onChange,
+  icon: Icon,
+  rightEl,
   labelRight,
+  error,
   id,
-  ...inputProps
-}: LoginFieldProps) {
+}: InputFieldProps) {
   return (
-    <div className="flex flex-col w-full gap-[clamp(6px,0.5556vw,8px)]">
-      {/* LABEL */}
-      <div className="flex items-center justify-between min-h-[clamp(17px,1.3889vw,22px)]">
-        <label
-          htmlFor={id}
-          className="font-medium font-[var(--font-sans)] text-[clamp(12px,0.9722vw,18px)] leading-[1.43] text-[var(--text-muted)]"
+    <div className="flex flex-col w-full" style={{ gap: "clamp(6px,0.556vw,11px)" }}>
+      {(label || labelRight) && (
+        <div
+          className="flex items-center justify-between"
+          style={{ height: "clamp(14px,1.389vw,20px)" }}
         >
-          {label}
-        </label>
+          {label && (
+            <label
+              htmlFor={id}
+              className="font-sans font-medium text-[#3D4949] leading-none"
+              style={{ fontSize: "clamp(10px,0.972vw,18px)" }}
+            >
+              {label}
+            </label>
+          )}
+          {labelRight && <div>{labelRight}</div>}
+        </div>
+      )}
 
-        {labelRight && <div>{labelRight}</div>}
-      </div>
-
-      {/* INPUT */}
-      <div className="relative flex items-center w-full shrink-0 h-[clamp(46px,3.8889vw,75px)] rounded-[clamp(24px,2.2222vw,40px)] bg-[var(--surface-page)]">
-        {icon && (
-          <span className="absolute top-1/2 -translate-y-1/2 pointer-events-none flex items-center left-[clamp(14px,1.1111vw,18px)]">
-            {icon}
+      {/* Input wrapper — Figma: 56px tall, radius 32px */}
+      <div
+        className="relative flex items-center w-full bg-[#F3F3F5]"
+        style={{
+          height: "clamp(40px,3.889vw,73px)",
+          borderRadius: "clamp(22px,2.222vw,42px)",
+        }}
+      >
+        {Icon && (
+          <span
+            className="absolute pointer-events-none flex items-center opacity-50"
+            style={{ left: "clamp(11px,1.111vw,21px)" }}
+          >
+            <Icon
+              strokeWidth={1.8}
+              className="text-[#6D7A7A]"
+              style={{
+                width: "clamp(9px,0.926vw,18px)",
+                height: "clamp(9px,0.926vw,18px)",
+              }}
+            />
           </span>
         )}
 
         <input
           id={id}
-          className={`w-full h-full border-none outline-none bg-transparent font-[var(--font-sans)] font-normal text-[clamp(13px,1.1111vw,18px)] text-[var(--text-primary)] placeholder:text-[var(--text-muted-strong)]
-            ${
-              icon
-                ? "pl-[clamp(34px,3.3333vw,52px)]"
-                : "pl-[clamp(16px,1.1111vw,22px)]"
-            }
-            ${
-              rightElement
-                ? "pr-[clamp(36px,3.3333vw,52px)]"
-                : "pr-[clamp(16px,1.1111vw,22px)]"
-            }`}
-          {...inputProps}
+          type={type}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="w-full h-full bg-transparent border-none outline-none font-sans font-normal text-[#1A1C1D] placeholder:text-[rgba(109,122,122,0.6)]"
+          style={{
+            fontSize: "clamp(11px,1.111vw,21px)",
+            paddingLeft: Icon
+              ? "clamp(30px,3.333vw,62px)"
+              : "clamp(11px,1.111vw,21px)",
+            paddingRight: rightEl
+              ? "clamp(30px,3.333vw,62px)"
+              : "clamp(11px,1.111vw,21px)",
+            borderRadius: "clamp(22px,2.222vw,42px)",
+          }}
         />
 
-        {rightElement && (
-          <span className="absolute top-1/2 -translate-y-1/2 flex items-center right-[clamp(14px,1.1111vw,18px)]">
-            {rightElement}
+        {rightEl && (
+          <span
+            className="absolute flex items-center"
+            style={{ right: "clamp(11px,1.111vw,21px)" }}
+          >
+            {rightEl}
           </span>
         )}
       </div>
+
+      {error && (
+        <p
+          className="font-sans text-red-600 mt-0.5"
+          style={{ fontSize: "clamp(9px,0.764vw,14px)" }}
+        >
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ─── PrimaryButton ────────────────────────────────────────────────────────────
+// Figma: height 52px, radius 48px, bg #2780C4, font 16px bold white
+function PrimaryButton({
+  children,
+  onClick,
+  disabled,
+  type = "button",
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  type?: "button" | "submit";
+}) {
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className="w-full bg-[#2780C4] border-none text-white font-sans font-bold tracking-[0.04em] cursor-pointer transition-all duration-150 shadow-[0_4px_20px_rgba(39,128,196,0.18)] disabled:opacity-55 disabled:cursor-not-allowed hover:brightness-90 active:scale-[0.99]"
+      style={{
+        height: "clamp(37px,3.611vw,68px)",
+        borderRadius: "clamp(26px,3.333vw,62px)",
+        fontSize: "clamp(11px,1.111vw,21px)",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+// ─── CardLogo ─────────────────────────────────────────────────────────────────
+// Figma: 151 × 73.26px, left: 48px, top: 47px
+function CardLogo() {
+  return (
+    <div
+      className="flex flex-col"
+      style={{ marginBottom: "clamp(14px,1.389vw,20px)" }}
+    >
+      <img
+        src={GlcLogo}
+        alt="Green Land Capital"
+        className="object-contain h-auto"
+        style={{
+          width: "clamp(107px,10.486vw,199px)",
+        }}
+      />
+    </div>
+  );
+}
+
+// ─── SecureFooter ─────────────────────────────────────────────────────────────
+// Figma: icon 16×20px green, text 12px rgba(61,73,73,0.8), gap 16px
+function SecureFooter() {
+  return (
+    <div
+      className="flex items-center mt-auto"
+      style={{ gap: "clamp(11px,1.111vw,21px)", paddingTop: "clamp(11px,1.111vw,21px)" }}
+    >
+      <ShieldCheck
+        strokeWidth={1.8}
+        className="shrink-0 text-[#006D3A]"
+        style={{
+          width: "clamp(11px,1.111vw,21px)",
+          height: "clamp(14px,1.389vw,26px)",
+        }}
+      />
+      <span
+        className="font-sans font-normal text-[rgba(61,73,73,0.8)] leading-4"
+        style={{ fontSize: "clamp(9px,0.833vw,16px)" }}
+      >
+        Secured by TechGy Innovations. End-to-end encrypted connection.
+      </span>
+    </div>
+  );
+}
+
+// ─── LoginCard ────────────────────────────────────────────────────────────────
+// Figma 1440px: width 550px, right edge = 1440 - 767 - 550 = 123px from right
+// Padding: 48px sides, top ~47px, bottom ~47px
+// Border-radius: 32px
+// Box-shadow: 0px 1px 3.5px rgba(0,0,0,0.06), 0px 8px 32px rgba(0,0,0,0.07)
+function LoginCard({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`absolute top-1/2 -translate-y-1/2 bg-white flex flex-col box-border ${className}`}
+      style={{
+        width: "clamp(390px,38.194vw,720px)",
+        right: "clamp(24px,8.542vw,162px)",
+        borderRadius: "clamp(22px,2.222vw,42px)",
+        padding: "clamp(34px,3.333vw,62px)",
+        paddingBottom: "clamp(28px,2.778vw,52px)",
+        boxShadow:
+          "0px 1px 3.5px rgba(0,0,0,0.06), 0px 8px 32px rgba(0,0,0,0.07)",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─── SCREEN 1 · Login ─────────────────────────────────────────────────────────
+function LoginScreen({
+  onSuccess,
+}: {
+  onSuccess: (d: { is_first_login: number }) => void;
+}) {
+  const [loginId, setLoginId] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+
+  const validate = () => {
+    const e: Record<string, string> = {};
+    if (!loginId.trim()) e.loginId = "Login ID is required";
+    else if (!/\S+@\S+\.\S+/.test(loginId)) e.loginId = "Enter a valid email";
+    if (!password) e.password = "Password is required";
+    else if (password.length < 6) e.password = "Password must be at least 6 characters";
+    return e;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+    setErrors({});
+    setLoading(true);
+    setTimeout(() => { setLoading(false); onSuccess({ is_first_login: 1 }); }, 900);
+  };
+
+  const EyeBtn = () => (
+    <button
+      type="button"
+      onClick={() => setShowPw((v) => !v)}
+      className="border-none bg-transparent cursor-pointer p-0 flex items-center opacity-45"
+      aria-label={showPw ? "Hide password" : "Show password"}
+    >
+      {showPw ? (
+        <Eye
+          strokeWidth={1.8}
+          className="text-[#6D7A7A]"
+          style={{
+            width: "clamp(12px,1.274vw,24px)",
+            height: "clamp(11px,1.146vw,22px)",
+          }}
+        />
+      ) : (
+        <EyeOff
+          strokeWidth={1.8}
+          className="text-[#6D7A7A]"
+          style={{
+            width: "clamp(12px,1.274vw,24px)",
+            height: "clamp(11px,1.146vw,22px)",
+          }}
+        />
+      )}
+    </button>
+  );
+
+  return (
+    <LoginCard>
+      <CardLogo />
+
+      {/* Heading block — Figma: top 145px from card top, logo ends ~120px, so ~25px gap */}
+      <div style={{ marginBottom: "clamp(14px,1.528vw,22px)" }}>
+        {/* Title: Manrope 700, 24px, tracking -0.9px, color #1A1C1D */}
+        <h1
+          className="font-heading font-bold text-[#1A1C1D] m-0"
+          style={{
+            fontFamily: "Manrope, sans-serif",
+            fontSize: "clamp(17px,1.667vw,32px)",
+            lineHeight: "clamp(24px,2.778vw,40px)",
+            letterSpacing: "-0.9px",
+            marginBottom: "clamp(6px,0.694vw,10px)",
+          }}
+        >
+          Role Manager Login
+        </h1>
+        {/* Subtitle: Plus Jakarta Sans 400, 16px, lh 26px, #3D4949 */}
+        <p
+          className="font-sans font-normal text-[#3D4949] m-0"
+          style={{
+            fontSize: "clamp(11px,1.111vw,21px)",
+            lineHeight: "clamp(17px,1.806vw,27px)",
+          }}
+        >
+          Secure access for authorised role managers.
+          <br />
+          Please authenticate to continue.
+        </p>
+      </div>
+
+      {/* Form — Figma gap between inputs: 24px (login id gap + password margin) */}
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col flex-1"
+        style={{ gap: "clamp(14px,1.667vw,24px)" }}
+      >
+        <InputField
+          id="login-id"
+          label="Login ID"
+          placeholder="Enter your assigned ID"
+          type="text"
+          value={loginId}
+          onChange={(e) => setLoginId(e.target.value)}
+          icon={User}
+          error={errors.loginId}
+        />
+
+        <InputField
+          id="login-password"
+          label="Password"
+          placeholder="Enter Password"
+          type={showPw ? "text" : "password"}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          icon={Lock}
+          error={errors.password}
+          labelRight={
+            <button
+              type="button"
+              className="border-none bg-transparent cursor-pointer p-0 font-sans font-medium text-[#6D7A7A]"
+              style={{ fontSize: "clamp(9px,0.764vw,14px)" }}
+            >
+              Forgot Password?
+            </button>
+          }
+          rightEl={<EyeBtn />}
+        />
+
+        {/* Submit button — Figma: 48px top margin from last input */}
+        <div style={{ marginTop: "clamp(20px,3.333vw,48px)" }}>
+          <PrimaryButton type="submit" disabled={loading}>
+            {loading ? "Signing in…" : "LOGIN"}
+          </PrimaryButton>
+        </div>
+
+        <SecureFooter />
+      </form>
+    </LoginCard>
+  );
+}
+
+// ─── SCREEN 2 · Update Default Password ──────────────────────────────────────
+// Figma: card 550×508px, heading 24px bold #111827, body 16px #6B7280
+// Actions gap 16px, "Set New Password" button 52px, "Continue" text 15px bold #424751
+function UpdateDefaultPasswordScreen({
+  onSetNew,
+  onContinue,
+}: {
+  onSetNew: () => void;
+  onContinue: () => void;
+}) {
+  return (
+    <LoginCard>
+      <CardLogo />
+
+      <div style={{ marginBottom: "clamp(18px,1.944vw,28px)" }}>
+        <h2
+          className="font-sans font-bold text-[#111827] m-0"
+          style={{
+            fontSize: "clamp(17px,1.667vw,32px)",
+            lineHeight: "clamp(24px,2.917vw,42px)",
+            marginBottom: "clamp(6px,0.556vw,10px)",
+          }}
+        >
+          Update Default Password
+        </h2>
+        <p
+          className="font-sans font-normal text-[#6B7280] m-0"
+          style={{
+            fontSize: "clamp(11px,1.111vw,21px)",
+            lineHeight: "clamp(15px,1.528vw,22px)",
+          }}
+        >
+          You are currently logging in with a system-generated password sent to
+          your email. For your security, we strongly recommend setting a new
+          password now.
+        </p>
+      </div>
+
+      <div
+        className="flex flex-col flex-1 items-center"
+        style={{ gap: "clamp(11px,1.111vw,21px)" }}
+      >
+        <PrimaryButton onClick={onSetNew}>Set New Password</PrimaryButton>
+
+        <button
+          type="button"
+          onClick={onContinue}
+          className="w-full bg-transparent border-none cursor-pointer font-sans font-bold text-[#424751] text-center transition-opacity hover:opacity-65"
+          style={{
+            fontSize: "clamp(11px,1.042vw,19px)",
+            padding: "clamp(4px,0.556vw,8px) 0",
+          }}
+        >
+          Continue to Dashboard
+        </button>
+
+        <SecureFooter />
+      </div>
+    </LoginCard>
+  );
+}
+
+// ─── SCREEN 3 · Change Password ───────────────────────────────────────────────
+// Figma: card 550×706px, form gap 24px between fields
+// label: 16px regular #424751 (different from login screen's 14px medium)
+// input bg: #F4F4F5 (slightly different from login's #F3F3F5)
+// icon: #9CA3AF (grey, not #6D7A7A)
+function ChangePasswordScreen({ onDone }: { onDone: () => void }) {
+  const dispatch = useDispatch<AppDispatch>();
+
+const updateLoading = useSelector(selectUpdatePasswordLoading);
+
+const updateError = useSelector(selectUpdatePasswordError);
+  const [newPw, setNewPw] = useState("");
+  const [confirmPw, setConfirmPw] = useState("");
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [success, setSuccess] = useState(false);
+
+  const validate = () => {
+    const e: Record<string, string> = {};
+    if (!newPw) e.newPw = "New password is required";
+    else if (newPw.length < 8) e.newPw = "Password must be at least 8 characters";
+    if (!confirmPw) e.confirmPw = "Please confirm your password";
+    else if (newPw !== confirmPw) e.confirmPw = "Passwords do not match";
+    return e;
+  };
+
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const errs = validate();
+
+  if (Object.keys(errs).length) {
+    setErrors(errs);
+    return;
+  }
+
+  setErrors({});
+
+  const resultAction = await dispatch(updatePassword(newPw));
+
+  if (updatePassword.fulfilled.match(resultAction)) {
+    setSuccess(true);
+
+    setTimeout(() => {
+      onDone();
+    }, 1400);
+  }
+};
+
+  const EyeToggle = ({
+    show,
+    toggle,
+  }: {
+    show: boolean;
+    toggle: () => void;
+  }) => (
+    <button
+      type="button"
+      onClick={toggle}
+      className="border-none bg-transparent cursor-pointer p-0 flex items-center opacity-45"
+    >
+      {show ? (
+        <Eye
+          strokeWidth={1.8}
+          className="text-[#9CA3AF]"
+          style={{
+            width: "clamp(14px,1.528vw,28px)",
+            height: "clamp(14px,1.375vw,26px)",
+          }}
+        />
+      ) : (
+        <EyeOff
+          strokeWidth={1.8}
+          className="text-[#9CA3AF]"
+          style={{
+            width: "clamp(14px,1.528vw,28px)",
+            height: "clamp(13px,1.146vw,22px)",
+          }}
+        />
+      )}
+    </button>
+  );
+
+  // Change password screen uses slightly different input bg (#F4F4F5)
+  // and label color (#424751 instead of #3D4949)
+  // We override via inline style on the input wrapper approach
+  // by using a local ChangeInputField wrapper
+  const ChangeInputField = ({
+    label: fieldLabel,
+    ...rest
+  }: InputFieldProps) => (
+    <div
+      className="flex flex-col w-full"
+      style={{ gap: "clamp(8px,0.833vw,12px)" }}
+    >
+      {fieldLabel && (
+        <label
+          htmlFor={rest.id}
+          className="font-sans font-normal text-[#424751]"
+          style={{ fontSize: "clamp(11px,1.111vw,21px)", lineHeight: "clamp(15px,1.667vw,24px)" }}
+        >
+          {fieldLabel}
+        </label>
+      )}
+      <div
+        className="relative flex items-center w-full"
+        style={{
+          height: "clamp(40px,3.958vw,75px)",
+          borderRadius: "clamp(22px,2.222vw,42px)",
+          background: "#F4F4F5",
+        }}
+      >
+        {rest.icon && (
+          <span
+            className="absolute pointer-events-none flex items-center"
+            style={{ left: "clamp(14px,1.389vw,26px)" }}
+          >
+            <rest.icon
+              strokeWidth={1.8}
+              className="text-[#9CA3AF]"
+              style={{
+                width: "clamp(11px,1.111vw,21px)",
+                height: "clamp(14px,1.458vw,27px)",
+              }}
+            />
+          </span>
+        )}
+        <input
+          id={rest.id}
+          type={rest.type || "text"}
+          value={rest.value}
+          onChange={rest.onChange}
+          placeholder={rest.placeholder}
+          className="w-full h-full bg-transparent border-none outline-none font-sans font-normal text-[#1A1C1D] placeholder:text-[#9CA3AF]"
+          style={{
+            fontSize: "clamp(11px,1.111vw,21px)",
+            paddingLeft: rest.icon
+              ? "clamp(34px,3.889vw,73px)"
+              : "clamp(14px,1.389vw,26px)",
+            paddingRight: rest.rightEl
+              ? "clamp(34px,3.889vw,73px)"
+              : "clamp(14px,1.389vw,26px)",
+            borderRadius: "clamp(22px,2.222vw,42px)",
+          }}
+        />
+        {rest.rightEl && (
+          <span
+            className="absolute flex items-center"
+            style={{ right: "clamp(14px,1.389vw,26px)" }}
+          >
+            {rest.rightEl}
+          </span>
+        )}
+      </div>
+      {rest.error && (
+        <p
+          className="font-sans text-red-600 mt-0.5"
+          style={{ fontSize: "clamp(9px,0.764vw,14px)" }}
+        >
+          {rest.error}
+        </p>
+      )}
+    </div>
+  );
+
+  return (
+    <LoginCard>
+      <CardLogo />
+
+      <div style={{ marginBottom: "clamp(14px,1.389vw,20px)" }}>
+        <h2
+          className="font-sans font-bold text-[#111827] m-0"
+          style={{
+            fontSize: "clamp(17px,1.667vw,32px)",
+            lineHeight: "clamp(24px,2.917vw,42px)",
+            marginBottom: "clamp(6px,0.556vw,10px)",
+          }}
+        >
+          Change Password
+        </h2>
+        <p
+          className="font-sans font-normal text-[#6B7280] m-0"
+          style={{
+            fontSize: "clamp(11px,1.111vw,21px)",
+            lineHeight: "clamp(15px,1.528vw,22px)",
+          }}
+        >
+          Ensure your account is using a long, random password to stay secure.
+        </p>
+      </div>
+
+      {success ? (
+        <div className="flex flex-col items-center justify-center flex-1 gap-3">
+          <div
+            className="rounded-full bg-[#E8F5EE] flex items-center justify-center"
+            style={{
+              width: "clamp(40px,3.889vw,73px)",
+              height: "clamp(40px,3.889vw,73px)",
+            }}
+          >
+            <svg
+              style={{
+                width: "clamp(16px,1.667vw,31px)",
+                height: "clamp(16px,1.667vw,31px)",
+              }}
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M5 12l5 5L19 7"
+                stroke="#006D3A"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <p
+            className="font-sans font-semibold text-[#006D3A] text-center m-0"
+            style={{ fontSize: "clamp(11px,1.111vw,21px)" }}
+          >
+            Password updated successfully!
+          </p>
+          <p
+            className="font-sans text-[#6B7280] m-0"
+            style={{ fontSize: "clamp(10px,0.972vw,18px)" }}
+          >
+            Redirecting to dashboard…
+          </p>
+        </div>
+      ) : (
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col flex-1"
+          style={{ gap: "clamp(17px,1.667vw,31px)" }}
+        >
+          <ChangeInputField
+            id="new-password"
+            label="New Password"
+            placeholder="Enter new password"
+            type={showNew ? "text" : "password"}
+            value={newPw}
+            onChange={(e) => setNewPw(e.target.value)}
+            icon={Lock}
+            error={errors.newPw}
+            rightEl={
+              <EyeToggle
+                show={showNew}
+                toggle={() => setShowNew((v) => !v)}
+              />
+            }
+          />
+
+          <ChangeInputField
+            id="confirm-password"
+            label="Confirm New Password"
+            placeholder="Re-enter new password"
+            type={showConfirm ? "text" : "password"}
+            value={confirmPw}
+            onChange={(e) => setConfirmPw(e.target.value)}
+            icon={Lock}
+            error={errors.confirmPw}
+            rightEl={
+              <EyeToggle
+                show={showConfirm}
+                toggle={() => setShowConfirm((v) => !v)}
+              />
+            }
+          />
+
+          {/* Button: 16px gap from last input per Figma actions gap */}
+          <div style={{ marginTop: "clamp(4px,1.111vw,16px)" }}>
+          <PrimaryButton type="submit" disabled={updateLoading}>
+  {updateLoading ? "Updating..." : "Update Password"}
+</PrimaryButton>
+          </div>
+
+          <SecureFooter />
+        </form>
+      )}
+    </LoginCard>
+  );
+}
+
+// ─── Background ───────────────────────────────────────────────────────────────
+// Welcome text — Figma: left 110px, top 780px (on 1024px tall canvas)
+// At 1440px wide: left 110px = 7.639vw, top 780px = ~76.2vh
+function Background() {
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      <img
+        src={MainLoginBg}
+        alt="Background"
+        className="w-full h-full object-cover"
+      />
+      <div className="absolute inset-0 bg-black/20" />
+
+      {/* Welcome text — Figma: Plus Jakarta Sans 600, 48px, lh 60px, white */}
+      <div
+        className="absolute"
+        style={{
+          left: "clamp(56px,7.639vw,145px)",
+          bottom: "clamp(40px,10.547vh,108px)",
+        }}
+      >
+        <p
+          className="font-sans font-semibold text-white drop-shadow-lg m-0"
+          style={{
+            fontSize: "clamp(28px,3.333vw,63px)",
+            lineHeight: "clamp(36px,4.167vw,79px)",
+          }}
+        >
+          Welcome To
+          <br />
+          Greenland Capital
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Root ─────────────────────────────────────────────────────────────────────
+export default function LoginFlow() {
+  type Screen = "login" | "update-default" | "change-password" | "dashboard";
+  const [screen, setScreen] = useState<Screen>("login");
+
+  const handleLoginSuccess = ({
+    is_first_login,
+  }: {
+    is_first_login: number;
+  }) => {
+    setScreen(is_first_login === 1 ? "update-default" : "dashboard");
+  };
+
+  return (
+    <div className="fixed inset-0 font-sans overflow-hidden">
+      <Background />
+
+      {screen === "login" && <LoginScreen onSuccess={handleLoginSuccess} />}
+
+      {screen === "update-default" && (
+        <UpdateDefaultPasswordScreen
+          onSetNew={() => setScreen("change-password")}
+          onContinue={() => setScreen("dashboard")}
+        />
+      )}
+
+      {screen === "change-password" && (
+        <ChangePasswordScreen onDone={() => setScreen("dashboard")} />
+      )}
+
+      {screen === "dashboard" && (
+        <LoginCard>
+          <CardLogo />
+          <div
+            className="font-sans font-bold text-[#111827] mt-4 mb-2"
+            style={{ fontSize: "clamp(13px,1.389vw,26px)" }}
+          >
+            Welcome to Dashboard!
+          </div>
+          <p
+            className="font-sans text-[#6B7280] mb-6"
+            style={{ fontSize: "clamp(11px,1.111vw,21px)" }}
+          >
+            You are now logged in successfully.
+          </p>
+          <button
+            onClick={() => setScreen("login")}
+            className="bg-transparent border border-[#2780C4] text-[#2780C4] font-semibold cursor-pointer self-start transition-opacity hover:opacity-75"
+            style={{
+              borderRadius: "clamp(16px,1.667vw,31px)",
+              fontSize: "clamp(10px,0.972vw,18px)",
+              padding:
+                "clamp(6px,0.556vw,10px) clamp(14px,1.736vw,33px)",
+            }}
+          >
+            ← Back to Login (demo reset)
+          </button>
+        </LoginCard>
+      )}
     </div>
   );
 }
