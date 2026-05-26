@@ -242,6 +242,25 @@ h1 {
   color: var(--text-muted);
 }
 
+/* Sleek custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
 /* ─── REGIONAL OFFICER NAVIGATION ──────────────────────────────── */
 .nav-container {
   width: 98%;
@@ -3670,4 +3689,15 @@ h1 {
 
 .land-boundaries-file-card.cover-theme .cover-delete-bg:hover {
   opacity: 0.8;
+}
+/* ─── MAPLIBRE POPUP OVERRIDES ─────────────────────────────────── */
+.region-hover-popup .maplibregl-popup-content {
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.region-hover-popup .maplibregl-popup-tip {
+  display: none;
 }

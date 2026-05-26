@@ -27,8 +27,18 @@ export const createStandardBaseQuery = (baseUrl: string) => fetchBaseQuery({
 
 export const createBaseQueryWithReauth = (baseUrl: string): BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> => {
   const baseQuery = createStandardBaseQuery(baseUrl);
-  
+
   return async (args, api, extraOptions) => {
+    // ── Mock session guard ────────────────────────────────────────────────
+    // If the token starts with "mock-token-", this is a dev mock user.
+    // Skip the real API entirely and return an empty successful response
+    // so charts/queries render "No data" instead of spamming 401s.
+    const token = (api.getState() as AuthState).auth.accessToken;
+    if (token?.startsWith('mock-token-')) {
+      return { data: { data: [], success: true, message: 'mock session' } };
+    }
+    // ─────────────────────────────────────────────────────────────────────
+
     await mutex.waitForUnlock();
     let result = await baseQuery(args, api, extraOptions);
 

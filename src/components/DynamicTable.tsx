@@ -5,7 +5,6 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { TABLE_COLUMNS, TABLE_DATA } from "@/data/DynamicTable.constants";
 
 // ─────────────────────────────────────────────
 //  Types
@@ -22,6 +21,17 @@ export interface DynamicTableProps {
   pagination?: boolean;
   height?: string;
 }
+
+const TABLE_COLUMNS: Column[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "role", label: "Role" },
+];
+
+const TABLE_DATA: Record<string, string | number>[] = [
+  { id: 1, name: "Alice", role: "Admin" },
+  { id: 2, name: "Bob", role: "User" },
+];
 
 // ─────────────────────────────────────────────
 //  Chevron icons
@@ -175,7 +185,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
       <div className="flex-1 w-full overflow-x-auto flex flex-col">
         <table className="w-full h-full border-collapse table-fixed min-w-70">
           <colgroup>
-            {columns.map((col) => (
+            {columns.map((col: Column) => (
               <col key={col.key} style={{ width: colWidth }} />
             ))}
           </colgroup>
@@ -183,7 +193,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
           {/* ── Header ── */}
           <thead ref={theadRef}>
             <tr>
-              {columns.map((col) => (
+              {columns.map((col: Column) => (
                 <th
                   key={col.key}
                   className="bg-(--brand-500) py-3.75 px-0 text-center font-sans font-semibold text-(length:--header-fs) leading-5 tracking-[0.23px] uppercase text-(--surface-sidebar-text) border-none whitespace-nowrap align-middle"
@@ -196,9 +206,9 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
 
           {/* ── Body ── */}
           <tbody>
-            {pageData.map((row, rowIdx) => (
+            {pageData.map((row: Record<string, string | number>, rowIdx: number) => (
               <tr key={rowIdx}>
-                {columns.map((col, colIdx) => (
+                {columns.map((col: Column, colIdx: number) => (
                   <td
                     key={col.key}
                     className={`
@@ -219,7 +229,7 @@ const DynamicTable: React.FC<DynamicTableProps> = ({
               Array.from({ length: rowsPerPage - pageData.length }).map(
                 (_, i) => (
                   <tr key={`empty-${i}`}>
-                    {columns.map((col) => (
+                    {columns.map((col: Column) => (
                       <td
                         key={col.key}
                         className="py-(--row-padding) px-0 bg-(--surface-card) border-none"

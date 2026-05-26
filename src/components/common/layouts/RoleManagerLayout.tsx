@@ -4,7 +4,7 @@ import { useAppDispatch } from "@/core/hooks";
 import { logOut } from "@/features/auth/store/authSlice";
 import DashboardSidebar from "@/features/role-manager/components/layout/Sidebar";
 import { useRoleLayout } from "@/core/hooks/useRoleLayout";
-import { useGetAllGeoMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { useGetAllGeoMasterDataQuery, useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import { setGeoMasterData } from "@/features/role-manager/store/roleManagerSlice";
 
 export const RoleManagerLayout = () => {
@@ -15,11 +15,20 @@ export const RoleManagerLayout = () => {
   // Load geo master data centrally for all role manager pages
   const { data: geoData } = useGetAllGeoMasterDataQuery();
 
+  // Load all master data at layout level (after login / page refresh)
+  const { data: allMasterData } = useGetAllMasterDataQuery();
+
   useEffect(() => {
     if (geoData) {
       dispatch(setGeoMasterData(geoData));
     }
   }, [geoData, dispatch]);
+
+  useEffect(() => {
+    if (allMasterData) {
+      console.log("[RoleManagerLayout] All Master Data Response:", allMasterData);
+    }
+  }, [allMasterData]);
 
   const handleLogout = () => {
     dispatch(logOut());

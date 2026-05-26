@@ -39,7 +39,11 @@ interface TooltipProps {
   tooltipLabel?: string;
 }
 
-const CustomTooltip = ({ active, payload, tooltipLabel = "Value" }: TooltipProps) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  tooltipLabel = "Value",
+}: TooltipProps) => {
   if (active && payload && payload.length) {
     const item = payload[0].payload;
     return (
@@ -89,7 +93,13 @@ const CustomBar = ({
 
         {/* Capsule Bar with Gradient */}
         <defs>
-          <linearGradient id="activeCapsuleGradient" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient
+            id="activeCapsuleGradient"
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="1"
+          >
             <stop offset="0%" stopColor="var(--chart-gradient-from)" />
             <stop offset="100%" stopColor="var(--chart-gradient-to)" />
           </linearGradient>
@@ -113,11 +123,19 @@ const CustomBar = ({
           strokeWidth={1.26}
         />
 
-        {/* Active Day label circle */}
-        <foreignObject x={centerX - 18} y={y + height - 2} width={36} height={36}>
-          <div className="w-9 h-9 bg-[var(--brand-500)] rounded-full flex justify-center items-center shadow-[var(--shadow-card-sm)]">
-            <span className="font-[var(--font-sans)] font-medium text-[10.7px] text-white">
-              {label}
+        <foreignObject
+          x={centerX - 22}
+          y={y + height - 4}
+          width={44}
+          height={44}
+        >
+          <div className="w-11 h-11 bg-[var(--brand-500)] rounded-full flex flex-col justify-center items-center shadow-[var(--shadow-card-sm)] leading-none">
+            <span className="text-[10px] text-white font-medium">
+              {label.split(" ")[0]}
+            </span>
+
+            <span className="text-[10px] text-white font-medium mt-[1px]">
+              {label.split(" ")[1]}
             </span>
           </div>
         </foreignObject>
@@ -141,10 +159,13 @@ const CustomBar = ({
       />
 
       {/* Inactive Day label circle */}
-      <foreignObject x={centerX - 20} y={y + height - 2} width={40} height={40}>
-        <div className="w-10 h-10 bg-[var(--surface-page)] rounded-full flex justify-center items-center">
-          <span className="font-[var(--font-sans)] font-medium text-xs text-[var(--text-primary)]">
-            {label}
+      <foreignObject x={centerX - 22} y={y + height - 4} width={44} height={44}>
+        <div className="w-11 h-11 bg-[var(--surface-page)] rounded-full flex flex-col justify-center items-center leading-none">
+          <span
+            className="font-[var(--font-sans)] font-medium text-[10px] text-[var(--text-primary)] text-center"
+            style={{ whiteSpace: "pre-line" }}
+          >
+            {label.replace(" ", "\n")}
           </span>
         </div>
       </foreignObject>
@@ -161,6 +182,14 @@ const BarChart: React.FC<Props> = ({
 }) => {
   const domainMax = yMaxProp ?? 300;
   const activeLbl = activeLabel ?? "We";
+  const tickCount = 5;
+
+  const step = Math.max(1, Math.ceil(domainMax / tickCount));
+
+  const ticks = Array.from({ length: tickCount + 1 }, (_, i) => i * step);
+
+  // Guard: don't render until data is a non-empty array
+  if (!data?.length) return null;
 
   return (
     <div className="w-full h-full min-h-[150px]">
@@ -179,7 +208,7 @@ const BarChart: React.FC<Props> = ({
           <XAxis dataKey="label" hide axisLine={false} tickLine={false} />
           <YAxis
             domain={[0, domainMax]}
-            ticks={[0, 100, 200, 300]}
+            ticks={ticks}
             width={40}
             axisLine={false}
             tickLine={false}
@@ -200,6 +229,12 @@ const BarChart: React.FC<Props> = ({
             dataKey="value"
             shape={(props: unknown) => {
               const p = props as CustomBarProps & { index: number };
+
+              // Guard: skip if index is out of bounds or entry is missing
+              if (p.index === undefined || p.index === null || !data[p.index]) {
+                return null;
+              }
+
               return (
                 <CustomBar
                   x={p.x}
@@ -208,7 +243,7 @@ const BarChart: React.FC<Props> = ({
                   height={p.height}
                   value={p.value}
                   activeLabel={activeLbl}
-                  label={data[p.index ?? 0].label}
+                  label={data[p.index].label}
                 />
               );
             }}

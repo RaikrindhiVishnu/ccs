@@ -6,6 +6,7 @@ import { Typography } from "@/components/ui/typography";
 
 import { Plus } from "lucide-react";
 import { useGetAllAgentsMutation } from "@/features/role-manager/api/getagents";
+import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import AgentRow from "../components/ui/AgentRow";
 import Loader from "../components/ui/Loader";
 
@@ -26,60 +27,79 @@ interface Agent {
 export const AgentApprovalsPage = () => {
   const navigate = useNavigate();
   const [getAllAgents, { isLoading }] = useGetAllAgentsMutation();
+  const { data: masterData } = useGetAllMasterDataQuery();
 
 const [agentList, setAgentList] = React.useState<Agent[]>([]);
 
-React.useEffect(() => {
-  fetchPendingAgents();
-}, []);
+// Resolve PENDNG status id from master data
+const pendingStatusId = React.useMemo(() => {
+  const statuses = masterData?.data?.userRegistrationStatusResult || [];
+  const pending = statuses.find((s: any) => s.code === "PENDNG");
+  return pending?.id ?? null;
+}, [masterData]);
 
-const fetchPendingAgents = async () => {
+const fetchPendingAgents = async (statusId: number) => {
   try {
-   const response = await getAllAgents({
-  is_verified: 0,
- 
-}).unwrap();
-
+    const response = await getAllAgents({
+      registration_status_id: statusId,
+      limit: 0,
+      offset: 0,
+    }).unwrap();
 
 
     const apiAgents = response?.data || [];
 
     const formattedAgents: Agent[] = apiAgents.map((item: any) => ({
-  id: item.id?.toString() || "",
-name:
-  item.name ||
-  item.full_name ||
-  `${item.first_name || ""} ${item.last_name || ""}`.trim(),
+      id: item.id?.toString() || "",
+      name:
+        item.name ||
+        item.full_name ||
+        `${item.first_name || ""} ${item.last_name || ""}`.trim(),
 
-  location:
-    item.location ||
-    item.city ||
-    item.address ||
-    "Location Not Available",
+      location:
+        item.location ||
+        item.city ||
+        item.address ||
+        "Location Not Available",
 
-  status: "Pending Review",
+      status: "Pending Review",
 
-  avatarUrl: item.avatar || item.profile_image || "",
+      avatarUrl: item.avatar || item.profile_image || "",
 
-  initials:
-    `${item.first_name || ""} ${item.last_name || ""}`
-      ?.split(" ")
-      ?.map((word: string) => word[0])
-      ?.join("")
-      ?.toUpperCase() || "NA",
-}));
+      initials:
+        `${item.first_name || ""} ${item.last_name || ""}`
+          ?.split(" ")
+          ?.map((word: string) => word[0])
+          ?.join("")
+          ?.toUpperCase() || "NA",
+    }));
 
     setAgentList(formattedAgents);
   } catch (error) {
-
+    // ignore for now
   }
 };
 
-  const [visibleCount, setVisibleCount] = React.useState(5);
+React.useEffect(() => {
+  if (pendingStatusId !== null) {
+    fetchPendingAgents(pendingStatusId);
+  }
+}, [pendingStatusId]);
 
-  const visibleAgents = agentList.slice(0, visibleCount);
+  const ITEMS_PER_PAGE = 7;
+  const [currentPage, setCurrentPage] = React.useState(1);
 
-  const hasMore = visibleCount < agentList.length;
+  const totalPages = Math.ceil(agentList.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const visibleAgents = agentList.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
 
  const handleViewProfile = (id: string) => {
 
@@ -191,47 +211,62 @@ name:
           )}
         </div>
 
-        {/* Load More */}
-        <div
-          className="
-            flex justify-center
-            mt-[1.5rem]
-            lg:mt-[1.75rem]
-            xl:mt-[2rem]
-          "
-          // was 24px→1.5rem | 28px→1.75rem | 32px→2rem
-        >
-          <Button
-            variant="secondary"
-            onClick={() => setVisibleCount((c) => c + 7)}
-            disabled={!hasMore}
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div
             className="
-              !h-[3.25rem]
-              lg:!h-[3.5rem]
-              xl:!h-[3.75rem]
-              !rounded-[var(--btn-radius-pill)]
+              flex items-center justify-between
+              mt-[1.5rem] lg:mt-[1.75rem] xl:mt-[2rem]
               bg-[color:var(--surface-card)]
-              border
-              border-[color:var(--border-soft)]
-              shadow-none
-              !px-[2.25rem]
-              lg:!px-[2.75rem]
-              xl:!px-[3.5rem]
-              uppercase
-              tracking-[0.16em]
-              font-medium
-              text-[color:var(--text-primary)]
-              !text-[0.6875rem]
-              lg:!text-[0.75rem]
-              xl:!text-[0.8125rem]
-              2xl:!text-[0.875rem]
-              disabled:opacity-50
-              disabled:cursor-not-allowed
+              border border-[color:var(--border-soft)]
+              rounded-[1rem]
+              px-[1.5rem] py-[1rem]
+              shadow-[0px_10px_20px_rgba(0,49,50,0.03)]
             "
           >
-            Load More Applicants
-          </Button>
-        </div>
+            <span className="text-[0.8125rem] lg:text-[0.875rem] text-[color:var(--text-secondary)] font-[family-name:var(--font-sans)]">
+              Showing <span className="font-semibold text-[color:var(--text-primary)]">{startIndex + 1}</span> to <span className="font-semibold text-[color:var(--text-primary)]">{Math.min(startIndex + ITEMS_PER_PAGE, agentList.length)}</span> of <span className="font-semibold text-[color:var(--text-primary)]">{agentList.length}</span> applicants
+            </span>
+            
+            <div className="flex items-center gap-3">
+              <Button
+                variant="secondary"
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className="
+                  !h-[2.5rem] lg:!h-[2.75rem]
+                  !rounded-[0.5rem]
+                  bg-transparent border border-[color:var(--border-soft)]
+                  hover:bg-gray-50
+                  !px-4
+                  text-[0.75rem] lg:text-[0.8125rem] font-medium
+                  disabled:opacity-40 disabled:cursor-not-allowed
+                "
+              >
+                Previous
+              </Button>
+              <div className="flex items-center justify-center min-w-[5rem] text-[0.8125rem] lg:text-[0.875rem] font-medium font-[family-name:var(--font-sans)] text-[color:var(--text-primary)]">
+                Page {currentPage} of {totalPages}
+              </div>
+              <Button
+                variant="secondary"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className="
+                  !h-[2.5rem] lg:!h-[2.75rem]
+                  !rounded-[0.5rem]
+                  bg-transparent border border-[color:var(--border-soft)]
+                  hover:bg-gray-50
+                  !px-4
+                  text-[0.75rem] lg:text-[0.8125rem] font-medium
+                  disabled:opacity-40 disabled:cursor-not-allowed
+                "
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );

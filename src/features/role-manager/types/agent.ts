@@ -10,8 +10,8 @@ export interface AgentFormData {
   state: string;
   city: string;
   pincode: string;
-  region: string;
-  area: string;
+  district: string;
+  mandal: string;
   bankName: string;
   accountNumber: string;
   ifscCode: string;
@@ -158,6 +158,7 @@ export interface UpdateAgentRequest {
   dob: string;
   role_id: number;
   isVerified?: number;
+  profile_image?: string;
   address: {
     address: string;
     state_id: number;
@@ -169,8 +170,8 @@ export interface UpdateAgentRequest {
     state_id?: number;
     district_id?: number;
     mandal_id?: number;
-    region_id: number;
-    areas_id: number;
+    region_id?: number;
+    areas_id?: number;
   };
   id_proof?: any;
 }

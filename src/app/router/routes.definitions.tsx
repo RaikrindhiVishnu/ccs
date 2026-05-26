@@ -26,6 +26,15 @@ import {
   IODashboard,
   
   // Regional Officer imports
+  Assignedfarmland,
+  AssignedFarmlandList,
+  Farmlanddocument,
+  CreateFieldOfficer,
+  CreateintellegenceOfficer,
+  CreateregionalOfficer,
+  EditFieldOfficer,
+  EditIntelligenceOfficer,
+  EditRegionalOfficer,
   RegionalOfficerDashboard,
   AssignedFarmlands,
   RequestedInfo,
@@ -60,7 +69,25 @@ import {
   EditFieldOfficer,
   EditIntelligenceOfficer,
   EditRegionalOfficer,
+  DraftsPage,
+  FieldOfficerLayout,
+  RequestInfoPage,
+  FarmlandAlertsPage,
+  FarmlandAlertDetailsPage,
+  TopPerformerDetailsPage,
+  AgentDetailsPage,
+  AssignedFarmlandPage,
+  FarmlandWorkflowPage,
+  DraftsDetailPage,
+  RequestInfoDetailsPage,
+  LandDocumentsPage,
+  AssignOfficersPage,
+  AssignFieldOfficerPage,
+  RegionDetailsView,
+  AreaDetailsView,
+  RegionAreaEdit,
 } from './routes.config';
+
 
 export const guestRoutes: RouteObject[] = [
   {
@@ -122,6 +149,17 @@ export const authRoutes: RouteObject[] = [
     path: "verification-officer",
     element: <VerificationOfficerLayout />,
     children: [
+      { path: "/", element: <RoleManagerDashboard /> },
+      { path: "/ccs/dashboard", element: <CcsDashboard /> },
+      { path: "/home", element: <Home /> },
+      { path: "/pending-cases", element: <ActiveVerifications /> },
+      { path: "/geospatial-audit", element: <GeospatialAudit /> },
+      { path: "/farmland-request", element: <FarmlandRequest /> },
+      { path: "/farmland-list", element: <FarmlandList /> },
+      { path: "/send-payment-link", element: <SendPaymentLink /> },
+      { path: "/processing-fee", element: <ProcessingFeeScreen /> },
+      { path: "/role-manager/dashboard", element: <RoleManagerDashboard /> },
+      { path: "/role-manager/user-directory", element: <UserDirectory /> },
       {
         index: true,
         element: <VerificationOfficerDashboard />,
@@ -130,6 +168,9 @@ export const authRoutes: RouteObject[] = [
         path: "dashboard",
         element: <VerificationOfficerDashboard />,
       },
+      { path: "/io/dashboard", element: <IODashboard /> },
+      { path: "/io/Assignedfarmland", element: <Assignedfarmland /> },
+      { path: "/io/assigned-farmland/list", element: <AssignedFarmlandList /> },
       {
         path: "assigned-farmlands",
         element: <VerificationOfficerAssignedFarmlands />,
@@ -191,9 +232,92 @@ export const authRoutes: RouteObject[] = [
   {
     path: '/regional-officer/assigned-farmlands-land-boundaries/:id',
     element: <LandBoundaries />,
+        path: "/role-manager/edit-field-officer",
+        element: <EditFieldOfficer />,
+      },
+      {
+        path: "/role-manager/edit-field-officer/:id",
+        element: <EditFieldOfficer />,
+      },
+      {
+        path: "/role-manager/edit-intelligence-officer",
+        element: <EditIntelligenceOfficer />,
+      },
+      {
+        path: "/role-manager/edit-intelligence-officer/:id",
+        element: <EditIntelligenceOfficer />,
+      },
+      {
+        path: "/role-manager/edit-regional-officer/:id",
+        element: <EditRegionalOfficer />,
+      },
+      { path: "/role-manager/profile/:id", element: <RoleManagerDetails /> },
+      { path: "/role-manager/agent-approvals", element: <AgentApprovals /> },
+      { path: "/role-manager/agent-details/:id", element: <Agentdetailpage /> },   
+ ],
+  },
+  {
+    path: "/role-manager/region-creation",
+    element: <RegionSelection />,
+  },
+  {
+    path: "/role-manager/assign-officers",
+    element: <AssignOfficersPage />,
+  },
+  {
+    path: "/role-manager/assign-field-officer",
+    element: <AssignFieldOfficerPage />,
+  },
+  {
+    path: "/role-manager/region-edit/:regionId",
+    element: <RegionAreaEdit />,
+  },
+  {
+    // Full-screen map for viewing/editing regions — no sidebar layout
+    path: "/role-manager/region-area-edit",
+    element: <RegionAreaEdit />,
+  },
+  {
+    // Full-screen details view for a specific region
+    path: "/role-manager/region-details/:regionId",
+    element: <RegionDetailsView />,
+  },
+  {
+    // Full-screen details view for a specific area
+    path: "/role-manager/area-details/:areaId",
+    element: <AreaDetailsView />,
+  },
+  {
+    element: <FieldOfficerLayout />,
+    children: [
+      { path: '/field-officer/dashboard',       element: <FieldOfficerDashboard /> },
+      { path: '/field-officer/drafts',          element: <DraftsPage /> },
+      { path: '/field-officer/request-info',    element: <RequestInfoPage /> },
+      { path: '/field-officer/alerts',          element: <FarmlandAlertsPage /> },
+      { path: '/field-officer/alerts/:id',      element: <FarmlandAlertDetailsPage /> },
+      { path: '/field-officer/top-performer/:id', element: <TopPerformerDetailsPage /> },
+      { path: '/field-officer/agent-details/:id', element: <AgentDetailsPage /> },
+      { path: '/field-officer/assigned-farmland/:id', element: <AssignedFarmlandPage /> },
+      { path: '/field-officer/farmland-workflow/:id', element: <FarmlandWorkflowPage /> },
+      { path: '/field-officer/draft-details/:id', element: <DraftsDetailPage /> },
+      { path: '/field-officer/request-info/:id', element: <RequestInfoDetailsPage /> },
+      { path: '/field-officer/land-documents/:id', element: <LandDocumentsPage /> },
+    ],
+  },
+  {
+    element: <RegionalOfficerLayout />,
+    children: [
+      { path: '/regional-officer/dashboard', element: <RegionalOfficerDashboard /> },
+    ],
   },
 ];
 
 export const publicRoutes: RouteObject[] = [
   { path: '/design-system',                    element: <DesignSystem /> },
+  { path: '/design-system',                 element: <DesignSystem /> },
+  { path: '/role-manager/agent-create',     element: <AgentCreate /> },
+  { path: '/role-manager/agent-edit',       element: <AgentEdit /> },
+  { path: '/role-manager/profile',          element: <RoleManagerDetails /> },
+  { path: '/role-manager/agent-approvals',  element: <AgentApprovals /> },
+  { path: '/role-manager/agent-details',    element: <Agentdetailpage /> },
 ];

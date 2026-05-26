@@ -17,10 +17,19 @@ export const roleManagerApi = createApi({
         method: "POST",
       }),
     }),
+    getIntelligenceOfficerById: builder.mutation<any, number>({
+      query: (userId) => ({
+        url: `/regionalOfficer/getIntelligenceOfficerById/${userId}`,
+        method: "POST",
+      }),
+    }),
     getFieldOfficerById: builder.mutation<any, number>({
       query: (userId) => ({
-        url: `/feildOfficer/getFieldOfficerById/${userId}`,
+        url: "/feildOfficer/getFieldOfficerById",
         method: "POST",
+        body: {
+          userId,
+        },
       }),
     }),
     getAgentDetailsByUserId: builder.mutation<any, number>({
@@ -32,11 +41,14 @@ export const roleManagerApi = createApi({
         },
       }),
     }),
-    getAllAgents: builder.mutation<GetAgentsApiResponse, GetAgentsRequest>({
+    getAllAgents: builder.mutation<GetAgentsApiResponse, GetAgentsRequest & { is_assigned?: number }>({
       query: (body) => ({
         url: "agents/getAllAgents",
         method: "POST",
-        body,
+        body: {
+          ...body,
+          is_assigned: body?.is_assigned !== undefined ? body.is_assigned : 0,
+        },
       }),
     }),
     getAgentById: builder.mutation<any, any>({
@@ -48,19 +60,33 @@ export const roleManagerApi = createApi({
         },
       }),
     }),
-    getRegionalOfficerById: builder.mutation<any, string | number>({
-      query: (userId) => ({
-        url: `/regionalOfficer/getRegionalOfficerById/${userId}`,
+    
+    getAllIntelligenceOfficers: builder.mutation<any, { is_assigned?: number } | void>({
+      query: (body) => ({
+        url: "/master/get_all_intelligence_officers",
         method: "POST",
+        body: body || { is_assigned: 0 },
       }),
     }),
-    getFieldOfficerById: builder.mutation<any, string | number>({
-      query: (userId) => ({
-        url: "/feildOfficer/getFieldOfficerById",
+    getAllRegionalOfficers: builder.mutation<any, { is_assigned?: number } | void>({
+      query: (body) => ({
+        url: "/master/get_all_regional_officers",
         method: "POST",
-        body: {
-          userId,
-        },
+        body: body || { is_assigned: 0 },
+      }),
+    }),
+    getAllFieldOfficers: builder.mutation<any, { is_assigned?: number } | void>({
+      query: (body) => ({
+        url: "/master/get_all_field_officers",
+        method: "POST",
+        body: body || { is_assigned: 0 },
+      }),
+    }),
+    getLocationHierarchyDetails: builder.mutation<any, { district_id: number; mandal_id: number }>({
+      query: (body) => ({
+        url: "/master/get_location_hierarchy_details",
+        method: "POST",
+        body,
       }),
     }),
   }),
@@ -71,5 +97,10 @@ export const {
   useGetAllAgentsMutation,
   useGetAgentByIdMutation,
   useGetRegionalOfficerByIdMutation,
+  useGetIntelligenceOfficerByIdMutation,
   useGetFieldOfficerByIdMutation,
+  useGetAllIntelligenceOfficersMutation,
+  useGetAllRegionalOfficersMutation,
+  useGetAllFieldOfficersMutation,
+  useGetLocationHierarchyDetailsMutation,
 } = roleManagerApi;

@@ -162,3 +162,72 @@ export const EditIntelligenceOfficer = lazy(
 export const EditRegionalOfficer = lazy(
   () => import("../../features/role-manager/pages/Createregionalofficer"),
 );
+
+// Regional Officer
+export const RegionalOfficerDashboard = lazy(
+  () => import("../../features/regional-officer/pages/RegionalOfficerDashboard"),
+);
+export const RegionalOfficerLayout = lazy(
+  () => import("../../components/common/layouts/Regionalofficerlayout"),
+);
+
+// Field Officer
+export const FieldOfficerDashboard = lazy(
+  () => import("../../features/field-officer/pages/FieldOfficerDashboard"),
+);
+export const DraftsPage = lazy(
+  () => import("../../features/field-officer/pages/DraftsPage"),
+);
+export const FieldOfficerLayout = lazy(
+  () => import("../../components/common/layouts/FieldOfficerLayout"),
+);
+export const RequestInfoPage = lazy(
+  () => import("../../features/field-officer/pages/RequestInfoPage"),
+);
+export const FarmlandAlertsPage = lazy(
+  () => import("../../features/field-officer/pages/FarmlandAlertsPage"),
+);
+export const FarmlandAlertDetailsPage = lazy(
+  () => import("../../features/field-officer/pages/FarmlandAlertDetailsPage"),
+);
+export const TopPerformerDetailsPage = lazy(
+  () => import("../../features/field-officer/pages/TopPerformerDetailsPage"),
+);
+export const AgentDetailsPage = lazy(
+  () => import("../../features/field-officer/pages/AgentDetailsPage"),
+);
+export const AssignedFarmlandPage = lazy(
+  () => import("../../features/field-officer/pages/AssignedFarmlandPage"),
+);
+export const FarmlandWorkflowPage = lazy(
+  () => import("../../features/field-officer/pages/FarmlandWorkflowPage"),
+);
+export const DraftsDetailPage = lazy(
+  () => import("../../features/field-officer/pages/DraftsDetailPage"),
+);
+export const RequestInfoDetailsPage = lazy(
+  () => import("../../features/field-officer/pages/RequestInfoDetailsPage"),
+);
+export const LandDocumentsPage = lazy(
+  () => import("../../features/field-officer/pages/LandDocumentsPage"),
+);
+export const AssignOfficersPage = lazy(
+  () => import("../../features/role-manager/pages/AssignOfficers"),
+);
+export const AssignFieldOfficerPage = lazy(
+  () => import("../../features/role-manager/pages/AssignFieldOfficer"),
+);
+
+// ─── Region & Area View / Edit pages (placeholder — wire to API when ready) ───
+export const RegionEdit = lazy(
+  () => import("../../features/role-manager/pages/RegionAreaEdit"),
+);
+export const RegionDetailsView = lazy(
+  () => import("../../features/role-manager/pages/RegionDetailsView"),
+);
+export const AreaDetailsView = lazy(
+  () => import("../../features/role-manager/pages/AreaDetailsView"),
+);
+export const RegionAreaEdit = lazy(
+  () => import("../../features/role-manager/pages/RegionAreaEdit"),
+);

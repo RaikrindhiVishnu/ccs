@@ -18,10 +18,28 @@ export const authApi = baseApi.injectEndpoints({
         body,
       }),
     }),
+
+    approveUser: builder.mutation<any, { user_id: number; role_id: number; role_code: string }>({
+      query: (body) => ({
+        url: "/auth/approveUser",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    generatePresignedUrl: builder.query<{ url: string }, string>({
+      query: (key) => ({
+        url: "/s3/generateUrl",
+        method: "POST",
+        body: { key },
+      }),
+    }),
   }),
 });
 
 export const {
   useLoginMutation,
   useSendIssueMailMutation,
+  useApproveUserMutation,
+  useGeneratePresignedUrlQuery,
 } = authApi;
