@@ -112,6 +112,9 @@ export const RequestInfoPage = lazy(
 export const FarmlandAlertsPage = lazy(
   () => import("../../features/field-officer/pages/FarmlandAlertsPage"),
 );
+export const FarmlandAlertDetailsPage = lazy(
+  () => import("../../features/field-officer/pages/FarmlandAlertDetailsPage"),
+);
 export const TopPerformerDetailsPage = lazy(
   () => import("../../features/field-officer/pages/TopPerformerDetailsPage"),
 );
