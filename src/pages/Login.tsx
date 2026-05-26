@@ -573,13 +573,14 @@ function Background() {
       />
       <div className="absolute inset-0 bg-black/20" />
 
-      {/* Welcome text — Figma: Plus Jakarta Sans 600, 48px, lh 60px, white */}
-      <div className="hidden md:block absolute left-8 md:left-[5vw] lg:left-[6vw] xl:left-[6.875rem] bottom-8 md:bottom-[6vh] lg:bottom-[8vh] max-w-[17.5rem] sm:max-w-[21.25rem] md:max-w-[25rem] xl:max-w-[30rem]">
-        <p className="font-sans font-semibold text-white drop-shadow-lg m-0 text-3xl md:text-4xl xl:text-[3rem] leading-tight xl:leading-[3.75rem] tracking-tight">
+      {/* Welcome text — Split style with fluid vw-based scaling starting from 1024px (md) up to 1920px */}
+      <div className="hidden md:block absolute left-8 md:left-[6vw] xl:left-[7.64vw] 2xl:left-[6.875rem] bottom-20 md:bottom-[6.5vh] xl:bottom-[6.25rem] max-w-[17.5rem] sm:max-w-[21.25rem] md:max-w-[25rem] xl:max-w-[30.125rem] flex flex-col justify-end">
+        <span className="font-sans font-bold text-white drop-shadow-lg text-3xl md:text-[3.2vw] xl:text-[3.33vw] 2xl:text-[3rem] leading-none tracking-tight block">
           Welcome To
-          <br />
+        </span>
+        <span className="font-sans font-normal text-white drop-shadow-lg text-4xl md:text-[3.8vw] xl:text-[3.89vw] 2xl:text-[3.5rem] leading-none tracking-normal block mt-3">
           Greenland Capital
-        </p>
+        </span>
       </div>
     </div>
   );
