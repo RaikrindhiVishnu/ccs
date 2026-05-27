@@ -96,12 +96,18 @@ const extractAllAreasGeoJSON = (data: GeoMasterData | null, areasList: any[], di
   const assignedMandalMap = new Map<number, { color: string; areaName: string }>();
   if (areasList && areasList.length > 0) {
     areasList.forEach((area, idx) => {
-      const color = getAreaColors(area.region_id || 1, idx);
-      const mIds = area.mandal_ids || area.mandalIds || [];
-      mIds.forEach((mId: any) => {
-        const idNum = Number(mId);
-        if (!isNaN(idNum)) assignedMandalMap.set(idNum, { color, areaName: area.area_name || area.areaName || "" });
-      });
+      const color = getAreaColors(area.region_id || area.regionId || 1, idx);
+      let mIds = area.mandal_ids || area.mandalIds || [];
+      if (typeof mIds === "string") {
+        try { mIds = JSON.parse(mIds); } catch (e) { mIds = []; }
+      }
+      if (Array.isArray(mIds)) {
+        mIds.forEach((mId: any) => {
+          const idNum = Number(mId);
+          if (!isNaN(idNum)) assignedMandalMap.set(idNum, { color, areaName: area.area_name || area.areaName || "" });
+        });
+      }
+      
       if (Array.isArray(area.assignments)) {
         area.assignments.forEach((assignment: any) => {
           const idNum = Number(assignment.mandal_id || assignment.mandalId);
@@ -160,7 +166,7 @@ const DashboardGlobeMap: React.FC = () => {
   );
   const regionIdForQuery = useMemo(() => {
     if (!selectedRegion) return 0;
-    return Number(selectedRegion.id || selectedRegion.properties?.region_id || selectedRegion.properties?.id);
+    return Number(selectedRegion.properties?.region_id || selectedRegion.properties?.regionId || selectedRegion.properties?.id || selectedRegion.id);
   }, [selectedRegion]);
 
   const { data: areasByRegionData } = useGetAllAreasByRegionIdQuery(
