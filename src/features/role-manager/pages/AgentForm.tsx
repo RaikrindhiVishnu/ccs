@@ -28,6 +28,7 @@ import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterData
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
 import { useGetAgentByIdMutation, useGetLocationHierarchyDetailsMutation } from "@/features/role-manager/api/roleManagerApi";
+import { useGetRegionsByStateIdQuery, useGetAllAreasByRegionIdQuery } from "../api/regionSelectionApi";
 import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
 import SectionCard from "../components/ui/SectionCard";
@@ -108,8 +109,7 @@ export default function AgentForm({
   isViewMode = false,
 }: AgentFormProps) {
   const states = useSelector((state: any) => state.roleManager.states);
-  const allDistricts = useSelector((state: any) => state.roleManager.districts);
-  const allMandals = useSelector((state: any) => state.roleManager.mandals);
+
 
   const stateOptions = states.map((item: any) => item.desc);
   const location = useLocation();
@@ -168,13 +168,11 @@ export default function AgentForm({
         initialData?.state ??
         (initialData as any)?.geo_assignments?.state_id ??
         "",
-      district:
-        initialData?.district ??
-        (initialData as any)?.geo_assignments?.district_id ??
+      region:
+        (initialData as any)?.region ??
         "",
-      mandal:
-        initialData?.mandal ??
-        (initialData as any)?.geo_assignments?.mandal_id ??
+      area:
+        (initialData as any)?.area ??
         "",
       bankName:
         initialData?.bankName ??
@@ -213,48 +211,65 @@ export default function AgentForm({
   }, [userId, getAgentById]);
 
   const selectedStateName = watch("state");
-  const selectedDistrictName = watch("district");
-  const selectedMandalName = watch("mandal");
+  const selectedRegionName = watch("region");
+  const selectedAreaName = watch("area");
 
   const selectedStateObj = states.find((s: any) => s.desc === selectedStateName);
+  const stateId = selectedStateObj?.id;
 
-  // Cascading district & mandal options
-  const districtOptions = selectedStateObj
-    ? allDistricts.filter((d: any) => d.state_id === selectedStateObj.id).map((d: any) => d.desc)
-    : [];
+  // Query regions by state ID
+  const { data: regionsData } = useGetRegionsByStateIdQuery(
+    { state_id: Number(stateId) },
+    { skip: !stateId }
+  );
 
-  const selectedDistrictObj = allDistricts.find((d: any) => d.desc === selectedDistrictName);
-  const mandalOptions = selectedDistrictObj
-    ? allMandals.filter((m: any) => m.districts_id === selectedDistrictObj.id).map((m: any) => m.desc)
-    : [];
+  const regionOptions = regionsData?.data?.map((r: any) => r.region_name) || [];
+
+  const selectedRegionObj = regionsData?.data?.find(
+    (r: any) => r.region_name === selectedRegionName
+  );
+  const regionId = selectedRegionObj?.id;
+
+  // Query areas by region ID
+  const { data: areasData } = useGetAllAreasByRegionIdQuery(
+    { region_id: Number(regionId) },
+    { skip: !regionId }
+  );
+
+  const areaOptions = areasData?.data?.map((a: any) => a.area_name) || [];
+
+  const selectedAreaObj = areasData?.data?.find(
+    (a: any) => a.area_name === selectedAreaName
+  );
 
   // Reset child fields when parent changes
   const prevStateRef = useRef(selectedStateName);
-  const prevDistrictRef = useRef(selectedDistrictName);
+  const prevRegionRef = useRef(selectedRegionName);
 
   useEffect(() => {
     if (selectedStateName !== prevStateRef.current) {
-      setValue("district", "");
-      setValue("mandal", "");
+      setValue("region", "");
+      setValue("area", "");
       prevStateRef.current = selectedStateName;
     }
   }, [selectedStateName, setValue]);
 
   useEffect(() => {
-    if (selectedDistrictName !== prevDistrictRef.current) {
-      setValue("mandal", "");
-      prevDistrictRef.current = selectedDistrictName;
+    if (selectedRegionName !== prevRegionRef.current) {
+      setValue("area", "");
+      prevRegionRef.current = selectedRegionName;
     }
-  }, [selectedDistrictName, setValue]);
+  }, [selectedRegionName, setValue]);
 
+  // Fetch location hierarchy when Area changes to show RO/IO/FO details
   useEffect(() => {
-    if (selectedDistrictName && selectedMandalName) {
-      const selectedDistrictObj = allDistricts.find((d: any) => d.desc === selectedDistrictName);
-      const selectedMandalObj = allMandals.find((m: any) => m.desc === selectedMandalName);
-      if (selectedDistrictObj?.id && selectedMandalObj?.id) {
+    if (selectedAreaObj) {
+      const distId = selectedAreaObj.district_ids?.[0];
+      const mandalId = selectedAreaObj.mandal_ids?.[0];
+      if (distId && mandalId) {
         getLocationHierarchyDetails({
-          district_id: Number(selectedDistrictObj.id),
-          mandal_id: Number(selectedMandalObj.id),
+          district_id: Number(distId),
+          mandal_id: Number(mandalId),
         })
           .unwrap()
           .then((res) => {
@@ -273,57 +288,42 @@ export default function AgentForm({
     } else {
       setHierarchy(null);
     }
-  }, [selectedDistrictName, selectedMandalName, allDistricts, allMandals, getLocationHierarchyDetails]);
+  }, [selectedAreaObj, getLocationHierarchyDetails]);
 
-  // Pre-fill geo fields from agentData (resolving IDs to names)
+  // Pre-fill state from agentData or initialData
   useEffect(() => {
-    if (agentData?.data && states.length > 0) {
-      const data = agentData.data;
-      const geo = data.geo_assignments;
-
-      const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === data.state);
-      const stateVal = stateObj?.desc || data.state || "";
-
-      const districtsForState = stateObj ? allDistricts.filter((d: any) => d.state_id === stateObj.id) : allDistricts;
-      const districtObj = districtsForState.find((d: any) => d.id === geo?.district_id || d.desc === data.district);
-      const districtVal = districtObj?.desc || data.district || "";
-
-      const mandalsForDistrict = districtObj ? allMandals.filter((m: any) => m.districts_id === districtObj.id) : allMandals;
-      const mandalObj = mandalsForDistrict.find((m: any) => m.id === geo?.mandal_id || m.desc === data.mandal || m.desc === data.area);
-      const mandalVal = mandalObj?.desc || data.mandal || data.area || "";
-
-      prevStateRef.current = stateVal;
-      prevDistrictRef.current = districtVal;
-      setValue("state", stateVal);
-      setValue("district", districtVal);
-      setValue("mandal", mandalVal);
+    const geo = agentData?.data?.geo_assignments || (initialData as any)?.geo_assignments;
+    if (geo?.state_id && states.length > 0) {
+      const stateObj = states.find((s: any) => s.id === geo.state_id);
+      if (stateObj) {
+        prevStateRef.current = stateObj.desc;
+        setValue("state", stateObj.desc);
+      }
     }
-  }, [agentData, states, allDistricts, allMandals, setValue]);
+  }, [agentData, initialData, states, setValue]);
 
-  // Pre-fill geo fields from initialData
+  // Pre-fill region when regionsData is loaded
   useEffect(() => {
-    if (initialData && states.length > 0) {
-      const geo = (initialData as any).geo_assignments;
-
-      const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === initialData.state);
-      const stateVal = stateObj?.desc || initialData.state || "";
-
-      const districtsForState = stateObj ? allDistricts.filter((d: any) => d.state_id === stateObj.id) : allDistricts;
-      const districtObj = districtsForState.find((d: any) => d.id === geo?.district_id || d.desc === (initialData as any).district);
-      const districtVal = districtObj?.desc || (initialData as any).district || "";
-
-      const mandalsForDistrict = districtObj ? allMandals.filter((m: any) => m.districts_id === districtObj.id) : allMandals;
-      const mandalObj = mandalsForDistrict.find((m: any) => m.id === geo?.mandal_id || m.desc === (initialData as any).mandal || m.desc === (initialData as any).area);
-      const mandalVal = mandalObj?.desc || (initialData as any).mandal || (initialData as any).area || "";
-      prevStateRef.current = stateVal;
-      prevDistrictRef.current = districtVal;
-      setValue("state", stateVal);
-      setValue("district", districtVal);
-      setValue("mandal", mandalVal);
+    const geo = agentData?.data?.geo_assignments || (initialData as any)?.geo_assignments;
+    if (geo?.region_id && regionsData?.data) {
+      const regionObj = regionsData.data.find((r: any) => r.id === geo.region_id);
+      if (regionObj) {
+        prevRegionRef.current = regionObj.region_name;
+        setValue("region", regionObj.region_name);
+      }
     }
-  }, [initialData, states, allDistricts, allMandals, setValue]);
+  }, [regionsData, agentData, initialData, setValue]);
 
-
+  // Pre-fill area when areasData is loaded
+  useEffect(() => {
+    const geo = agentData?.data?.geo_assignments || (initialData as any)?.geo_assignments;
+    if (geo?.areas_id && areasData?.data) {
+      const areaObj = areasData.data.find((a: any) => a.area_id === geo.areas_id);
+      if (areaObj) {
+        setValue("area", areaObj.area_name);
+      }
+    }
+  }, [areasData, agentData, initialData, setValue]);
 
   useEffect(() => {
     if (agentData?.data) {
@@ -340,8 +340,8 @@ export default function AgentForm({
         pincode: data.pincode || data.address?.pincode || "",
         panNumber: data.panCardNumber || data.id_proof?.pan_card_number || "",
         state: "",
-        district: "",
-        mandal: "",
+        region: "",
+        area: "",
         bankName: data.bankName || data.id_proof?.bank_name || "",
         accountNumber: data.accountNumber || data.id_proof?.bank_account_number || "",
         ifscCode: data.ifscCode || data.id_proof?.ifsc_code || "",
@@ -375,11 +375,14 @@ export default function AgentForm({
       const selectedStateObj = states.find((s: any) => s.desc === values.state);
       const stateIdVal = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
 
-      const selectedDistrictObj = allDistricts.find((d: any) => d.desc === values.district);
-      const districtIdVal = selectedDistrictObj?.id ? Number(selectedDistrictObj.id) : 1;
+      const selectedRegionObj = regionsData?.data?.find((r: any) => r.region_name === values.region);
+      const regionIdVal = selectedRegionObj?.id ? Number(selectedRegionObj.id) : 1;
 
-      const selectedMandalObj = allMandals.find((m: any) => m.desc === values.mandal);
-      const mandalIdVal = selectedMandalObj?.id ? Number(selectedMandalObj.id) : 1;
+      const selectedAreaObj = areasData?.data?.find((a: any) => a.area_name === values.area);
+      const areaIdVal = selectedAreaObj?.area_id ? Number(selectedAreaObj.area_id) : 1;
+
+      const districtIdVal = selectedAreaObj?.district_ids?.[0] ? Number(selectedAreaObj.district_ids[0]) : 1;
+      const mandalIdVal = selectedAreaObj?.mandal_ids?.[0] ? Number(selectedAreaObj.mandal_ids[0]) : 1;
 
       if (isEdit) {
         const userId =
@@ -406,9 +409,12 @@ export default function AgentForm({
             },
 
             geo_assignments: {
+              country_id: 1,
               state_id: stateIdVal,
               district_id: districtIdVal,
               mandal_id: mandalIdVal,
+              region_id: regionIdVal,
+              areas_id: areaIdVal,
             },
           };
 
@@ -474,8 +480,8 @@ export default function AgentForm({
             state_id: stateIdVal,
             district_id: districtIdVal,
             mandal_id: mandalIdVal,
-            region_id: 1,
-            areas_id: 1,
+            region_id: regionIdVal,
+            areas_id: areaIdVal,
           },
 
           avatar: profilePicKey !== "profile.png" ? profilePicKey : undefined,
@@ -563,17 +569,18 @@ export default function AgentForm({
     const dateOfBirth = watch("dob") || data?.dob ? new Date(watch("dob") || data.dob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' }) : "N/A";
     
     const stateObj = states.find((s: any) => s.desc === watch("state") || s.id === data?.geo_assignments?.state_id);
-    const districtObj = allDistricts.find((d: any) => d.desc === watch("district") || d.id === data?.geo_assignments?.district_id);
-    const mandalObj = allMandals.find((m: any) => m.desc === watch("mandal") || m.id === data?.geo_assignments?.mandal_id);
-
     const stateName = stateObj?.desc || data?.state || "N/A";
-    const districtName = districtObj?.desc || data?.district || "N/A";
-    const mandalName = mandalObj?.desc || data?.mandal || data?.area || "N/A";
+
+    const regionObj = regionsData?.data?.find((r: any) => r.region_name === watch("region") || r.id === data?.geo_assignments?.region_id);
+    const regionName = regionObj?.region_name || data?.region || "N/A";
+
+    const areaObj = areasData?.data?.find((a: any) => a.area_name === watch("area") || a.area_id === data?.geo_assignments?.areas_id);
+    const areaName = areaObj?.area_name || data?.area || "N/A";
 
     // Operating Territory
     const operatingTerritory = [
-      mandalName,
-      districtName,
+      areaName,
+      regionName,
       stateName,
     ].filter((val) => val && val !== "N/A").join(", ") || "N/A";
 
@@ -907,8 +914,8 @@ export default function AgentForm({
           </div>
         </FormSection>
 
-        {/* ── SELECT STATE, DISTRICT & MANDAL ── */}
-        <FormSection title="Select State, District & Mandal">
+        {/* ── SELECT STATE, REGION & AREA ── */}
+        <FormSection title="Select State, Region & Area">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
             <RHFDropdown
               name="state"
@@ -920,11 +927,11 @@ export default function AgentForm({
             />
             <div className="flex flex-col gap-1">
               <RHFDropdown
-                name="district"
+                name="region"
                 control={control}
-                label="District"
-                options={districtOptions}
-                placeholder="Select District"
+                label="Region"
+                options={regionOptions}
+                placeholder="Select Region"
                 disabled={isViewMode}
               />
               {(hierarchy?.region || hierarchy?.regional_officer || hierarchy?.intelligence_officer) && (
@@ -949,11 +956,11 @@ export default function AgentForm({
             </div>
             <div className="flex flex-col gap-1">
               <RHFDropdown
-                name="mandal"
+                name="area"
                 control={control}
-                label="Mandal"
-                options={mandalOptions}
-                placeholder="Select Mandal"
+                label="Area"
+                options={areaOptions}
+                placeholder="Select Area"
                 disabled={isViewMode}
               />
               {(hierarchy?.area || hierarchy?.field_officer) && (
