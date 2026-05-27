@@ -21,7 +21,7 @@ export const RaiseIssueForm = ({
   const [selectedIssue, setSelectedIssue] = React.useState("");
   const [message, setMessage] = React.useState("");
   const [toMail, setToMail] = React.useState(agentEmail || "");
-const [subject, setSubject] = React.useState("");
+  const [subject, setSubject] = React.useState("");
 
   const [sendIssueMail, { isLoading }] =
     useSendIssueMailMutation();
@@ -29,43 +29,37 @@ const [subject, setSubject] = React.useState("");
   const handleSendMail = async () => {
     try {
       const payload = {
-  to_mails: [toMail],
+        to_mails: [toMail],
+        Subject: subject,
+        Body: `
+          <h3>${selectedIssue}</h3>
+          <p>${message}</p>
+        `,
+        cc_mails: [],
+      };
 
-  Subject: subject,
+      if (!toMail.trim()) {
+        alert("Please enter recipient mail");
+        return;
+      }
 
-  Body: `
-    <h3>${selectedIssue}</h3>
-    <p>${message}</p>
-  `,
+      if (!subject.trim()) {
+        alert("Please enter subject");
+        return;
+      }
 
-  cc_mails: [],
-};
-if (!toMail.trim()) {
-  alert("Please enter recipient mail");
-  return;
-}
+      if (!selectedIssue) {
+        alert("Please select issue");
+        return;
+      }
 
-if (!subject.trim()) {
-  alert("Please enter subject");
-  return;
-}
-
-if (!selectedIssue) {
-  alert("Please select issue");
-  return;
-}
-
-if (!message.trim()) {
-  alert("Please enter message");
-  return;
-}
+      if (!message.trim()) {
+        alert("Please enter message");
+        return;
+      }
 
       await sendIssueMail(payload).unwrap();
-
-
-
       alert("Mail sent successfully");
-
       onClose?.();
     } catch (error) {
       console.log("Mail Error:", error);
@@ -76,12 +70,13 @@ if (!message.trim()) {
     <div
       className="
         w-full
-        max-w-[620px]
-        rounded-[28px]
-        bg-[#F7F7F7]
-        px-7
-        py-6
+        max-w-[min(90vw,560px)]
+        rounded-[clamp(12px,1.5vw,20px)]
+        bg-[#F8FAFC]
+        border border-slate-200/60
+        p-[clamp(14px,2vw,22px)]
         shadow-2xl
+        box-border
       "
     >
       {/* Header */}
@@ -89,10 +84,11 @@ if (!message.trim()) {
         <div>
           <h1
             className="
-              text-[34px]
+              text-[clamp(1.25rem,1.8vw,1.625rem)]
               leading-none
               font-bold
               text-[#202020]
+              tracking-tight
             "
           >
             Raise Issue
@@ -100,116 +96,127 @@ if (!message.trim()) {
 
           <p
             className="
-              mt-2
-              text-[15px]
-              text-[#4F4F4F]
+              mt-1.5
+              text-[clamp(0.75rem,0.95vw,0.8125rem)]
+              text-[#5C5C5C]
             "
           >
             Send a message to the agent regarding corrections
           </p>
         </div>
 
-        <button onClick={onClose}>
-          <X className="w-6 h-6 text-[#3D3D3D]" />
+        <button
+          onClick={onClose}
+          className="p-1 rounded-full hover:bg-slate-200/60 transition-colors"
+        >
+          <X className="w-5 h-5 text-[#3D3D3D]" />
         </button>
       </div>
 
       {/* To */}
-      <div className="mt-7">
+      <div className="mt-3.5">
         <label
           className="
             block
-            text-[15px]
+            text-[clamp(0.75rem,0.95vw,0.8125rem)]
             text-[#3E3E3E]
-            mb-2
-            font-medium
+            mb-1.5
+            font-semibold
           "
         >
           To
         </label>
 
         <input
-  type="email"
-  value={toMail}
-  onChange={(e) => setToMail(e.target.value)}
-  placeholder="Enter recipient mail"
-  className="
-    w-full
-    h-[52px]
-    rounded-[14px]
-    border
-    border-[#D8D8D8]
-    bg-white
-    px-5
-    text-[15px]
-    outline-none
-  "
-/>
+          type="email"
+          value={toMail}
+          onChange={(e) => setToMail(e.target.value)}
+          placeholder="Enter recipient mail"
+          className="
+            w-full
+            h-[clamp(36px,3vw,42px)]
+            rounded-[clamp(8px,0.8vw,12px)]
+            border
+            border-[#D8D8D8]
+            bg-white
+            px-4
+            text-[clamp(0.75rem,1vw,0.875rem)]
+            outline-none
+            focus:border-[#3D7DCA]
+            focus:ring-1
+            focus:ring-[#3D7DCA]/40
+            transition-all
+          "
+        />
       </div>
 
       {/* Subject */}
-      <div className="mt-5">
+      <div className="mt-2.5">
         <label
           className="
             block
-            text-[15px]
+            text-[clamp(0.75rem,0.95vw,0.8125rem)]
             text-[#3E3E3E]
-            mb-2
-            font-medium
+            mb-1.5
+            font-semibold
           "
         >
           Subject
         </label>
 
         <input
-  type="text"
-  value={subject}
-  onChange={(e) => setSubject(e.target.value)}
-  placeholder="Enter subject"
-  className="
-    w-full
-    h-[52px]
-    rounded-[14px]
-    border
-    border-[#D8D8D8]
-    bg-white
-    px-5
-    text-[15px]
-    outline-none
-  "
-/>
+          type="text"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          placeholder="Enter subject"
+          className="
+            w-full
+            h-[clamp(36px,3vw,42px)]
+            rounded-[clamp(8px,0.8vw,12px)]
+            border
+            border-[#D8D8D8]
+            bg-white
+            px-4
+            text-[clamp(0.75rem,1vw,0.875rem)]
+            outline-none
+            focus:border-[#3D7DCA]
+            focus:ring-1
+            focus:ring-[#3D7DCA]/40
+            transition-all
+          "
+        />
       </div>
 
       {/* Issues */}
-      <div className="mt-5">
+      <div className="mt-2.5">
         <label
           className="
             block
-            text-[15px]
+            text-[clamp(0.75rem,0.95vw,0.8125rem)]
             text-[#3E3E3E]
-            mb-3
-            font-medium
+            mb-2
+            font-semibold
           "
         >
           Describe the issue
         </label>
 
-        <div className="flex gap-3 flex-wrap">
+        <div className="flex gap-2 flex-wrap">
           {issueOptions.map((issue) => (
             <button
               key={issue}
               onClick={() => setSelectedIssue(issue)}
               className={`
-                px-5
-                h-[38px]
+                px-4
+                h-[clamp(28px,2.2vw,32px)]
                 rounded-full
                 border
-                text-[14px]
+                text-[clamp(0.7rem,0.85vw,0.75rem)]
+                font-medium
                 transition-all
-                ${
-                  selectedIssue === issue
-                    ? "bg-[#3D7DCA] text-white border-[#3D7DCA]"
-                    : "border-[#D3D3D3] text-[#4B4B4B] bg-white"
+                ${selectedIssue === issue
+                  ? "bg-[#3D7DCA] text-white border-[#3D7DCA] shadow-md shadow-[#3D7DCA]/20"
+                  : "border-[#D3D3D3] text-[#4B4B4B] bg-white hover:bg-slate-50 hover:border-slate-400"
                 }
               `}
             >
@@ -224,31 +231,37 @@ if (!message.trim()) {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="
-            mt-4
+            mt-2.5
             w-full
-            h-[130px]
-            rounded-[16px]
+            h-[clamp(75px,8vw,90px)]
+            rounded-[clamp(10px,1vw,14px)]
             border
             border-[#D8D8D8]
-            bg-transparent
-            px-5
-            py-4
-            text-[15px]
+            bg-white
+            px-4
+            py-3
+            text-[clamp(0.75rem,1vw,0.875rem)]
             outline-none
             resize-none
             placeholder:text-[#8A8A8A]
+            focus:border-[#3D7DCA]
+            focus:ring-1
+            focus:ring-[#3D7DCA]/40
+            transition-all
           "
         />
       </div>
 
       {/* Footer */}
-      <div className="flex justify-end gap-5 mt-6">
+      <div className="flex justify-end items-center gap-[clamp(10px,1.2vw,16px)] mt-4">
         <button
           onClick={onClose}
           className="
-            text-[16px]
+            text-[clamp(0.75rem,1vw,0.875rem)]
             text-[#3F3F3F]
-            font-medium
+            font-bold
+            hover:text-slate-800
+            transition-colors
           "
         >
           Cancel
@@ -258,14 +271,17 @@ if (!message.trim()) {
           onClick={handleSendMail}
           disabled={isLoading}
           className="
-            h-[48px]
-            px-8
+            h-[clamp(34px,2.8vw,40px)]
+            px-[clamp(18px,1.8vw,26px)]
             rounded-full
-            bg-[#3D7DCA]
+            bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)]
             text-white
-            text-[15px]
-            font-medium
-            shadow-[0px_8px_20px_rgba(61,125,202,0.35)]
+            text-[clamp(0.75rem,1vw,0.875rem)]
+            font-bold
+            shadow-[0px_6px_15px_rgba(38,128,196,0.25)]
+            hover:opacity-95
+            active:scale-[0.98]
+            transition-all
             disabled:opacity-50
           "
         >
