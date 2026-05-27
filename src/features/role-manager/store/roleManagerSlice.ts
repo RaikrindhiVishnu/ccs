@@ -7,6 +7,9 @@ interface RoleManagerState extends GeoMasterData {
   profileData: any | null;
   isLoading: boolean;
   error: string | null;
+  selectedStateId: string;
+  selectedRegionId: string;
+  selectedAreaId: string;
 }
 
 const initialState: RoleManagerState = {
@@ -19,6 +22,9 @@ const initialState: RoleManagerState = {
   error: null,
   createdArea: null,
   profileData: null,
+  selectedStateId: "",
+  selectedRegionId: "",
+  selectedAreaId: "",
 };
 
 const roleManagerSlice = createSlice({
@@ -46,6 +52,15 @@ const roleManagerSlice = createSlice({
     setProfileData: (state, action: PayloadAction<any>) => {
       state.profileData = action.payload;
     },
+    setSelectedStateId: (state, action: PayloadAction<string>) => {
+      state.selectedStateId = action.payload;
+    },
+    setSelectedRegionId: (state, action: PayloadAction<string>) => {
+      state.selectedRegionId = action.payload;
+    },
+    setSelectedAreaId: (state, action: PayloadAction<string>) => {
+      state.selectedAreaId = action.payload;
+    },
   },
 });
 
@@ -56,5 +71,8 @@ export const {
   setRegions,
   setCreatedArea,
   setProfileData,
+  setSelectedStateId,
+  setSelectedRegionId,
+  setSelectedAreaId,
 } = roleManagerSlice.actions;
 export default roleManagerSlice.reducer;
