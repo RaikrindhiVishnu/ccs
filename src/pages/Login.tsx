@@ -94,17 +94,17 @@ const MOCK_API_USERS = [
     },
   },
   {
-    login_id: "vo@glc.com",
-    password: "vo@123",
+    login_id: "vo2@glc.com",
+    password: "vo2@123",
     response: {
       id: 107,
-      login_id: "vo@glc.com",
+      login_id: "vo2@glc.com",
       first_name: "Verification",
-      last_name: "Officer",
-      role_id: UserRole.VO1,
+      last_name: "Officer 2",
+      role_id: UserRole.VO2,
       is_first_login: 0,
-      token: "mock-token-vo1",
-      refreshToken: "mock-refresh-token-vo1",
+      token: "mock-token-vo2",
+      refreshToken: "mock-refresh-token-vo2",
     },
   },
 ];
@@ -167,8 +167,8 @@ export default function Login() {
         navigate("/regional-officer/dashboard");
       } else if (roleCode === "FO") {
         navigate("/field-officer/dashboard");
-      } else if (roleCode === "VO1") {
-        navigate("/verification-officer/dashboard");
+      } else if (roleCode === "VO2" || roleCode === "VO1") {
+        navigate("/verification-officer-2/dashboard");
       } else {
         navigate("/role-manager/dashboard");
       }
@@ -199,8 +199,8 @@ export default function Login() {
         navigate("/regional-officer/dashboard");
       } else if (roleCode === "FO") {
         navigate("/field-officer/dashboard");
-      } else if (roleCode === "VO1") {
-        navigate("/verification-officer/dashboard");
+      } else if (roleCode === "VO2" || roleCode === "VO1") {
+        navigate("/verification-officer-2/dashboard");
       } else {
         navigate("/role-manager/dashboard");
       }

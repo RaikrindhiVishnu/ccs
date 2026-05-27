@@ -7,12 +7,12 @@ import RejectionBreakdown from '../components/RejectionBreakdown';
 
 export const VerificationOfficerDashboard = () => {
   return (
-    <div className="w-full relative flex gap-[30px] justify-center items-start">
+    <div className="w-full relative flex flex-col xl:flex-row gap-6 xl:gap-[30px] justify-center items-start">
       
       {/* Left Column */}
-      <div className="flex flex-col gap-[30px] w-full max-w-[876px]">
+      <div className="flex flex-col gap-6 xl:gap-[30px] w-full xl:max-w-[876px]">
         {/* Top Row of Left Column */}
-        <div className="flex gap-[30px] w-full">
+        <div className="flex flex-col md:flex-row gap-6 xl:gap-[30px] w-full">
           <DailyClearanceStatus />
           <ActiveReviewCard />
         </div>
@@ -24,7 +24,7 @@ export const VerificationOfficerDashboard = () => {
       </div>
 
       {/* Right Column (Unified Sidebar) */}
-      <div className="bg-[#F7F8FA] rounded-[30px] p-6 w-full max-w-[420px] h-[831px] shadow-sm flex flex-col justify-between">
+      <div className="bg-[#F7F8FA] rounded-[30px] p-6 w-full xl:max-w-[420px] h-auto min-h-[831px] shadow-sm flex flex-col gap-6 xl:justify-between">
         <WeeklyAssetCertification />
         <RejectionBreakdown />
       </div>

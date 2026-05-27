@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Bell, Check, Phone, Mail, CalendarDays } from 'lucide-react';
+import { ArrowLeft, Bell, Check, Phone, Mail, CalendarDays, MapPin } from 'lucide-react';
 import { useViewportScale } from '@/hooks/useViewportScale';
 
 export const VerificationOfficerAssignedFarmlandsOwnerDetails: React.FC = () => {
@@ -156,17 +156,21 @@ export const VerificationOfficerAssignedFarmlandsOwnerDetails: React.FC = () => 
           }} />
 
           {/* Steps */}
-          <div style={{ position: 'absolute', left: '120px', top: '130px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span style={{ fontFamily: "'Plus Jakarta Sans'", fontWeight: 600, fontSize: '14px', textTransform: 'uppercase', color: '#FFBC8A' }}>CUSTOMER INFORMATION</span>
+          <div style={{ position: 'absolute', left: '120px', top: '130px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px 0px 32px 24px', gap: '4px', width: '173px', height: '68px', boxSizing: 'content-box' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px', width: '182px', height: '36px' }}>
+              <span style={{ fontFamily: "'Plus Jakarta Sans'", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#FFBC8A', width: '173px', height: '36px' }}>CUSTOMER INFORMATION</span>
+            </div>
           </div>
-          <div style={{ position: 'absolute', left: '120px', top: '219px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span style={{ fontFamily: "'Plus Jakarta Sans'", fontWeight: 600, fontSize: '14px', textTransform: 'uppercase', color: '#FFBC8A' }}>LAND & BOUNDARIES</span>
+          <div style={{ position: 'absolute', left: '120px', top: '219px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px 0px 4px 24px', gap: '4px', width: '173px', height: '22px', boxSizing: 'content-box' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px', width: '149px', height: '18px' }}>
+              <span style={{ fontFamily: "'Plus Jakarta Sans'", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#FFBC8A', width: '149px', height: '18px' }}>LAND & BOUNDARIES</span>
+            </div>
           </div>
-          <div style={{ position: 'absolute', left: '143px', top: '299px' }}>
-            <span style={{ fontFamily: "'Plus Jakarta Sans'", fontWeight: 600, fontSize: '14px', textTransform: 'uppercase', color: '#FFBC8A' }}>VALUATION</span>
+          <div style={{ position: 'absolute', left: '143px', top: '299px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px', height: '18px' }}>
+            <span style={{ fontFamily: "'Plus Jakarta Sans'", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#FFBC8A', width: '81px', height: '18px' }}>VALUATION</span>
           </div>
           <div style={{ position: 'absolute', left: '143px', top: '377px' }}>
-            <span style={{ fontFamily: "'Plus Jakarta Sans'", fontWeight: 600, fontSize: '14px', textTransform: 'uppercase', color: '#FFBC8A' }}>AGRICULTURE & REPORT</span>
+            <span style={{ fontFamily: "'Plus Jakarta Sans'", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#FFBC8A', height: '36px', width: '118px' }}>AGRICULTURE &<br/>REPORT</span>
           </div>
 
           {/* Step Dots (Exclamation in Circle) */}

@@ -5,7 +5,7 @@ export const ActiveReviewCard = () => {
   const { title, subtitle, assignee, progress, buttonText } = dashboardMockData.activeReview;
 
   return (
-    <div className="bg-[#F7F8FA] rounded-[30px] p-8 w-full max-w-[423px] h-[417px] flex flex-col shadow-sm relative">
+    <div className="bg-[#F7F8FA] rounded-[30px] p-6 md:p-8 w-full md:max-w-[423px] h-auto min-h-[417px] flex flex-col shadow-sm relative">
       {/* Top Labels */}
       <div className="flex gap-3 mb-8">
         <div className="bg-[#E6FFEC] text-[#00801F] text-[15px] font-medium font-poppins px-4 py-2 rounded-full">
@@ -27,7 +27,7 @@ export const ActiveReviewCard = () => {
       </div>
 
       {/* Audit Info Cards */}
-      <div className="flex gap-4 mb-auto">
+      <div className="flex flex-col sm:flex-row gap-4 mb-auto">
         {/* Assignee Card */}
         <div className="bg-[#F1F1F1] rounded-[15px] p-4 flex-1 flex flex-col gap-2">
           <span className="text-[#6E6E6E] text-sm font-normal font-inter">
@@ -76,5 +76,6 @@ export const ActiveReviewCard = () => {
     </div>
   );
 };
+
 
 export default ActiveReviewCard;

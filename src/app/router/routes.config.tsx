@@ -113,25 +113,25 @@ export const FieldOfficerDashboard = lazy(
 
 // Verification Officer
 export const VerificationOfficerDashboard = lazy(
-  () => import("../../features/verification-officer/pages/VerificationOfficerDashboard"),
+  () => import("../../features/verification-officer-2/pages/VerificationOfficerDashboard"),
 );
 export const VerificationOfficerAssignedFarmlands = lazy(
-  () => import("../../features/verification-officer/pages/AssignedFarmlands"),
+  () => import("../../features/verification-officer-2/pages/AssignedFarmlands"),
 );
 export const VerificationOfficerInProgressFarmlands = lazy(
-  () => import("../../features/verification-officer/pages/InProgressFarmlands"),
+  () => import("../../features/verification-officer-2/pages/InProgressFarmlands"),
 );
 export const VerificationOfficerCompletedFarmlands = lazy(
-  () => import("../../features/verification-officer/pages/CompletedFarmlands"),
+  () => import("../../features/verification-officer-2/pages/CompletedFarmlands"),
 );
 export const VerificationOfficerCompletedFarmlandDetails = lazy(
-  () => import("../../features/verification-officer/pages/CompletedFarmlandDetails"),
+  () => import("../../features/verification-officer-2/pages/CompletedFarmlandDetails"),
 );
 export const VerificationOfficerAssignedFarmlandsOwnerDetails = lazy(
-  () => import("../../features/verification-officer/pages/AssignedFarmlandsOwnerDetails"),
+  () => import("../../features/verification-officer-2/pages/AssignedFarmlandsOwnerDetails"),
 );
 export const VerificationOfficerLayout = lazy(
-  () => import("../../components/common/layouts/verificationofficer"),
+  () => import("../../components/common/layouts/VerificationOfficer2Layout"),
 );
 
 // Dev Imports
@@ -163,18 +163,7 @@ export const EditRegionalOfficer = lazy(
   () => import("../../features/role-manager/pages/Createregionalofficer"),
 );
 
-// Regional Officer
-export const RegionalOfficerDashboard = lazy(
-  () => import("../../features/regional-officer/pages/RegionalOfficerDashboard"),
-);
-export const RegionalOfficerLayout = lazy(
-  () => import("../../components/common/layouts/Regionalofficerlayout"),
-);
 
-// Field Officer
-export const FieldOfficerDashboard = lazy(
-  () => import("../../features/field-officer/pages/FieldOfficerDashboard"),
-);
 export const DraftsPage = lazy(
   () => import("../../features/field-officer/pages/DraftsPage"),
 );

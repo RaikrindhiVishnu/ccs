@@ -1,6 +1,6 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import glcLogo from "@/assets/glc-logo.svg";
-import bellIcon from "@/assets/bellicon.svg";
+import iconNotification from "@/assets/Icon Notification (3).svg";
 import profileImg from "@/assets/profile.svg";
 import { REGIONAL_OFFICER_NAV_ITEMS } from "@/features/regional-officer/data/navigation";
 
@@ -47,10 +47,10 @@ export const RegionalOfficerLayout = () => {
 
         {/* Right Action Section */}
         <div className="flex items-center gap-[15px] justify-self-end">
-          <button className="icon-button relative">
-            <img src={bellIcon} alt="Notifications" className="w-[26px] h-[28px]" />
-            {/* Red Dot from Figma */}
-            <div className="absolute top-[2px] right-[2px] w-[6px] h-[6px] bg-[#FF2D55] rounded-full border border-white"></div>
+          <button className="relative flex items-center justify-center w-[37.5px] h-[37.5px] bg-white border border-[rgba(155,155,155,0.6)] rounded-full shrink-0 transition-transform hover:scale-105 active:scale-95 cursor-pointer">
+            <img src={iconNotification} alt="Notifications" className="w-[12px] h-[15px]" />
+            {/* Red Dot */}
+            <div className="absolute top-[10px] right-[11px] w-[6px] h-[6px] bg-[#FF2D55] rounded-full"></div>
           </button>
 
           <div className="profile-container">

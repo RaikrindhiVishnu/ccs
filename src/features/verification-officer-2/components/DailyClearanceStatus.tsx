@@ -15,7 +15,7 @@ export const DailyClearanceStatus = () => {
   };
 
   return (
-    <div className="bg-white rounded-[30px] p-8 w-full max-w-[423px] h-[417px] flex flex-col shadow-sm">
+    <div className="bg-white rounded-[30px] p-6 md:p-8 w-full md:max-w-[423px] h-auto min-h-[417px] flex flex-col shadow-sm">
       <h2 className="text-[#202020] text-2xl font-medium font-plus-jakarta mb-6">
         Daily Clearance Status
       </h2>
@@ -42,10 +42,7 @@ export const DailyClearanceStatus = () => {
       </div>
 
       {/* Stats Area */}
-      <div className="bg-[#F1F1F1] rounded-[30px] mt-auto p-6 flex justify-between items-center relative">
-        {/* Divider Lines */}
-        <div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-px h-16 bg-[#6F6F6F]/20"></div>
-        <div className="absolute left-2/3 top-1/2 -translate-y-1/2 w-px h-16 bg-[#6F6F6F]/20"></div>
+      <div className="bg-[#F1F1F1] rounded-[30px] mt-auto p-4 md:p-6 flex justify-between items-center relative divide-x divide-[#6F6F6F]/20">
 
         {stats.map((stat) => (
           <div key={stat.id} className="flex flex-col items-center justify-center w-1/3 gap-3">

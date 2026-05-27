@@ -1,11 +1,4 @@
 import React from 'react';
-import {
-  Search,
-  ArrowUpRight,
-  MapPin,
-  FileText,
-  Clock,
-  ChevronDown,
 import { 
   Search, 
   Plus, 

@@ -6,7 +6,7 @@ export const RejectionBreakdown = () => {
   const { items } = dashboardMockData.rejectionBreakdown;
 
   return (
-    <div className="bg-[#F1F1F1] rounded-[20px] p-6 w-full max-w-[370px] flex flex-col shadow-sm">
+    <div className="bg-[#F1F1F1] rounded-[20px] p-6 w-full xl:max-w-[370px] flex flex-col shadow-sm">
       <h3 className="text-[#202020] text-xl font-medium font-plus-jakarta capitalize mb-4">
         Rejection Breakdown
       </h3>
