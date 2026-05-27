@@ -13,14 +13,20 @@ export const roleManagerApi = createApi({
   endpoints: (builder) => ({
     getRegionalOfficerById: builder.mutation<any, number>({
       query: (userId) => ({
-        url: `/regionalOfficer/getRegionalOfficerById/${userId}`,
+        url: "/regionalOfficer/getRegionalOfficerById",
         method: "POST",
+        body: {
+          userId,
+        },
       }),
     }),
     getIntelligenceOfficerById: builder.mutation<any, number>({
       query: (userId) => ({
-        url: `/regionalOfficer/getIntelligenceOfficerById/${userId}`,
+        url: "/regionalOfficer/getIntelligenceOfficerById",
         method: "POST",
+        body: {
+          userId,
+        },
       }),
     }),
     getFieldOfficerById: builder.mutation<any, number>({
