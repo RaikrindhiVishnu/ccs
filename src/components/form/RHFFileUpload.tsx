@@ -95,6 +95,7 @@ export function RHFFileUpload<T extends FieldValues>({
             className="hidden"
             onChange={(e) => {
               field.onChange(e.target.files?.[0] ?? undefined);
+              e.target.value = "";
             }}
           />
 
