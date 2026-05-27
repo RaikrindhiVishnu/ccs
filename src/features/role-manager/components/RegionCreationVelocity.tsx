@@ -135,8 +135,8 @@ const RegionCreationVelocity: React.FC = () => {
     isLoading,
     error,
   } = useGetRegionCreationVelocityQuery({
-    startDate: dateRange.from.toISOString().split("T")[0],
-    endDate: dateRange.to.toISOString().split("T")[0],
+    startDate: `${dateRange.from.getFullYear()}-${String(dateRange.from.getMonth() + 1).padStart(2, '0')}-${String(dateRange.from.getDate()).padStart(2, '0')}`,
+    endDate: `${dateRange.to.getFullYear()}-${String(dateRange.to.getMonth() + 1).padStart(2, '0')}-${String(dateRange.to.getDate()).padStart(2, '0')}`,
     offset: "0",
   });
 
@@ -155,7 +155,7 @@ const RegionCreationVelocity: React.FC = () => {
   };
 
   const chartData = generateDateRange(dateRange.from, dateRange.to).map((date) => {
-    const dateStr = date.toISOString().split("T")[0];
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const matchingItem = apiData?.data?.find((item) => {
       return item.creationDate.startsWith(dateStr);
     });
