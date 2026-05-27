@@ -10,12 +10,13 @@ import { useUpdatePasswordMutation } from "@/features/auth/api/authApi";
 
 export default function UpdatePassword() {
   const navigate = useNavigate();
-  const [updatePassword, { isLoading: isUpdating }] = useUpdatePasswordMutation();
-  
+  const [updatePassword, { isLoading: isUpdating }] =
+    useUpdatePasswordMutation();
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -45,7 +46,7 @@ export default function UpdatePassword() {
     }
 
     try {
-      const res = await updatePassword({
+      await updatePassword({
         old_password: currentPassword,
         new_password: newPassword,
       }).unwrap();
@@ -57,9 +58,9 @@ export default function UpdatePassword() {
     } catch (err: any) {
       console.error("Update password error:", err);
       toast.error(
-        err?.data?.message || 
-        err?.message || 
-        "Failed to update password. Please check your current password."
+        err?.data?.message ||
+          err?.message ||
+          "Failed to update password. Please check your current password.",
       );
     }
   };
@@ -118,7 +119,11 @@ export default function UpdatePassword() {
           "
         >
           {/* Logo */}
-          <img src={glcLogo} alt="Green Land Capital Logo" className="h-14 w-auto object-contain mb-6 select-none" />
+          <img
+            src={glcLogo}
+            alt="Green Land Capital Logo"
+            className="h-14 w-auto object-contain mb-6 select-none"
+          />
 
           {/* Heading */}
           <Typography
@@ -157,7 +162,11 @@ export default function UpdatePassword() {
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                   className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none cursor-pointer flex items-center justify-center"
                 >
-                  {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showCurrentPassword ? (
+                    <EyeOff size={16} />
+                  ) : (
+                    <Eye size={16} />
+                  )}
                 </button>
               }
             />
@@ -203,7 +212,11 @@ export default function UpdatePassword() {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none cursor-pointer flex items-center justify-center"
                 >
-                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showConfirmPassword ? (
+                    <EyeOff size={16} />
+                  ) : (
+                    <Eye size={16} />
+                  )}
                 </button>
               }
             />
@@ -222,7 +235,9 @@ export default function UpdatePassword() {
           {/* Footer Security Badge */}
           <div className="flex items-center gap-1.5 mt-8 text-[11px] text-slate-400 font-medium">
             <Shield size={13} className="text-emerald-500 shrink-0" />
-            <span>Secured by TechGy Innovations. End-to-end encrypted connection.</span>
+            <span>
+              Secured by TechGy Innovations. End-to-end encrypted connection.
+            </span>
           </div>
         </div>
       </div>
