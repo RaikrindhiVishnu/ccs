@@ -154,7 +154,7 @@ export default function Successcard({
             <div className="w-full bg-[var(--surface-page)] p-[clamp(12px,1.5vw,20px)] pl-[clamp(16px,2vw,28px)] rounded-[clamp(18px,2vw,28px)] grid grid-cols-2 gap-x-[clamp(16px,2vw,24px)] gap-y-[clamp(10px,1.2vh,18px)]">
               {[
                 {
-                  label: titleLine1 === "Area" ? "AREA NAME" : "REGION NAME",
+                  label: titleLine1 === "Area" ? "AREA NAME" : titleLine1 === "Agent" ? "AGENT NAME" : "REGION NAME",
                   value: regionName
                 },
                 { label: "ASSIGNED ID", value: assignedId },
