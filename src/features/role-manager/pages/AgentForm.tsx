@@ -145,7 +145,7 @@ export default function AgentForm({
       firstName:
         initialData?.firstName ?? (initialData as any)?.first_name ?? "",
       lastName: initialData?.lastName ?? (initialData as any)?.last_name ?? "",
-      dob: initialData?.dob ?? "",
+      dob: initialData?.dob ? initialData.dob.split("T")[0] : "",
       email: initialData?.email ?? (initialData as any)?.emailAddress ?? "",
       phone:
         initialData?.phone ??
@@ -162,6 +162,7 @@ export default function AgentForm({
         initialData?.pincode ?? (initialData as any)?.address?.pincode ?? "",
       panNumber:
         initialData?.panNumber ??
+        (initialData as any)?.pan_card_number ??
         (initialData as any)?.id_proof?.pan_card_number ??
         "",
       state:
@@ -176,18 +177,24 @@ export default function AgentForm({
         "",
       bankName:
         initialData?.bankName ??
+        (initialData as any)?.bank_name ??
         (initialData as any)?.id_proof?.bank_name ??
         "",
       accountNumber:
         initialData?.accountNumber ??
+        (initialData as any)?.account_number ??
         (initialData as any)?.id_proof?.bank_account_number ??
         "",
       ifscCode:
         initialData?.ifscCode ??
+        (initialData as any)?.ifsc_code ??
         (initialData as any)?.id_proof?.ifsc_code ??
         "",
       bankBranch:
-        initialData?.bankBranch ?? (initialData as any)?.id_proof?.branch ?? "",
+        initialData?.bankBranch ?? 
+        (initialData as any)?.branch ?? 
+        (initialData as any)?.id_proof?.branch ?? 
+        "",
       // ── file fields ──
       profilePicture: undefined,
       aadharFront: undefined,
@@ -297,7 +304,7 @@ export default function AgentForm({
       const stateObj = states.find((s: any) => s.id === geo.state_id);
       if (stateObj) {
         prevStateRef.current = stateObj.desc;
-        setValue("state", stateObj.desc);
+        setValue("state", stateObj.desc, { shouldValidate: true });
       }
     }
   }, [agentData, initialData, states, setValue]);
@@ -309,7 +316,7 @@ export default function AgentForm({
       const regionObj = regionsData.data.find((r: any) => r.id === geo.region_id);
       if (regionObj) {
         prevRegionRef.current = regionObj.region_name;
-        setValue("region", regionObj.region_name);
+        setValue("region", regionObj.region_name, { shouldValidate: true });
       }
     }
   }, [regionsData, agentData, initialData, setValue]);
@@ -320,45 +327,80 @@ export default function AgentForm({
     if (geo?.areas_id && areasData?.data) {
       const areaObj = areasData.data.find((a: any) => a.area_id === geo.areas_id);
       if (areaObj) {
-        setValue("area", areaObj.area_name);
+        setValue("area", areaObj.area_name, { shouldValidate: true });
       }
     }
   }, [areasData, agentData, initialData, setValue]);
 
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "";
+    return dateStr.split("T")[0];
+  };
+
+  const getGeoNames = (srcData: any) => {
+    const geo = srcData?.geo_assignments;
+    
+    const safeLower = (val: any): string => {
+      if (typeof val === "string") return val.toLowerCase();
+      if (val && typeof val.desc === "string") return val.desc.toLowerCase();
+      if (val && typeof val.name === "string") return val.name.toLowerCase();
+      return "";
+    };
+
+    const stateObj = states.find((s: any) => {
+      const sDesc = safeLower(s.desc);
+      if (!sDesc) return false;
+      return (
+        String(s.id) === String(geo?.state_id) ||
+        String(s.id) === String(srcData?.address_state_id) ||
+        String(s.id) === String(srcData?.address?.state_id) ||
+        sDesc === safeLower(srcData?.state) ||
+        sDesc === safeLower(srcData?.address?.state)
+      );
+    });
+
+    const stateVal = stateObj?.desc ||
+      (typeof srcData?.state === "string" ? srcData.state : srcData?.state?.desc || srcData?.state?.name) ||
+      (typeof srcData?.address?.state === "string" ? srcData.address.state : srcData?.address?.state?.desc || srcData?.address?.state?.name) ||
+      "";
+    return { stateVal };
+  };
+
   useEffect(() => {
-    if (agentData?.data) {
+    if (agentData?.data && states.length > 0) {
       const data = agentData.data;
+      const { stateVal } = getGeoNames(data);
       reset({
         firstName: data.firstName || data.first_name || "",
         lastName: data.lastName || data.last_name || "",
-        dob: data.dob || "",
+        dob: formatDate(data.dob),
         email: data.email || data.emailAddress || "",
         phone: data.phone || data.phoneNumber || data.mobile || data.contact || "",
         address: data.address || data.address?.address || "",
-        addressState: data.state || data.address?.state || "",
+        addressState: stateVal || data.state || data.address?.state || "",
         city: data.city || data.address?.city || "",
         pincode: data.pincode || data.address?.pincode || "",
-        panNumber: data.panCardNumber || data.id_proof?.pan_card_number || "",
-        state: "",
+        panNumber: data.pan_card_number || data.panCardNumber || data.id_proof?.pan_card_number || "",
+        state: stateVal,
         region: "",
         area: "",
-        bankName: data.bankName || data.id_proof?.bank_name || "",
-        accountNumber: data.accountNumber || data.id_proof?.bank_account_number || "",
-        ifscCode: data.ifscCode || data.id_proof?.ifsc_code || "",
-        bankBranch: data.bankBranch || data.id_proof?.branch || "",
+        bankName: data.bank_name || data.bankName || data.id_proof?.bank_name || "",
+        accountNumber: data.account_number || data.accountNumber || data.id_proof?.bank_account_number || "",
+        ifscCode: data.ifsc_code || data.ifscCode || data.id_proof?.ifsc_code || "",
+        bankBranch: data.branch || data.bankBranch || data.id_proof?.branch || "",
       });
-      setDobState(data.dob || "");
+      setDobState(formatDate(data.dob));
       setAddressState(data.address || data.address?.address || "");
       setRoleIdState(data.role_id || 1);
     }
-  }, [agentData, reset]);
+  }, [agentData, reset, states]);
 
   const firstName = watch("firstName");
   const lastName = watch("lastName");
 
   useEffect(() => {
     if (isEdit && initialData) {
-      setDobState(initialData.dob || (initialData as any).dob || "");
+      setDobState(formatDate(initialData.dob || (initialData as any).dob));
       setAddressState(
         initialData.address ||
         (initialData as any).address?.address ||
