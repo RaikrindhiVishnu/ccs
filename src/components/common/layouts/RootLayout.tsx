@@ -13,8 +13,8 @@ const LAYOUT_MAP: Record<LayoutVariant, ComponentType> = {
   'sidebar-role-manager': RoleManagerLayout,
   'sidebar-ccs-officer':  CcsOfficerLayout,
   'sidebar-intelligence-officer': IntelligenceOfficerLayout,
-  'sidebar-regional-officer': RegionalOfficerLayout,
   'header-only':          FieldOfficerLayout,
+  'sidebar-regional-officer': RegionalOfficerLayout,
 };
 
 // ─── RootLayout — the single entry point for all authenticated pages ──────────

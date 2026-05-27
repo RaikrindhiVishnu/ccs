@@ -11,13 +11,41 @@ const data = [
   { name: 'Sun', acres: 25 },
 ];
 
+const CustomTick = ({ x, y, payload }: any) => {
+  const isSelected = payload.value === 'Wed'; // Match the selected state in the design
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <rect 
+        x={-18} 
+        y={0} 
+        width={36} 
+        height={18} 
+        rx={9} 
+        fill={isSelected ? "#2780C4" : "white"} 
+        stroke={isSelected ? "#2780C4" : "rgba(155, 155, 155, 0.6)"} 
+        strokeWidth={0.75}
+      />
+      <text 
+        x={0} 
+        y={12} 
+        textAnchor="middle" 
+        fill={isSelected ? "#FFFFFF" : "#000000"} 
+        fontSize={9} 
+        fontFamily="Plus Jakarta Sans"
+      >
+        {payload.value}
+      </text>
+    </g>
+  );
+};
+
 const DailyClearanceChart: React.FC = () => {
   return (
-    <div className="h-[180px] w-full">
+    <div className="h-full w-full min-h-[120px]">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={data}
-          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+          margin={{ top: 10, right: 20, left: 20, bottom: 20 }}
         >
           <defs>
             <linearGradient id="colorAcres" x1="0" y1="0" x2="0" y2="1">
@@ -30,7 +58,7 @@ const DailyClearanceChart: React.FC = () => {
             dataKey="name" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fontSize: 10, fill: '#98A0B2' }}
+            tick={<CustomTick />}
             dy={10}
           />
           <YAxis hide />

@@ -37,14 +37,36 @@ const AgentOnboardingVelocity: React.FC<Props> = ({
     offset: "0",
   });
 
-  const chartData =
-    apiData?.data?.map((item) => ({
-     label: new Date(item.onboardingDate).toLocaleDateString("en-US", {
-  month: "short",
-  day: "numeric",
-}),
-      value: item.totalAgents,
-    })) || [];
+  const generateDateRange = (start: Date, end: Date) => {
+    const dates = [];
+    const currentDate = new Date(start);
+    // Set time to start of day to avoid timezone issues during comparison
+    currentDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(end);
+    endDate.setHours(23, 59, 59, 999);
+    
+    while (currentDate <= endDate) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return dates;
+  };
+
+  const chartData = generateDateRange(dateRange.from, dateRange.to).map((date) => {
+    const dateStr = date.toISOString().split("T")[0];
+    const matchingItem = apiData?.data?.find((item) => {
+      // Handle potential timezone differences by parsing as UTC or just splitting string
+      return item.onboardingDate.startsWith(dateStr);
+    });
+
+    return {
+      label: date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+      value: matchingItem ? matchingItem.totalAgents : 0,
+    };
+  });
 const maxValue =
   chartData.length > 0
     ? Math.max(...chartData.map((item) => item.value))
