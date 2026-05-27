@@ -179,7 +179,7 @@ function LoginCard({
 function LoginScreen({
   onSuccess,
 }: {
-  onSuccess: (d: { is_first_login: number }) => void;
+  onSuccess: (d: { is_first_login: number; passwordUsed: string }) => void;
 }) {
   const dispatch = useDispatch();
   const [login] = useLoginMutation();
@@ -252,6 +252,7 @@ function LoginScreen({
             first_name: response.first_name,
             last_name: response.last_name,
             role_id: response.role_id,
+            role: ROLE_CODES[response.role_id] || "",
             is_first_login: response.is_first_login,
           },
           accessToken: response.token,
@@ -261,6 +262,7 @@ function LoginScreen({
 
       onSuccess({
         is_first_login: response.is_first_login,
+        passwordUsed: password,
       });
     } catch (err: any) {
       setErrors({
@@ -407,7 +409,7 @@ function UpdateDefaultPasswordScreen({
   );
 }
 
-function ChangePasswordScreen({ onDone }: { onDone: () => void }) {
+function ChangePasswordScreen({ onDone, oldPassword }: { onDone: () => void; oldPassword: string }) {
   const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
   const [newPw, setNewPw] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
@@ -440,6 +442,7 @@ function ChangePasswordScreen({ onDone }: { onDone: () => void }) {
 
     try {
       await updatePassword({
+        old_password: oldPassword,
         new_password: newPw,
       }).unwrap();
 
@@ -642,12 +645,16 @@ export default function LoginFlow() {
   const navigate = useNavigate();
   type Screen = "login" | "update-default" | "change-password" | "dashboard";
   const [screen, setScreen] = useState<Screen>("login");
+  const [oldPassword, setOldPassword] = useState("");
 
   const handleLoginSuccess = ({
     is_first_login,
+    passwordUsed,
   }: {
     is_first_login: number;
+    passwordUsed: string;
   }) => {
+    setOldPassword(passwordUsed);
     if (is_first_login === 1) {
       setScreen("update-default");
     } else {
@@ -669,7 +676,7 @@ export default function LoginFlow() {
       )}
 
       {screen === "change-password" && (
-        <ChangePasswordScreen onDone={() => navigate("/dashboard")} />
+        <ChangePasswordScreen onDone={() => navigate("/dashboard")} oldPassword={oldPassword} />
       )}
     </div>
   );

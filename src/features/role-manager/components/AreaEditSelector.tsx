@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { X, Search, ChevronDown, CheckCircle, HelpCircle, MapPin } from "lucide-react";
+import { Search, ChevronDown, HelpCircle } from "lucide-react";
 import { useGetAllAreasByRegionIdQuery } from "../api/regionSelectionApi";
 import { decompressGeoJSON } from "../utils/utils";
 import maplibregl from "maplibre-gl";
@@ -17,6 +17,10 @@ interface AreaEditSelectorProps {
   onClose: () => void;
   mapRef: React.MutableRefObject<maplibregl.Map | null>;
   geoMasterData: GeoMasterData | null;
+  filter: "assigned" | "unassigned" | "all";
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  areasDropdownRef: React.RefObject<HTMLDivElement | null>;
 }
 
 // Helper to compute combined bounding box of a list of mandal IDs
@@ -61,17 +65,16 @@ const getMandalsBounds = (
 
 export const AreaEditSelector: React.FC<AreaEditSelectorProps> = ({
   regionId,
-  regionName,
-  stateName,
   selectedAreaId,
   onAreaSelect,
-  onClose,
   mapRef,
   geoMasterData,
+  filter,
+  isOpen,
+  setIsOpen,
+  areasDropdownRef,
 }) => {
-  const [filter, setFilter] = useState<"all" | "assigned" | "unassigned">("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Fetch areas in selected region
   const { data: regionAreasResponse, isLoading, refetch } = useGetAllAreasByRegionIdQuery(
@@ -87,6 +90,11 @@ export const AreaEditSelector: React.FC<AreaEditSelectorProps> = ({
   useEffect(() => {
     refetch();
   }, [regionId, refetch]);
+
+  const selectedArea = useMemo(() => {
+    if (!selectedAreaId) return null;
+    return areasList.find((area: any) => Number(area.area_id || area.id) === Number(selectedAreaId));
+  }, [areasList, selectedAreaId]);
 
   // Dropdown filtering logic
   const filteredAreas = useMemo(() => {
@@ -181,139 +189,100 @@ export const AreaEditSelector: React.FC<AreaEditSelectorProps> = ({
   }, [regionId, mapRef]);
 
   return (
-    <div className="flex flex-col bg-white rounded-2xl overflow-hidden shadow-2xl h-full max-h-[500px]">
-      {/* ── CONSTANT HEADER: State Name & Region Name ── */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-5 py-4 text-white relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-white/80 hover:text-white hover:bg-white/10 p-1.5 rounded-full transition-colors cursor-pointer border-0 bg-transparent"
-        >
-          <X className="w-4 h-4" />
-        </button>
-        <span className="text-[10px] uppercase font-bold tracking-widest text-blue-200 block mb-0.5">
-          {stateName}
+    <div className="relative" ref={areasDropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+      >
+        <span>
+          {selectedArea
+            ? `Areas: ${selectedArea.area_name || selectedArea.areaName}`
+            : `Areas: ${filteredAreas.length}`}
         </span>
-        <h3 className="text-[16px] font-extrabold tracking-tight truncate pr-8 leading-tight">
-          {regionName}
-        </h3>
-        <p className="text-[11px] text-indigo-100 font-medium mt-1.5 flex items-center gap-1.5">
-          <MapPin className="w-3.5 h-3.5 text-blue-300 shrink-0" />
-          <span>Area Management Dashboard</span>
-        </p>
-      </div>
+        <ChevronDown
+          className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
 
-      {/* ── FILTER & CONTROLS ── */}
-      <div className="p-4 bg-slate-50 border-b border-slate-100 flex flex-col gap-3">
-        {/* Custom Premium Dropdown Menu */}
-        <div className="relative">
-          <button
-            onClick={() => setDropdownOpen((prev) => !prev)}
-            className="w-full h-11 px-4 flex items-center justify-between rounded-xl border border-slate-200 bg-white shadow-sm text-xs font-bold text-slate-700 cursor-pointer hover:bg-slate-50 transition-all"
-          >
-            <span className="capitalize">
-              {filter === "all" ? "All Areas" : `${filter} Areas`}
-            </span>
-            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
-          </button>
-
-          {dropdownOpen && (
-            <div className="absolute left-0 right-0 top-[48px] bg-white rounded-xl border border-slate-200 shadow-xl z-20 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
-              {(["all", "assigned", "unassigned"] as const).map((option) => (
-                <button
-                  key={option}
-                  onClick={() => {
-                    setFilter(option);
-                    setDropdownOpen(false);
-                  }}
-                  className={`w-full text-left px-4 py-3 text-xs font-bold transition-colors cursor-pointer border-0 ${
-                    filter === option
-                      ? "bg-blue-50 text-blue-600"
-                      : "bg-white text-slate-600 hover:bg-slate-50"
-                  }`}
-                >
-                  {option === "all" ? "All Areas" : option === "assigned" ? "Assigned Areas" : "Unassigned Areas"}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Search Field */}
-        <div className="relative flex items-center">
-          <Search className="absolute left-3 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search areas..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-10 pl-9 pr-4 rounded-xl border border-slate-200 text-xs font-semibold placeholder:text-slate-400 bg-white focus:outline-none focus:border-blue-500 shadow-inner"
-          />
-        </div>
-      </div>
-
-      {/* ── AREAS LIST VIEW ── */}
-      <div className="flex-1 overflow-y-auto px-4 py-3 min-h-[220px]">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-10 gap-3">
-            <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Loading Areas...</span>
+      {isOpen && (
+        <div className="absolute right-0 top-11 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden w-64 flex flex-col">
+          {/* Search bar inside dropdown */}
+          <div className="p-3 border-b border-slate-100 relative flex items-center">
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-10 pl-3 pr-9 text-xs rounded-xl border border-slate-200 bg-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-sm transition-all"
+            />
+            <Search className="absolute right-6 w-4 h-4 text-slate-400 pointer-events-none" />
           </div>
-        ) : filteredAreas.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-slate-400 text-center">
-            <HelpCircle className="w-10 h-10 text-slate-300 mb-2.5" />
-            <p className="text-xs font-bold">No {filter === "all" ? "" : filter} areas found</p>
-            <p className="text-[10px] text-slate-400 mt-1 max-w-[200px]">Try changing your search query or filters.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-2">
-            {filteredAreas.map((area) => {
-              const areaId = area.area_id || area.id;
-              const isSelected = Number(selectedAreaId) === Number(areaId);
-              const isAssigned = Number(area.is_assigned) === 1;
 
-              return (
-                <button
-                  key={areaId}
-                  onClick={() => handleAreaClick(area)}
-                  className={`w-full text-left p-3 rounded-xl border cursor-pointer transition-all duration-200 flex items-center justify-between gap-3 ${
-                    isSelected
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-600 shadow-md shadow-blue-500/20"
-                      : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200"
-                  }`}
-                >
-                  <div className="flex flex-col gap-0.5 truncate">
-                    <span className={`text-[13px] font-bold ${isSelected ? "text-white" : "text-slate-800"}`}>
-                      {area.area_name || area.areaName || "Unnamed Area"}
-                    </span>
-                    <span className={`text-[10px] font-mono ${isSelected ? "text-blue-200" : "text-slate-400"}`}>
-                      Code: {area.area_code || "—"}
-                    </span>
-                  </div>
+          <div className="max-h-60 overflow-y-auto py-1">
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-6 gap-2">
+                <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  Loading Areas...
+                </span>
+              </div>
+            ) : filteredAreas.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-slate-400 text-center px-4">
+                <HelpCircle className="w-8 h-8 text-slate-300 mb-2" />
+                <p className="text-xs font-bold">
+                  No {filter === "all" ? "" : filter === "assigned" ? "assigned" : "unassigned"} areas found
+                </p>
+              </div>
+            ) : (
+              filteredAreas.map((area) => {
+                const areaId = area.area_id || area.id;
+                const isSelected = Number(selectedAreaId) === Number(areaId);
+                const isAssigned = Number(area.is_assigned) === 1;
 
-                  <span
-                    className={`text-[9px] font-extrabold uppercase px-2 py-1 rounded-full shrink-0 tracking-wider flex items-center gap-1 ${
+                return (
+                  <button
+                    key={areaId}
+                    onClick={() => {
+                      handleAreaClick(area);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2.5 cursor-pointer transition-all duration-200 flex items-center justify-between gap-3 border-b border-slate-100 last:border-b-0 ${
                       isSelected
-                        ? "bg-white/20 text-white"
-                        : isAssigned
-                        ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                        : "bg-amber-50 text-amber-600 border border-amber-200"
+                        ? "bg-blue-50 text-blue-600"
+                        : "bg-white hover:bg-slate-50 text-slate-700"
                     }`}
                   >
-                    {isAssigned ? (
-                      <>
-                        <CheckCircle className="w-2.5 h-2.5 shrink-0" />
-                        <span>Assigned</span>
-                      </>
-                    ) : (
-                      "Unassigned"
-                    )}
-                  </span>
-                </button>
-              );
-            })}
+                    <div className="flex flex-col gap-0.5 truncate">
+                      <span
+                        className={`text-xs font-bold ${
+                          isSelected ? "text-blue-600" : "text-slate-800"
+                        }`}
+                      >
+                        {area.area_name || area.areaName || "Unnamed Area"}
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400">
+                        Code: {area.area_code || "—"}
+                      </span>
+                    </div>
+
+                    <span
+                      className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full shrink-0 tracking-wider ${
+                        isAssigned
+                          ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                          : "bg-amber-50 text-amber-600 border border-amber-200"
+                      }`}
+                    >
+                      {isAssigned ? "Assigned" : "Unassigned"}
+                    </span>
+                  </button>
+                );
+              })
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
