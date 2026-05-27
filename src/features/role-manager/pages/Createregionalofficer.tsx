@@ -537,10 +537,14 @@ export default function CreateRegionalOfficer() {
 
   if (isViewMode) {
     const data = regionalOfficerData?.data || initialData;
+    const isFromDirectory = location.state?.from === "/role-manager/user-directory";
     const name = `${watch("firstName") || data?.firstName || data?.first_name || ""} ${watch("lastName") || data?.lastName || data?.last_name || ""}`.trim() || "Regional Officer Name";
-    const status = data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review";
+    const status = isFromDirectory ? undefined : (data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review");
     const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "RO";
-    const avatarUrl = data?.avatar_url || data?.avatar || data?.profile_image || "";
+    
+    // Retrieve correct avatar URL: prioritize cached local storage key
+    const cachedAvatarKey = localStorage.getItem(`avatar_key_${(data?.emailAddress || data?.email || "").trim().toLowerCase()}`);
+    const avatarUrl = cachedAvatarKey || data?.avatar_url || data?.avatar || data?.profile_image || (data?.emailAddress || data?.email ? `users/${(data.emailAddress || data.email).trim().toLowerCase()}/documents/profile_image/download.png` : "");
 
     const officer = {
       name,
@@ -552,7 +556,10 @@ export default function CreateRegionalOfficer() {
 
     const email = watch("email") || data?.emailAddress || data?.email || "N/A";
     const phone = watch("mobile") || data?.phoneNumber || data?.phone || data?.mobile || "N/A";
-    const dateOfBirth = watch("dob") || data?.dob ? new Date(watch("dob") || data.dob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' }) : "N/A";
+    const rawDob = watch("dob") || data?.dob;
+    const dateOfBirth = rawDob && !isNaN(new Date(rawDob).getTime())
+      ? new Date(rawDob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' })
+      : "N/A";
 
     const stateObj = states.find((s: any) => s.desc === watch("addressState") || s.id === data?.geo_assignments?.state_id || s.desc === data?.state);
     const districtObj = allDistricts.find((d: any) => d.id === data?.geo_assignments?.district_id || d.desc === data?.district);
@@ -584,37 +591,45 @@ export default function CreateRegionalOfficer() {
 
             <SectionCard title="Info">
               <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-[1.5rem] lg:gap-x-[2rem] xl:gap-x-[2.5rem] gap-y-[1.25rem] lg:gap-y-[1.5rem] xl:gap-y-[1.75rem]">
+                <InfoField label="First Name" value={watch("firstName") || data?.firstName || data?.first_name || "N/A"} />
+                <InfoField label="Last Name" value={watch("lastName") || data?.lastName || data?.last_name || "N/A"} />
                 <InfoField label="Email" value={email} />
                 <InfoField label="Phone number" value={phone} />
                 <InfoField label="Date Of Birth" value={dateOfBirth} />
+                <InfoField label="Address" value={watch("address") || data?.address || data?.address?.address || "N/A"} />
+                <InfoField label="State" value={watch("addressState") || data?.state || data?.address?.state || "N/A"} />
+                <InfoField label="City / Village" value={watch("city") || data?.city || data?.address?.city || "N/A"} />
+                <InfoField label="Pincode" value={watch("pincode") || data?.pincode || data?.address?.pincode || "N/A"} />
                 <InfoField label="Operating Territory" value={operatingTerritory} className="col-span-2 xl:col-span-3" />
               </div>
             </SectionCard>
 
             <SectionCard title="Documents Provided">
-              <div className="grid grid-cols-2 gap-[1.25rem] lg:gap-[1.5rem] xl:gap-[2rem] max-w-[48.75rem]">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-[1.25rem] lg:gap-[1.5rem] xl:gap-[2rem]">
                 <DocumentCard label="Aadhaar card (Front)" imageUrl={aadharFrontUrl} />
                 <DocumentCard label="Aadhaar card (Back)" imageUrl={aadharBackUrl} />
                 <DocumentCard label="Pan card" imageUrl={panCardUrl} />
               </div>
             </SectionCard>
 
-            <div className="flex items-center justify-end gap-[0.625rem] lg:gap-[0.75rem] xl:gap-[0.875rem] pt-4">
-              <button
-                type="button"
-                onClick={() => navigate(fromPath)}
-                className="font-medium font-[family-name:'Inter',sans-serif] text-[color:var(--profile-text)] px-[1.25rem] lg:px-[1.5rem] py-[0.5rem] rounded-[0.375rem] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:bg-gray-100 transition-colors"
-              >
-                Dismiss
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate(fromPath)}
-                className="font-medium font-[family-name:'Inter',sans-serif] text-white px-[1.75rem] lg:px-[2rem] py-[0.5rem] rounded-full bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:opacity-90 active:scale-[0.97] transition-all duration-150"
-              >
-                Approve
-              </button>
-            </div>
+            {!isFromDirectory && (
+              <div className="flex items-center justify-end gap-[0.625rem] lg:gap-[0.75rem] xl:gap-[0.875rem] pt-4">
+                <button
+                  type="button"
+                  onClick={() => navigate(fromPath)}
+                  className="font-medium font-[family-name:'Inter',sans-serif] text-[color:var(--profile-text)] px-[1.25rem] lg:px-[1.5rem] py-[0.5rem] rounded-[0.375rem] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:bg-gray-100 transition-colors"
+                >
+                  Dismiss
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate(fromPath)}
+                  className="font-medium font-[family-name:'Inter',sans-serif] text-white px-[1.75rem] lg:px-[2rem] py-[0.5rem] rounded-full bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:opacity-90 active:scale-[0.97] transition-all duration-150"
+                >
+                  Approve
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </main>

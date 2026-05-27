@@ -108,9 +108,11 @@ export const ProfileHeaderCard: React.FC<ProfileHeaderCardProps> = ({
         </div>
 
         {/* Status */}
-        <div className="pb-[0.125rem]">
-          <StatusBadge status={agent.status} variant="detail" />
-        </div>
+        {agent.status && (
+          <div className="pb-[0.125rem]">
+            <StatusBadge status={agent.status} variant="detail" />
+          </div>
+        )}
       </div>
     </div>
   );

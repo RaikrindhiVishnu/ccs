@@ -723,8 +723,9 @@ export default function AgentForm({
 
   if (isViewMode) {
     const data = agentData?.data || initialData;
+    const isFromDirectory = location.state?.from === "/role-manager/user-directory";
     const name = `${watch("firstName") || data?.firstName || data?.first_name || ""} ${watch("lastName") || data?.lastName || data?.last_name || ""}`.trim() || "Agent Name";
-    const status = data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review";
+    const status = isFromDirectory ? undefined : (data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review");
     const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "AN";
     const avatarUrl = data?.avatar || data?.profile_image || profileImage || "";
 
@@ -738,7 +739,10 @@ export default function AgentForm({
 
     const email = watch("email") || data?.email || data?.emailAddress || "N/A";
     const phone = watch("phone") || data?.phone || data?.phoneNumber || data?.mobile || data?.contact || "N/A";
-    const dateOfBirth = watch("dob") || data?.dob ? new Date(watch("dob") || data.dob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' }) : "N/A";
+    const rawDob = watch("dob") || data?.dob;
+    const dateOfBirth = rawDob && !isNaN(new Date(rawDob).getTime())
+      ? new Date(rawDob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' })
+      : "N/A";
 
     const stateObj = states.find((s: any) => s.desc === watch("state") || s.id === data?.geo_assignments?.state_id);
     const stateName = stateObj?.desc || data?.state || "N/A";
@@ -807,22 +811,24 @@ export default function AgentForm({
               </div>
             </SectionCard>
 
-            <div className="flex items-center justify-end gap-[0.625rem] lg:gap-[0.75rem] xl:gap-[0.875rem] pt-4">
-              <button
-                type="button"
-                onClick={handleBackToDirectory}
-                className="font-medium font-[family-name:'Inter',sans-serif] text-[color:var(--profile-text)] px-[1.25rem] lg:px-[1.5rem] py-[0.5rem] rounded-[0.375rem] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:bg-gray-100 transition-colors"
-              >
-                Dismiss
-              </button>
-              <button
-                type="button"
-                onClick={handleBackToDirectory}
-                className="font-medium font-[family-name:'Inter',sans-serif] text-white px-[1.75rem] lg:px-[2rem] py-[0.5rem] rounded-full bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:opacity-90 active:scale-[0.97] transition-all duration-150"
-              >
-                Approve
-              </button>
-            </div>
+            {!isFromDirectory && (
+              <div className="flex items-center justify-end gap-[0.625rem] lg:gap-[0.75rem] xl:gap-[0.875rem] pt-4">
+                <button
+                  type="button"
+                  onClick={handleBackToDirectory}
+                  className="font-medium font-[family-name:'Inter',sans-serif] text-[color:var(--profile-text)] px-[1.25rem] lg:px-[1.5rem] py-[0.5rem] rounded-[0.375rem] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:bg-gray-100 transition-colors"
+                >
+                  Dismiss
+                </button>
+                <button
+                  type="button"
+                  onClick={handleBackToDirectory}
+                  className="font-medium font-[family-name:'Inter',sans-serif] text-white px-[1.75rem] lg:px-[2rem] py-[0.5rem] rounded-full bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:opacity-90 active:scale-[0.97] transition-all duration-150"
+                >
+                  Approve
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </main>
