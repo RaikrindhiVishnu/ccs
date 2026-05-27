@@ -232,7 +232,7 @@ function LoginScreen({
           refreshToken: "mock-refresh-" + roleCode.toLowerCase(),
         })
       );
-      onSuccess({ is_first_login: 0 });
+      onSuccess({ is_first_login: 0, passwordUsed: password });
       return;
     }
     // ──────────────────────────────────────────────────────────────────────
