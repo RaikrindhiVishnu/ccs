@@ -25,6 +25,7 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      providesTags: ["Region"],
     }),
     getDistrictsByStateId: builder.query<any, { state_id: number }>({
       query: (body) => ({
@@ -50,6 +51,7 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["Region"],
     }),
     assignOfficers: builder.mutation<
       any,
@@ -86,6 +88,7 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["Area"],
     }),
 
     assignFieldOfficer: builder.mutation<
@@ -115,6 +118,7 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      providesTags: ["Area"],
     }),
 
     // ─── PLACEHOLDER: Get All Regions ─────────────────────────────────────────
@@ -163,6 +167,7 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
           district_ids: body.district_ids,
         },
       }),
+      invalidatesTags: ["Region", "Area"],
     }),
 
     // ─── PLACEHOLDER: Get All Areas ───────────────────────────────────────────
@@ -217,6 +222,7 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
           assignments,
         },
       }),
+      invalidatesTags: ["Area"],
     }),
     getAllRegionsByStateId: builder.mutation<any, { state_id: number }>({
       query: (body) => ({
@@ -231,6 +237,7 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
         method: "POST",
         body,
       }),
+      providesTags: ["Region"],
     }),
     getRegionGeoJson: builder.query<any, { region_id: number }>({
       query: (body) => ({
