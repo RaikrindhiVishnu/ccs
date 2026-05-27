@@ -99,17 +99,37 @@ export function RoleCreationOverviewCard({
     offset: "0",
   });
 
-  const data: DayData[] =
-    apiResponse?.data?.map((item) => ({
-      day: new Date(item.assignmentDate).toLocaleDateString("en-US", {
+  const generateDateRange = (start: Date, end: Date) => {
+    const dates = [];
+    const currentDate = new Date(start);
+    currentDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(end);
+    endDate.setHours(23, 59, 59, 999);
+    
+    while (currentDate <= endDate) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return dates;
+  };
+
+  const data: DayData[] = generateDateRange(dateRange.from, dateRange.to).map((date) => {
+    const dateStr = date.toISOString().split("T")[0];
+    const matchingItem = apiResponse?.data?.find((item) => {
+      return item.assignmentDate.startsWith(dateStr);
+    });
+
+    return {
+      day: date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       }),
-      ro: item.totalRO,
-      io: item.totalIO,
-      fo: item.totalFO,
-      agents: item.totalAgents,
-    })) ?? [];
+      ro: matchingItem ? matchingItem.totalRO : 0,
+      io: matchingItem ? matchingItem.totalIO : 0,
+      fo: matchingItem ? matchingItem.totalFO : 0,
+      agents: matchingItem ? matchingItem.totalAgents : 0,
+    };
+  });
 
   // ── Y-axis scale ──────────────────────────────────────────────────────────
   const maxTotal = useMemo(

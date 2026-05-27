@@ -7,8 +7,17 @@ import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "@/features/auth/api/authApi";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "@/features/auth/store/authSlice";
+import { UserRole, ROLE_CODES } from "@/features/auth/types";
 
-
+// ─── Dev Mock Users ───────────────────────────────────────────────────────────
+const MOCK_USERS = [
+  { login_id: "manager@glc.com",      password: "manager@123",      role_id: UserRole.ROLEMNGR, first_name: "Harish",        last_name: "Kumar",    id: 102 },
+  { login_id: "ccs@glc.com",          password: "ccs@123456",       role_id: UserRole.CCS,      first_name: "CCS",           last_name: "Officer",  id: 103 },
+  { login_id: "field.officer@glc.com",password: "field.officer@123",role_id: UserRole.FO,       first_name: "Field",         last_name: "Officer",  id: 104 },
+  { login_id: "io@glc.com",           password: "io@123456",        role_id: UserRole.IO,       first_name: "Intelligence",  last_name: "Officer",  id: 105 },
+  { login_id: "regional@glc.com",     password: "regional@123",     role_id: UserRole.RO,       first_name: "Edward",        last_name: "Janowski", id: 106 },
+  { login_id: "vo2@glc.com",          password: "vo2@123",          role_id: UserRole.VO2,      first_name: "Verification",  last_name: "Officer 2",id: 107 },
+];
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface InputFieldProps {
   label?: string;
@@ -201,6 +210,32 @@ function LoginScreen({
     }
 
     setErrors({});
+
+    // ── Check mock users first (dev only) ──────────────────────────────────
+    const mockUser = MOCK_USERS.find(
+      (u) => u.login_id === loginId && u.password === password
+    );
+    if (mockUser) {
+      const roleCode = ROLE_CODES[mockUser.role_id];
+      dispatch(
+        setCredentials({
+          user: {
+            id: mockUser.id,
+            login_id: mockUser.login_id,
+            first_name: mockUser.first_name,
+            last_name: mockUser.last_name,
+            role_id: mockUser.role_id,
+            role: roleCode,
+            is_first_login: 0,
+          },
+          accessToken: "mock-token-" + roleCode.toLowerCase(),
+          refreshToken: "mock-refresh-" + roleCode.toLowerCase(),
+        })
+      );
+      onSuccess({ is_first_login: 0 });
+      return;
+    }
+    // ──────────────────────────────────────────────────────────────────────
 
     try {
       setLoading(true);

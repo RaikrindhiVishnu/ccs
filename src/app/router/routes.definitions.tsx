@@ -216,29 +216,7 @@ export const authRoutes: RouteObject[] = [
     path: '/regional-officer/assigned-farmlands-land-boundaries/:id',
     element: <LandBoundaries />,
   },
-  {
-    path: "/role-manager/edit-field-officer",
-    element: <EditFieldOfficer />,
-  },
-  {
-    path: "/role-manager/edit-field-officer/:id",
-    element: <EditFieldOfficer />,
-  },
-  {
-    path: "/role-manager/edit-intelligence-officer",
-    element: <EditIntelligenceOfficer />,
-  },
-  {
-    path: "/role-manager/edit-intelligence-officer/:id",
-    element: <EditIntelligenceOfficer />,
-  },
-  {
-    path: "/role-manager/edit-regional-officer/:id",
-    element: <EditRegionalOfficer />,
-  },
-  { path: "/role-manager/profile/:id", element: <RoleManagerDetails /> },
-  { path: "/role-manager/agent-approvals", element: <AgentApprovals /> },
-  { path: "/role-manager/agent-details/:id", element: <Agentdetailpage /> },
+
   {
     path: "/role-manager/region-creation",
     element: <RegionSelection />,
@@ -285,12 +263,6 @@ export const authRoutes: RouteObject[] = [
       { path: '/field-officer/draft-details/:id', element: <DraftsDetailPage /> },
       { path: '/field-officer/request-info/:id', element: <RequestInfoDetailsPage /> },
       { path: '/field-officer/land-documents/:id', element: <LandDocumentsPage /> },
-    ],
-  },
-  {
-    element: <RegionalOfficerLayout />,
-    children: [
-      { path: '/regional-officer/dashboard', element: <RegionalOfficerDashboard /> },
     ],
   },
 ];

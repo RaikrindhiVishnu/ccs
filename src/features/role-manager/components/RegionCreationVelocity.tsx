@@ -140,16 +140,34 @@ const RegionCreationVelocity: React.FC = () => {
     offset: "0",
   });
 
-  const transformedData =
-    apiData?.data?.map((item) => ({
-      label: new Date(item.creationDate).toLocaleDateString("en-US", {
+  const generateDateRange = (start: Date, end: Date) => {
+    const dates = [];
+    const currentDate = new Date(start);
+    currentDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(end);
+    endDate.setHours(23, 59, 59, 999);
+    
+    while (currentDate <= endDate) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return dates;
+  };
+
+  const chartData = generateDateRange(dateRange.from, dateRange.to).map((date) => {
+    const dateStr = date.toISOString().split("T")[0];
+    const matchingItem = apiData?.data?.find((item) => {
+      return item.creationDate.startsWith(dateStr);
+    });
+
+    return {
+      label: date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       }),
-      value: item.totalRegions,
-    })) || [];
-
-  const chartData = transformedData;
+      value: matchingItem ? matchingItem.totalRegions : 0,
+    };
+  });
 const maxValue =
   chartData.length > 0
     ? Math.max(...chartData.map((item) => item.value))

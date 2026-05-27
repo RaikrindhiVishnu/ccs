@@ -4,6 +4,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import RegionCreationVelocity from "@/features/role-manager/components/RegionCreationVelocity";
 import RoleCreationOverviewCard from "@/features/role-manager/components/Rolecreationoverviewcard";
+import DashboardGlobeMap from "@/features/role-manager/components/DashboardGlobeMap";
 
 const RegionAndArea: React.FC = () => {
   const navigate = useNavigate();
@@ -47,7 +48,7 @@ const RegionAndArea: React.FC = () => {
       {/* Regions & Area Data */}
       <div className="rounded-2xl shadow-sm overflow-hidden flex flex-col">
         {/* Card Header */}
-        <div className="flex items-center justify-between px-[clamp(0.75rem,1.5vw,1.5rem)] py-[clamp(0.625rem,1.2vw,1.125rem)] border-b border-[var(--border)]">
+        <div className="flex items-center justify-between px-[clamp(0.75rem,1.5vw,1.5rem)] py-[clamp(0.625rem,1.2vw,1.125rem)] border-b border-[var(--border)] bg-white relative z-10">
           <Typography
             variant="h2"
             className="text-2xl font-semibold text-[var(--text-primary)]"
@@ -100,20 +101,16 @@ const RegionAndArea: React.FC = () => {
           </div>
         </div>
 
-        {/* Empty State Body */}
-        <div className="flex bg-[var(--surface-card)]  flex-col items-center justify-center flex-1 min-h-[clamp(12rem,20vw,18.75rem)] gap-[0.75rem] text-center px-[1.5rem]">
-          <Typography
-            variant="p"
-            className="text-[var(--text-muted)] text-[clamp(0.75rem,0.9vw,0.875rem)]"
-          >
-            No region or area data available yet.
-          </Typography>
-          <Typography
-            variant="p"
-            className="text-[var(--text-muted)] text-[clamp(0.6875rem,0.8vw,0.75rem)]"
-          >
-            Create roles to start managing your regions and operational areas.
-          </Typography>
+        {/* Globe Map Body (Replaces Cards) */}
+        <div className="relative w-full h-[600px] overflow-hidden bg-[#D6E6FF] rounded-b-2xl dashboard-map-container z-0">
+          <style>{`
+            .dashboard-map-container > div {
+              height: 100% !important;
+              min-height: 100% !important;
+              border-radius: 0 0 1rem 1rem;
+            }
+          `}</style>
+          <DashboardGlobeMap />
         </div>
       </div>
     </div>
