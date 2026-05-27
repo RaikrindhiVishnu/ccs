@@ -22,6 +22,7 @@ import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useState, useEffect } from "react"; // kept only for profileImage                       // kept only for profileImage
+import Successcard from "@/components/ui/Successcard";
 import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
@@ -121,6 +122,7 @@ export default function AgentForm({
   };
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [successCardProps, setSuccessCardProps] = useState<any | null>(null);
 
   const [createAgent, { isLoading: isSubmitting }] = useCreateAgentMutation();
   const [updateAgentDetails] = useUpdateAgentDetailsMutation();
@@ -133,6 +135,9 @@ export default function AgentForm({
     masterData?.data?.userRolesResult || [],
     "AGENT",
   );
+  
+  const approvedStatus = masterData?.data?.userRegistrationStatusResult?.find((status: any) => status.code === "APPRVD");
+  const registrationStatusId = approvedStatus?.id || 2;
 
   const { control, handleSubmit, watch, reset, setValue } = useForm<AgentFormValues>({
     resolver: zodResolver(agentSchema),
@@ -366,6 +371,7 @@ export default function AgentForm({
 
   const handleSave = async (values: AgentFormValues) => {
     try {
+      let res: any = null;
       const selectedStateObj = states.find((s: any) => s.desc === values.state);
       const stateIdVal = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
 
@@ -406,7 +412,7 @@ export default function AgentForm({
             },
           };
 
-          await updateAgentDetails(payload).unwrap();
+          res = await updateAgentDetails(payload).unwrap();
         } else {
           toast.error("Unknown role type for update");
           return;
@@ -454,6 +460,7 @@ export default function AgentForm({
           dob: values.dob,
 
           role_id: agentRoleId,
+          registration_status_id: registrationStatusId,
 
           address: {
             address: values.address,
@@ -486,15 +493,39 @@ export default function AgentForm({
           },
         };
 
-        await createAgent(payload).unwrap();
+        res = await createAgent(payload).unwrap();
       }
 
-      toast.success(
-        isEdit ? "Profile Updated Successfully" : "Agent Created Successfully",
-      );
-
-      if (onCancel) {
-        onCancel();
+      if (isEdit) {
+        toast.success("Profile Updated Successfully");
+        if (onCancel) {
+          onCancel();
+        } else {
+          navigate("/role-manager/user-directory");
+        }
+      } else {
+        const now = new Date();
+        setSuccessCardProps({
+          badgeLabel: "Agent Onboarding",
+          titleLine1: "Agent",
+          titleLine2: "Created Successfully!",
+          redirectText: "Redirecting to User Directory...",
+          regionName: `${values.firstName} ${values.lastName}`,
+          assignedId: res?.responseData?.username || res?.data?.username || res?.data?.emailAddress || values.email || "N/A",
+          createdDate: now.toLocaleDateString(),
+          createdTime: now.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          mapImage: profileImage || null,
+          onRedirect: () => {
+            if (onCancel) {
+              onCancel();
+            } else {
+              navigate("/role-manager/user-directory");
+            }
+          },
+        });
       }
     } catch (err) {
       console.error("Failed to save:", err);
@@ -506,6 +537,10 @@ export default function AgentForm({
       );
     }
   };
+  if (successCardProps) {
+    return <Successcard {...successCardProps} />;
+  }
+
   const isVerified = isEdit && !!initialData?.firstName;
 
   if (isViewMode) {
@@ -696,7 +731,11 @@ export default function AgentForm({
                                                 `}
                       >
                         {field.value ? (
-                          <ImagePreview file={field.value} className="w-full h-full object-cover rounded-full" />
+                          <ImagePreview
+                            file={field.value}
+                            className="w-full h-full object-cover rounded-full"
+                            onUrlReady={setProfileImage}
+                          />
                         ) : (agentData?.data?.avatar || agentData?.data?.profile_image || (initialData as any)?.avatar || (initialData as any)?.profile_image) ? (
                           <img
                             src={agentData?.data?.avatar || agentData?.data?.profile_image || (initialData as any)?.avatar || (initialData as any)?.profile_image}

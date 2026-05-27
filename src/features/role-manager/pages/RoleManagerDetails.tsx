@@ -3,8 +3,9 @@ import { Typography } from "@/components/ui/typography";
 import { Input } from "@/components/ui/input";
 import role from "@/assets/role profile.svg";
 import SuccessIcon from "@/assets/sucess.svg";
-import { ArrowLeft, User } from "lucide-react";
+import { ArrowLeft, User, Pencil } from "lucide-react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useAppSelector } from "@/core/hooks";
 import {
   useGetAgentDetailsByUserIdMutation,
 } from "../api/roleManagerApi";
@@ -66,19 +67,8 @@ function Toggle({ defaultOn = true }: { defaultOn?: boolean }) {
   );
 }
 
-interface FieldProps {
-  label: string;
-  value: string;
-}
-
-function Field({ label, value }: FieldProps) {
-  return (
-    <Input variant="form" label={label} value={value} readOnly />
-  );
-}
-
 export default function RoleManagerDetails({
-  data,
+  data: _data,
   onBack,
 }: RoleManagerDetailsProps) {
   const { id } = useParams();
@@ -92,6 +82,10 @@ export default function RoleManagerDetails({
   const [profileData, setProfileData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const profileStoreData = useAppSelector(
+    (state) => state.roleManager.profileData,
+  );
+  const currentUser = useAppSelector((state) => state.auth.user);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -99,7 +93,6 @@ export default function RoleManagerDetails({
 
       setIsLoading(true);
       try {
-
         let response;
         if (roleType === "AG") {
           response = await getAgentDetailsByUserId(Number(id)).unwrap();
@@ -122,33 +115,87 @@ export default function RoleManagerDetails({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[color:var(--surface-page)]">
-        <Typography variant="h3" className="text-[color:var(--brand-500)] animate-pulse">
+        <Typography
+          variant="h3"
+          className="text-[color:var(--brand-500)] animate-pulse"
+        >
           Loading Details...
         </Typography>
       </div>
     );
   }
 
-  const profile = profileData ? {
-    firstName: profileData.first_name || "",
-    lastName: profileData.last_name || "",
-    age: profileData.age || "N/A",
-    phone: profileData.phone_number || profileData.phone || "",
-    email: profileData.email_address || profileData.email || "",
-    role: roleType === "AG" ? "Agent" : roleType === "FO" ? "Field Officer" : roleType === "RO" ? "Regional Officer" : "Intelligence Officer",
-    profileImage: profileData.profile_url,
-    notificationsEnabled: true,
-    smsEnabled: true,
-  } : (data ?? {
-    firstName: "Sravan",
-    lastName: "Kumar",
-    age: "32",
-    phone: "+91 9342848293",
-    email: "sravan@gmail.com",
-    role: "Role Manager",
-    notificationsEnabled: true,
-    smsEnabled: true,
-  });
+  const profile = profileData
+    ? {
+        firstName: profileData.first_name || "",
+        lastName: profileData.last_name || "",
+        age:
+          profileData.dob ||
+          profileData.date_of_birth ||
+          profileData.age ||
+          "23/01/1992",
+        phone: profileData.phone_number || profileData.phone || "",
+        email: profileData.email_address || profileData.email || "",
+        role:
+          roleType === "AG"
+            ? "Agent"
+            : roleType === "FO"
+              ? "Field Officer"
+              : roleType === "RO"
+                ? "Regional Officer"
+                : "Intelligence Officer",
+        profileImage: profileData.profile_url,
+        notificationsEnabled: true,
+        smsEnabled: true,
+      }
+    : profileStoreData
+      ? {
+          firstName: profileStoreData.first_name || "",
+          lastName: profileStoreData.last_name || "",
+          age:
+            profileStoreData.dob ||
+            profileStoreData.date_of_birth ||
+            profileStoreData.age ||
+            "23/01/1992",
+          phone: profileStoreData.phone_number || profileStoreData.phone || "",
+          email: profileStoreData.email_address || profileStoreData.email || "",
+          role: profileStoreData.role || "Role Manager",
+          profileImage: profileStoreData.profile_url,
+          notificationsEnabled: true,
+          smsEnabled: true,
+        }
+      : currentUser
+        ? {
+            firstName: currentUser.first_name || "Keshav",
+            lastName: currentUser.last_name || "Surigi",
+            age:
+              (currentUser as any).dob ||
+              (currentUser as any).date_of_birth ||
+              (currentUser as any).age ||
+              "23/01/1992",
+            phone:
+              (currentUser as any).phone_number ||
+              (currentUser as any).phone ||
+              "+9193428-48293",
+            email:
+              currentUser.login_id ||
+              (currentUser as any).email ||
+              "keshavs@gmail.com",
+            role: currentUser.role || "Role Manager",
+            profileImage: undefined,
+            notificationsEnabled: true,
+            smsEnabled: true,
+          }
+        : {
+            firstName: "Keshav",
+            lastName: "Surigi",
+            age: "23/01/1992",
+            phone: "+9193428-48293",
+            email: "keshavs@gmail.com",
+            role: "Role Manager",
+            notificationsEnabled: true,
+            smsEnabled: true,
+          };
 
   const handleBack = () => {
     if (onBack) {
@@ -210,7 +257,7 @@ export default function RoleManagerDetails({
             bg-[color:var(--surface-card)]
             shadow-[0px_0px_6px_rgba(0,0,0,0.12)]
           "
-        // rounded: 16px→1rem, 24px→1.5rem
+          // rounded: 16px→1rem, 24px→1.5rem
         >
           {/* Banner */}
           <div className="w-full h-[clamp(7.5rem,11vw,10.625rem)] overflow-hidden">
@@ -250,8 +297,8 @@ export default function RoleManagerDetails({
                   h-[clamp(6.25rem,6vw,10rem)]
                   flex items-center justify-center
                 "
-              // border: 2px→0.125rem, 4px→0.25rem
-              // w/h: 100px→6.25rem, 160px→10rem
+                // border: 2px→0.125rem, 4px→0.25rem
+                // w/h: 100px→6.25rem, 160px→10rem
               >
                 {profile.profileImage ? (
                   <img
@@ -307,7 +354,7 @@ export default function RoleManagerDetails({
                   w-[clamp(2.125rem,3vw,3.25rem)]
                   h-[clamp(2.125rem,3vw,3.25rem)]
                 "
-              // w/h: 34px→2.125rem, 52px→3.25rem
+                // w/h: 34px→2.125rem, 52px→3.25rem
               />
             </div>
           </div>
@@ -331,7 +378,7 @@ export default function RoleManagerDetails({
               text-[clamp(1.125rem,1.5vw,1.5rem)]
               text-[color:var(--text-primary)]
             "
-          // text: 18px→1.125rem, 24px→1.5rem
+            // text: 18px→1.125rem, 24px→1.5rem
           >
             Personal Details
           </Typography>
@@ -346,11 +393,26 @@ export default function RoleManagerDetails({
               gap-y-[clamp(1rem,1.8vw,1.75rem)]
             "
           >
-            <Field label="First Name" value={profile.firstName} />
-            <Field label="Last Name" value={profile.lastName} />
-            <Field label="Age" value={profile.age} />
-            <Field label="Phone Number" value={profile.phone} />
-            <Field label="Email" value={profile.email} />
+            <Input variant="form" label="First name" value={profile.firstName} readOnly />
+            <Input variant="form" label="Last name" value={profile.lastName} readOnly />
+            <Input variant="form" label="Date Of Birth" value={profile.age} readOnly />
+            <Input variant="form" label="Phone number" value={profile.phone} readOnly />
+            <Input variant="form" label="Email" value={profile.email} readOnly />
+            <Input
+              variant="form"
+              label="Password"
+              value="XXXXXXXXXX"
+              readOnly
+              rightElement={
+                <button
+                  type="button"
+                  onClick={() => navigate("/role-manager/update-password")}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none cursor-pointer flex items-center justify-center"
+                >
+                  <Pencil size={15} />
+                </button>
+              }
+            />
           </div>
         </div>
 
@@ -372,7 +434,7 @@ export default function RoleManagerDetails({
               text-[clamp(1.125rem,1.5vw,1.5rem)]
               text-[color:var(--text-primary)]
             "
-          // text: 18px→1.125rem, 24px→1.5rem
+            // text: 18px→1.125rem, 24px→1.5rem
           >
             Alerts
           </Typography>
@@ -384,7 +446,7 @@ export default function RoleManagerDetails({
               xl:grid-cols-2
               gap-[clamp(1.125rem,2vw,2.5rem)]
             "
-          // gap: 18px→1.125rem, 40px→2.5rem
+            // gap: 18px→1.125rem, 40px→2.5rem
           >
             {/* Notifications */}
             <div className="flex items-center justify-between">
@@ -396,7 +458,7 @@ export default function RoleManagerDetails({
                     text-[clamp(0.875rem,1vw,1.125rem)]
                     text-[color:var(--text-primary)]
                   "
-                // text: 14px→0.875rem, 18px→1.125rem
+                  // text: 14px→0.875rem, 18px→1.125rem
                 >
                   Notifications
                 </h4>
@@ -405,7 +467,7 @@ export default function RoleManagerDetails({
                     text-[clamp(0.6875rem,0.9vw,0.875rem)]
                     text-[color:var(--text-muted)]
                   "
-                // text: 11px→0.6875rem, 14px→0.875rem
+                  // text: 11px→0.6875rem, 14px→0.875rem
                 >
                   Receive updates via Notifications
                 </p>
@@ -423,7 +485,7 @@ export default function RoleManagerDetails({
                     text-[clamp(0.875rem,1vw,1.125rem)]
                     text-[color:var(--text-primary)]
                   "
-                // text: 14px→0.875rem, 18px→1.125rem
+                  // text: 14px→0.875rem, 18px→1.125rem
                 >
                   SMS Alerts
                 </h4>
@@ -432,7 +494,7 @@ export default function RoleManagerDetails({
                     text-[clamp(0.6875rem,0.9vw,0.875rem)]
                     text-[color:var(--text-muted)]
                   "
-                // text: 11px→0.6875rem, 14px→0.875rem
+                  // text: 11px→0.6875rem, 14px→0.875rem
                 >
                   Get important alerts via SMS
                 </p>
