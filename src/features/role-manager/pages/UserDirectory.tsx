@@ -6,7 +6,12 @@ import {
 } from "../api/userDirectoryApi";
 import { useGetAllAreasByRegionIdQuery } from "../api/regionSelectionApi";
 import { useDispatch, useSelector } from "react-redux";
-import { setRegions } from "../store/roleManagerSlice";
+import {
+  setRegions,
+  setSelectedStateId as setSelectedStateIdAction,
+  setSelectedRegionId as setSelectedRegionIdAction,
+  setSelectedAreaId as setSelectedAreaIdAction,
+} from "../store/roleManagerSlice";
 import { useGetAllRegionsByStateIdMutation } from "../api/masterDataApi";
 import { useNavigate } from "react-router-dom";
 import AgentOnboardingVelocity from "@/features/role-manager/components/AgentOnboardingVelocity";
@@ -26,13 +31,13 @@ const UserDirectory: React.FC = () => {
   const states = useSelector((state: any) => state.roleManager.states);
   const regions = useSelector((state: any) => state.roleManager.regions);
   
-  const [selectedStateId, setSelectedStateId] = React.useState<string>(
-    states?.[0]?.id?.toString() || ""
-  );
-  const [selectedRegionId, setSelectedRegionId] = React.useState<string>(
-    regions?.[0]?.id?.toString() || ""
-  );
-  const [selectedAreaId, setSelectedAreaId] = React.useState<string>("");
+  const selectedStateId = useSelector((state: any) => state.roleManager.selectedStateId);
+  const selectedRegionId = useSelector((state: any) => state.roleManager.selectedRegionId);
+  const selectedAreaId = useSelector((state: any) => state.roleManager.selectedAreaId);
+
+  const setSelectedStateId = (id: string) => dispatch(setSelectedStateIdAction(id));
+  const setSelectedRegionId = (id: string) => dispatch(setSelectedRegionIdAction(id));
+  const setSelectedAreaId = (id: string) => dispatch(setSelectedAreaIdAction(id));
 
   const [
     getRegionsByStateId,
@@ -63,13 +68,21 @@ const UserDirectory: React.FC = () => {
   const areasList = areasData?.data || [];
 
   useEffect(() => {
-    const firstAreaId = areasList[0]?.area_id ?? areasList[0]?.id;
-    if (areasList.length > 0 && firstAreaId !== undefined && firstAreaId !== null) {
-      setSelectedAreaId(firstAreaId.toString());
-    } else {
+    if (areasList.length > 0) {
+      const isStillValid = areasList.some((a: any) => {
+        const aId = (a.area_id ?? a.id)?.toString();
+        return aId === selectedAreaId;
+      });
+      if (!isStillValid) {
+        const firstAreaId = areasList[0]?.area_id ?? areasList[0]?.id;
+        if (firstAreaId !== undefined && firstAreaId !== null) {
+          setSelectedAreaId(firstAreaId.toString());
+        }
+      }
+    } else if (!isAreasLoading && selectedAreaId !== "") {
       setSelectedAreaId("");
     }
-  }, [areasList]);
+  }, [areasList, isAreasLoading, selectedAreaId]);
 
   // 2. Fetch Field Officers under these regional/intelligence officers (pass 0 if null/undefined)
   const { data: fieldOfficerData, isLoading: isFieldLoading } = useGetFieldOfficerDetailsQuery(
@@ -116,11 +129,14 @@ const UserDirectory: React.FC = () => {
       const fetchedRegions = response?.data || [];
       dispatch(setRegions(fetchedRegions));
       
-      if (fetchedRegions.length > 0) {
-        const firstRegionId = fetchedRegions[0].id.toString();
-        setSelectedRegionId(firstRegionId);
-      } else {
-        setSelectedRegionId("");
+      const isStillValid = fetchedRegions.some((r: any) => r.id?.toString() === selectedRegionId);
+      if (!isStillValid) {
+        if (fetchedRegions.length > 0) {
+          const firstRegionId = fetchedRegions[0].id.toString();
+          setSelectedRegionId(firstRegionId);
+        } else {
+          setSelectedRegionId("");
+        }
       }
     } catch (error) {
       console.log(error);
@@ -137,11 +153,14 @@ const UserDirectory: React.FC = () => {
   useEffect(() => {
     if (states && states.length > 0 && !initializedRef.current) {
       initializedRef.current = true;
-      const firstStateId = states[0].id.toString();
-      setSelectedStateId(firstStateId);
-      handleStateChange(firstStateId);
+      if (selectedStateId) {
+        handleStateChange(selectedStateId);
+      } else {
+        const firstStateId = states[0].id.toString();
+        handleStateChange(firstStateId);
+      }
     }
-  }, [states]);
+  }, [states, selectedStateId]);
 
   useEffect(() => {
     return () => {
