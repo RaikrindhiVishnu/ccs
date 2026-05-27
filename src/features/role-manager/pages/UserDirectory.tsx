@@ -185,24 +185,31 @@ const UserDirectory: React.FC = () => {
       <div className="pt-6 flex flex-col gap-6">
         {/* Header Row */}
         <div className="flex flex-row items-center justify-between">
-          <Typography variant="p" className="text-3xl font-bold leading-tight">
+          <Typography
+            variant="h1"
+            className="m-0 text-[36px] font-bold leading-[100%] tracking-[0px] text-black"
+            style={{
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+            }}
+          >
             User Directory
           </Typography>
           <Button
-            variant="primary-sm"
-            leftIcon={<Plus size={10} />}
-            className="h-10 text-sm font-medium rounded-full"
             onClick={() => navigate("/role-manager/create-roles")}
+            className="w-[129px] h-[48px] rounded-[100px] bg-[#2780C4] text-white text-[14px] font-normal leading-[18px] shadow-md flex items-center justify-center gap-[2px] hover:bg-[#2780C4]"
           >
-            Create roles
+            <Plus size={18} />
+            Create Roles
           </Button>
         </div>
 
         {/* Filters/Navigation Row */}
         <div className="flex flex-row items-center justify-between w-full p-3 ">
           {/* Left Side: Role List Pill */}
-          <div className="bg-white rounded-full px-4 h-8 flex items-center justify-center shadow-sm border-border">
-            <span className="text-sm font-medium  opacity-80">Role List</span>
+          <div className="w-[90px] h-[44px] rounded-[64.67px] bg-white flex items-center justify-center shadow-sm">
+            <span className="text-[12px] font-normal leading-[140%] tracking-[-0.02em] text-black">
+              Role List
+            </span>
           </div>
 
           {/* Right Side: Dropdowns */}
