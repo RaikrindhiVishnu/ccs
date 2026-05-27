@@ -24,7 +24,7 @@ import {
 import { RHFTextField } from "@/components/form/RHFTextField";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
-import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { useGetAllMasterDataQuery, useGetAllGeoMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 import { uploadUserDocument } from "@/core/utils/fileUpload";
 import { useGetRegionalOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
@@ -56,7 +56,7 @@ function ImagePreview({ file, className, onUrlReady }: { file: any; className?: 
   const [src, setSrc] = useState<string>("");
 
   const isS3Key = typeof file === "string" && !file.startsWith("http") && !file.startsWith("data:");
-  
+
   const { data: s3Data } = useGeneratePresignedUrlQuery(file, {
     skip: !isS3Key,
   });
@@ -147,7 +147,10 @@ function UploadPictureField({
                 disabled={disabled}
                 accept="image/jpeg,image/png,image/webp"
                 className="hidden"
-                onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
+                onChange={(e) => {
+                  field.onChange(e.target.files?.[0] ?? undefined);
+                  e.target.value = "";
+                }}
               />
             </button>
           </div>
@@ -212,13 +215,16 @@ function DocUploadField({
                   <button type="button" className="action-btn p-[clamp(0.25rem,0.5vw,0.375rem)] hover:bg-white/20 rounded-full transition-colors" title="View File" onClick={() => {
                     if (previewUrl) window.open(previewUrl, "_blank");
                   }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
                   </button>
                   <button type="button" className="action-btn p-[clamp(0.25rem,0.5vw,0.375rem)] hover:bg-white/20 rounded-full transition-colors" title="Change File" onClick={() => !disabled && ref.current?.click()}>
                     <FileImage className="w-4 h-4" />
                   </button>
-                  <button type="button" className="action-btn p-[clamp(0.25rem,0.5vw,0.375rem)] hover:bg-white/20 rounded-full transition-colors" title="Remove File" onClick={() => field.onChange(undefined)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                  <button type="button" className="action-btn p-[clamp(0.25rem,0.5vw,0.375rem)] hover:bg-white/20 rounded-full transition-colors" title="Remove File" onClick={() => {
+                    field.onChange(undefined);
+                    if (ref.current) ref.current.value = "";
+                  }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>
                   </button>
                 </div>
                 <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium pointer-events-none">
@@ -243,7 +249,10 @@ function DocUploadField({
               disabled={disabled}
               accept=".jpg,.jpeg,.png,.webp"
               className="hidden"
-              onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
+              onChange={(e) => {
+                field.onChange(e.target.files?.[0] ?? undefined);
+                e.target.value = "";
+              }}
             />
           </div>
           {fieldState.error && (
@@ -295,9 +304,10 @@ export default function CreateRegionalOfficer() {
   const initialData = location.state?.initialData;
 
   const isEditMode = !!userId;
-  const states = useAppSelector((state) => state.roleManager.states);
-  const allDistricts = useAppSelector((state) => state.roleManager.districts);
-  const allMandals = useAppSelector((state) => state.roleManager.mandals);
+  const { data: geoMasterData } = useGetAllGeoMasterDataQuery();
+  const states = geoMasterData?.states || [];
+  const allDistricts = geoMasterData?.districts || [];
+  const allMandals = geoMasterData?.mandals || [];
 
 
   const [createRegionalOfficer, { isLoading }] =
@@ -331,9 +341,36 @@ export default function CreateRegionalOfficer() {
 
   const getGeoNames = (srcData: any) => {
     const geo = srcData?.geo_assignments;
-    const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === srcData?.state || s.desc === srcData?.address?.state);
-    const stateVal = stateObj?.desc || srcData?.state || srcData?.address?.state || "";
+
+    const safeLower = (val: any): string => {
+      if (typeof val === "string") return val.toLowerCase();
+      if (val && typeof val.desc === "string") return val.desc.toLowerCase();
+      if (val && typeof val.name === "string") return val.name.toLowerCase();
+      return "";
+    };
+
+    const stateObj = states.find((s: any) => {
+      const sDesc = safeLower(s.desc);
+      if (!sDesc) return false;
+      return (
+        String(s.id) === String(geo?.state_id) ||
+        String(s.id) === String(srcData?.address_state_id) ||
+        String(s.id) === String(srcData?.address?.state_id) ||
+        sDesc === safeLower(srcData?.state) ||
+        sDesc === safeLower(srcData?.address?.state)
+      );
+    });
+
+    const stateVal = stateObj?.desc ||
+      (typeof srcData?.state === "string" ? srcData.state : srcData?.state?.desc || srcData?.state?.name) ||
+      (typeof srcData?.address?.state === "string" ? srcData.address.state : srcData?.address?.state?.desc || srcData?.address?.state?.name) ||
+      "";
     return { stateVal };
+  };
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "";
+    return dateStr.split("T")[0];
   };
 
   const [getRegionalOfficerById, { data: regionalOfficerData }] =
@@ -355,13 +392,14 @@ export default function CreateRegionalOfficer() {
       reset({
         firstName: initialData.first_name || initialData.firstName || "",
         lastName: initialData.last_name || initialData.lastName || "",
-        dob: initialData.dob || "",
+        dob: formatDate(initialData.dob),
         email: initialData.email || initialData.emailAddress || "",
         mobile: initialData.phone || initialData.mobile || initialData.phoneNumber || initialData.contact || "",
         address: initialData.address || "",
         addressState: stateVal || "",
         city: initialData.city || "",
         pincode: initialData.pincode || "",
+        profilePicture: initialData.avatar_url || initialData.avatar || initialData.profile_image || initialData.profilePicture || undefined,
         aadharFront: initialData.id_proof_front_url || initialData.id_proof?.id_proof_frontUrl || undefined,
         aadharBack: initialData.id_proof_back_url || initialData.id_proof?.id_proof_backUrl || undefined,
         panCard: initialData.pan_card_url || initialData.id_proof?.pan_card_url || undefined,
@@ -377,13 +415,14 @@ export default function CreateRegionalOfficer() {
       reset({
         firstName: data.firstName || data.first_name || "",
         lastName: data.lastName || data.last_name || "",
-        dob: data.dob || "",
+        dob: formatDate(data.dob),
         email: data.emailAddress || data.email || "",
         mobile: data.phoneNumber || data.phone || data.mobile || "",
         address: data.address?.address || data.address || "",
         addressState: stateVal || "",
         city: data.address?.city || data.city || "",
         pincode: data.address?.pincode || data.pincode || "",
+        profilePicture: data.avatar_url || data.avatar || data.profile_image || data.profilePicture || undefined,
         aadharFront: data.id_proof_front_url || data.id_proof?.id_proof_frontUrl || undefined,
         aadharBack: data.id_proof_back_url || data.id_proof?.id_proof_backUrl || undefined,
         panCard: data.pan_card_url || data.id_proof?.pan_card_url || undefined,
@@ -397,11 +436,12 @@ export default function CreateRegionalOfficer() {
     try {
       // ── Resolve S3 keys (upload new files, keep existing string keys) ────────
       let aadharFrontKey = typeof values.aadharFront === "string" ? values.aadharFront : "";
-      let aadharBackKey  = typeof values.aadharBack  === "string" ? values.aadharBack  : "";
-      let panCardKey     = typeof values.panCard      === "string" ? values.panCard      : "";
+      let aadharBackKey = typeof values.aadharBack === "string" ? values.aadharBack : "";
+      let panCardKey = typeof values.panCard === "string" ? values.panCard : "";
+      let profilePictureKey = typeof values.profilePicture === "string" ? values.profilePicture : "";
 
       const uploadPromises: Promise<any>[] = [];
-      const uploadFields: ("aadharFront" | "aadharBack" | "panCard")[] = [];
+      const uploadFields: ("aadharFront" | "aadharBack" | "panCard" | "profilePicture")[] = [];
 
       if (values.aadharFront instanceof File) {
         uploadPromises.push(uploadUserDocument(values.aadharFront, values.email, "aadhar_front"));
@@ -415,6 +455,10 @@ export default function CreateRegionalOfficer() {
         uploadPromises.push(uploadUserDocument(values.panCard, values.email, "pan"));
         uploadFields.push("panCard");
       }
+      if (values.profilePicture instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.profilePicture, values.email, "profile_image"));
+        uploadFields.push("profilePicture");
+      }
 
       if (uploadPromises.length > 0) {
         const uploadToastId = toast.loading("Uploading documents, please wait...");
@@ -423,8 +467,9 @@ export default function CreateRegionalOfficer() {
           uploadResults.forEach((res, index) => {
             const field = uploadFields[index];
             if (field === "aadharFront") aadharFrontKey = res.key;
-            if (field === "aadharBack")  aadharBackKey  = res.key;
-            if (field === "panCard")     panCardKey     = res.key;
+            if (field === "aadharBack") aadharBackKey = res.key;
+            if (field === "panCard") panCardKey = res.key;
+            if (field === "profilePicture") profilePictureKey = res.key;
           });
           toast.dismiss(uploadToastId);
         } catch (uploadError) {
@@ -437,9 +482,9 @@ export default function CreateRegionalOfficer() {
       const selectedStateObj = states.find(
         (s: any) => s.desc?.toLowerCase().trim() === values.addressState?.toLowerCase().trim()
       );
-      const stateIdVal   = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
+      const stateIdVal = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
       const districtIdVal = 1;
-      const mandalIdVal   = 1;
+      const mandalIdVal = 1;
 
       const payload = {
         firstName: values.firstName,
@@ -448,6 +493,7 @@ export default function CreateRegionalOfficer() {
         emailAddress: values.email,
         phoneNumber: values.mobile,
         dob: values.dob,
+        avatar: profilePictureKey || undefined,
         role_id: regionalOfficerRoleId,
         address: {
           address: values.address,
@@ -465,9 +511,9 @@ export default function CreateRegionalOfficer() {
         },
         id_proof: {
           id_proof_frontUrl: aadharFrontKey,
-          id_proof_backUrl:  aadharBackKey,
-          pan_card_number:   "ABCDE1234F",
-          pan_card_url:      panCardKey,
+          id_proof_backUrl: aadharBackKey,
+          pan_card_number: "ABCDE1234F",
+          pan_card_url: panCardKey,
         },
       };
 
@@ -489,8 +535,8 @@ export default function CreateRegionalOfficer() {
     const name = `${watch("firstName") || data?.firstName || data?.first_name || ""} ${watch("lastName") || data?.lastName || data?.last_name || ""}`.trim() || "Regional Officer Name";
     const status = data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review";
     const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "RO";
-    const avatarUrl = data?.avatar || data?.profile_image || "";
-    
+    const avatarUrl = data?.avatar_url || data?.avatar || data?.profile_image || "";
+
     const officer = {
       name,
       applicationId: userId?.toString() || data?.id?.toString() || "N/A",
@@ -502,7 +548,7 @@ export default function CreateRegionalOfficer() {
     const email = watch("email") || data?.emailAddress || data?.email || "N/A";
     const phone = watch("mobile") || data?.phoneNumber || data?.phone || data?.mobile || "N/A";
     const dateOfBirth = watch("dob") || data?.dob ? new Date(watch("dob") || data.dob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' }) : "N/A";
-    
+
     const stateObj = states.find((s: any) => s.desc === watch("addressState") || s.id === data?.geo_assignments?.state_id || s.desc === data?.state);
     const districtObj = allDistricts.find((d: any) => d.id === data?.geo_assignments?.district_id || d.desc === data?.district);
     const mandalObj = allMandals.find((m: any) => m.id === data?.geo_assignments?.mandal_id || m.desc === data?.mandal || m.desc === data?.area);

@@ -22,7 +22,7 @@ import {
 } from "@/components/validations/officerSchema";
 import { RHFTextField } from "@/components/form/RHFTextField";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
-import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { useGetAllMasterDataQuery, useGetAllGeoMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
 import { uploadUserDocument } from "@/core/utils/fileUpload";
@@ -53,7 +53,7 @@ function ImagePreview({ file, className, onUrlReady }: { file: any; className?: 
   const [src, setSrc] = useState<string>("");
 
   const isS3Key = typeof file === "string" && !file.startsWith("http") && !file.startsWith("data:");
-  
+
   const { data: s3Data } = useGeneratePresignedUrlQuery(file, {
     skip: !isS3Key,
   });
@@ -144,7 +144,10 @@ function UploadPictureField({
                 disabled={disabled}
                 accept="image/jpeg,image/png,image/webp"
                 className="hidden"
-                onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
+                onChange={(e) => {
+                  field.onChange(e.target.files?.[0] ?? undefined);
+                  e.target.value = "";
+                }}
               />
             </button>
           </div>
@@ -209,13 +212,16 @@ function DocUploadField({
                   <button type="button" className="action-btn p-[clamp(0.25rem,0.5vw,0.375rem)] hover:bg-white/20 rounded-full transition-colors" title="View File" onClick={() => {
                     if (previewUrl) window.open(previewUrl, "_blank");
                   }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
                   </button>
                   <button type="button" className="action-btn p-[clamp(0.25rem,0.5vw,0.375rem)] hover:bg-white/20 rounded-full transition-colors" title="Change File" onClick={() => !disabled && ref.current?.click()}>
                     <FileImage className="w-4 h-4" />
                   </button>
-                  <button type="button" className="action-btn p-[clamp(0.25rem,0.5vw,0.375rem)] hover:bg-white/20 rounded-full transition-colors" title="Remove File" onClick={() => field.onChange(undefined)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                  <button type="button" className="action-btn p-[clamp(0.25rem,0.5vw,0.375rem)] hover:bg-white/20 rounded-full transition-colors" title="Remove File" onClick={() => {
+                    field.onChange(undefined);
+                    if (ref.current) ref.current.value = "";
+                  }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>
                   </button>
                 </div>
                 <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium pointer-events-none">
@@ -240,7 +246,10 @@ function DocUploadField({
               disabled={disabled}
               accept=".jpg,.jpeg,.png,.webp"
               className="hidden"
-              onChange={(e) => field.onChange(e.target.files?.[0] ?? undefined)}
+              onChange={(e) => {
+                field.onChange(e.target.files?.[0] ?? undefined);
+                e.target.value = "";
+              }}
             />
           </div>
           {fieldState.error && (
@@ -301,9 +310,10 @@ const CreateFieldOfficer = () => {
     "FO",
   );
 
-  const states = useSelector((state: any) => state.roleManager.states);
-  const allDistricts = useSelector((state: any) => state.roleManager.districts);
-  const allMandals = useSelector((state: any) => state.roleManager.mandals);
+  const { data: geoMasterData } = useGetAllGeoMasterDataQuery();
+  const states = geoMasterData?.states || [];
+  const allDistricts = geoMasterData?.districts || [];
+  const allMandals = geoMasterData?.mandals || [];
 
   const { control, handleSubmit, reset, watch } = useForm<OfficerFormValues>({
     resolver: zodResolver(officerSchema),
@@ -327,9 +337,36 @@ const CreateFieldOfficer = () => {
 
   const getGeoNames = (srcData: any) => {
     const geo = srcData?.geo_assignments;
-    const stateObj = states.find((s: any) => s.id === geo?.state_id || s.desc === srcData?.state || s.desc === srcData?.address?.state);
-    const stateVal = stateObj?.desc || srcData?.state || srcData?.address?.state || "";
+
+    const safeLower = (val: any): string => {
+      if (typeof val === "string") return val.toLowerCase();
+      if (val && typeof val.desc === "string") return val.desc.toLowerCase();
+      if (val && typeof val.name === "string") return val.name.toLowerCase();
+      return "";
+    };
+
+    const stateObj = states.find((s: any) => {
+      const sDesc = safeLower(s.desc);
+      if (!sDesc) return false;
+      return (
+        String(s.id) === String(geo?.state_id) ||
+        String(s.id) === String(srcData?.address_state_id) ||
+        String(s.id) === String(srcData?.address?.state_id) ||
+        sDesc === safeLower(srcData?.state) ||
+        sDesc === safeLower(srcData?.address?.state)
+      );
+    });
+
+    const stateVal = stateObj?.desc ||
+      (typeof srcData?.state === "string" ? srcData.state : srcData?.state?.desc || srcData?.state?.name) ||
+      (typeof srcData?.address?.state === "string" ? srcData.address.state : srcData?.address?.state?.desc || srcData?.address?.state?.name) ||
+      "";
     return { stateVal };
+  };
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "";
+    return dateStr.split("T")[0];
   };
 
   const [getFieldOfficerById, { data: fieldOfficerData }] =
@@ -351,13 +388,14 @@ const CreateFieldOfficer = () => {
       reset({
         firstName: initialData.first_name || initialData.firstName || "",
         lastName: initialData.last_name || initialData.lastName || "",
-        dob: initialData.dob || "",
+        dob: formatDate(initialData.dob),
         email: initialData.email || initialData.emailAddress || "",
         mobile: initialData.phone || initialData.mobile || initialData.phoneNumber || initialData.contact || "",
         address: initialData.address?.address || initialData.address || "",
         city: initialData.address?.city || initialData.city || "",
         pincode: initialData.address?.pincode || initialData.pincode || "",
         state: stateVal,
+        profilePicture: initialData.avatar_url || initialData.avatar || initialData.profile_image || initialData.profilePicture || undefined,
         aadharFront: initialData.id_proof_front_url || initialData.id_proof?.id_proof_frontUrl || undefined,
         aadharBack: initialData.id_proof_back_url || initialData.id_proof?.id_proof_backUrl || undefined,
         panCard: initialData.pan_card_url || initialData.id_proof?.pan_card_url || undefined,
@@ -373,13 +411,14 @@ const CreateFieldOfficer = () => {
       reset({
         firstName: data.firstName || data.first_name || "",
         lastName: data.lastName || data.last_name || "",
-        dob: data.dob || "",
+        dob: formatDate(data.dob),
         email: data.emailAddress || data.email || "",
         mobile: data.phoneNumber || data.phone || data.mobile || "",
         address: data.address?.address || data.address || "",
         city: data.address?.city || data.city || "",
         pincode: data.address?.pincode || data.pincode || "",
         state: stateVal,
+        profilePicture: data.avatar_url || data.avatar || data.profile_image || data.profilePicture || undefined,
         aadharFront: data.id_proof_front_url || data.id_proof?.id_proof_frontUrl || undefined,
         aadharBack: data.id_proof_back_url || data.id_proof?.id_proof_backUrl || undefined,
         panCard: data.pan_card_url || data.id_proof?.pan_card_url || undefined,
@@ -393,10 +432,11 @@ const CreateFieldOfficer = () => {
       let aadharFrontKey = typeof values.aadharFront === "string" ? values.aadharFront : "front.png";
       let aadharBackKey = typeof values.aadharBack === "string" ? values.aadharBack : "back.png";
       let panCardKey = typeof values.panCard === "string" ? values.panCard : "pan.png";
+      let profilePictureKey = typeof values.profilePicture === "string" ? values.profilePicture : "";
 
       // 1. Track files that need to be uploaded and run concurrently
       const uploadPromises: Promise<any>[] = [];
-      const uploadFields: ("aadharFront" | "aadharBack" | "panCard")[] = [];
+      const uploadFields: ("aadharFront" | "aadharBack" | "panCard" | "profilePicture")[] = [];
 
       if (values.aadharFront instanceof File) {
         uploadPromises.push(uploadUserDocument(values.aadharFront, values.email, "aadhar_front"));
@@ -410,21 +450,26 @@ const CreateFieldOfficer = () => {
         uploadPromises.push(uploadUserDocument(values.panCard, values.email, "pan"));
         uploadFields.push("panCard");
       }
+      if (values.profilePicture instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.profilePicture, values.email, "profile_image"));
+        uploadFields.push("profilePicture");
+      }
 
       // 2. Perform concurrent uploads if there are new files
       if (uploadPromises.length > 0) {
         const uploadToastId = toast.loading("Uploading documents, please wait...");
         try {
           const uploadResults = await Promise.all(uploadPromises);
-          
+
           // Map results back to correct keys
           uploadResults.forEach((res, index) => {
             const field = uploadFields[index];
             if (field === "aadharFront") aadharFrontKey = res.key;
             if (field === "aadharBack") aadharBackKey = res.key;
             if (field === "panCard") panCardKey = res.key;
+            if (field === "profilePicture") profilePictureKey = res.key;
           });
-          
+
           toast.dismiss(uploadToastId);
         } catch (uploadError) {
           toast.dismiss(uploadToastId);
@@ -448,6 +493,7 @@ const CreateFieldOfficer = () => {
         emailAddress: values.email,
         phoneNumber: values.mobile,
         dob: values.dob,
+        avatar: profilePictureKey || undefined,
         role_id: fieldOfficerRoleId,
         address: {
           address: values.address,
@@ -492,8 +538,8 @@ const CreateFieldOfficer = () => {
     const name = `${watch("firstName") || data?.firstName || data?.first_name || ""} ${watch("lastName") || data?.lastName || data?.last_name || ""}`.trim() || "Field Officer Name";
     const status = data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review";
     const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "FO";
-    const avatarUrl = data?.avatar || data?.profile_image || "";
-    
+    const avatarUrl = data?.avatar_url || data?.avatar || data?.profile_image || "";
+
     const officer = {
       name,
       applicationId: userId?.toString() || data?.id?.toString() || "N/A",
@@ -505,7 +551,7 @@ const CreateFieldOfficer = () => {
     const email = watch("email") || data?.emailAddress || data?.email || "N/A";
     const phone = watch("mobile") || data?.phoneNumber || data?.phone || data?.mobile || "N/A";
     const dateOfBirth = watch("dob") || data?.dob ? new Date(watch("dob") || data.dob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' }) : "N/A";
-    
+
     const stateObj = states.find((s: any) => s.desc === watch("state") || s.id === data?.geo_assignments?.state_id || s.desc === data?.state);
     const districtObj = allDistricts.find((d: any) => d.id === data?.geo_assignments?.district_id || d.desc === data?.district);
     const mandalObj = allMandals.find((m: any) => m.id === data?.geo_assignments?.mandal_id || m.desc === data?.mandal || m.desc === data?.area);
