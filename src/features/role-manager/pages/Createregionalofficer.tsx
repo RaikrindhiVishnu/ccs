@@ -422,7 +422,7 @@ export default function CreateRegionalOfficer() {
         addressState: stateVal || "",
         city: data.address?.city || data.city || "",
         pincode: data.address?.pincode || data.pincode || "",
-        profilePicture: data.avatar_url || data.avatar || data.profile_image || data.profilePicture || undefined,
+        profilePicture: data.avatar_url || data.avatar || data.profile_image || data.profilePicture || data.profile_url || (data.emailAddress || data.email ? (localStorage.getItem(`avatar_key_${(data.emailAddress || data.email).trim().toLowerCase()}`) || `users/${(data.emailAddress || data.email).trim().toLowerCase()}/documents/profile_image/download.png`) : undefined),
         aadharFront: data.id_proof_front_url || data.id_proof?.id_proof_frontUrl || undefined,
         aadharBack: data.id_proof_back_url || data.id_proof?.id_proof_backUrl || undefined,
         panCard: data.pan_card_url || data.id_proof?.pan_card_url || undefined,
@@ -479,6 +479,10 @@ export default function CreateRegionalOfficer() {
         }
       }
 
+      if (profilePictureKey) {
+        localStorage.setItem(`avatar_key_${values.email.trim().toLowerCase()}`, profilePictureKey);
+      }
+
       const selectedStateObj = states.find(
         (s: any) => s.desc?.toLowerCase().trim() === values.addressState?.toLowerCase().trim()
       );
@@ -494,6 +498,7 @@ export default function CreateRegionalOfficer() {
         phoneNumber: values.mobile,
         dob: values.dob,
         avatar: profilePictureKey || undefined,
+        profile_image: profilePictureKey || undefined,
         role_id: regionalOfficerRoleId,
         address: {
           address: values.address,

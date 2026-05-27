@@ -53,7 +53,7 @@ function ImagePreview({ file, className, onUrlReady }: { file: any; className?: 
   const [src, setSrc] = useState<string>("");
 
   const isS3Key = typeof file === "string" && !file.startsWith("http") && !file.startsWith("data:");
-  
+
   const { data: s3Data } = useGeneratePresignedUrlQuery(file, {
     skip: !isS3Key,
   });
@@ -121,6 +121,46 @@ export default function AgentForm({
     navigate("/role-manager/user-directory");
   };
 
+  const parseIdProof = (idProofField: any) => {
+    if (!idProofField) return null;
+    if (typeof idProofField === "string") {
+      try {
+        return JSON.parse(idProofField);
+      } catch (e) {
+        console.error("Failed to parse id_proof JSON string:", e);
+      }
+    }
+    return idProofField;
+  };
+
+  const parseGeoAssignments = (geoField: any) => {
+    if (!geoField) return null;
+    if (typeof geoField === "string") {
+      try {
+        return JSON.parse(geoField);
+      } catch (e) {
+        console.error("Failed to parse geo_assignments JSON string:", e);
+      }
+    }
+    return geoField;
+  };
+
+  const getGeoField = (data: any, key: "state_id" | "region_id" | "areas_id") => {
+    if (!data) return undefined;
+    const geo = parseGeoAssignments(data.geo_assignments);
+
+    if (key === "state_id") {
+      return geo?.state_id || data.state_id || data.address_state_id || data.address?.state_id;
+    }
+    if (key === "region_id") {
+      return geo?.region_id || geo?.region || data.region_id || data.region;
+    }
+    if (key === "areas_id") {
+      return geo?.areas_id || geo?.area || data.areas_id || data.area_id || data.area;
+    }
+    return undefined;
+  };
+
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [successCardProps, setSuccessCardProps] = useState<any | null>(null);
 
@@ -135,7 +175,7 @@ export default function AgentForm({
     masterData?.data?.userRolesResult || [],
     "AGENT",
   );
-  
+
   const approvedStatus = masterData?.data?.userRegistrationStatusResult?.find((status: any) => status.code === "APPRVD");
   const registrationStatusId = approvedStatus?.id || 2;
 
@@ -191,9 +231,9 @@ export default function AgentForm({
         (initialData as any)?.id_proof?.ifsc_code ??
         "",
       bankBranch:
-        initialData?.bankBranch ?? 
-        (initialData as any)?.branch ?? 
-        (initialData as any)?.id_proof?.branch ?? 
+        initialData?.bankBranch ??
+        (initialData as any)?.branch ??
+        (initialData as any)?.id_proof?.branch ??
         "",
       // ── file fields ──
       profilePicture: undefined,
@@ -299,9 +339,10 @@ export default function AgentForm({
 
   // Pre-fill state from agentData or initialData
   useEffect(() => {
-    const geo = agentData?.data?.geo_assignments || (initialData as any)?.geo_assignments;
-    if (geo?.state_id && states.length > 0) {
-      const stateObj = states.find((s: any) => s.id === geo.state_id);
+    const dataObj = agentData?.data || initialData;
+    const stateIdVal = getGeoField(dataObj, "state_id");
+    if (stateIdVal && states.length > 0) {
+      const stateObj = states.find((s: any) => String(s.id) === String(stateIdVal) || String(s.state_id) === String(stateIdVal));
       if (stateObj) {
         prevStateRef.current = stateObj.desc;
         setValue("state", stateObj.desc, { shouldValidate: true });
@@ -311,35 +352,103 @@ export default function AgentForm({
 
   // Pre-fill region when regionsData is loaded
   useEffect(() => {
-    const geo = agentData?.data?.geo_assignments || (initialData as any)?.geo_assignments;
-    if (geo?.region_id && regionsData?.data) {
-      const regionObj = regionsData.data.find((r: any) => r.id === geo.region_id);
+    const dataObj = agentData?.data || initialData;
+    const regionIdVal = getGeoField(dataObj, "region_id");
+    if (regionIdVal && regionsData?.data) {
+      const regionObj = regionsData.data.find((r: any) => String(r.id) === String(regionIdVal) || String(r.region_id) === String(regionIdVal));
       if (regionObj) {
         prevRegionRef.current = regionObj.region_name;
         setValue("region", regionObj.region_name, { shouldValidate: true });
       }
     }
-  }, [regionsData, agentData, initialData, setValue]);
+  }, [regionsData, agentData, initialData, setValue, selectedStateName]);
 
   // Pre-fill area when areasData is loaded
   useEffect(() => {
-    const geo = agentData?.data?.geo_assignments || (initialData as any)?.geo_assignments;
-    if (geo?.areas_id && areasData?.data) {
-      const areaObj = areasData.data.find((a: any) => a.area_id === geo.areas_id);
+    const dataObj = agentData?.data || initialData;
+    const areaIdVal = getGeoField(dataObj, "areas_id");
+    if (areaIdVal && areasData?.data) {
+      const areaObj = areasData.data.find((a: any) =>
+        String(a.area_id) === String(areaIdVal) ||
+        String(a.id) === String(areaIdVal) ||
+        String(a.areas_id) === String(areaIdVal)
+      );
       if (areaObj) {
         setValue("area", areaObj.area_name, { shouldValidate: true });
       }
     }
-  }, [areasData, agentData, initialData, setValue]);
+  }, [areasData, agentData, initialData, setValue, selectedRegionName]);
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "";
     return dateStr.split("T")[0];
   };
 
+  const getProfilePic = (srcData: any) => {
+    if (!srcData) return "";
+    let val = srcData.avatar_url || srcData.avatar || srcData.profile_image || srcData.profilePicture || srcData.profile_url || srcData.id_proof?.avatar || srcData.id_proof?.profile_image || srcData.id_proof?.profile_url;
+    if (!val || val === "null" || val === "undefined") {
+      const email = srcData.email || srcData.emailAddress;
+      if (email) {
+        const cached = localStorage.getItem(`avatar_key_${email.trim().toLowerCase()}`);
+        if (cached) {
+          val = cached;
+        } else {
+          val = `users/${email.trim().toLowerCase()}/documents/profile_image/download.png`;
+        }
+      }
+    }
+    if (!val || val === "null" || val === "undefined") return "";
+    return val;
+  };
+
+  const getDoc = (data: any, key: "front" | "back" | "pan") => {
+    if (!data) return "";
+    const parsedIdProof = parseIdProof(data.id_proof);
+    if (key === "front") {
+      const val = (
+        data.id_proof_front_url ||
+        data.id_proof_frontUrl ||
+        parsedIdProof?.id_proof_frontUrl ||
+        parsedIdProof?.id_proof_front_url ||
+        data.id_proof?.id_proof_frontUrl ||
+        data.id_proof?.id_proof_front_url ||
+        ""
+      );
+      if (!val || val === "null" || val === "undefined") return "";
+      return val;
+    }
+    if (key === "back") {
+      const val = (
+        data.id_proof_back_url ||
+        data.id_proof_backUrl ||
+        parsedIdProof?.id_proof_backUrl ||
+        parsedIdProof?.id_proof_back_url ||
+        data.id_proof?.id_proof_backUrl ||
+        data.id_proof?.id_proof_back_url ||
+        ""
+      );
+      if (!val || val === "null" || val === "undefined") return "";
+      return val;
+    }
+    if (key === "pan") {
+      const val = (
+        data.pan_card_url ||
+        data.panCardUrl ||
+        parsedIdProof?.pan_card_url ||
+        parsedIdProof?.pan_card_url ||
+        data.id_proof?.pan_card_url ||
+        ""
+      );
+      if (!val || val === "null" || val === "undefined") return "";
+      return val;
+    }
+    return "";
+  };
+
   const getGeoNames = (srcData: any) => {
-    const geo = srcData?.geo_assignments;
-    
+    const stateIdVal = getGeoField(srcData, "state_id");
+
     const safeLower = (val: any): string => {
       if (typeof val === "string") return val.toLowerCase();
       if (val && typeof val.desc === "string") return val.desc.toLowerCase();
@@ -351,9 +460,7 @@ export default function AgentForm({
       const sDesc = safeLower(s.desc);
       if (!sDesc) return false;
       return (
-        String(s.id) === String(geo?.state_id) ||
-        String(s.id) === String(srcData?.address_state_id) ||
-        String(s.id) === String(srcData?.address?.state_id) ||
+        String(s.id) === String(stateIdVal) ||
         sDesc === safeLower(srcData?.state) ||
         sDesc === safeLower(srcData?.address?.state)
       );
@@ -370,6 +477,7 @@ export default function AgentForm({
     if (agentData?.data && states.length > 0) {
       const data = agentData.data;
       const { stateVal } = getGeoNames(data);
+      const parsedIdProof = parseIdProof(data.id_proof);
       reset({
         firstName: data.firstName || data.first_name || "",
         lastName: data.lastName || data.last_name || "",
@@ -380,14 +488,18 @@ export default function AgentForm({
         addressState: stateVal || data.state || data.address?.state || "",
         city: data.city || data.address?.city || "",
         pincode: data.pincode || data.address?.pincode || "",
-        panNumber: data.pan_card_number || data.panCardNumber || data.id_proof?.pan_card_number || "",
+        panNumber: data.pan_number || data.pan_card_number || data.panCardNumber || parsedIdProof?.pan_card_number || "",
         state: stateVal,
         region: "",
         area: "",
-        bankName: data.bank_name || data.bankName || data.id_proof?.bank_name || "",
-        accountNumber: data.account_number || data.accountNumber || data.id_proof?.bank_account_number || "",
-        ifscCode: data.ifsc_code || data.ifscCode || data.id_proof?.ifsc_code || "",
-        bankBranch: data.branch || data.bankBranch || data.id_proof?.branch || "",
+        bankName: data.bank_name || data.bankName || parsedIdProof?.bank_name || "",
+        accountNumber: data.account_number || data.accountNumber || parsedIdProof?.bank_account_number || "",
+        ifscCode: data.ifsc_code || data.ifscCode || parsedIdProof?.ifsc_code || "",
+        bankBranch: data.branch || data.bankBranch || parsedIdProof?.branch || "",
+        profilePicture: getProfilePic(data) || undefined,
+        aadharFront: getDoc(data, "front") || undefined,
+        aadharBack: getDoc(data, "back") || undefined,
+        panCard: getDoc(data, "pan") || undefined,
       });
       setDobState(formatDate(data.dob));
       setAddressState(data.address || data.address?.address || "");
@@ -426,6 +538,43 @@ export default function AgentForm({
       const districtIdVal = selectedAreaObj?.district_ids?.[0] ? Number(selectedAreaObj.district_ids[0]) : 1;
       const mandalIdVal = selectedAreaObj?.mandal_ids?.[0] ? Number(selectedAreaObj.mandal_ids[0]) : 1;
 
+      // 1. Resolve S3 keys (either existing string URLs/keys or default fallbacks)
+      let aadharFrontKey = typeof values.aadharFront === "string" ? values.aadharFront : getDoc(agentData?.data, "front") || getDoc(initialData, "front") || "front.png";
+      let aadharBackKey = typeof values.aadharBack === "string" ? values.aadharBack : getDoc(agentData?.data, "back") || getDoc(initialData, "back") || "back.png";
+      let panKey = typeof values.panCard === "string" ? values.panCard : getDoc(agentData?.data, "pan") || getDoc(initialData, "pan") || "pan.png";
+      let profilePicKey = typeof values.profilePicture === "string" ? values.profilePicture : getProfilePic(agentData?.data) || getProfilePic(initialData) || "profile.png";
+
+      // 2. Perform concurrent uploads if the user chose new files
+      const uploadPromises = [];
+      if (values.aadharFront instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.aadharFront, values.email, "aadhar_front").then(res => { aadharFrontKey = res.key || "front.png"; }));
+      }
+      if (values.aadharBack instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.aadharBack, values.email, "aadhar_back").then(res => { aadharBackKey = res.key || "back.png"; }));
+      }
+      if (values.panCard instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.panCard, values.email, "pan").then(res => { panKey = res.key || "pan.png"; }));
+      }
+      if (values.profilePicture instanceof File) {
+        uploadPromises.push(uploadUserDocument(values.profilePicture, values.email, "profile_image").then(res => { profilePicKey = res.key || "profile.png"; }));
+      }
+
+      if (uploadPromises.length > 0) {
+        const docUploadToastId = toast.loading("Uploading documents...");
+        try {
+          await Promise.all(uploadPromises);
+          toast.success("Documents uploaded successfully!", { id: docUploadToastId });
+        } catch (error) {
+          toast.error("Failed to upload one or more documents. Please try again.", { id: docUploadToastId });
+          console.error("Document upload failed:", error);
+          return;
+        }
+      }
+
+      if (profilePicKey && profilePicKey !== "profile.png") {
+        localStorage.setItem(`avatar_key_${values.email.trim().toLowerCase()}`, profilePicKey);
+      }
+
       if (isEdit) {
         const userId =
           locUserId ||
@@ -442,6 +591,8 @@ export default function AgentForm({
             phoneNumber: values.phone || "",
             dob: values.dob || dobState || "",
             role_id: Number(roleIdState || agentRoleId),
+            profile_image: profilePicKey !== "profile.png" ? profilePicKey : undefined,
+            avatar: profilePicKey !== "profile.png" ? profilePicKey : undefined,
 
             address: {
               address: values.address || addressState || "",
@@ -458,6 +609,18 @@ export default function AgentForm({
               region_id: regionIdVal,
               areas_id: areaIdVal,
             },
+
+            id_proof: {
+              bank_account_name: `${values.firstName} ${values.lastName}`,
+              bank_account_number: values.accountNumber,
+              ifsc_code: values.ifscCode,
+              branch: values.bankBranch,
+              bank_name: values.bankName,
+              id_proof_frontUrl: aadharFrontKey,
+              id_proof_backUrl: aadharBackKey,
+              pan_card_number: values.panNumber,
+              pan_card_url: panKey,
+            },
           };
 
           res = await updateAgentDetails(payload).unwrap();
@@ -466,39 +629,6 @@ export default function AgentForm({
           return;
         }
       } else {
-        const docUploadToastId = toast.loading("Uploading documents...");
-        
-        let aadharFrontKey = "front.png";
-        let aadharBackKey = "back.png";
-        let panKey = "pan.png";
-        let profilePicKey = "profile.png";
-
-        try {
-          const uploadPromises = [];
-
-          if (values.aadharFront instanceof File) {
-            uploadPromises.push(uploadUserDocument(values.aadharFront, values.email, "aadhar_front").then(res => { aadharFrontKey = res.key || "front.png"; }));
-          }
-          if (values.aadharBack instanceof File) {
-            uploadPromises.push(uploadUserDocument(values.aadharBack, values.email, "aadhar_back").then(res => { aadharBackKey = res.key || "back.png"; }));
-          }
-          if (values.panCard instanceof File) {
-            uploadPromises.push(uploadUserDocument(values.panCard, values.email, "pan").then(res => { panKey = res.key || "pan.png"; }));
-          }
-          if (values.profilePicture instanceof File) {
-            uploadPromises.push(uploadUserDocument(values.profilePicture, values.email, "profile_image").then(res => { profilePicKey = res.key || "profile.png"; }));
-          }
-
-          if (uploadPromises.length > 0) {
-            await Promise.all(uploadPromises);
-          }
-          toast.success("Documents uploaded successfully!", { id: docUploadToastId });
-        } catch (error) {
-          toast.error("Failed to upload one or more documents. Please try again.", { id: docUploadToastId });
-          console.error("Document upload failed:", error);
-          return;
-        }
-
         const payload = {
           firstName: values.firstName,
           lastName: values.lastName,
@@ -597,7 +727,7 @@ export default function AgentForm({
     const status = data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review";
     const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "AN";
     const avatarUrl = data?.avatar || data?.profile_image || profileImage || "";
-    
+
     const agent = {
       name,
       applicationId: userId?.toString() || data?.id?.toString() || "N/A",
@@ -609,7 +739,7 @@ export default function AgentForm({
     const email = watch("email") || data?.email || data?.emailAddress || "N/A";
     const phone = watch("phone") || data?.phone || data?.phoneNumber || data?.mobile || data?.contact || "N/A";
     const dateOfBirth = watch("dob") || data?.dob ? new Date(watch("dob") || data.dob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' }) : "N/A";
-    
+
     const stateObj = states.find((s: any) => s.desc === watch("state") || s.id === data?.geo_assignments?.state_id);
     const stateName = stateObj?.desc || data?.state || "N/A";
 
@@ -785,17 +915,17 @@ export default function AgentForm({
                             className="w-full h-full object-cover rounded-full"
                             onUrlReady={setProfileImage}
                           />
-                        ) : (agentData?.data?.avatar || agentData?.data?.profile_image || (initialData as any)?.avatar || (initialData as any)?.profile_image) ? (
-                          <img
-                            src={agentData?.data?.avatar || agentData?.data?.profile_image || (initialData as any)?.avatar || (initialData as any)?.profile_image}
-                            alt="profile"
-                            className="w-full h-full object-cover"
+                        ) : (getProfilePic(agentData?.data) || getProfilePic(initialData)) ? (
+                          <ImagePreview
+                            file={getProfilePic(agentData?.data) || getProfilePic(initialData)}
+                            className="w-full h-full object-cover rounded-full"
+                            onUrlReady={setProfileImage}
                           />
                         ) : profileImage ? (
                           <img
                             src={profileImage}
                             alt="profile"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover rounded-full"
                           />
                         ) : (
                           <User
@@ -1070,21 +1200,21 @@ export default function AgentForm({
               title="Aadhar Card (Front)"
               control={control}
               disabled={isViewMode}
-              existingUrl={agentData?.data?.id_proof_front_url || agentData?.data?.id_proof?.id_proof_frontUrl || (initialData as any)?.id_proof_front_url || (initialData as any)?.id_proof?.id_proof_frontUrl || (initialData as any)?.id_proof?.id_proof_front_url}
+              existingUrl={getDoc(agentData?.data, "front") || getDoc(initialData, "front")}
             />
             <UploadBox
               name="aadharBack"
               title="Aadhar Card (Back)"
               control={control}
               disabled={isViewMode}
-              existingUrl={agentData?.data?.id_proof_back_url || agentData?.data?.id_proof?.id_proof_backUrl || (initialData as any)?.id_proof_back_url || (initialData as any)?.id_proof?.id_proof_backUrl || (initialData as any)?.id_proof?.id_proof_back_url}
+              existingUrl={getDoc(agentData?.data, "back") || getDoc(initialData, "back")}
             />
             <UploadBox
               name="panCard"
               title="Pan Card"
               control={control}
               disabled={isViewMode}
-              existingUrl={agentData?.data?.pan_card_url || agentData?.data?.id_proof?.pan_card_url || (initialData as any)?.pan_card_url || (initialData as any)?.id_proof?.pan_card_url || (initialData as any)?.id_proof?.pan_card_url}
+              existingUrl={getDoc(agentData?.data, "pan") || getDoc(initialData, "pan")}
             />
           </div>
         </FormSection>
@@ -1232,7 +1362,7 @@ function UploadBox({
                   <button type="button" className="action-btn p-1.5 hover:bg-white/20 rounded-full transition-colors" title="View File" onClick={() => {
                     if (previewUrl) window.open(previewUrl, "_blank");
                   }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
                   </button>
                   <button type="button" className="action-btn p-1.5 hover:bg-white/20 rounded-full transition-colors" title="Change File" onClick={() => !disabled && inputRef.current?.click()}>
                     <Upload className="w-4 h-4" />
@@ -1241,7 +1371,7 @@ function UploadBox({
                     field.onChange(undefined);
                     if (inputRef.current) inputRef.current.value = "";
                   }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></svg>
                   </button>
                 </div>
                 <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium pointer-events-none">
