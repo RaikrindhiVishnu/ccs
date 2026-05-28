@@ -94,8 +94,8 @@ export function RoleCreationOverviewCard({
     isLoading,
     error,
   } = useGetRoleCreationOverviewQuery({
-    startDate: dateRange.from.toISOString().split("T")[0],
-    endDate: dateRange.to.toISOString().split("T")[0],
+    startDate: `${dateRange.from.getFullYear()}-${String(dateRange.from.getMonth() + 1).padStart(2, '0')}-${String(dateRange.from.getDate()).padStart(2, '0')}`,
+    endDate: `${dateRange.to.getFullYear()}-${String(dateRange.to.getMonth() + 1).padStart(2, '0')}-${String(dateRange.to.getDate()).padStart(2, '0')}`,
     offset: "0",
   });
 
@@ -114,7 +114,7 @@ export function RoleCreationOverviewCard({
   };
 
   const data: DayData[] = generateDateRange(dateRange.from, dateRange.to).map((date) => {
-    const dateStr = date.toISOString().split("T")[0];
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     const matchingItem = apiResponse?.data?.find((item) => {
       return item.assignmentDate.startsWith(dateStr);
     });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,6 @@ import { useLazyGetAgentDetailsQuery } from "../api/userDirectoryApi";
 import { FlowCard } from "./FlowCard";
 import { FlowItem } from "./FlowItem";
 import { FlowConnector } from "./FlowConnector";
-import type { UserRole } from "../data/mockRoles";
 
 interface RoleFlowProps {
   regionOfficerData?: any;
@@ -73,7 +72,9 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
           state: regionOfficerData.data.state_id,
           region: regionOfficerData.data.region_name || regionOfficerData.data.region_id,
           role: "Regional Officer" as const,
-          roleId: "RO",
+          roleId: typeof regionOfficerData.data.regional_officer_role_id === "string" && regionOfficerData.data.regional_officer_role_id.includes("RO-")
+            ? regionOfficerData.data.regional_officer_role_id
+            : `RO-${regionOfficerData.data.regional_officer_role_id || regionOfficerData.data.regional_officer_id || "-"}`,
           contact:
             regionOfficerData.data.regional_officer_phone,
           avatar:
@@ -103,7 +104,9 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
               .intelligence_officer_last_name || ""
             }`.trim(),
           role: "Intelligence Officer" as const,
-          roleId: "IO",
+          roleId: typeof regionOfficerData.data.intelligence_officer_role_id === "string" && regionOfficerData.data.intelligence_officer_role_id.includes("IO-")
+            ? regionOfficerData.data.intelligence_officer_role_id
+            : `IO-${regionOfficerData.data.intelligence_officer_role_id || regionOfficerData.data.intelligence_officer_id || "-"}`,
           contact:
             regionOfficerData.data
               .intelligence_officer_phone,
@@ -129,7 +132,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
         name: `${fo.first_name || ""} ${fo.last_name || ""
           }`.trim(),
         role: "Field Officer" as const,
-        roleId: `FO-${fo.role_id || "000"}`,
+        roleId: fo.role_id || "-",
         contact: fo.phone,
         avatar: fo.avatar || fo.profile_image || fo.image || "",
       })
@@ -137,7 +140,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
     : [];
 
   const [selectedFO, setSelectedFO] =
-    useState<UserRole | null>(null);
+    useState<any | null>(null);
 
   const [searchFO, setSearchFO] = useState("");
   const [searchAgent, setSearchAgent] = useState("");
@@ -153,6 +156,12 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
     selectedFieldOfficerIndex,
     setSelectedFieldOfficerIndex,
   ] = useState(0);
+
+  useEffect(() => {
+    setSelectedFO(null);
+    setSelectedFieldOfficerIndex(0);
+    setLocalAgents([]);
+  }, [stateId, regionId, areaId]);
 
   const handleFieldOfficerClick = async (
     officer: any,
@@ -191,9 +200,12 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
   // AGENTS
   // ─────────────────────────────────────────────────────────────
 
-  const agentsToMap = selectedFO
-    ? localAgents
-    : agentData?.data || [];
+  const agentsToMap =
+    fieldOfficers.length === 0
+      ? []
+      : selectedFO
+        ? localAgents
+        : agentData?.data || [];
 
   const rawAgents = Array.isArray(agentsToMap)
     ? agentsToMap.map(
@@ -204,7 +216,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
         name: `${ag.first_name || ""} ${ag.last_name || ""
           }`.trim(),
         role: "Agent" as const,
-        roleId: `AG-${ag.role_id || "000"}`,
+        roleId: ag.role_id || "-",
         contact: ag.phone,
         avatar: ag.avatar || ag.profile_image || ag.image || "",
       })
