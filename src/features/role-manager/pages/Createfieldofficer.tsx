@@ -29,6 +29,7 @@ import { uploadUserDocument } from "@/core/utils/fileUpload";
 import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 import { useGetFieldOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
 import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
+import { useGetRegionsByStateIdQuery, useGetAllAreasByRegionIdQuery } from "../api/regionSelectionApi";
 import SectionCard from "../components/ui/SectionCard";
 import InfoField from "../components/ui/InfoField";
 import DocumentCard from "../components/ui/DocumentCard";
@@ -372,6 +373,21 @@ const CreateFieldOfficer = () => {
   const [getFieldOfficerById, { data: fieldOfficerData }] =
     useGetFieldOfficerByIdMutation();
 
+  const dataForGeo = fieldOfficerData?.data || initialData;
+  const geoStateId = dataForGeo?.geo_assignments?.state_id || dataForGeo?.state_id || dataForGeo?.address_state_id || dataForGeo?.address?.state_id;
+
+  const { data: regionsData } = useGetRegionsByStateIdQuery(
+    { state_id: Number(geoStateId) },
+    { skip: !geoStateId }
+  );
+
+  const geoRegionId = dataForGeo?.geo_assignments?.region_id || dataForGeo?.region_id || dataForGeo?.region;
+
+  const { data: areasData } = useGetAllAreasByRegionIdQuery(
+    { region_id: Number(geoRegionId) },
+    { skip: !geoRegionId }
+  );
+
   const fetchedRef = useRef<any>(null);
 
   useEffect(() => {
@@ -564,17 +580,18 @@ const CreateFieldOfficer = () => {
       ? new Date(rawDob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' })
       : "N/A";
 
-    const stateObj = states.find((s: any) => s.desc === watch("state") || s.id === data?.geo_assignments?.state_id || s.desc === data?.state);
-    const districtObj = allDistricts.find((d: any) => d.id === data?.geo_assignments?.district_id || d.desc === data?.district);
-    const mandalObj = allMandals.find((m: any) => m.id === data?.geo_assignments?.mandal_id || m.desc === data?.mandal || m.desc === data?.area);
-
+    const stateObj = states.find((s: any) => s.desc === watch("state") || s.id === data?.geo_assignments?.state_id || s.desc === data?.state || s.id === data?.state_id || s.id === data?.address_state_id);
     const stateName = stateObj?.desc || data?.state || "N/A";
-    const districtName = districtObj?.desc || data?.district || "N/A";
-    const mandalName = mandalObj?.desc || data?.mandal || "N/A";
+
+    const regionObj = regionsData?.data?.find((r: any) => r.id === (data?.geo_assignments?.region_id || data?.region_id) || r.region_name === data?.region);
+    const regionName = regionObj?.region_name || data?.region || "N/A";
+
+    const areaObj = areasData?.data?.find((a: any) => (a.area_id ?? a.id) === (data?.geo_assignments?.areas_id || data?.geo_assignments?.area_id || data?.area_id) || a.area_name === data?.area);
+    const areaName = areaObj?.area_name || data?.area || "N/A";
 
     const operatingTerritory = [
-      mandalName,
-      districtName,
+      areaName,
+      regionName,
       stateName,
     ].filter((val) => val && val !== "N/A").join(", ") || "N/A";
 
