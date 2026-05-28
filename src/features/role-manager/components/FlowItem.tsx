@@ -69,24 +69,28 @@ export const FlowItem: React.FC<FlowItemProps> = ({
   if (variant === "detailed") {
     return (
       <div
-        className={cn(
-          "flex flex-col gap-4 p-4 rounded-2xl transition-all relative",
-        )}
+        className="
+          flex flex-col
+          px-5 py-4
+          min-h-[180px]
+        "
       >
-        <div className="flex justify-between items-start">
-          {renderAvatar("w-12 h-12 text-base")}
-          <div className="flex gap-2">
+        <div className="flex items-start justify-between">
+          {renderAvatar("w-12 h-12 min-[1920px]:w-16 min-[1920px]:h-16 min-[2560px]:w-20 min-[2560px]:h-20 text-base")}
+
+          <div className="flex items-center gap-2">
             <SquarePen
               size={16}
-              className="text-(--text-muted-strong) cursor-pointer hover:text-(--brand-500) transition-colors"
+              className="text-[#626C70] cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit?.();
               }}
             />
+
             <Eye
               size={16}
-              className="text-(--text-muted-strong) cursor-pointer hover:text-(--brand-500) transition-colors"
+              className="text-[#626C70] cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 onView?.();
@@ -95,15 +99,17 @@ export const FlowItem: React.FC<FlowItemProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-col gap-1.5 mt-2">
-          <span className="text-sm font-semibold text-[#191B1C] font-sans leading-tight">
+        <div className="mt-6 flex flex-col gap-2">
+          <span className="text-[15px] min-[1920px]:text-[18px] min-[2560px]:text-[22px] font-semibold text-[#191B1C] leading-[22px]">
             {name} - {role}
           </span>
-          <span className="text-xs text-[#626C70] font-sans leading-tight">
+
+          <span className="text-sm min-[1920px]:text-base min-[2560px]:text-lg text-[#626C70] leading-5">
             Role ID - {roleId}
           </span>
+
           {contact && (
-            <span className="text-xs text-[#626C70] font-sans leading-tight mt-0.5">
+            <span className="text-sm min-[1920px]:text-base min-[2560px]:text-lg text-[#626C70] leading-5">
               Contact - {contact}
             </span>
           )}
@@ -116,36 +122,47 @@ export const FlowItem: React.FC<FlowItemProps> = ({
     <div
       onClick={onClick}
       className={cn(
-        "flex items-center justify-between p-3 rounded-2xl transition-all cursor-pointer group border",
+        `
+        flex items-center justify-between
+        rounded-[20px]
+        px-4 py-3
+        min-h-[74px]
+        border
+        transition-all
+        cursor-pointer
+        `,
         active
-          ? "bg-(--brand-tint) border-(--brand-200)"
-          : "hover:bg-(--brand-tint)/50 border-transparent",
+          ? "bg-[#F3F8FF] border-[#B9D7FF]"
+          : "border-transparent hover:bg-[#F8FAFB]"
       )}
     >
       <div className="flex items-center gap-3">
-        {renderAvatar("w-10 h-10 text-xs")}
-        <div className="flex flex-col gap-0.5">
-          <span className="font-semibold text-[#191B1C] text-sm font-sans leading-tight">
+        {renderAvatar("w-11 h-11 min-[1920px]:w-14 min-[1920px]:h-14 min-[2560px]:w-18 min-[2560px]:h-18 text-xs")}
+
+        <div className="flex flex-col">
+          <span className="font-semibold text-[14px] text-[#191B1C] leading-5">
             {name}
           </span>
-          <span className="text-[11px] text-[#626C70] font-sans leading-tight">
+
+          <span className="text-xs text-[#626C70] leading-4">
             Role ID - {roleId}
           </span>
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
         <SquarePen
-          size={14}
-          className="text-(--text-muted-strong) cursor-pointer hover:text-(--brand-500) transition-colors"
+          size={15}
+          className="text-[#626C70] cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
             onEdit?.();
           }}
         />
+
         <Eye
-          size={14}
-          className="text-(--text-muted-strong) cursor-pointer hover:text-(--brand-500) transition-colors"
+          size={15}
+          className="text-[#626C70] cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
             onView?.();

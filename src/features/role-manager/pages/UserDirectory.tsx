@@ -196,10 +196,10 @@ const UserDirectory: React.FC = () => {
           </Typography>
           <Button
             onClick={() => navigate("/role-manager/create-roles")}
-            className="w-[129px] h-[48px] rounded-[100px] bg-[#2780C4] text-white text-[14px] font-normal leading-[18px] shadow-md flex items-center justify-center gap-[2px] hover:bg-[#2780C4]"
+            className="w-[129px] h-[48px] rounded-[100px] bg-[#2780C4] text-white text-[14px] font-normal leading-[18px] shadow-md flex items-center justify-center gap-[2px] hover:bg-[#2780C4] normal-case"
+            style={{ textTransform: "none" }}
           >
-            <Plus size={18} />
-            Create Roles
+            + Create Role
           </Button>
         </div>
 

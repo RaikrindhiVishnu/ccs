@@ -237,35 +237,117 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
 
   const foCount = filteredFOs.length;
 
-  const foOffset =
-    foCount > 0
-      ? (actualIndex + 0.5) / foCount
-      : 0.5;
+  const foOffset = selectedFieldOfficerIndex / 3;
 
   return (
-    <div className="flex flex-row items-start gap-0 w-full overflow-x-auto pb-6">
-      {/* ───────────────────────── RO & IO ───────────────────────── */}
+    <div className="w-full overflow-hidden">
+      <div
+        className="
+          w-full
+          flex items-stretch
+          px-3
+        "
+      >
+        {/* ───────────────────────── RO & IO ───────────────────────── */}
 
-      <div className="flex items-center w-1/3">
-        <FlowCard>
-          <div className="flex flex-col gap-4">
-            {roAndIo.length > 0 ? (
-              roAndIo.map((role, idx) => (
-                <React.Fragment key={role.id}>
+        <div className="flex flex-col flex-1 min-w-0">
+          <FlowCard className="flex-1">
+            <div className="flex flex-col gap-6">
+              {roAndIo.length > 0 ? (
+                roAndIo.map((role, idx) => (
+                  <React.Fragment key={role.id}>
+                    <FlowItem
+                      {...role}
+                      variant="detailed"
+                      active={idx === 0}
+                      onEdit={() =>
+                        navigate(
+                          role.roleId === "IO"
+                            ? "/role-manager/edit-intelligence-officer"
+                            : `/role-manager/edit-regional-officer/${role.originalId}`,
+                          {
+                            state: {
+                              initialData: role,
+                              roleType: role.roleId,
+                              userId: role.originalId,
+                              from: "/role-manager/user-directory",
+                              isViewMode: false,
+                            },
+                          }
+                        )
+                      }
+                      onView={() =>
+                        handleView(
+                          role,
+                          role.roleId === "IO"
+                            ? "IO"
+                            : "RO"
+                        )
+                      }
+                    />
+
+                    {idx < roAndIo.length - 1 && (
+                      <div className="h-px bg-[#E7EAEA] w-full mx-auto" />
+                    )}
+                  </React.Fragment>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-start pt-[134px] h-[280px] opacity-40">
+                  <Typography
+                    variant="p"
+                    className="text-sm"
+                  >
+                    No data available
+                  </Typography>
+                </div>
+              )}
+            </div>
+          </FlowCard>
+        </div>
+
+        <FlowConnector
+          type="branch"
+          startOffset={0.5}
+        />
+
+        {/* ───────────────────── FIELD OFFICERS ───────────────────── */}
+
+        <div className="flex flex-col flex-1 min-w-0">
+          <FlowCard
+            className="flex-1"
+            header={
+              <Input
+                placeholder="Search Field Officer"
+                value={searchFO}
+                onChange={(e) =>
+                  setSearchFO(e.target.value)
+                }
+                icon={<Search size={16} />}
+                wrapperClassName="border border-[var(--border-subtle)] rounded-full h-10 min-[1920px]:h-14 min-[2560px]:h-16 text-sm"
+                variant="white"
+              />
+            }
+          >
+            <div className="flex flex-col gap-2 mt-2">
+              {filteredFOs.length > 0 ? (
+                filteredFOs.slice(0, 4).map((fo: any, index: number) => (
                   <FlowItem
-                    {...role}
-                    variant="detailed"
-                    active={idx === 0}
+                    key={fo.id}
+                    {...fo}
+                    active={
+                      selectedFieldOfficerIndex === index
+                    }
+                    onClick={() =>
+                      handleFieldOfficerClick(fo, index)
+                    }
                     onEdit={() =>
                       navigate(
-                        role.roleId === "IO"
-                          ? "/role-manager/edit-intelligence-officer"
-                          : `/role-manager/edit-regional-officer/${role.originalId}`,
+                        "/role-manager/edit-field-officer",
                         {
                           state: {
-                            initialData: role,
-                            roleType: role.roleId,
-                            userId: role.originalId,
+                            initialData: fo,
+                            roleType: "FO",
+                            userId: fo.originalId,
                             from: "/role-manager/user-directory",
                             isViewMode: false,
                           },
@@ -273,160 +355,85 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                       )
                     }
                     onView={() =>
-                      handleView(
-                        role,
-                        role.roleId === "IO"
-                          ? "IO"
-                          : "RO"
-                      )
+                      handleView(fo, "FO")
                     }
                   />
-
-                  {idx < roAndIo.length - 1 && (
-                    <div className="h-px bg-gray-100 w-full" />
-                  )}
-                </React.Fragment>
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-start pt-[134px] h-[280px] opacity-40">
-                <Typography
-                  variant="p"
-                  className="text-sm"
-                >
-                  No data available
-                </Typography>
-              </div>
-            )}
-          </div>
-        </FlowCard>
-
-        <FlowConnector
-          type="branch"
-          startOffset={0.5}
-        />
-      </div>
-
-      {/* ───────────────────── FIELD OFFICERS ───────────────────── */}
-
-      <div className="flex items-center w-1/3">
-        <FlowCard
-          header={
-            <Input
-              placeholder="Search Field Officer"
-              value={searchFO}
-              onChange={(e) =>
-                setSearchFO(e.target.value)
-              }
-              icon={<Search size={16} />}
-              wrapperClassName="border border-[var(--border-subtle)] rounded-full h-10 text-sm"
-              variant="white"
-            />
-          }
-        >
-          <div className="flex flex-col gap-2 mt-2">
-            {filteredFOs.length > 0 ? (
-              filteredFOs.map((fo: any, index: number) => (
-                <FlowItem
-                  key={fo.id}
-                  {...fo}
-                  active={
-                    selectedFieldOfficerIndex === index
-                  }
-                  onClick={() =>
-                    handleFieldOfficerClick(fo, index)
-                  }
-                  onEdit={() =>
-                    navigate(
-                      "/role-manager/edit-field-officer",
-                      {
-                        state: {
-                          initialData: fo,
-                          roleType: "FO",
-                          userId: fo.originalId,
-                          from: "/role-manager/user-directory",
-                          isViewMode: false,
-                        },
-                      }
-                    )
-                  }
-                  onView={() =>
-                    handleView(fo, "FO")
-                  }
-                />
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-start pt-[78px] h-[240px] opacity-40">
-                <Typography
-                  variant="p"
-                  className="text-sm"
-                >
-                  No data available
-                </Typography>
-              </div>
-            )}
-          </div>
-        </FlowCard>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-start pt-[78px] h-[240px] opacity-40">
+                  <Typography
+                    variant="p"
+                    className="text-sm"
+                  >
+                    No data available
+                  </Typography>
+                </div>
+              )}
+            </div>
+          </FlowCard>
+        </div>
 
         <FlowConnector
           type="branch"
           startOffset={foOffset}
         />
-      </div>
 
-      {/* ───────────────────────── AGENTS ───────────────────────── */}
+        {/* ───────────────────────── AGENTS ───────────────────────── */}
 
-      <div className="flex items-center w-1/3">
-        <FlowCard
-          header={
-            <Input
-              placeholder="Search Agents"
-              value={searchAgent}
-              onChange={(e) =>
-                setSearchAgent(e.target.value)
-              }
-              icon={<Search size={16} />}
-              wrapperClassName="border border-[var(--border-subtle)] rounded-full h-10 text-sm"
-              variant="white"
-            />
-          }
-        >
-          <div className="flex flex-col gap-2 mt-2">
-            {filteredAgents.length > 0 ? (
-              filteredAgents.map((ag) => (
-                <FlowItem
-                  key={ag.id}
-                  {...ag}
-                  onEdit={() =>
-                    navigate(
-                      "/role-manager/agent-edit",
-                      {
-                        state: {
-                          initialData: ag,
-                          roleType: "AG",
-                          userId: ag.originalId,
-                          from: "/role-manager/user-directory",
-                          isViewMode: false,
-                        },
-                      }
-                    )
-                  }
-                  onView={() =>
-                    handleView(ag, "AG")
-                  }
-                />
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-start pt-[78px] h-[240px] opacity-40">
-                <Typography
-                  variant="p"
-                  className="text-sm"
-                >
-                  No data available
-                </Typography>
-              </div>
-            )}
-          </div>
-        </FlowCard>
+        <div className="flex flex-col flex-1 min-w-0">
+          <FlowCard
+            className="flex-1"
+            header={
+              <Input
+                placeholder="Search Agents"
+                value={searchAgent}
+                onChange={(e) =>
+                  setSearchAgent(e.target.value)
+                }
+                icon={<Search size={16} />}
+                wrapperClassName="border border-[var(--border-subtle)] rounded-full h-10 min-[1920px]:h-14 min-[2560px]:h-16 text-sm"
+                variant="white"
+              />
+            }
+          >
+            <div className="flex flex-col gap-2 mt-2">
+              {filteredAgents.length > 0 ? (
+                filteredAgents.slice(0, 4).map((ag) => (
+                  <FlowItem
+                    key={ag.id}
+                    {...ag}
+                    onEdit={() =>
+                      navigate(
+                        "/role-manager/agent-edit",
+                        {
+                          state: {
+                            initialData: ag,
+                            roleType: "AG",
+                            userId: ag.originalId,
+                            from: "/role-manager/user-directory",
+                            isViewMode: false,
+                          },
+                        }
+                      )
+                    }
+                    onView={() =>
+                      handleView(ag, "AG")
+                    }
+                  />
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-start pt-[78px] h-[240px] opacity-40">
+                  <Typography
+                    variant="p"
+                    className="text-sm"
+                  >
+                    No data available
+                  </Typography>
+                </div>
+              )}
+            </div>
+          </FlowCard>
+        </div>
       </div>
     </div>
   );
