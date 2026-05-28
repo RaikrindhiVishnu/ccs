@@ -9,25 +9,18 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ navItems = [] }) => {
   const navigate = useNavigate();
-  const iconSize = "clamp(14px,1.39vw,20px)";
-
-  const iconClass = `
-    w-[clamp(36px,3.61vw,32px)] h-[clamp(36px,4.17vh,52px)] rounded-[clamp(8px,0.83vw,12px)]
-    flex justify-center items-center cursor-pointer shrink-0
-    hover:bg-[var(--surface-sidebar-accent)] transition-colors duration-200
-  `;
 
   return (
-    <div className="w-[clamp(44px,4vw,60px)] bg-[var(--surface-sidebar)] rounded-[clamp(12px,1.39vw,20px)] flex flex-col justify-between p-[clamp(6px,0.69vw,10px)] box-border shrink-0 ml-[clamp(6px,0.83vw,12px)] mt-[clamp(6px,0.83vw,12px)] mb-[clamp(6px,0.83vw,12px)] h-[calc(100%-clamp(12px,1.67vw,24px))]">
+    <div className="w-[76px] bg-[#191B1C] rounded-[24px] flex flex-col justify-between p-3.5 box-border shrink-0 ml-4 mt-4 mb-4 h-[calc(100vh-32px)]">
       {/* TOP */}
-      <div className="flex flex-col gap-[clamp(12px,2.08vh,32px)] w-full items-center">
+      <div className="flex flex-col gap-9 w-full items-center">
         {/* Logo */}
-        <div className="w-full aspect-square max-h-[clamp(36px,4.17vh,52px)] bg-[var(--text-primary)] rounded-[clamp(8px,0.83vw,12px)] flex justify-center items-center shrink-0 overflow-hidden">
-          <img src="/logo.svg" alt="logo" className="w-[70%] h-[70%] object-contain" />
+        <div className="w-12 h-12 bg-[#0F1011] rounded-2xl flex justify-center items-center shrink-0 overflow-hidden">
+          <img src="/logo.svg" alt="logo" className="w-[60%] h-[60%] object-contain" />
         </div>
 
         {/* Nav items */}
-        <div className="flex flex-col gap-[clamp(2px,0.35vh,4px)] items-center w-full">
+        <div className="flex flex-col gap-3 items-center w-full">
           {navItems.map(({ icon, label, path }) => {
             const IconComponent = (Icons as any)[icon] || Icons.HelpCircle;
             return (
@@ -37,14 +30,16 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems = [] }) => {
                 end={path === '/'}
                 title={label}
                 className={({ isActive }) =>
-                  `${iconClass} ${isActive ? 'bg-[var(--surface-sidebar-accent)]' : ''}`
+                  `w-12 h-12 rounded-xl flex justify-center items-center cursor-pointer shrink-0 transition-all duration-200 ${
+                    isActive
+                      ? 'bg-[#2D3032] text-white'
+                      : 'text-[#8E9093] hover:bg-[#252729] hover:text-white'
+                  }`
                 }
               >
                 <IconComponent
-                  size={20}
+                  size={22}
                   strokeWidth={1.5}
-                  className="text-[var(--surface-sidebar-text)] w-[var(--icon-size)] h-[var(--icon-size)]"
-                  style={{ ["--icon-size" as any]: iconSize }}
                 />
               </NavLink>
             );
@@ -53,22 +48,24 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems = [] }) => {
       </div>
 
       {/* BOTTOM */}
-      <div className="flex flex-col gap-[clamp(8px,1.39vh,20px)] items-center w-full">
-
+      <div className="flex flex-col gap-4 items-center w-full">
         {/* Logout */}
-        <div className={iconClass} data-logout="true">
+        <div
+          data-logout="true"
+          className="w-12 h-12 rounded-xl flex justify-center items-center cursor-pointer shrink-0 transition-all duration-200 text-[#8E9093] hover:bg-[#252729] hover:text-white"
+          title="Logout"
+        >
           <Icons.LogOut
-            size={20}
+            size={22}
             strokeWidth={1.5}
-            className="text-[var(--surface-sidebar-text)] w-[var(--icon-size)] h-[var(--icon-size)]"
-            style={{ ["--icon-size" as any]: iconSize }}
           />
         </div>
 
         {/* Profile avatar */}
         <div
           onClick={() => navigate("/role-manager/profile")}
-          className="w-full aspect-square max-h-[clamp(36px,4.17vh,52px)] rounded-[clamp(8px,0.83vw,12px)] overflow-hidden bg-[var(--surface-sidebar-accent)] shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
+          className="w-12 h-12 rounded-xl overflow-hidden bg-gray-800 shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
+          title="Profile"
         >
           <img src={sidebarImg} alt="profile" className="w-full h-full object-cover" />
         </div>
