@@ -132,7 +132,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
         name: `${fo.first_name || ""} ${fo.last_name || ""
           }`.trim(),
         role: "Field Officer" as const,
-        roleId: fo.role_id || "-",
+        roleId: fo.role_id ? String(fo.role_id) : "-",
         contact: fo.phone,
         avatar: fo.avatar || fo.profile_image || fo.image || "",
       })
@@ -188,10 +188,10 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
 
   const filteredFOs = fieldOfficers.filter(
     (fo: any) =>
-      fo.name
+      String(fo.name || "")
         .toLowerCase()
         .includes(searchFO.toLowerCase()) ||
-      fo.roleId
+      String(fo.roleId || "")
         .toLowerCase()
         .includes(searchFO.toLowerCase())
   );
@@ -216,7 +216,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
         name: `${ag.first_name || ""} ${ag.last_name || ""
           }`.trim(),
         role: "Agent" as const,
-        roleId: ag.role_id || "-",
+        roleId: ag.role_id ? String(ag.role_id) : "-",
         contact: ag.phone,
         avatar: ag.avatar || ag.profile_image || ag.image || "",
       })
@@ -225,10 +225,10 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
 
   const filteredAgents = rawAgents.filter(
     (ag: any) =>
-      ag.name
+      String(ag.name || "")
         .toLowerCase()
         .includes(searchAgent.toLowerCase()) ||
-      ag.roleId
+      String(ag.roleId || "")
         .toLowerCase()
         .includes(searchAgent.toLowerCase())
   );
