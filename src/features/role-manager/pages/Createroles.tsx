@@ -156,7 +156,7 @@ const RoleCard: React.FC<RoleItem & { onClick?: () => void }> = ({
           {title}
         </h3>
 
-        <p className="font-sans font-normal text-[0.97vw] leading-[128%] text-black/60 tracking-[-0.01em] mt-[3.49%] max-w-[85.5%]">
+        <p className="font-sans font-normal text-[0.97vw] leading-[128%] text-black/60 tracking-[-0.01em] mt-[3.49%] max-w-[95%]">
           {description}
         </p>
 

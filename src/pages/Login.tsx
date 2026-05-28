@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Eye, EyeOff, Lock, User, ShieldCheck } from "lucide-react";
 import MainLoginBg from "@/assets/main login.svg";
 import GlcLogo from "@/assets/glc-logo.svg";
@@ -147,19 +147,18 @@ function CardLogo() {
  </div>
  );
 }
-
 function SecureFooter() {
- return (
- <div className="flex items-center justify-center gap-4 mt-auto pt-[clamp(0.75rem,2.5vh,1.5rem)] ">
- <ShieldCheck
- strokeWidth={1.8}
- className="shrink-0 text-[var(--status-success)] w-4 h-5 lg:w-[1.11vw] "
- />
- <span className="font-sans font-normal text-[var(--text-secondary)]/80 text-xs leading-tight lg:text-[0.83vw] lg:leading-[1.11vw]">
- Secured by TechGy Innovations. End-to-end encrypted connection.
- </span>
- </div>
- );
+  return (
+    <div className="flex items-center justify-center gap-4 -pt-[clamp(0.5rem,1.5vh,1rem)]">
+      <ShieldCheck
+        strokeWidth={1.8}
+        className="shrink-0 text-[var(--status-success)] w-4 h-5 lg:w-[1.11vw]"
+      />
+      <span className="font-sans font-normal text-[var(--text-secondary)]/80 text-xs leading-tight lg:text-[0.83vw] lg:leading-[1.11vw]">
+        Secured by TechGy Innovations. End-to-end encrypted connection.
+      </span>
+    </div>
+  );
 }
 
 function LoginCard({
@@ -307,27 +306,45 @@ function LoginScreen({
  className=""
  />
 
- <InputField
- id="login-password"
- label="Password"
- placeholder="Enter Password"
- type={showPw ? "text" : "password"}
- value={password}
- onChange={(e) => setPassword(e.target.value)}
- icon={Lock}
- error={errors.password}
- labelRight={
- <button
- type="button"
- onClick={onForgotPassword}
- className="border-none bg-transparent cursor-pointer p-0 font-sans font-medium text-[var(--text-secondary)] hover:text-[var(--text-heading)] transition-colors text-sm lg:text-[0.97vw]"
- >
- Forgot Password?
- </button>
- }
- rightEl={<EyeBtn />}
- className=""
- />
+<InputField
+  id="login-password"
+  label="Password"
+  placeholder="Enter Password"
+  type={showPw ? "text" : "password"}
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  icon={Lock}
+  error={errors.password}
+  rightEl={<EyeBtn />}
+  className=""
+/>
+
+<div className="flex justify-end -mt-[clamp(0.25rem,1vh,0.75rem)]">
+  <button
+    type="button"
+    onClick={onForgotPassword}
+    className="
+      border-none
+      cursor-pointer
+      p-0
+      font-semibold
+      text-[#3D4949]
+      hover:text-[var(--text-heading)]
+      transition-colors
+      text-[13px]
+      leading-[18px]
+      sm:text-[14px]
+      sm:leading-[20px]
+      lg:text-[0.97vw]
+      lg:leading-[1.38vw]
+      tracking-normal
+      align-middle
+      whitespace-nowrap
+    "
+  >
+    Forgot Password?
+  </button>
+</div>
 
  <div className="mt-[clamp(1rem,3.5vh,2.5rem)] ">
  <PrimaryButton type="submit" disabled={loading} className=" lg:rounded-full lg:text-[1.11vw]">
