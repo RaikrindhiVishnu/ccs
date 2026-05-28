@@ -133,6 +133,7 @@ export interface PillDropdownProps {
   value?: string;
   onChange?: (value: string) => void;
   className?: string;
+  buttonClassName?: string;
   disabled?: boolean;
   title?: string;
   placeholder?: string;
@@ -144,6 +145,7 @@ export function PillDropdown({
   value,
   onChange,
   className,
+  buttonClassName,
   disabled = false,
   title,
   placeholder,
@@ -184,7 +186,8 @@ export function PillDropdown({
           "transition-colors duration-150",
           disabled
             ? "opacity-60 cursor-not-allowed bg-gray-50 border-gray-200 text-gray-400"
-            : "cursor-pointer hover:bg-[color:var(--brand-tint)]"
+            : "cursor-pointer hover:bg-[color:var(--brand-tint)]",
+          buttonClassName
         )}
       >
         <span className="flex-1 text-left whitespace-nowrap">{selectedLabel}</span>
