@@ -99,7 +99,7 @@ export const AssignedFarmlandCard: React.FC<AssignedFarmlandCardProps> = ({ farm
 
         {/* Action Button */}
         <button 
-          onClick={() => navigate(`/verification-officer/assigned-farmlands-owner-details/${encodeURIComponent(farmland.id)}`)}
+          onClick={() => navigate(`/verification-officer-2/assigned-farmlands-owner-details/${encodeURIComponent(farmland.id)}`)}
           className="w-full h-[48px] rounded-[69px] mt-[25px] flex items-center justify-center transition-opacity hover:opacity-90"
           style={{ background: 'radial-gradient(50% 50% at 50% 50%, #3D4A0D 0%, #2A3008 100%)' }}
         >
