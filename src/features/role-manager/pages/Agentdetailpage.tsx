@@ -1,12 +1,12 @@
 import * as React from "react";
 
-import {useNavigate, useParams} from "react-router-dom";
-import {useGetAgentByIdMutation, useGetLocationHierarchyDetailsMutation} from "@/features/role-manager/api/roleManagerApi";
-import {useGetAllGeoMasterDataQuery} from "@/features/role-manager/api/masterDataApi";
-import {useApproveUserMutation} from "@/features/auth/api/authApi";
-import {useUpdateAgentDetailsMutation} from "@/features/role-manager/api/agentApi";
+import { useNavigate, useParams } from "react-router-dom";
+import { useGetAgentByIdMutation, useGetLocationHierarchyDetailsMutation } from "@/features/role-manager/api/roleManagerApi";
+import { useGetAllGeoMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { useApproveUserMutation } from "@/features/auth/api/authApi";
+import { useUpdateAgentDetailsMutation } from "@/features/role-manager/api/agentApi";
 import RaiseIssueForm from "@/features/role-manager/components/form";
-import {toast} from "sonner";
+import { toast } from "sonner";
 
 import InfoField from "../components/ui/InfoField";
 import SectionCard from "../components/ui/SectionCard";
@@ -44,36 +44,36 @@ interface AgentDetailPageProps {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) => {
+export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) => {
     const navigate = useNavigate();
     const [showIssueForm, setShowIssueForm] = React.useState(false);
 
-    const {id} = useParams();
+    const { id } = useParams();
     const userId = id ? Number(id) : NaN;
 
     const [getAgentById, {
-            data,
-            isLoading
-        }
+        data,
+        isLoading
+    }
     ] = useGetAgentByIdMutation();
     const [approveUser, {
-            isLoading : isApproving
-        }
+        isLoading: isApproving
+    }
     ] = useApproveUserMutation();
     const [updateAgentDetails, {
-            isLoading : isUpdatingAgent
-        }
+        isLoading: isUpdatingAgent
+    }
     ] = useUpdateAgentDetailsMutation();
     const [getLocationHierarchyDetails] = useGetLocationHierarchyDetailsMutation();
-    const {data: geoMasterData} = useGetAllGeoMasterDataQuery();
+    const { data: geoMasterData } = useGetAllGeoMasterDataQuery();
 
     // Territory assignment status
-    const [hierarchyData, setHierarchyData] = React.useState < any > (null);
-    const [territoryStatus, setTerritoryStatus] = React.useState < "loading" | "assigned" | "not_assigned" > ("loading");
-    const [territoryError, setTerritoryError] = React.useState < {
+    const [hierarchyData, setHierarchyData] = React.useState<any>(null);
+    const [territoryStatus, setTerritoryStatus] = React.useState<"loading" | "assigned" | "not_assigned">("loading");
+    const [territoryError, setTerritoryError] = React.useState<{
         district: boolean;
         area: boolean
-    } > ({district: false, area: false});
+    }>({ district: false, area: false });
 
     React.useEffect(() => {
         if (!isNaN(userId)) {
@@ -82,10 +82,10 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
     }, [userId, getAgentById]);
 
     // Parse geo_assignments (may be a JSON string or object)
-    const parseGeoAssignments = (geoField : any) => {
-        if (!geoField) 
+    const parseGeoAssignments = (geoField: any) => {
+        if (!geoField)
             return null;
-        
+
         if (typeof geoField === "string") {
             try {
                 return JSON.parse(geoField);
@@ -98,108 +98,105 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
 
     // Call getLocationHierarchyDetails when agent data is loaded
     React.useEffect(() => {
-        const apiData = data ?. data as any;
-        if (! apiData) 
+        const apiData = data?.data as any;
+        if (!apiData)
             return;
-        
+
 
         // Read district_id and mandal_id from top-level first, then fallback to geo_assignments
         const geo = parseGeoAssignments(apiData.geo_assignments);
-        const districtId = apiData.district_id || geo ?. district_id;
-        const mandalId = apiData.mandal_id || geo ?. mandal_id;
+        const districtId = apiData.district_id || geo?.district_id;
+        const mandalId = apiData.mandal_id || geo?.mandal_id;
 
         if (districtId && mandalId) {
             setTerritoryStatus("loading");
             console.log("Fetching Hierarchy for District ID:", districtId, "Mandal ID:", mandalId);
-            
-            getLocationHierarchyDetails({district_id: Number(districtId), mandal_id: Number(mandalId)}).unwrap().then((res) => {
-                if (res ?. success) {
+
+            getLocationHierarchyDetails({ district_id: Number(districtId), mandal_id: Number(mandalId) }).unwrap().then((res) => {
+                if (res?.success) {
                     setHierarchyData(res.data);
                     setTerritoryStatus("assigned");
-                    setTerritoryError({district: false, area: false});
+                    setTerritoryError({ district: false, area: false });
                 } else {
                     setHierarchyData(null);
                     setTerritoryStatus("not_assigned");
-                    setTerritoryError({district: true, area: true});
+                    setTerritoryError({ district: true, area: true });
                 }
             }).catch(() => {
                 setHierarchyData(null);
                 setTerritoryStatus("not_assigned");
-                setTerritoryError({district: true, area: true});
+                setTerritoryError({ district: true, area: true });
             });
         } else { // No district_id or mandal_id present at all
             setHierarchyData(null);
             setTerritoryStatus("not_assigned");
             setTerritoryError({
-                district: ! districtId,
-                area: ! mandalId
+                district: !districtId,
+                area: !mandalId
             });
         }
     }, [data, getLocationHierarchyDetails]);
 
 
-    const apiData = data ?. data as any;
+    const apiData = data?.data as any;
 
-    const geo = parseGeoAssignments(apiData ?. geo_assignments);
-    const districtId = apiData ?. district_id || geo ?. district_id;
-    const mandalId = apiData ?. mandal_id || geo ?. mandal_id;
+    const geo = parseGeoAssignments(apiData?.geo_assignments);
+    const districtId = apiData?.district_id || geo?.district_id;
+    const mandalId = apiData?.mandal_id || geo?.mandal_id;
 
-    const districtObj = geoMasterData ?. districts ?. find((d : any) => d.id === Number(districtId));
-    const mandalObj = geoMasterData ?. mandals ?. find((m : any) => m.id === Number(mandalId));
+    const districtObj = geoMasterData?.districts?.find((d: any) => d.id === Number(districtId));
+    const mandalObj = geoMasterData?.mandals?.find((m: any) => m.id === Number(mandalId));
+    const stateId = apiData?.state_id || geo?.state_id || apiData?.address_state_id;
+    const stateObj = geoMasterData?.states?.find((s: any) => s.id === Number(stateId));
 
-    const districtName = districtObj ?. desc || "";
-    const mandalName = mandalObj ?. desc || "";
+    const districtName = districtObj?.desc || "";
+    const mandalName = mandalObj?.desc || "";
+    const stateName = stateObj?.desc || "";
 
     const agent: AgentDetail = {
-        id: apiData ?. id ?. toString() || "",
+        id: apiData?.id?.toString() || "",
 
-        name: apiData ?. name || apiData ?. full_name || `${
-            apiData ?. first_name || ""
-        } ${
-            apiData ?. last_name || ""
-        }`.trim() || "No Name",
+        name: apiData?.name || apiData?.full_name || `${apiData?.first_name || ""
+            } ${apiData?.last_name || ""
+            }`.trim() || "No Name",
 
-        applicationId: apiData ?. id ?. toString() || "N/A",
+        applicationId: apiData?.id?.toString() || "N/A",
 
         status: "Pending Review",
 
-        initials: `${
-            apiData ?. first_name || ""
-        } ${
-            apiData ?. last_name || ""
-        }`.split(" ").map(
-            (word : string) => word[0]
-        ).join("").toUpperCase() || "NA",
+        initials: `${apiData?.first_name || ""
+            } ${apiData?.last_name || ""
+            }`.split(" ").map(
+                (word: string) => word[0]
+            ).join("").toUpperCase() || "NA",
 
-        avatarUrl: apiData ?. avatar || apiData ?. profile_image || "",
+        avatarUrl: apiData?.avatar || apiData?.profile_image || "",
 
         bannerUrl: "",
 
-        email: apiData ?. email || "N/A",
+        email: apiData?.email || "N/A",
 
-        phone: apiData ?. phone || "N/A",
+        phone: apiData?.phone || "N/A",
 
-        dateOfBirth: apiData ?. dob ? new Date(apiData.dob).toLocaleDateString() : "N/A",
+        dateOfBirth: apiData?.dob ? new Date(apiData.dob).toLocaleDateString() : "N/A",
 
         operatingTerritory: [
             mandalName,
             districtName,
-            apiData ?. address,
-            apiData ?. city,
-            apiData ?. pincode,
+            stateName,
         ].filter(Boolean).join(", ") || "Not Assigned",
 
-        bankName: apiData ?. bank_name || "N/A",
+        bankName: apiData?.bank_name || "N/A",
 
-        accountNumber: apiData ?. account_number || "N/A",
+        accountNumber: apiData?.account_number || "N/A",
 
-        ifscCode: apiData ?. ifsc_code || "N/A",
+        ifscCode: apiData?.ifsc_code || "N/A",
 
-        aadhaarImageUrl: apiData ?. id_proof_front_url || "",
+        aadhaarImageUrl: apiData?.id_proof_front_url || "",
 
-        aadhaarBackImageUrl: apiData ?. id_proof_back_url || "",
+        aadhaarBackImageUrl: apiData?.id_proof_back_url || "",
 
-        panImageUrl: apiData ?. pan_card_url || ""
+        panImageUrl: apiData?.pan_card_url || ""
     };
 
     const onBack = () => {
@@ -226,7 +223,7 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
         }
 
         try {
-            const geo = parseGeoAssignments(apiData ?. geo_assignments);
+            const geo = parseGeoAssignments(apiData?.geo_assignments);
 
             const payload = {
                 userId: Number(apiData?.id || userId || 0),
@@ -266,7 +263,7 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
             await updateAgentDetails(payload).unwrap();
 
             await approveUser({
-                user_id: apiData ?. id || userId || 0,
+                user_id: apiData?.id || userId || 0,
                 role_id: 6, // Hardcoded: AGENT role id
                 role_code: "AGENT", // Hardcoded: AGENT role code
             }).unwrap();
@@ -276,18 +273,18 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
             } else {
                 navigate("/role-manager/agent-approvals");
             }
-        } catch (error : any) {
+        } catch (error: any) {
             console.error("Error approving agent:", error);
-            toast.error(error ?. data ?. message || "Failed to approve agent.");
+            toast.error(error?.data?.message || "Failed to approve agent.");
         }
     };
 
     if (isLoading) {
-        return <Loader message="Loading Agent Details..." fullscreen/>;
+        return <Loader message="Loading Agent Details..." fullscreen />;
     }
 
     if (isApproving || isUpdatingAgent) {
-        return <Loader message="Approving Agent Registration..." fullscreen/>;
+        return <Loader message="Approving Agent Registration..." fullscreen />;
     }
     return (
         <main className="
@@ -313,9 +310,9 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
                                                             lg:mb-[1.5rem]
                                                             xl:mb-[1.75rem]
                                                           "
-                    // 20px→1.25rem | 24px→1.5rem | 28px→1.75rem
+                // 20px→1.25rem | 24px→1.5rem | 28px→1.75rem
                 >
-                    <BackButton onClick={onBack}/>
+                    <BackButton onClick={onBack} />
                 </div>
 
                 <div className="
@@ -337,7 +334,7 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
                                                             lg:gap-[1.125rem]
                                                             xl:gap-[1.25rem]
                                                           ">
-                    <ProfileHeaderCard agent={agent}/>
+                    <ProfileHeaderCard agent={agent} />
 
                     <SectionCard title="Info">
                         <div className="
@@ -354,89 +351,89 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
                             <InfoField label="Email"
                                 value={
                                     agent.email
-                                }/>
+                                } />
                             <InfoField label="Phone number"
                                 value={
                                     agent.phone
-                                }/>
+                                } />
                             <InfoField label="Date Of Birth"
                                 value={
                                     agent.dateOfBirth
-                                }/>
+                                } />
                             <InfoField label="Operating Territory"
                                 value={
                                     agent.operatingTerritory
                                 }
-                                className="col-span-2 xl:col-span-3"/> {/* Territory Assignment Status */}
+                                className="col-span-2 xl:col-span-3" /> {/* Territory Assignment Status */}
                             {
-                            territoryStatus === "loading" && (
-                                <div className="col-span-2 xl:col-span-3">
-                                    <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)] italic">
-                                        Verifying territory assignment...
-                                    </span>
-                                </div>
-                            )
-                        }
+                                territoryStatus === "loading" && (
+                                    <div className="col-span-2 xl:col-span-3">
+                                        <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)] italic">
+                                            Verifying territory assignment...
+                                        </span>
+                                    </div>
+                                )
+                            }
 
                             {
-                            territoryStatus === "assigned" && hierarchyData && (
-                                <div className="col-span-2 xl:col-span-3 flex flex-col gap-1">
-                                    <span className="inline-flex items-center gap-1.5 text-[0.8125rem] lg:text-[0.875rem] font-semibold text-[#16a34a]">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                        Territory Assigned
-                                    </span>
-                                    {
-                                    hierarchyData.regional_officer && (
-                                        <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)]">
-                                            RO: {
-                                            hierarchyData.regional_officer.first_name
+                                territoryStatus === "assigned" && hierarchyData && (
+                                    <div className="col-span-2 xl:col-span-3 flex flex-col gap-1">
+                                        <span className="inline-flex items-center gap-1.5 text-[0.8125rem] lg:text-[0.875rem] font-semibold text-[#16a34a]">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                                            Territory Assigned
+                                        </span>
+                                        {
+                                            hierarchyData.regional_officer && (
+                                                <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)]">
+                                                    RO: {
+                                                        hierarchyData.regional_officer.first_name
+                                                    }
+                                                    {
+                                                        hierarchyData.regional_officer.last_name
+                                                    } </span>
+                                            )
                                         }
-                                            {
-                                            hierarchyData.regional_officer.last_name
-                                        } </span>
-                                    )
-                                }
-                                    {
-                                    hierarchyData.field_officer && (
-                                        <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)]">
-                                            FO: {
-                                            hierarchyData.field_officer.first_name
-                                        }
-                                            {
-                                            hierarchyData.field_officer.last_name
-                                        } </span>
-                                    )
-                                } </div>
-                            )
-                        }
+                                        {
+                                            hierarchyData.field_officer && (
+                                                <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)]">
+                                                    FO: {
+                                                        hierarchyData.field_officer.first_name
+                                                    }
+                                                    {
+                                                        hierarchyData.field_officer.last_name
+                                                    } </span>
+                                            )
+                                        } </div>
+                                )
+                            }
 
                             {
-                            territoryStatus === "not_assigned" && (
-                                <div className="col-span-2 xl:col-span-3 flex flex-col gap-1.5">
-                                    <span className="inline-flex items-center gap-1.5 text-[0.8125rem] lg:text-[0.875rem] font-semibold text-[#dc2626]">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                                        Territory Not Assigned
-                                    </span>
-                                    {
-                                    territoryError.district && (
-                                        <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                                            • District ID — Not Assigned
+                                territoryStatus === "not_assigned" && (
+                                    <div className="col-span-2 xl:col-span-3 flex flex-col gap-1.5">
+                                        <span className="inline-flex items-center gap-1.5 text-[0.8125rem] lg:text-[0.875rem] font-semibold text-[#dc2626]">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+                                            Territory Not Assigned
                                         </span>
-                                    )
-                                }
-                                    {
-                                    territoryError.area && (
-                                        <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                                            • Area (Mandal) ID — Not Assigned
+                                        {
+                                            territoryError.district && (
+                                                <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
+                                                    • District ID — Not Assigned
+                                                </span>
+                                            )
+                                        }
+                                        {
+                                            territoryError.area && (
+                                                <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
+                                                    • Area (Mandal) ID — Not Assigned
+                                                </span>
+                                            )
+                                        }
+                                        <span className="text-[0.6875rem] lg:text-[0.75rem] text-[color:var(--text-secondary)] mt-0.5">
+                                            Agent cannot be approved until territory is properly assigned.
                                         </span>
-                                    )
-                                }
-                                    <span className="text-[0.6875rem] lg:text-[0.75rem] text-[color:var(--text-secondary)] mt-0.5">
-                                        Agent cannot be approved until territory is properly assigned.
-                                    </span>
-                                </div>
-                            )
-                        } </div>
+                                    </div>
+                                )
+                            } </div>
                     </SectionCard>
 
                     <SectionCard title="Bank Details">
@@ -453,15 +450,15 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
                             <InfoField label="Bank Name"
                                 value={
                                     agent.bankName
-                                }/>
+                                } />
                             <InfoField label="Account Number"
                                 value={
                                     agent.accountNumber
-                                }/>
+                                } />
                             <InfoField label="IFSC Code"
                                 value={
                                     agent.ifscCode
-                                }/>
+                                } />
                         </div>
                     </SectionCard>
 
@@ -475,15 +472,15 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
                             <DocumentCard label="Aadhaar card (Front)"
                                 imageUrl={
                                     agent.aadhaarImageUrl
-                                }/>
+                                } />
                             <DocumentCard label="Aadhaar card (Back)"
                                 imageUrl={
                                     agent.aadhaarBackImageUrl
-                                }/>
+                                } />
                             <DocumentCard label="Pan card"
                                 imageUrl={
                                     agent.panImageUrl
-                                }/>
+                                } />
                         </div>
                     </SectionCard>
 
@@ -493,8 +490,8 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
                                                                     ">
                         {/* Left Side: Compose Mail */}
                         <button onClick={
-                                () => setShowIssueForm(true)
-                            }
+                            () => setShowIssueForm(true)
+                        }
                             className="
                                                                                 font-medium
                                                                                 font-[family-name:'Inter',sans-serif]
@@ -542,8 +539,8 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
                             </button>
 
                             <button onClick={
-                                    territoryStatus === "assigned" ? handleApprove : undefined
-                                }
+                                territoryStatus === "assigned" ? handleApprove : undefined
+                            }
                                 disabled={
                                     territoryStatus !== "assigned"
                                 }
@@ -565,11 +562,10 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
                                                     2xl:text-[1rem]
                                                     transition-all
                                                     duration-150
-                                                    ${
-                                        territoryStatus === "assigned" ? "bg-[linear-gradient(110.22deg,var(--approve-gradient-from)_0%,var(--approve-gradient-to)_100%)] hover:opacity-90 active:scale-[0.97] cursor-pointer" : "bg-gray-300 cursor-not-allowed opacity-60"
+                                                    ${territoryStatus === "assigned" ? "bg-[linear-gradient(110.22deg,var(--approve-gradient-from)_0%,var(--approve-gradient-to)_100%)] hover:opacity-90 active:scale-[0.97] cursor-pointer" : "bg-gray-300 cursor-not-allowed opacity-60"
                                     }
                                                   `
-                            }>
+                                }>
                                 Approve
                             </button>
                         </div>
@@ -577,8 +573,8 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
                 </div>
             </div>
             {
-            showIssueForm && (
-                <div className="
+                showIssueForm && (
+                    <div className="
                                                       fixed
                                                       inset-0
                                                       z-50
@@ -589,15 +585,15 @@ export const AgentDetailPage = ({onDismiss, onApprove} : AgentDetailPageProps) =
                                                       backdrop-blur-[2px]
                                                       p-4
                                                     ">
-                    <RaiseIssueForm agentEmail={
+                        <RaiseIssueForm agentEmail={
                             agent.email
                         }
-                        onClose={
-                            () => setShowIssueForm(false)
-                        }/>
-                </div>
-            )
-        } </main>
+                            onClose={
+                                () => setShowIssueForm(false)
+                            } />
+                    </div>
+                )
+            } </main>
     );
 };
 
