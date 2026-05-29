@@ -15,7 +15,7 @@ export const VerificationOfficerCompletedFarmlandDetails: React.FC = () => {
   ) || completedFarmlandsData[0];
 
   const handleBack = () => {
-    navigate('/verification-officer/completed-farmland');
+    navigate('/verification-officer-2/completed-farmland');
   };
 
   return (

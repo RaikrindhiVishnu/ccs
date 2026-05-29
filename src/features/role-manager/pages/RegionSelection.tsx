@@ -1189,6 +1189,28 @@ const RegionSelection: React.FC = () => {
             }
 
             setSelectedMandals((prev) => {
+              // Prevent selecting from multiple regions simultaneously
+              const currentDistrictId = prev.length > 0 ? prev[0].district_id : null;
+              
+              if (currentDistrictId && mData.district_id && currentDistrictId !== mData.district_id) {
+                // Different region selected! Clear previous selections on the map
+                prev.forEach(m => {
+                   if (m.featureId !== undefined) {
+                      map.current?.setFeatureState(
+                        { source: "mandals-source", id: m.featureId },
+                        { selected: false }
+                      );
+                   }
+                });
+                
+                // Select only the new one
+                map.current?.setFeatureState(
+                  { source: "mandals-source", id: feature.id },
+                  { selected: true }
+                );
+                return [{ ...mData, featureId: feature.id }];
+              }
+
               const isAlreadySelected = prev.find(
                 (m) => (m.id ?? m.featureId) === mId,
               );

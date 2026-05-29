@@ -72,9 +72,10 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
           state: regionOfficerData.data.state_id,
           region: regionOfficerData.data.region_name || regionOfficerData.data.region_id,
           role: "Regional Officer" as const,
-          roleId: typeof regionOfficerData.data.regional_officer_role_id === "string" && regionOfficerData.data.regional_officer_role_id.includes("RO-")
-            ? regionOfficerData.data.regional_officer_role_id
-            : `RO-${regionOfficerData.data.regional_officer_role_id || regionOfficerData.data.regional_officer_id || "-"}`,
+          roleId: regionOfficerData.data.regional_officer_user_code ||
+            (typeof regionOfficerData.data.regional_officer_role_id === "string" && regionOfficerData.data.regional_officer_role_id.includes("RO-")
+              ? regionOfficerData.data.regional_officer_role_id
+              : `RO-${regionOfficerData.data.regional_officer_role_id || regionOfficerData.data.regional_officer_id || "-"}`),
           contact:
             regionOfficerData.data.regional_officer_phone,
           avatar:
@@ -104,9 +105,10 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
               .intelligence_officer_last_name || ""
             }`.trim(),
           role: "Intelligence Officer" as const,
-          roleId: typeof regionOfficerData.data.intelligence_officer_role_id === "string" && regionOfficerData.data.intelligence_officer_role_id.includes("IO-")
-            ? regionOfficerData.data.intelligence_officer_role_id
-            : `IO-${regionOfficerData.data.intelligence_officer_role_id || regionOfficerData.data.intelligence_officer_id || "-"}`,
+          roleId: regionOfficerData.data.intelligence_officer_user_code ||
+            (typeof regionOfficerData.data.intelligence_officer_role_id === "string" && regionOfficerData.data.intelligence_officer_role_id.includes("IO-")
+              ? regionOfficerData.data.intelligence_officer_role_id
+              : `IO-${regionOfficerData.data.intelligence_officer_role_id || regionOfficerData.data.intelligence_officer_id || "-"}`),
           contact:
             regionOfficerData.data
               .intelligence_officer_phone,
@@ -132,7 +134,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
         name: `${fo.first_name || ""} ${fo.last_name || ""
           }`.trim(),
         role: "Field Officer" as const,
-        roleId: fo.role_id ? String(fo.role_id) : "-",
+        roleId: fo.field_officer_user_code || fo.feild_officer_user_code || fo.user_code || fo.userCode || (fo.role_id ? String(fo.role_id) : "-"),
         contact: fo.phone,
         avatar: fo.avatar || fo.profile_image || fo.image || "",
       })
@@ -216,7 +218,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
         name: `${ag.first_name || ""} ${ag.last_name || ""
           }`.trim(),
         role: "Agent" as const,
-        roleId: ag.role_id ? String(ag.role_id) : "-",
+        roleId: ag.agent_user_code || ag.user_code || ag.userCode || (ag.role_id ? String(ag.role_id) : "-"),
         contact: ag.phone,
         avatar: ag.avatar || ag.profile_image || ag.image || "",
       })
@@ -262,13 +264,13 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                       active={idx === 0}
                       onEdit={() =>
                         navigate(
-                          role.roleId === "IO"
+                          role.role === "Intelligence Officer"
                             ? "/role-manager/edit-intelligence-officer"
                             : `/role-manager/edit-regional-officer/${role.originalId}`,
                           {
                             state: {
                               initialData: role,
-                              roleType: role.roleId,
+                              roleType: role.role === "Intelligence Officer" ? "IO" : "RO",
                               userId: role.originalId,
                               from: "/role-manager/user-directory",
                               isViewMode: false,
@@ -279,7 +281,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
                       onView={() =>
                         handleView(
                           role,
-                          role.roleId === "IO"
+                          role.role === "Intelligence Officer"
                             ? "IO"
                             : "RO"
                         )
