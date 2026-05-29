@@ -72,8 +72,9 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
     const [territoryStatus, setTerritoryStatus] = React.useState<"loading" | "assigned" | "not_assigned">("loading");
     const [territoryError, setTerritoryError] = React.useState<{
         district: boolean;
-        area: boolean
-    }>({ district: false, area: false });
+        area: boolean;
+        hierarchy: boolean;
+    }>({ district: false, area: false, hierarchy: false });
 
     React.useEffect(() => {
         if (!isNaN(userId)) {
@@ -116,23 +117,24 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
                 if (res?.success) {
                     setHierarchyData(res.data);
                     setTerritoryStatus("assigned");
-                    setTerritoryError({ district: false, area: false });
+                    setTerritoryError({ district: false, area: false, hierarchy: false });
                 } else {
                     setHierarchyData(null);
                     setTerritoryStatus("not_assigned");
-                    setTerritoryError({ district: true, area: true });
+                    setTerritoryError({ district: false, area: false, hierarchy: true });
                 }
             }).catch(() => {
                 setHierarchyData(null);
                 setTerritoryStatus("not_assigned");
-                setTerritoryError({ district: true, area: true });
+                setTerritoryError({ district: false, area: false, hierarchy: true });
             });
         } else { // No district_id or mandal_id present at all
             setHierarchyData(null);
             setTerritoryStatus("not_assigned");
             setTerritoryError({
                 district: !districtId,
-                area: !mandalId
+                area: !mandalId,
+                hierarchy: false
             });
         }
     }, [data, getLocationHierarchyDetails]);
@@ -417,19 +419,26 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
                                         {
                                             territoryError.district && (
                                                 <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                                                    • District ID — Not Assigned
+                                                    • District ID — Not Assigned to Agent Profile
                                                 </span>
                                             )
                                         }
                                         {
                                             territoryError.area && (
                                                 <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                                                    • Area (Mandal) ID — Not Assigned
+                                                    • Area (Mandal) ID — Not Assigned to Agent Profile
+                                                </span>
+                                            )
+                                        }
+                                        {
+                                            territoryError.hierarchy && (
+                                                <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
+                                                    • Region / Area Mapping — Not created or mapped for this District & Mandal in Master Data
                                                 </span>
                                             )
                                         }
                                         <span className="text-[0.6875rem] lg:text-[0.75rem] text-[color:var(--text-secondary)] mt-0.5">
-                                            Agent cannot be approved until territory is properly assigned.
+                                            Agent cannot be approved until territory hierarchy is properly assigned/created.
                                         </span>
                                     </div>
                                 )

@@ -725,9 +725,10 @@ export default function AgentForm({
   // ── Territory validation for view mode ──
   const [viewTerritoryStatus, setViewTerritoryStatus] = useState<"loading" | "assigned" | "not_assigned">("loading");
   const [viewHierarchyData, setViewHierarchyData] = useState<any>(null);
-  const [viewTerritoryError, setViewTerritoryError] = useState<{ district: boolean; area: boolean }>({
+  const [viewTerritoryError, setViewTerritoryError] = useState<{ district: boolean; area: boolean; hierarchy: boolean }>({
     district: false,
     area: false,
+    hierarchy: false,
   });
 
   useEffect(() => {
@@ -760,17 +761,17 @@ export default function AgentForm({
           if (res?.success) {
             setViewHierarchyData(res.data);
             setViewTerritoryStatus("assigned");
-            setViewTerritoryError({ district: false, area: false });
+            setViewTerritoryError({ district: false, area: false, hierarchy: false });
           } else {
             setViewHierarchyData(null);
             setViewTerritoryStatus("not_assigned");
-            setViewTerritoryError({ district: true, area: true });
+            setViewTerritoryError({ district: false, area: false, hierarchy: true });
           }
         })
         .catch(() => {
           setViewHierarchyData(null);
           setViewTerritoryStatus("not_assigned");
-          setViewTerritoryError({ district: true, area: true });
+          setViewTerritoryError({ district: false, area: false, hierarchy: true });
         });
     } else {
       setViewHierarchyData(null);
@@ -778,6 +779,7 @@ export default function AgentForm({
       setViewTerritoryError({
         district: !districtId,
         area: !mandalId,
+        hierarchy: false,
       });
     }
   }, [isViewMode, agentData, initialData, getLocationHierarchyDetails]);
@@ -909,16 +911,21 @@ export default function AgentForm({
                     </span>
                     {viewTerritoryError.district && (
                       <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                        • District ID — Not Assigned
+                        • District ID — Not Assigned to Agent Profile
                       </span>
                     )}
                     {viewTerritoryError.area && (
                       <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                        • Area (Mandal) ID — Not Assigned
+                        • Area (Mandal) ID — Not Assigned to Agent Profile
+                      </span>
+                    )}
+                    {viewTerritoryError.hierarchy && (
+                      <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
+                        • Region / Area Mapping — Not created or mapped for this District & Mandal in Master Data
                       </span>
                     )}
                     <span className="text-[0.6875rem] lg:text-[0.75rem] text-[color:var(--text-secondary)] mt-0.5">
-                      Agent cannot be approved until territory is properly assigned.
+                      Agent cannot be approved until territory hierarchy is properly assigned/created.
                     </span>
                   </div>
                 )}
