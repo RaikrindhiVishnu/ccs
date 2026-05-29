@@ -11,12 +11,7 @@ import { UserRole, ROLE_CODES } from "@/features/auth/types";
 
 // ─── Dev Mock Users ───────────────────────────────────────────────────────────
 const MOCK_USERS = [
-  { login_id: "manager@glc.com", password: "manager@123", role_id: UserRole.ROLEMNGR, first_name: "Harish", last_name: "Kumar", id: 102 },
-  { login_id: "ccs@glc.com", password: "ccs@123456", role_id: UserRole.CCS, first_name: "CCS", last_name: "Officer", id: 103 },
-  { login_id: "field.officer@glc.com", password: "field.officer@123", role_id: UserRole.FO, first_name: "Field", last_name: "Officer", id: 104 },
-  { login_id: "io@glc.com", password: "io@123456", role_id: UserRole.IO, first_name: "Intelligence", last_name: "Officer", id: 105 },
-  { login_id: "regional@glc.com", password: "regional@123", role_id: UserRole.RO, first_name: "Edward", last_name: "Janowski", id: 106 },
-  { login_id: "vo2@glc.com", password: "vo2@123", role_id: UserRole.VO2, first_name: "Verification", last_name: "Officer 2", id: 107 },
+  { login_id: "superadmin@glc.com", password: "superadmin@123", role_id: UserRole.SUPERADMIN, first_name: "Super", last_name: "Admin", id: 999 },
 ];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -215,7 +210,7 @@ function LoginScreen({
       (u) => u.login_id === loginId && u.password === password
     );
     if (mockUser) {
-      const roleCode = ROLE_CODES[mockUser.role_id];
+      const roleCode = ROLE_CODES[mockUser.role_id] || "SUPERADMIN";
       dispatch(
         setCredentials({
           user: {
@@ -282,10 +277,10 @@ function LoginScreen({
 
       <div className="mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 lg:flex lg:flex-col lg:items-start shrink-0 min-[1440px]:mb-[1.94vw]">
         <h1 className="font-heading font-bold text-[var(--text-heading)] text-[clamp(1.25rem,1.66vw,1.5rem)] lg:text-[1.67vw] lg:leading-[2.78vw] leading-snug tracking-[-0.05625rem] lg:tracking-[-0.06vw] m-0 mb-[clamp(0.25rem,0.4vw,0.5rem)] min-[1440px]:mb-[0.97vw] ">
-          Role Manager Login
+          Super Admin Login
         </h1>
         <p className="font-sans font-normal text-[var(--text-secondary)] text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] lg:leading-[1.81vw] leading-normal m-0">
-          Secure access for authorised role managers.
+          Secure access for authorised super admins.
           <br />
           Please authenticate to continue.
         </p>
@@ -318,7 +313,6 @@ function LoginScreen({
           icon={Lock}
           error={errors.password}
           rightEl={<EyeBtn />}
-          className=""
         />
 
         <div className="flex justify-end -mt-[clamp(0.25rem,1vh,0.75rem)] min-[1440px]:mt-[0.97vw]">
@@ -693,7 +687,7 @@ function Background() {
 }
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
-export default function LoginFlow() {
+export default function SuperAdminLogin() {
   const navigate = useNavigate();
   type Screen = "login" | "update-default" | "change-password" | "forgot-password" | "forgot-success";
   const [screen, setScreen] = useState<Screen>("login");
@@ -711,7 +705,7 @@ export default function LoginFlow() {
     if (is_first_login === 1) {
       setScreen("update-default");
     } else {
-      navigate("/");
+      navigate("/super-admin/dashboard");
     }
   };
 
@@ -743,12 +737,12 @@ export default function LoginFlow() {
       {screen === "update-default" && (
         <UpdateDefaultPasswordScreen
           onSetNew={() => setScreen("change-password")}
-          onContinue={() => navigate("/")}
+          onContinue={() => navigate("/super-admin/dashboard")}
         />
       )}
 
       {screen === "change-password" && (
-        <ChangePasswordScreen onDone={() => navigate("/")} oldPassword={oldPassword} />
+        <ChangePasswordScreen onDone={() => navigate("/super-admin/dashboard")} oldPassword={oldPassword} />
       )}
     </div>
   );

@@ -1,7 +1,8 @@
 // firebase.ts
 
 import {initializeApp} from "firebase/app";
-import {getMessaging, getToken, onMessage} from "firebase/messaging";
+import {getMessaging, getToken, onMessage, isSupported} from "firebase/messaging";
+import type {Messaging} from "firebase/messaging";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -16,16 +17,39 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-export const messaging = getMessaging(app);
+// ─── Guard messaging init — avoid crash in unsupported browsers ──────────────
+let messaging: Messaging | null = null;
+
+const initMessaging = async (): Promise<Messaging | null> => {
+    try {
+        const supported = await isSupported();
+        if (supported) {
+            messaging = getMessaging(app);
+        } else {
+            console.warn("[Firebase] Messaging is not supported in this browser.");
+        }
+    } catch (err) {
+        console.warn("[Firebase] Failed to initialize messaging:", err);
+    }
+    return messaging;
+};
+
+// Kick off async init (non-blocking)
+const messagingPromise = initMessaging();
+
+export { messaging, messagingPromise };
 
 export const requestForToken = async () => {
     try {
+        const msg = await messagingPromise;
+        if (!msg) return null;
+
         if ("serviceWorker" in navigator) {
             const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
 
             await navigator.serviceWorker.ready;
 
-            const currentToken = await getToken(messaging, {
+            const currentToken = await getToken(msg, {
                 vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
                 serviceWorkerRegistration: registration
             });
@@ -43,9 +67,13 @@ export const requestForToken = async () => {
 };
 
 export const onMessageListener = () => new Promise((resolve) => {
-    onMessage(messaging, (payload) => {
-        console.log("Foreground Message received:", payload);
-        resolve(payload);
+    messagingPromise.then((msg) => {
+        if (msg) {
+            onMessage(msg, (payload) => {
+                console.log("Foreground Message received:", payload);
+                resolve(payload);
+            });
+        }
     });
 });
 
