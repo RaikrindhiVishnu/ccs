@@ -338,6 +338,31 @@ export default function AgentForm({
     }
   }, [selectedAreaObj, getLocationHierarchyDetails]);
 
+  // Fetch initial hierarchy for existing agent on load (edit mode)
+  useEffect(() => {
+    if (!isEdit) return;
+    const srcData = agentData?.data || initialData;
+    if (!srcData) return;
+
+    const geo = parseGeoAssignments(srcData.geo_assignments);
+    const districtId = srcData.district_id || geo?.district_id;
+    const mandalId = srcData.mandal_id || geo?.mandal_id;
+
+    if (districtId && mandalId) {
+      getLocationHierarchyDetails({
+        district_id: Number(districtId),
+        mandal_id: Number(mandalId),
+      })
+        .unwrap()
+        .then((res) => {
+          if (res?.success) {
+            setHierarchy(res.data);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isEdit, agentData, initialData, getLocationHierarchyDetails]);
+
   // Pre-fill state from agentData or initialData
   useEffect(() => {
     const dataObj = agentData?.data || initialData;
@@ -527,17 +552,32 @@ export default function AgentForm({
   const handleSave = async (values: AgentFormValues) => {
     try {
       let res: any = null;
+      const existingGeo = parseGeoAssignments(agentData?.data?.geo_assignments || initialData?.geo_assignments);
+      const existingDistrictId = agentData?.data?.district_id || existingGeo?.district_id;
+      const existingMandalId = agentData?.data?.mandal_id || existingGeo?.mandal_id;
+
       const selectedStateObj = states.find((s: any) => s.desc === values.state);
-      const stateIdVal = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
+      const stateIdVal = selectedStateObj?.id 
+        ? Number(selectedStateObj.id) 
+        : (agentData?.data?.state_id || existingGeo?.state_id || 1);
 
       const selectedRegionObj = regionsData?.data?.find((r: any) => r.region_name === values.region);
-      const regionIdVal = selectedRegionObj?.id ? Number(selectedRegionObj.id) : 1;
+      const regionIdVal = selectedRegionObj?.id 
+        ? Number(selectedRegionObj.id) 
+        : (hierarchy?.region?.id ? Number(hierarchy.region.id) : (agentData?.data?.region_id || existingGeo?.region_id || 1));
 
       const selectedAreaObj = areasData?.data?.find((a: any) => a.area_name === values.area);
-      const areaIdVal = selectedAreaObj?.area_id ? Number(selectedAreaObj.area_id) : 1;
+      const areaIdVal = selectedAreaObj?.area_id 
+        ? Number(selectedAreaObj.area_id) 
+        : (hierarchy?.area?.id ? Number(hierarchy.area.id) : (agentData?.data?.areas_id || existingGeo?.areas_id || 1));
 
-      const districtIdVal = selectedAreaObj?.district_ids?.[0] ? Number(selectedAreaObj.district_ids[0]) : 1;
-      const mandalIdVal = selectedAreaObj?.mandal_ids?.[0] ? Number(selectedAreaObj.mandal_ids[0]) : 1;
+      const districtIdVal = selectedAreaObj?.district_ids?.[0] 
+        ? Number(selectedAreaObj.district_ids[0]) 
+        : (existingDistrictId ? Number(existingDistrictId) : 1);
+
+      const mandalIdVal = selectedAreaObj?.mandal_ids?.[0] 
+        ? Number(selectedAreaObj.mandal_ids[0]) 
+        : (existingMandalId ? Number(existingMandalId) : 1);
 
       // 1. Resolve S3 keys (either existing string URLs/keys or default fallbacks)
       let aadharFrontKey = typeof values.aadharFront === "string" ? values.aadharFront : getDoc(agentData?.data, "front") || getDoc(initialData, "front") || "front.png";

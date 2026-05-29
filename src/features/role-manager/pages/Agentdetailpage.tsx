@@ -146,10 +146,10 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
     const districtId = apiData?.district_id || geo?.district_id;
     const mandalId = apiData?.mandal_id || geo?.mandal_id;
 
-    const districtObj = geoMasterData?.districts?.find((d: any) => d.id === Number(districtId));
-    const mandalObj = geoMasterData?.mandals?.find((m: any) => m.id === Number(mandalId));
+    const districtObj = geoMasterData?.districts?.find((d: any) => String(d.id) === String(districtId));
+    const mandalObj = geoMasterData?.mandals?.find((m: any) => String(m.id) === String(mandalId));
     const stateId = apiData?.state_id || geo?.state_id || apiData?.address_state_id;
-    const stateObj = geoMasterData?.states?.find((s: any) => s.id === Number(stateId));
+    const stateObj = geoMasterData?.states?.find((s: any) => String(s.id) === String(stateId));
 
     const districtName = districtObj?.desc || "";
     const mandalName = mandalObj?.desc || "";
