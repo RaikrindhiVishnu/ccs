@@ -59,7 +59,7 @@ export const AgentRow: React.FC<AgentRowProps> = ({
           variant="list"
         />
 
-        <div className="flex flex-col gap-1 w-[8.5rem] lg:w-[9.5rem] xl:w-[10rem] shrink-0">
+        <div className="flex flex-col gap-1.5 lg:gap-2 w-[8.5rem] lg:w-[9.5rem] xl:w-[8rem] shrink-0">
           <Typography
             variant="h4"
             className="
