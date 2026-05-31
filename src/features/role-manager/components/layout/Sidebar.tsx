@@ -1,7 +1,7 @@
 import * as Icons from "lucide-react";
-import sidebarImg from "@/assets/sidebar.png";
 import { NavLink, useNavigate } from "react-router-dom";
 import { type NavItem } from "@/core/config/layoutConfig";
+import { useAppSelector } from "@/core/hooks";
 
 interface SidebarProps {
   navItems?: NavItem[];
@@ -9,6 +9,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ navItems = [] }) => {
   const navigate = useNavigate();
+  const user = useAppSelector((state) => state.auth.user);
 
   return (
     <div className="w-[76px] bg-[#191B1C] rounded-[24px] flex flex-col justify-between p-3.5 box-border shrink-0 ml-4 mt-4 mb-4 h-[calc(100vh-32px)]">
@@ -64,10 +65,14 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems = [] }) => {
         {/* Profile avatar */}
         <div
           onClick={() => navigate("/role-manager/profile")}
-          className="w-12 h-12 rounded-xl overflow-hidden bg-gray-800 shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
+          className="w-12 h-12 rounded-xl overflow-hidden bg-gray-800 shrink-0 cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center text-[#8E9093]"
           title="Profile"
         >
-          <img src={sidebarImg} alt="profile" className="w-full h-full object-cover" />
+          {(user as any)?.profile_url ? (
+            <img src={(user as any).profile_url} alt="profile" className="w-full h-full object-cover" />
+          ) : (
+            <Icons.User size={24} strokeWidth={1.5} />
+          )}
         </div>
       </div>
     </div>

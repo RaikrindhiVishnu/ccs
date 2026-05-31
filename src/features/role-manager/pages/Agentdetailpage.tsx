@@ -3,7 +3,7 @@ import * as React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetAgentByIdMutation, useGetLocationHierarchyDetailsMutation } from "@/features/role-manager/api/roleManagerApi";
 import { useGetAllGeoMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
-import { useApproveUserMutation } from "@/features/auth/api/authApi";
+import { useApproveUserMutation, useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 import { useUpdateAgentDetailsMutation } from "@/features/role-manager/api/agentApi";
 import RaiseIssueForm from "@/features/role-manager/components/form";
 import { toast } from "sonner";
@@ -20,6 +20,8 @@ import Loader from "../components/ui/Loader";
 interface AgentDetail {
     id: string;
     name: string;
+    firstName: string;
+    lastName: string;
     applicationId: string;
     status: "Pending Review" | "Approved" | "Rejected";
     avatarUrl?: string;
@@ -28,10 +30,16 @@ interface AgentDetail {
     email: string;
     phone: string;
     dateOfBirth: string;
+    panNumber: string;
+    address: string;
+    addressState: string;
+    city: string;
+    pincode: string;
     operatingTerritory: string;
     bankName: string;
     accountNumber: string;
     ifscCode: string;
+    bankBranch: string;
     aadhaarImageUrl?: string;
     aadhaarBackImageUrl?: string;
     panImageUrl?: string;
@@ -142,6 +150,11 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
 
     const apiData = data?.data as any;
 
+    const rawProfileUrl = apiData?.profile_url || apiData?.avatar || apiData?.profile_image || "";
+    const isProfileS3Key = Boolean(rawProfileUrl && !rawProfileUrl.startsWith("http") && !rawProfileUrl.startsWith("data:"));
+    const { data: profileS3Data } = useGeneratePresignedUrlQuery(rawProfileUrl, { skip: !isProfileS3Key || !rawProfileUrl });
+    const finalProfileUrl = isProfileS3Key ? profileS3Data?.url : rawProfileUrl;
+
     const geo = parseGeoAssignments(apiData?.geo_assignments);
     const districtId = apiData?.district_id || geo?.district_id;
     const mandalId = apiData?.mandal_id || geo?.mandal_id;
@@ -161,6 +174,10 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
             } ${apiData?.last_name || ""
             }`.trim() || "No Name",
 
+        firstName: apiData?.first_name || "",
+
+        lastName: apiData?.last_name || "",
+
         applicationId: apiData?.id?.toString() || "N/A",
 
         status: "Pending Review",
@@ -171,7 +188,7 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
                 (word: string) => word[0]
             ).join("").toUpperCase() || "NA",
 
-        avatarUrl: apiData?.profile_url || apiData?.avatar || apiData?.profile_image || "",
+        avatarUrl: finalProfileUrl || "",
 
         bannerUrl: "",
 
@@ -179,7 +196,25 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
 
         phone: apiData?.phone || "N/A",
 
-        dateOfBirth: apiData?.dob ? new Date(apiData.dob).toLocaleDateString() : "N/A",
+        dateOfBirth: apiData?.dob
+            ? new Date(apiData.dob).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+            : "N/A",
+
+        panNumber: apiData?.pan_number || apiData?.pan_card_number || "N/A",
+
+        address: typeof apiData?.address === "object"
+            ? (apiData?.address?.address || "")
+            : (apiData?.address || "N/A"),
+
+        addressState: stateName || "N/A",
+
+        city: typeof apiData?.address === "object"
+            ? (apiData?.address?.city || "")
+            : (apiData?.city || "N/A"),
+
+        pincode: typeof apiData?.address === "object"
+            ? (apiData?.address?.pincode || "")
+            : (apiData?.pincode || "N/A"),
 
         operatingTerritory: [
             mandalName,
@@ -192,6 +227,8 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
         accountNumber: apiData?.account_number || "N/A",
 
         ifscCode: apiData?.ifsc_code || "N/A",
+
+        bankBranch: apiData?.branch || "N/A",
 
         aadhaarImageUrl: apiData?.id_proof_front_url || "",
 
@@ -357,6 +394,8 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
                                                                                 lg:gap-y-[1.5rem]
                                                                                 xl:gap-y-[1.75rem]
                                                                               ">
+                            <InfoField label="First Name" value={agent.firstName} />
+                            <InfoField label="Last Name" value={agent.lastName} />
                             <InfoField label="Email"
                                 value={
                                     agent.email
@@ -369,7 +408,12 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
                                 value={
                                     agent.dateOfBirth
                                 } />
-                            <InfoField label="Operating Territory1"
+                            <InfoField label="PAN Number" value={agent.panNumber} />
+                            <InfoField label="Address" value={agent.address} />
+                            <InfoField label="State" value={agent.addressState} />
+                            <InfoField label="City / Village" value={agent.city} />
+                            <InfoField label="Pincode" value={agent.pincode} />
+                            <InfoField label="Operating Territory"
                                 value={
                                     agent.operatingTerritory
                                 }
@@ -475,6 +519,7 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
                                 value={
                                     agent.ifscCode
                                 } />
+                            <InfoField label="Bank Branch" value={agent.bankBranch} />
                         </div>
                     </SectionCard>
 
