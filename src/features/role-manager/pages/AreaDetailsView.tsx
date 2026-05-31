@@ -8,8 +8,6 @@ import { Typography } from "@/components/ui/typography";
 import { BackButton } from "@/components/ui/BackButton";
 
 import {
-  useGetAreaByIdQuery,
-  useGetAllAreasByRegionIdQuery,
   useGetAreaGeoJsonQuery,
 } from "../api/regionSelectionApi";
 

@@ -1,8 +1,7 @@
 import React, { useEffect, useCallback } from "react";
-import { LayoutGrid, Search, Bell } from "lucide-react";
+import { LayoutGrid } from "lucide-react";
 import headerBg from "@/assets/head1.svg";
 import { Typography } from "@/components/ui/typography";
-import { Input } from "@/components/ui/input";
 import AgentOnboardingVelocity from "@/features/role-manager/components/AgentOnboardingVelocity";
 import RegionCreationVelocity from "@/features/role-manager/components/RegionCreationVelocity";
 import WorkforceStructure from "@/features/role-manager/components/WorkforceStructure";

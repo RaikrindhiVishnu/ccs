@@ -409,7 +409,7 @@ const RegionAreaEdit: React.FC = () => {
   // Floating Edit Form Card States
   const [regionName, setRegionName] = useState("");
   const [regionCode, setRegionCode] = useState("");
-  const [districtSearch, setDistrictSearch] = useState("");
+
   const [selectedDistricts, setSelectedDistricts] = useState<any[]>([]);
   // Ref so the one-time map click handler always reads the latest selectedDistricts
   // without needing to re-register (avoids stale closure → duplicate selection bug)
@@ -2944,15 +2944,6 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
                     </p>
                   ) : (
                     selectedDistricts
-                      .filter((d) => {
-                        const name = (
-                          d.name ||
-                          d.dtname ||
-                          d.d ||
-                          ""
-                        ).toLowerCase();
-                        return name.includes(districtSearch.toLowerCase());
-                      })
                       .map((d, i) => (
                         <div
                           key={i}

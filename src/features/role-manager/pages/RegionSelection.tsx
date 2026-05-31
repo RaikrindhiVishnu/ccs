@@ -6,7 +6,7 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { decompressGeoJSON } from "../utils/utils";
 import { getRegionColors, getAreaColors } from "../utils/colorPalette";
-import { Maximize2, ChevronLeft, X, Loader2, Search } from "lucide-react";
+import { Maximize2, ChevronLeft, X, Loader2 } from "lucide-react";
 
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
@@ -334,7 +334,7 @@ const RegionSelection: React.FC = () => {
   const [hoveredDistrictName, setHoveredDistrictName] = useState<string | null>(
     null,
   );
-  const [districtSearch, setDistrictSearch] = useState("");
+
   const [formErrors, setFormErrors] = useState<{ regionName?: string; regionCode?: string; districts?: string; general?: string }>({});
 
   // Area Creation States
@@ -342,7 +342,7 @@ const RegionSelection: React.FC = () => {
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
   const [areaName, setAreaName] = useState("");
   const [areaCode, setAreaCode] = useState("");
-  const [mandalSearch, setMandalSearch] = useState("");
+
   const [formAreaErrors, setFormAreaErrors] = useState<{ areaName?: string; areaCode?: string; mandals?: string; general?: string }>({});
   const [hoveredMandalName, setHoveredMandalName] = useState<string | null>(
     null,
@@ -1967,10 +1967,6 @@ const RegionSelection: React.FC = () => {
                   
                   <div className="flex flex-wrap gap-[10px] mt-1 max-h-24 overflow-y-auto custom-scrollbar">
                     {selectedDistricts
-                      .filter((d) => {
-                        const name = (d.name || d.dtname || d.d || "").toLowerCase();
-                        return name.includes(districtSearch.toLowerCase());
-                      })
                       .map((d, i) => (
                         <div
                           key={i}
@@ -2111,10 +2107,6 @@ const RegionSelection: React.FC = () => {
                   
                   <div className="flex flex-wrap gap-[10px] mt-1 max-h-24 overflow-y-auto custom-scrollbar">
                     {selectedMandals
-                      .filter((m) => {
-                        const name = (m.name || m.dtname || m.d || m.mandal_name || "").toLowerCase();
-                        return name.includes(mandalSearch.toLowerCase());
-                      })
                       .map((m, i) => (
                         <div
                           key={i}

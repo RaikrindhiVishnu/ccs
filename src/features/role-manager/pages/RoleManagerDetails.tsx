@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Typography } from "@/components/ui/typography";
 import { Input } from "@/components/ui/input";
 import role from "@/assets/role profile.svg";
@@ -24,44 +23,6 @@ interface RoleManagerDetailsProps {
   onBack?: () => void;
 }
 
-function Toggle({ defaultOn = true }: { defaultOn?: boolean }) {
-  const [enabled, setEnabled] = useState(defaultOn);
-
-  return (
-    <button
-      type="button"
-      onClick={() => setEnabled(!enabled)}
-      className={`
-        relative
-        w-[clamp(2.25rem,2.8vw,3rem)]
-        h-[clamp(1.25rem,1.5vw,1.625rem)]
-        rounded-full
-        transition-colors
-        duration-300
-        shrink-0
-        ${enabled ? "bg-[color:var(--toggle-active)]" : "bg-gray-300"}
-      `}
-
-    >
-      <div
-        className={`
-          absolute
-          top-[clamp(0.125rem,0.2vw,0.1875rem)]
-          w-[clamp(0.875rem,1.1vw,1.25rem)]
-          h-[clamp(0.875rem,1.1vw,1.25rem)]
-          rounded-full
-          bg-white
-          transition-all
-          duration-300
-          ${enabled
-            ? "left-[clamp(1.125rem,1.4vw,1.5625rem)]"
-            : "left-[clamp(0.125rem,0.2vw,0.1875rem)]"
-          }
-        `}
-      />
-    </button>
-  );
-}
 
 export default function RoleManagerDetails({
   data: _data,
