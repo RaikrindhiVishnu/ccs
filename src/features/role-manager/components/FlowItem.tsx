@@ -1,6 +1,7 @@
 import React from "react";
 import { SquarePen, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 
 interface FlowItemProps {
   name: string;
@@ -29,6 +30,10 @@ export const FlowItem: React.FC<FlowItemProps> = ({
 }) => {
   const [imgError, setImgError] = React.useState(false);
 
+  const isS3Key = Boolean(avatar && !avatar.startsWith("http") && !avatar.startsWith("data:"));
+  const { data: s3Data } = useGeneratePresignedUrlQuery(avatar || "", { skip: !isS3Key });
+  const finalUrl = isS3Key ? s3Data?.url : avatar;
+
   const getInitials = (fullName: string) => {
     if (!fullName) return "?";
     const parts = fullName.trim().split(/\s+/);
@@ -38,7 +43,7 @@ export const FlowItem: React.FC<FlowItemProps> = ({
     return fullName.slice(0, 2).toUpperCase();
   };
 
-  const showInitials = !avatar || imgError;
+  const showInitials = !avatar || !finalUrl || imgError;
   const initials = getInitials(name);
 
   const renderAvatar = (sizeClass: string) => {
@@ -58,7 +63,7 @@ export const FlowItem: React.FC<FlowItemProps> = ({
 
     return (
       <img
-        src={avatar}
+        src={finalUrl}
         alt={name}
         onError={() => setImgError(true)}
         className={cn("rounded-full object-cover shrink-0", sizeClass)}
