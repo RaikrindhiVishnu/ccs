@@ -2916,7 +2916,7 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
 
               {/* Tag Selection search + pills */}
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-0.5">
+                {/* <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-0.5">
                   {editModeType === "area"
                     ? "Mandal Selection (Interact on Map)"
                     : "District Selection (Interact on Map)"}
@@ -2933,7 +2933,7 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
                   onChange={(e) => setDistrictSearch(e.target.value)}
                   icon={<Search size={14} className="text-slate-400" />}
                   className="pl-9 pr-3 text-sm h-11 border-slate-200 bg-slate-50"
-                />
+                /> */}
 
                 <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pt-1 custom-scrollbar">
                   {selectedDistricts.length === 0 ? (

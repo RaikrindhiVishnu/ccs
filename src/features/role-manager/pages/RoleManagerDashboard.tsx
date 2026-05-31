@@ -68,8 +68,7 @@ const RoleManagerHeader: React.FC = () => {
     {/* Right controls: Search + Bell */}
     <div className="flex flex-1 items-center justify-end gap-2 lg:gap-3 max-w-[18rem] md:max-w-xs lg:max-w-sm xl:max-w-[23.25rem] 2xl:max-w-[26rem]">
 
-      {/* Search */}
-      <Input
+      {/* <Input
         variant="white"
         placeholder="Search..."
         icon={
@@ -83,8 +82,6 @@ const RoleManagerHeader: React.FC = () => {
         wrapperClassName="h-10 lg:h-11 xl:h-[3.25rem] bg-[var(--surface-card)] rounded-full shadow-sm"
         className="font-inter font-normal text-[var(--text-primary)] placeholder:text-[var(--text-muted-strong)] text-[0.8125rem] lg:text-sm xl:text-base"
       />
-
-      {/* Bell */}
       <button
         type="button"
         aria-label="Notifications"
@@ -99,12 +96,11 @@ const RoleManagerHeader: React.FC = () => {
           strokeWidth={1.8}
           className="text-[var(--text-primary)] w-4 h-4 lg:w-[1.125rem] lg:h-[1.125rem] xl:w-[1.35rem] xl:h-[1.35rem]"
         />
-        {/* Notification dot */}
         <span
           aria-hidden="true"
           className="absolute top-[0.78rem] right-[0.78rem] xl:top-[0.95rem] xl:right-[0.95rem] w-1.5 h-1.5 rounded-full bg-[var(--status-danger)]"
         />
-      </button>
+      </button> */}
     </div>
   </div>
 

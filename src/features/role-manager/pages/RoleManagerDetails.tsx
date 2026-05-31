@@ -417,7 +417,7 @@ export default function RoleManagerDetails({
         </div>
 
         {/* ───────────── ALERTS ───────────── */}
-        <div
+        {/* <div
           className="
             bg-[color:var(--surface-card)]
             rounded-[clamp(1rem,1.5vw,1.5rem)]
@@ -434,7 +434,6 @@ export default function RoleManagerDetails({
               text-[clamp(1.125rem,1.5vw,1.5rem)]
               text-[color:var(--text-primary)]
             "
-            // text: 18px→1.125rem, 24px→1.5rem
           >
             Alerts
           </Typography>
@@ -446,12 +445,9 @@ export default function RoleManagerDetails({
               xl:grid-cols-2
               gap-[clamp(1.125rem,2vw,2.5rem)]
             "
-            // gap: 18px→1.125rem, 40px→2.5rem
           >
-            {/* Notifications */}
             <div className="flex items-center justify-between">
               <div className="space-y-[clamp(0.125rem,0.3vw,0.375rem)]">
-                {/* space-y: 2px→0.125rem, 6px→0.375rem */}
                 <h4
                   className="
                     font-semibold
@@ -475,10 +471,8 @@ export default function RoleManagerDetails({
               <Toggle defaultOn={profile.notificationsEnabled} />
             </div>
 
-            {/* SMS */}
             <div className="flex items-center justify-between">
               <div className="space-y-[clamp(0.125rem,0.3vw,0.375rem)]">
-                {/* space-y: 2px→0.125rem, 6px→0.375rem */}
                 <h4
                   className="
                     font-semibold
@@ -502,7 +496,7 @@ export default function RoleManagerDetails({
               <Toggle defaultOn={profile.smsEnabled} />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

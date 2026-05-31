@@ -263,7 +263,7 @@ const DashboardGlobeMap: React.FC = () => {
 
         map.current?.addSource("areas-source", { type: "geojson", data: { type: "FeatureCollection", features: [] }, generateId: true });
         map.current?.addLayer({ id: "areas-fill", type: "fill", source: "areas-source", paint: { "fill-color": ["case", ["boolean", ["get", "isAssigned"], false], ["coalesce", ["get", "areaColor"], "#3b82f6"], ["case", ["boolean", ["feature-state", "hover"], false], "rgba(255,255,255,0.4)", "rgba(255,255,255,0.01)"]], "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.9, 0.7] } }, "states-border-line");
-        map.current?.addLayer({ id: "areas-line", type: "line", source: "areas-source", paint: { "line-color": ["case", ["boolean", ["get", "isAssigned"], false], "#ffffff", "#0891b2"], "line-width": ["case", ["boolean", ["get", "isAssigned"], false], 1.5, 1.2], "line-opacity": ["case", ["boolean", ["get", "isAssigned"], false], 0.8, 0.6] } }, "states-border-line");
+        map.current?.addLayer({ id: "areas-line", type: "line", source: "areas-source", paint: { "line-color": ["case", ["boolean", ["get", "isAssigned"], false], ["coalesce", ["get", "areaColor"], "#3b82f6"], "#0891b2"], "line-width": ["case", ["boolean", ["get", "isAssigned"], false], 2.5, 1.8], "line-opacity": ["case", ["boolean", ["get", "isAssigned"], false], 0.7, 0.6] } }, "states-border-line");
 
         // State click → zoom in
         map.current?.on("click", "states-fill", (e) => {

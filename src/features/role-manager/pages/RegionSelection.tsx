@@ -309,6 +309,7 @@ const RegionSelection: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const popup = useRef<maplibregl.Popup | null>(null);
+  const selectedRegionIdRef = useRef<any>(null);
 
   const [searchParams] = useSearchParams();
   const mode = searchParams.get("mode") || "region";
@@ -357,6 +358,14 @@ const RegionSelection: React.FC = () => {
     setIsAreaModalOpen(selectedMandals.length > 0);
     if (selectedMandals.length === 0) setFormAreaErrors({});
   }, [selectedMandals.length]);
+
+  useEffect(() => {
+    selectedRegionIdRef.current =
+      selectedRegion?.properties?.region_id ??
+      selectedRegion?.properties?.id ??
+      selectedRegion?.id ??
+      null;
+  }, [selectedRegion]);
 
   const handleRemoveMandal = (mandal: any) => {
     const featId = mandal.id ?? mandal.featureId;
@@ -1189,28 +1198,6 @@ const RegionSelection: React.FC = () => {
             }
 
             setSelectedMandals((prev) => {
-              // Prevent selecting from multiple regions simultaneously
-              const currentDistrictId = prev.length > 0 ? prev[0].district_id : null;
-              
-              if (currentDistrictId && mData.district_id && currentDistrictId !== mData.district_id) {
-                // Different region selected! Clear previous selections on the map
-                prev.forEach(m => {
-                   if (m.featureId !== undefined) {
-                      map.current?.setFeatureState(
-                        { source: "mandals-source", id: m.featureId },
-                        { selected: false }
-                      );
-                   }
-                });
-                
-                // Select only the new one
-                map.current?.setFeatureState(
-                  { source: "mandals-source", id: feature.id },
-                  { selected: true }
-                );
-                return [{ ...mData, featureId: feature.id }];
-              }
-
               const isAlreadySelected = prev.find(
                 (m) => (m.id ?? m.featureId) === mId,
               );
@@ -1366,8 +1353,28 @@ const RegionSelection: React.FC = () => {
             // Click Handler for dynamic zoom & mandals rendering in Area Mode
             map.current?.on("click", "country-regions-fill", (e) => {
               if (mode !== "area") return;
-              if (e.features && e.features.length > 0 && !selectedRegion) {
+              if (e.features && e.features.length > 0) {
                 const feature = e.features[0];
+                const clickedId =
+                  feature.properties?.region_id ??
+                  feature.properties?.id ??
+                  feature.id;
+                const currentId = selectedRegionIdRef.current;
+                if (clickedId !== currentId) {
+                  setSelectedMandals((prev) => {
+                    prev.forEach((m) => {
+                      const featId =
+                        m.featureId !== undefined ? m.featureId : m.id;
+                      if (featId !== undefined) {
+                        map.current?.setFeatureState(
+                          { source: "mandals-source", id: featId },
+                          { selected: false },
+                        );
+                      }
+                    });
+                    return [];
+                  });
+                }
                 setSelectedRegion(feature);
 
                 // Zoom smoothly into the region bounds
@@ -1944,7 +1951,7 @@ const RegionSelection: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-[12px]">
-                  <label className="text-[14px] font-bold text-[rgba(53,53,53,0.8)] font-['Plus_Jakarta_Sans'] leading-[18px]">
+                  {/* <label className="text-[14px] font-bold text-[rgba(53,53,53,0.8)] font-['Plus_Jakarta_Sans'] leading-[18px]">
                     Tag Sub-Regions
                   </label>
                   <div className="relative">
@@ -1955,7 +1962,7 @@ const RegionSelection: React.FC = () => {
                       onChange={(e) => setDistrictSearch(e.target.value)}
                       className={`h-[40px] w-full rounded-[12px] border ${formErrors.districts ? 'border-red-500' : 'border-[#E1E5EF]'} bg-white pl-[40px] pr-3 text-[14px] font-medium font-['Plus_Jakarta_Sans'] text-[#353535] placeholder-[rgba(90,92,94,0.6)] outline-none focus:border-[#2780C4] transition-colors`}
                     />
-                  </div>
+                  </div> */}
                   {formErrors.districts && <span className="text-red-500 text-xs mt-[-4px]">{formErrors.districts}</span>}
                   
                   <div className="flex flex-wrap gap-[10px] mt-1 max-h-24 overflow-y-auto custom-scrollbar">
@@ -2088,7 +2095,7 @@ const RegionSelection: React.FC = () => {
                 </div>
 
                 <div className="flex flex-col gap-[12px]">
-                  <label className="text-[14px] font-bold text-[rgba(53,53,53,0.8)] font-['Plus_Jakarta_Sans'] leading-[18px]">
+                  {/* <label className="text-[14px] font-bold text-[rgba(53,53,53,0.8)] font-['Plus_Jakarta_Sans'] leading-[18px]">
                     Tag Sub-Areas (Mandals)
                   </label>
                   <div className="relative">
@@ -2099,7 +2106,7 @@ const RegionSelection: React.FC = () => {
                       onChange={(e) => setMandalSearch(e.target.value)}
                       className={`h-[40px] w-full rounded-[12px] border ${formAreaErrors.mandals ? 'border-red-500' : 'border-[#E1E5EF]'} bg-white pl-[40px] pr-3 text-[14px] font-medium font-['Plus_Jakarta_Sans'] text-[#353535] placeholder-[rgba(90,92,94,0.6)] outline-none focus:border-[#2780C4] transition-colors`}
                     />
-                  </div>
+                  </div> */}
                   {formAreaErrors.mandals && <span className="text-red-500 text-xs mt-[-4px]">{formAreaErrors.mandals}</span>}
                   
                   <div className="flex flex-wrap gap-[10px] mt-1 max-h-24 overflow-y-auto custom-scrollbar">
