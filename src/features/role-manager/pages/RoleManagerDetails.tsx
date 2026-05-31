@@ -1,15 +1,10 @@
-import { useState, useEffect } from "react";
 import { Typography } from "@/components/ui/typography";
 import { Input } from "@/components/ui/input";
 import role from "@/assets/role profile.svg";
 import SuccessIcon from "@/assets/sucess.svg";
 import { ArrowLeft, User, Pencil } from "lucide-react";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/core/hooks";
-import {
-  useGetAgentDetailsByUserIdMutation,
-} from "../api/roleManagerApi";
-import { useLazyRegionOfficerDetailsQuery } from "../api/userDirectoryApi";
 
 interface RoleManagerData {
   firstName: string;
@@ -28,174 +23,47 @@ interface RoleManagerDetailsProps {
   onBack?: () => void;
 }
 
-function Toggle({ defaultOn = true }: { defaultOn?: boolean }) {
-  const [enabled, setEnabled] = useState(defaultOn);
-
-  return (
-    <button
-      type="button"
-      onClick={() => setEnabled(!enabled)}
-      className={`
-        relative
-        w-[clamp(2.25rem,2.8vw,3rem)]
-        h-[clamp(1.25rem,1.5vw,1.625rem)]
-        rounded-full
-        transition-colors
-        duration-300
-        shrink-0
-        ${enabled ? "bg-[color:var(--toggle-active)]" : "bg-gray-300"}
-      `}
-
-    >
-      <div
-        className={`
-          absolute
-          top-[clamp(0.125rem,0.2vw,0.1875rem)]
-          w-[clamp(0.875rem,1.1vw,1.25rem)]
-          h-[clamp(0.875rem,1.1vw,1.25rem)]
-          rounded-full
-          bg-white
-          transition-all
-          duration-300
-          ${enabled
-            ? "left-[clamp(1.125rem,1.4vw,1.5625rem)]"
-            : "left-[clamp(0.125rem,0.2vw,0.1875rem)]"
-          }
-        `}
-      />
-    </button>
-  );
-}
 
 export default function RoleManagerDetails({
   data: _data,
   onBack,
 }: RoleManagerDetailsProps) {
-  const { id } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
-  const { roleType } = location.state || {};
 
-  const [getAgentDetailsByUserId] = useGetAgentDetailsByUserIdMutation();
-  const [getRegionOfficerDetails] = useLazyRegionOfficerDetailsQuery();
-
-  const [profileData, setProfileData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const profileStoreData = useAppSelector(
-    (state) => state.roleManager.profileData,
-  );
   const currentUser = useAppSelector((state) => state.auth.user);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!roleType || !id || profileData) return;
-
-      setIsLoading(true);
-      try {
-        let response;
-        if (roleType === "AG") {
-          response = await getAgentDetailsByUserId(Number(id)).unwrap();
-        } else if (roleType === "FO") {
-          // Field Officer details endpoint is currently deprecated/not available
-          response = { data: null };
-        } else if (roleType === "RO" || roleType === "IO") {
-          response = await getRegionOfficerDetails(Number(id)).unwrap();
-        }
-
-        setProfileData(response?.data);
-      } catch (error) {
-        console.error("API ERROR:", error);
-      }
-    };
-
-    fetchProfile();
-  }, [id, roleType]);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[color:var(--surface-page)]">
-        <Typography
-          variant="h3"
-          className="text-[color:var(--brand-500)] animate-pulse"
-        >
-          Loading Details...
-        </Typography>
-      </div>
-    );
-  }
-
-  const profile = profileData
+  const profile = currentUser
     ? {
-        firstName: profileData.first_name || "",
-        lastName: profileData.last_name || "",
+        firstName: currentUser.first_name || "",
+        lastName: currentUser.last_name || "",
         age:
-          profileData.dob ||
-          profileData.date_of_birth ||
-          profileData.age ||
-          "23/01/1992",
-        phone: profileData.phone_number || profileData.phone || "",
-        email: profileData.email_address || profileData.email || "",
-        role:
-          roleType === "AG"
-            ? "Agent"
-            : roleType === "FO"
-              ? "Field Officer"
-              : roleType === "RO"
-                ? "Regional Officer"
-                : "Intelligence Officer",
-        profileImage: profileData.profile_url,
+          (currentUser as any).dob ||
+          (currentUser as any).date_of_birth ||
+          (currentUser as any).age ||
+          "",
+        phone:
+          (currentUser as any).phone_number ||
+          (currentUser as any).phone ||
+          "",
+        email:
+          currentUser.login_id ||
+          (currentUser as any).email ||
+          "",
+        role: currentUser.role || "Role Manager",
+        profileImage: (currentUser as any).profile_url || undefined,
         notificationsEnabled: true,
         smsEnabled: true,
       }
-    : profileStoreData
-      ? {
-          firstName: profileStoreData.first_name || "",
-          lastName: profileStoreData.last_name || "",
-          age:
-            profileStoreData.dob ||
-            profileStoreData.date_of_birth ||
-            profileStoreData.age ||
-            "23/01/1992",
-          phone: profileStoreData.phone_number || profileStoreData.phone || "",
-          email: profileStoreData.email_address || profileStoreData.email || "",
-          role: profileStoreData.role || "Role Manager",
-          profileImage: profileStoreData.profile_url,
-          notificationsEnabled: true,
-          smsEnabled: true,
-        }
-      : currentUser
-        ? {
-            firstName: currentUser.first_name || "Keshav",
-            lastName: currentUser.last_name || "Surigi",
-            age:
-              (currentUser as any).dob ||
-              (currentUser as any).date_of_birth ||
-              (currentUser as any).age ||
-              "23/01/1992",
-            phone:
-              (currentUser as any).phone_number ||
-              (currentUser as any).phone ||
-              "+9193428-48293",
-            email:
-              currentUser.login_id ||
-              (currentUser as any).email ||
-              "keshavs@gmail.com",
-            role: currentUser.role || "Role Manager",
-            profileImage: undefined,
-            notificationsEnabled: true,
-            smsEnabled: true,
-          }
-        : {
-            firstName: "Keshav",
-            lastName: "Surigi",
-            age: "23/01/1992",
-            phone: "+9193428-48293",
-            email: "keshavs@gmail.com",
-            role: "Role Manager",
-            notificationsEnabled: true,
-            smsEnabled: true,
-          };
+    : {
+        firstName: "",
+        lastName: "",
+        age: "",
+        phone: "",
+        email: "",
+        role: "Role Manager",
+        notificationsEnabled: true,
+        smsEnabled: true,
+      };
 
   const handleBack = () => {
     if (onBack) {
@@ -417,7 +285,7 @@ export default function RoleManagerDetails({
         </div>
 
         {/* ───────────── ALERTS ───────────── */}
-        <div
+        {/* <div
           className="
             bg-[color:var(--surface-card)]
             rounded-[clamp(1rem,1.5vw,1.5rem)]
@@ -434,7 +302,6 @@ export default function RoleManagerDetails({
               text-[clamp(1.125rem,1.5vw,1.5rem)]
               text-[color:var(--text-primary)]
             "
-            // text: 18px→1.125rem, 24px→1.5rem
           >
             Alerts
           </Typography>
@@ -446,12 +313,9 @@ export default function RoleManagerDetails({
               xl:grid-cols-2
               gap-[clamp(1.125rem,2vw,2.5rem)]
             "
-            // gap: 18px→1.125rem, 40px→2.5rem
           >
-            {/* Notifications */}
             <div className="flex items-center justify-between">
               <div className="space-y-[clamp(0.125rem,0.3vw,0.375rem)]">
-                {/* space-y: 2px→0.125rem, 6px→0.375rem */}
                 <h4
                   className="
                     font-semibold
@@ -475,10 +339,8 @@ export default function RoleManagerDetails({
               <Toggle defaultOn={profile.notificationsEnabled} />
             </div>
 
-            {/* SMS */}
             <div className="flex items-center justify-between">
               <div className="space-y-[clamp(0.125rem,0.3vw,0.375rem)]">
-                {/* space-y: 2px→0.125rem, 6px→0.375rem */}
                 <h4
                   className="
                     font-semibold
@@ -502,7 +364,7 @@ export default function RoleManagerDetails({
               <Toggle defaultOn={profile.smsEnabled} />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

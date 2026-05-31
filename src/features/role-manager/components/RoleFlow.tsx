@@ -78,11 +78,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
               : `RO-${regionOfficerData.data.regional_officer_role_id || regionOfficerData.data.regional_officer_id || "-"}`),
           contact:
             regionOfficerData.data.regional_officer_phone,
-          avatar:
-            regionOfficerData.data.regional_officer_avatar ||
-            regionOfficerData.data.avatar ||
-            regionOfficerData.data.profile_image ||
-            "",
+          avatar: regionOfficerData.data.regional_officer_profile_url || "",
         },
         {
           id: String(
@@ -112,11 +108,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
           contact:
             regionOfficerData.data
               .intelligence_officer_phone,
-          avatar:
-            regionOfficerData.data.intelligence_officer_avatar ||
-            regionOfficerData.data.avatar ||
-            regionOfficerData.data.profile_image ||
-            "",
+          avatar: regionOfficerData.data.intelligence_officer_profile_url || "",
         },
       ].filter((item) => item.name)
       : [];
@@ -136,7 +128,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
         role: "Field Officer" as const,
         roleId: fo.field_officer_user_code || fo.feild_officer_user_code || fo.user_code || fo.userCode || (fo.role_id ? String(fo.role_id) : "-"),
         contact: fo.phone,
-        avatar: fo.avatar || fo.profile_image || fo.image || "",
+        avatar: fo.profile_url || "",
       })
     )
     : [];
@@ -220,7 +212,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
         role: "Agent" as const,
         roleId: ag.agent_user_code || ag.user_code || ag.userCode || (ag.role_id ? String(ag.role_id) : "-"),
         contact: ag.phone,
-        avatar: ag.avatar || ag.profile_image || ag.image || "",
+        avatar: ag.profile_url || "",
       })
     )
     : [];
@@ -234,10 +226,6 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
         .toLowerCase()
         .includes(searchAgent.toLowerCase())
   );
-
-  const actualIndex = selectedFieldOfficerIndex;
-
-  const foCount = filteredFOs.length;
 
   const foOffset = selectedFieldOfficerIndex / 3;
 

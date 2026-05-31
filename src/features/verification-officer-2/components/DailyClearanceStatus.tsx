@@ -1,4 +1,3 @@
-import React from 'react';
 import { dashboardMockData } from '../Data/dashboardMockData';
 import { MonitorPlay, CheckSquare, Calendar } from 'lucide-react'; // Fallback icons if custom ones are missing
 

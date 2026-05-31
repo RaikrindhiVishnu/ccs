@@ -19,7 +19,6 @@ import WorkforceStructure from "@/features/role-manager/components/WorkforceStru
 import { Typography } from "@/components/ui/typography";
 
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { PillDropdown } from "@/components/ui/Dropdown";
 import { RoleFlow } from "../components/RoleFlow";
 

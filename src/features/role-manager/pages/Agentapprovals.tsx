@@ -60,7 +60,7 @@ export const AgentApprovalsPage = () => {
 
                 status: "Pending Review",
 
-                avatarUrl: item.avatar || item.profile_image || "",
+                avatarUrl: item.profile_url || item.avatar || item.profile_image || "",
 
                 initials: `${
                     item.first_name || ""

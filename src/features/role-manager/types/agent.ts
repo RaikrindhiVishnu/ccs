@@ -147,6 +147,9 @@ export interface CreateRegionalOfficerRequest {
     pan_card_number: string;
     pan_card_url: string;
   };
+  avatar?: string;
+  profile_image?: string;
+  profile_url?: string;
 }
 
 export interface UpdateAgentRequest {
@@ -159,6 +162,8 @@ export interface UpdateAgentRequest {
   role_id: number;
   isVerified?: number;
   profile_image?: string;
+  avatar?: string;
+  profile_url?: string;
   address: {
     address: string;
     state_id: number;
@@ -194,6 +199,9 @@ export interface UpdateFieldOfficerRequest {
     state_id: number;
     region_id: number;
   };
+  avatar?: string;
+  profile_image?: string;
+  profile_url?: string;
 }
 
 export interface UpdateRegionalOfficerRequest {
@@ -216,6 +224,9 @@ export interface UpdateRegionalOfficerRequest {
     state_id: number;
     region_id: number;
   };
+  avatar?: string;
+  profile_image?: string;
+  profile_url?: string;
 }
 export interface CreateFieldOfficerRequest {
   firstName: string;
@@ -246,6 +257,9 @@ export interface CreateFieldOfficerRequest {
     pan_card_number: string;
     pan_card_url: string;
   };
+  avatar?: string;
+  profile_image?: string;
+  profile_url?: string;
 }
 
 export interface GetAgentsRequest {
@@ -267,6 +281,7 @@ export interface AgentResponse {
   pincode?: string;
   avatar?: string;
   profile_image?: string;
+  profile_url?: string;
   bank_name?: string;
   account_number?: string;
   ifsc_code?: string;

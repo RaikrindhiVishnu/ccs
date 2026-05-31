@@ -1,5 +1,5 @@
 import { roleManagerApi } from "./roleManagerApi";
-import type { GeoMasterData, GeoMasterDataRaw } from "../types/masterDataTypes";
+import type { GeoMasterData } from "../types/masterDataTypes";
 import { transformTable } from "../utils/utils";
 
 export const masterDataApi = roleManagerApi.injectEndpoints({

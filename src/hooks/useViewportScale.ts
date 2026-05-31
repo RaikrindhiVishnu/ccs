@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
  * @param baseWidth The Figma target width design scale (default 1440px)
  * @returns The scaling factor to fit the width perfectly.
  */
-export const useViewportScale = (baseWidth = 1440, baseHeight?: number) => {
+export const useViewportScale = (baseWidth = 1440, _baseHeight?: number) => {
   const [scale, setScale] = useState<number>(1);
 
   useEffect(() => {

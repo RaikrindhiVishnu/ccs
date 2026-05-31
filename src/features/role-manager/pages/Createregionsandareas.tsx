@@ -106,7 +106,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
           variant="span"
           className={cn(
             "font-[family-name:var(--font-sans)] font-normal",
-            "text-[var(--text-primary)] opacity-60",
+            "text-[#000000]",
             "tracking-[-0.01em]",
             // Line height scales
             "leading-[1.1rem] lg:leading-[1.125rem] 2xl:leading-5",

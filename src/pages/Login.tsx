@@ -318,7 +318,6 @@ function LoginScreen({
           icon={Lock}
           error={errors.password}
           rightEl={<EyeBtn />}
-          className=""
         />
 
         <div className="flex justify-end -mt-[clamp(0.25rem,1vh,0.75rem)] min-[1440px]:mt-[0.97vw]">
@@ -420,10 +419,17 @@ function ForgotPasswordScreen({
           className="min-[1440px]:mt-[1.67vw] min-[1440px]:gap-[0.83vw]"
         />
 
-        <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:mt-[2.36vw]">
+        <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:mt-[2.36vw] flex flex-col gap-3">
           <PrimaryButton type="submit" disabled={isLoading} variant="secondary" className=" lg:rounded-full lg:text-[1.11vw]">
             {isLoading ? "Sending…" : "Send Password"}
           </PrimaryButton>
+          <button
+            type="button"
+            onClick={onBack}
+            className="border-none cursor-pointer p-0 bg-transparent font-semibold text-[#3D4949] hover:text-[var(--text-heading)] transition-colors text-[14px] self-center"
+          >
+            Back to Login
+          </button>
         </div>
       </form>
 
