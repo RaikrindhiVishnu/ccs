@@ -275,7 +275,7 @@ const AssignOfficers: React.FC = () => {
       navigate("/role-manager/region-area-dashboard");
     } catch (err) {
       console.error("Failed to assign officers:", err);
-      toast.error("Failed to assign officers. Please try again.");
+      // toast.error("Failed to assign officers. Please try again.");
     }
   };
 

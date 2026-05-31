@@ -9,7 +9,7 @@ export const VerificationOfficerAssignedFarmlandsOwnerDetails: React.FC = () => 
   const scale = useViewportScale(1440, 1080);
   const targetId = id || "GLCSOS 01";
   const [activeTab, setActiveTab] = React.useState<'Owner Details' | 'Family Tree' | 'Land Details'>('Family Tree');
-  const [completedTabs, setCompletedTabs] = React.useState<string[]>(['Owner Details']);
+  const [completedTabs] = React.useState<string[]>(['Owner Details']);
 
   const handleBack = () => {
     navigate('/verification-officer-2/assigned-farmlands');

@@ -1,4 +1,3 @@
-import React from 'react';
 import { dashboardMockData } from '../Data/dashboardMockData';
 
 export const ActiveReviewCard = () => {

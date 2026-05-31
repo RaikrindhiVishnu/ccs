@@ -150,7 +150,6 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
     const mandalObj = geoMasterData?.mandals?.find((m: any) => String(m.id) === String(mandalId));
     const stateId = apiData?.state_id || geo?.state_id || apiData?.address_state_id;
     const stateObj = geoMasterData?.states?.find((s: any) => String(s.id) === String(stateId));
-
     const districtName = districtObj?.desc || "";
     const mandalName = mandalObj?.desc || "";
     const stateName = stateObj?.desc || "";
@@ -172,7 +171,7 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
                 (word: string) => word[0]
             ).join("").toUpperCase() || "NA",
 
-        avatarUrl: apiData?.avatar || apiData?.profile_image || "",
+        avatarUrl: apiData?.profile_url || apiData?.avatar || apiData?.profile_image || "",
 
         bannerUrl: "",
 
@@ -218,9 +217,17 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
             toast.error("Cannot approve agent without an assigned territory.");
             return;
         }
-
-        if (!hierarchyData || !hierarchyData.region || !hierarchyData.area) {
-            toast.error("Cannot approve: No valid Region and Area mapping found for this agent's territory.");
+        console.log(hierarchyData, "hierarchyData");
+        if (!hierarchyData) {
+            toast.error("Cannot approve: No valid hierarchy data found for this agent's territory.");
+            return;
+        }
+        if (!hierarchyData.region) {
+            toast.error("Cannot approve: No valid Region mapping found for this agent's territory.");
+            return;
+        }
+        if (!hierarchyData.area) {
+            toast.error("Cannot approve: No valid Area mapping found for this agent's territory.");
             return;
         }
 
@@ -362,7 +369,7 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
                                 value={
                                     agent.dateOfBirth
                                 } />
-                            <InfoField label="Operating Territory"
+                            <InfoField label="Operating Territory1"
                                 value={
                                     agent.operatingTerritory
                                 }
@@ -433,12 +440,12 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
                                         {
                                             territoryError.hierarchy && (
                                                 <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                                                    • Region / Area Mapping — Not created or mapped for this District & Mandal in Master Data
+                                                    • Region / Area Mapping — Not created or mapped for this District & Mandal.
                                                 </span>
                                             )
                                         }
                                         <span className="text-[0.6875rem] lg:text-[0.75rem] text-[color:var(--text-secondary)] mt-0.5">
-                                            Agent cannot be approved until territory hierarchy is properly assigned/created.
+                                            Agent cannot be approved until territory assigned/created.
                                         </span>
                                     </div>
                                 )

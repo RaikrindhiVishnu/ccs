@@ -412,7 +412,7 @@ export default function AgentForm({
 
   const getProfilePic = (srcData: any) => {
     if (!srcData) return "";
-    let val = srcData.avatar_url || srcData.avatar || srcData.profile_image || srcData.profilePicture || srcData.profile_url || srcData.id_proof?.avatar || srcData.id_proof?.profile_image || srcData.id_proof?.profile_url;
+    let val = srcData.profile_url || srcData.avatar_url || srcData.avatar || srcData.profile_image || srcData.profilePicture || srcData.id_proof?.profile_url || srcData.id_proof?.avatar || srcData.id_proof?.profile_image || srcData.id_proof?.profile_url;
     if (!val || val === "null" || val === "undefined") {
       const email = srcData.email || srcData.emailAddress;
       if (email) {
@@ -552,7 +552,7 @@ export default function AgentForm({
   const handleSave = async (values: AgentFormValues) => {
     try {
       let res: any = null;
-      const existingGeo = parseGeoAssignments(agentData?.data?.geo_assignments || initialData?.geo_assignments);
+      const existingGeo = parseGeoAssignments(agentData?.data?.geo_assignments || (initialData as any)?.geo_assignments);
       const existingDistrictId = agentData?.data?.district_id || existingGeo?.district_id;
       const existingMandalId = agentData?.data?.mandal_id || existingGeo?.mandal_id;
 
@@ -633,7 +633,7 @@ export default function AgentForm({
             dob: values.dob || dobState || "",
             role_id: Number(roleIdState || agentRoleId),
             profile_image: profilePicKey !== "profile.png" ? profilePicKey : undefined,
-            avatar: profilePicKey !== "profile.png" ? profilePicKey : undefined,
+            profile_url: profilePicKey !== "profile.png" ? profilePicKey : undefined,
 
             address: {
               address: values.address || addressState || "",
@@ -697,7 +697,7 @@ export default function AgentForm({
             areas_id: areaIdVal,
           },
 
-          avatar: profilePicKey !== "profile.png" ? profilePicKey : undefined,
+          profile_url: profilePicKey !== "profile.png" ? profilePicKey : undefined,
 
           id_proof: {
             bank_account_name: `${values.firstName} ${values.lastName}`,
@@ -961,12 +961,12 @@ export default function AgentForm({
                     )}
                     {viewTerritoryError.hierarchy && (
                       <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                        • Region / Area Mapping — Not created or mapped for this District & Mandal in Master Data
+                        • Region / Area Mapping — Not created or mapped for this District & Mandal.
                       </span>
                     )}
-                    <span className="text-[0.6875rem] lg:text-[0.75rem] text-[color:var(--text-secondary)] mt-0.5">
+                    {/* <span className="text-[0.6875rem] lg:text-[0.75rem] text-[color:var(--text-secondary)] mt-0.5">
                       Agent cannot be approved until territory hierarchy is properly assigned/created.
-                    </span>
+                    </span> */}
                   </div>
                 )}
               </div>

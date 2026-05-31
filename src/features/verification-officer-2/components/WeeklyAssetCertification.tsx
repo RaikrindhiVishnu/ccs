@@ -1,4 +1,3 @@
-import React from 'react';
 import { dashboardMockData } from '../Data/dashboardMockData';
 import { Calendar } from 'lucide-react';
 

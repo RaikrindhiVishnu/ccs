@@ -24,7 +24,6 @@ import { RHFTextField } from "@/components/form/RHFTextField";
 import { RHFDropdown } from "@/components/form/RHFDropdown";
 import { useGetAllMasterDataQuery, useGetAllGeoMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
-import { useSelector } from "react-redux";
 import { uploadUserDocument } from "@/core/utils/fileUpload";
 import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 import { useGetFieldOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
@@ -313,8 +312,6 @@ const CreateFieldOfficer = () => {
 
   const { data: geoMasterData } = useGetAllGeoMasterDataQuery();
   const states = geoMasterData?.states || [];
-  const allDistricts = geoMasterData?.districts || [];
-  const allMandals = geoMasterData?.mandals || [];
 
   const { control, handleSubmit, reset, watch } = useForm<OfficerFormValues>({
     resolver: zodResolver(officerSchema),
@@ -411,7 +408,7 @@ const CreateFieldOfficer = () => {
         city: initialData.address?.city || initialData.city || "",
         pincode: initialData.address?.pincode || initialData.pincode || "",
         state: stateVal,
-        profilePicture: initialData.avatar_url || initialData.avatar || initialData.profile_image || initialData.profilePicture || undefined,
+        profilePicture: initialData.profile_url || initialData.avatar_url || initialData.avatar || initialData.profile_image || initialData.profilePicture || undefined,
         aadharFront: initialData.id_proof_front_url || initialData.id_proof?.id_proof_frontUrl || undefined,
         aadharBack: initialData.id_proof_back_url || initialData.id_proof?.id_proof_backUrl || undefined,
         panCard: initialData.pan_card_url || initialData.id_proof?.pan_card_url || undefined,
@@ -434,7 +431,7 @@ const CreateFieldOfficer = () => {
         city: data.address?.city || data.city || "",
         pincode: data.address?.pincode || data.pincode || "",
         state: stateVal,
-        profilePicture: data.avatar_url || data.avatar || data.profile_image || data.profilePicture || data.profile_url || (data.emailAddress || data.email ? (localStorage.getItem(`avatar_key_${(data.emailAddress || data.email).trim().toLowerCase()}`) || `users/${(data.emailAddress || data.email).trim().toLowerCase()}/documents/profile_image/download.png`) : undefined),
+        profilePicture: data.profile_url || data.avatar_url || data.avatar || data.profile_image || data.profilePicture || (data.emailAddress || data.email ? (localStorage.getItem(`avatar_key_${(data.emailAddress || data.email).trim().toLowerCase()}`) || `users/${(data.emailAddress || data.email).trim().toLowerCase()}/documents/profile_image/download.png`) : undefined),
         aadharFront: data.id_proof_front_url || data.id_proof?.id_proof_frontUrl || undefined,
         aadharBack: data.id_proof_back_url || data.id_proof?.id_proof_backUrl || undefined,
         panCard: data.pan_card_url || data.id_proof?.pan_card_url || undefined,
@@ -513,7 +510,7 @@ const CreateFieldOfficer = () => {
         emailAddress: values.email,
         phoneNumber: values.mobile,
         dob: values.dob,
-        avatar: profilePictureKey || undefined,
+        profile_url: profilePictureKey || undefined,
         profile_image: profilePictureKey || undefined,
         role_id: fieldOfficerRoleId,
         address: {
@@ -563,7 +560,7 @@ const CreateFieldOfficer = () => {
     
     // Retrieve correct avatar URL: prioritize cached local storage key
     const cachedAvatarKey = localStorage.getItem(`avatar_key_${(data?.emailAddress || data?.email || "").trim().toLowerCase()}`);
-    const avatarUrl = cachedAvatarKey || data?.avatar_url || data?.avatar || data?.profile_image || (data?.emailAddress || data?.email ? `users/${(data.emailAddress || data.email).trim().toLowerCase()}/documents/profile_image/download.png` : "");
+    const avatarUrl = cachedAvatarKey || data?.profile_url || data?.avatar_url || data?.avatar || data?.profile_image || (data?.emailAddress || data?.email ? `users/${(data.emailAddress || data.email).trim().toLowerCase()}/documents/profile_image/download.png` : "");
 
     const officer = {
       name,

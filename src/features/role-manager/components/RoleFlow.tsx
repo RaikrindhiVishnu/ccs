@@ -235,10 +235,6 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
         .includes(searchAgent.toLowerCase())
   );
 
-  const actualIndex = selectedFieldOfficerIndex;
-
-  const foCount = filteredFOs.length;
-
   const foOffset = selectedFieldOfficerIndex / 3;
 
   return (
