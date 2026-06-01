@@ -334,6 +334,9 @@ const RegionSelection: React.FC = () => {
   const [hoveredDistrictName, setHoveredDistrictName] = useState<string | null>(
     null,
   );
+  const [districtDropdownOpen, setDistrictDropdownOpen] = useState(false);
+  const [districtSearchQuery, setDistrictSearchQuery] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [formErrors, setFormErrors] = useState<{ regionName?: string; regionCode?: string; districts?: string; general?: string }>({});
 
@@ -353,6 +356,19 @@ const RegionSelection: React.FC = () => {
     setIsModalOpen(selectedDistricts.length > 0);
     if (selectedDistricts.length === 0) setFormErrors({});
   }, [selectedDistricts.length]);
+
+  // Click outside to close district dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDistrictDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     setIsAreaModalOpen(selectedMandals.length > 0);
@@ -476,6 +492,64 @@ const RegionSelection: React.FC = () => {
       ? Number(selectedRegion.properties.stateId)
       : undefined);
 
+  const filteredDistricts = useMemo(() => {
+    if (!geoMasterData || !selectedStateId) return [];
+    const stateObj = geoMasterData.countries
+      .flatMap((c) => c.states ?? [])
+      .find((s) => s.i === selectedStateId);
+
+    if (!stateObj || !stateObj.districts) return [];
+
+    const districts = stateObj.districts;
+    if (!districtSearchQuery.trim()) return districts;
+
+    return districts.filter((d) =>
+      d.d.toLowerCase().includes(districtSearchQuery.toLowerCase())
+    );
+  }, [geoMasterData, selectedStateId, districtSearchQuery]);
+
+  const toggleDistrictSelection = (district: any) => {
+    const dtId = district.i;
+    const isAssigned = assignedDistrictIds.has(dtId);
+    if (isAssigned) {
+      toast.warning(`${district.d} is already part of an existing region.`);
+      return;
+    }
+
+    setSelectedDistricts((prev) => {
+      const isAlreadySelected = prev.find(
+        (d) => (d.id ?? d.featureId) === dtId
+      );
+
+      if (isAlreadySelected) {
+        if (map.current) {
+          map.current.setFeatureState(
+            { source: "districts-source", id: dtId },
+            { selected: false }
+          );
+        }
+        return prev.filter((d) => (d.id ?? d.featureId) !== dtId);
+      } else {
+        if (map.current) {
+          map.current.setFeatureState(
+            { source: "districts-source", id: dtId },
+            { selected: true }
+          );
+        }
+        return [
+          ...prev,
+          {
+            id: dtId,
+            code: district.c,
+            name: district.d,
+            featureId: dtId,
+            isAssigned: false,
+          },
+        ];
+      }
+    });
+  };
+
   const { data: regionOfficerDetailsRes } = useGetRegionOfficerDetailsQuery(
     {
       state_id: selectedStateId ? String(selectedStateId) : "",
@@ -558,6 +632,8 @@ const RegionSelection: React.FC = () => {
     setSelectedRegion(null);
     setHoveredMandalName(null);
     setSelectedDistricts([]);
+    setDistrictSearchQuery("");
+    setDistrictDropdownOpen(false);
 
     // Clear district data from map
     if (map.current?.getSource("districts-source")) {
@@ -838,7 +914,6 @@ const RegionSelection: React.FC = () => {
         map.current.addSource("districts-source", {
           type: "geojson",
           data: districtsGeoJSON,
-          generateId: true,
         });
 
         map.current.addLayer(
@@ -1592,7 +1667,8 @@ const RegionSelection: React.FC = () => {
       setRegionCode("");
     } catch (err) {
       console.error("Failed to create region:", err);
-      toast.error("Failed to create region");
+      const errorMsg = (err as any)?.data?.message || (err as any)?.message || "Failed to create region";
+      toast.error(errorMsg);
     }
   };
   const handleCreateArea = async () => {
@@ -1699,7 +1775,8 @@ const RegionSelection: React.FC = () => {
       setAreaCode("");
     } catch (err) {
       console.error("Failed to create area:", err);
-      toast.error("Failed to create area");
+      const errorMsg = (err as any)?.data?.message || (err as any)?.message || "Failed to create area";
+      toast.error(errorMsg);
     }
   };
 
@@ -1950,19 +2027,121 @@ const RegionSelection: React.FC = () => {
                   {formErrors.regionCode && <span className="text-red-500 text-xs mt-[-4px]">{formErrors.regionCode}</span>}
                 </div>
 
-                <div className="flex flex-col gap-[12px]">
-                  {/* <label className="text-[14px] font-bold text-[rgba(53,53,53,0.8)] font-['Plus_Jakarta_Sans'] leading-[18px]">
+                <div ref={dropdownRef} className="flex flex-col gap-[12px] relative">
+                  <label className="text-[14px] font-bold text-[rgba(53,53,53,0.8)] font-['Plus_Jakarta_Sans'] leading-[18px]">
                     Tag Sub-Regions
                   </label>
                   <div className="relative">
-                    <Search size={20} className="absolute left-[12px] top-1/2 -translate-y-1/2 text-[rgba(93,93,93,0.6)]" />
-                    <input
-                      placeholder="Search"
-                      value={districtSearch}
-                      onChange={(e) => setDistrictSearch(e.target.value)}
-                      className={`h-[40px] w-full rounded-[12px] border ${formErrors.districts ? 'border-red-500' : 'border-[#E1E5EF]'} bg-white pl-[40px] pr-3 text-[14px] font-medium font-['Plus_Jakarta_Sans'] text-[#353535] placeholder-[rgba(90,92,94,0.6)] outline-none focus:border-[#2780C4] transition-colors`}
-                    />
-                  </div> */}
+                    <button
+                      type="button"
+                      onClick={() => setDistrictDropdownOpen(!districtDropdownOpen)}
+                      className={`h-[40px] w-full rounded-[12px] border ${formErrors.districts ? 'border-red-500' : 'border-[#E1E5EF]'} bg-white px-3 flex items-center justify-between text-[14px] font-medium font-['Plus_Jakarta_Sans'] text-[#353535] outline-none focus:border-[#2780C4] transition-all hover:bg-slate-50/50`}
+                    >
+                      <span className="truncate">
+                        {selectedDistricts.length > 0
+                          ? `${selectedDistricts.length} District(s) Selected`
+                          : "Select Districts"}
+                      </span>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
+                          districtDropdownOpen ? "rotate-180" : ""
+                        }`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {districtDropdownOpen && (
+                      <div className="mt-2 bg-white border border-[#E1E5EF] rounded-[16px] shadow-md p-3 flex flex-col gap-2 max-h-[200px] overflow-y-auto">
+                        <div className="relative">
+                          <input
+                            type="text"
+                            placeholder="Search district..."
+                            value={districtSearchQuery}
+                            onChange={(e) => setDistrictSearchQuery(e.target.value)}
+                            className="h-[36px] w-full rounded-[8px] border border-[#E1E5EF] px-3 pl-8 text-[13px] font-['Plus_Jakarta_Sans'] outline-none focus:border-[#2780C4] transition-colors"
+                          />
+                          <svg
+                            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            />
+                          </svg>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-1 pr-1">
+                          {filteredDistricts.length > 0 ? (
+                            filteredDistricts.map((district) => {
+                              const isAssigned = assignedDistrictIds.has(district.i);
+                              const isSelected = selectedDistricts.some(
+                                (d) => (d.id ?? d.featureId) === district.i
+                              );
+
+                              return (
+                                <div
+                                  key={district.i}
+                                  onClick={() => toggleDistrictSelection(district)}
+                                  className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${
+                                    isAssigned
+                                      ? "bg-slate-50 text-slate-400 cursor-not-allowed"
+                                      : isSelected
+                                      ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
+                                      : "hover:bg-slate-50 text-slate-700"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    {!isAssigned && (
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        readOnly
+                                        className="rounded border-slate-300 text-[#2780C4] focus:ring-[#2780C4]"
+                                      />
+                                    )}
+                                    <span>{district.d}</span>
+                                  </div>
+
+                                  {isAssigned && (
+                                    <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+                                     
+                                      <svg
+                                        className="w-4 h-4 text-emerald-600"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth="3"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          d="M5 13l4 4L19 7"
+                                        />
+                                      </svg>
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div className="text-center text-slate-400 text-xs py-4">
+                              No districts found
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   {formErrors.districts && <span className="text-red-500 text-xs mt-[-4px]">{formErrors.districts}</span>}
                   
                   <div className="flex flex-wrap gap-[10px] mt-1 max-h-24 overflow-y-auto custom-scrollbar">
