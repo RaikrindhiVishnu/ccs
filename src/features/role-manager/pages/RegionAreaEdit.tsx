@@ -2811,6 +2811,13 @@ const RegionAreaEdit: React.FC = () => {
           (id) => !data.lostDistrictIds.includes(id),
         );
 
+        if (newIds.length === 0) {
+          console.warn(
+            `[Background Silent Reassignment] Skipping source region ${sourceRegionId} because it would be left with 0 districts.`,
+          );
+          continue;
+        }
+
         const silentPayload = {
           region_id: sourceRegionId,
           regionName: activeProps.region_name || activeProps.name,
@@ -2893,8 +2900,14 @@ const RegionAreaEdit: React.FC = () => {
       const errMsg =
         err?.data?.message ||
         err?.message ||
-        "Failed to update region. Please try again.";
-      toast.error(errMsg);
+        "";
+      if (errMsg.includes("already assigned to another region")) {
+        toast.error(
+          errMsg + " (Note: A region must always have at least one district. If the other region only has this one district, please assign another district to it first before reassigning this one.)"
+        );
+      } else {
+        toast.error(errMsg || "Failed to update region. Please try again.");
+      }
     }
   };
 
