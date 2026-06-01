@@ -59,6 +59,15 @@ import {
   VerificationOfficerCompletedFarmlandDetails,
   VerificationOfficerAssignedFarmlandsOwnerDetails,
 
+  // Verification Officer 1 (VO1)
+  VerificationOfficer1Dashboard,
+  VerificationOfficer1AssignedFarmlands,
+  VerificationOfficer1InProgressFarmlands,
+  VerificationOfficer1CompletedFarmlands,
+  VerificationOfficer1CompletedFarmlandDetails,
+  VerificationOfficer1AssignedFarmlandsOwnerDetails,
+  VerificationOfficer1Layout,
+
   // Dev imports
   DraftsPage,
   FieldOfficerLayout,
@@ -175,6 +184,40 @@ export const authRoutes: RouteObject[] = [
   {
     path: '/verification-officer-2/assigned-farmlands-owner-details/:id',
     element: <VerificationOfficerAssignedFarmlandsOwnerDetails />,
+  },
+  {
+    path: "verification-officer-1",
+    element: <VerificationOfficer1Layout />,
+    children: [
+      {
+        index: true,
+        element: <VerificationOfficer1Dashboard />,
+      },
+      {
+        path: "dashboard",
+        element: <VerificationOfficer1Dashboard />,
+      },
+      {
+        path: "assigned-farmlands",
+        element: <VerificationOfficer1AssignedFarmlands />,
+      },
+      {
+        path: "in-progress-farmlands",
+        element: <VerificationOfficer1InProgressFarmlands />,
+      },
+      {
+        path: "completed-farmland",
+        element: <VerificationOfficer1CompletedFarmlands />,
+      },
+    ],
+  },
+  {
+    path: '/verification-officer-1/completed-farmland/:id',
+    element: <VerificationOfficer1CompletedFarmlandDetails />,
+  },
+  {
+    path: '/verification-officer-1/assigned-farmlands-owner-details/:id',
+    element: <VerificationOfficer1AssignedFarmlandsOwnerDetails />,
   },
   {
     path: '/regional-officer/requested-info-details/:id',

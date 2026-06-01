@@ -592,7 +592,6 @@ export default function AgentForm({
             dob: values.dob || dobState || "",
             role_id: Number(roleIdState || agentRoleId),
             profile_image: profilePicKey !== "profile.png" ? profilePicKey : undefined,
-            avatar: profilePicKey !== "profile.png" ? profilePicKey : undefined,
 
             address: {
               address: values.address || addressState || "",

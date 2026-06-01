@@ -3701,3 +3701,21 @@ h1 {
 .region-hover-popup .maplibregl-popup-tip {
   display: none;
 }
+
+/* ─── DYNAMIC LAYOUT ZOOM FOR HIGH-RESOLUTION SCREENS ───────────────── */
+@media (min-width: 1920px) {
+  .layout-container-zoom {
+    zoom: 1.3333;
+    -moz-transform: scale(1.3333);
+    -moz-transform-origin: top center;
+  }
+}
+
+@media (min-width: 2560px) {
+  .layout-container-zoom {
+    zoom: 1.7778;
+    -moz-transform: scale(1.7778);
+    -moz-transform-origin: top center;
+  }
+}
+
