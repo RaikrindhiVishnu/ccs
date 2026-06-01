@@ -11,6 +11,7 @@ import io4 from '@/assets/io4.svg';
 // ─── Types ───────────────────────────────────────────────────────────────────
 export type LayoutVariant =
   | 'sidebar-role-manager'
+  | 'sidebar-super-admin'
   | 'sidebar-ccs-officer'
   | 'sidebar-intelligence-officer'
   | 'sidebar-regional-officer'
@@ -64,10 +65,27 @@ export const MOCK_USERS: Record<
     name: 'Edward Janowski',
     role: 'RO',
   },
+  SUPER_ADMIN: {
+    email: 'superadmin@glc.com',
+    password: 'superadmin@123',
+    name: 'Super Admin',
+    role: 'SUPERADMIN',
+  },
 };
 
 // ─── Master Layout Config ─────────────────────────────────────────────────────
 export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
+  SUPERADMIN: {
+    layoutVariant: 'sidebar-super-admin',
+    roleLabel: 'Super Admin',
+    navItems: [
+      { label: 'Dashboard',          path: '/super-admin/dashboard',           icon: 'LayoutDashboard' },
+      { label: 'Assigned Farmlands', path: '/super-admin/farmlands',           icon: 'Layers' },
+      { label: 'Farmlands List',     path: '/super-admin/farmlands-list',      icon: 'Box' },
+      { label: 'User Management',    path: '/super-admin/users',               icon: 'Users' },
+    ],
+  },
+
   ROLEMNGR: {
     layoutVariant: 'sidebar-role-manager',
     roleLabel: 'Role Manager',
