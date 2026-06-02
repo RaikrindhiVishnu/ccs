@@ -172,14 +172,7 @@ const UserDirectory: React.FC = () => {
         </div>
 
         {/* Filters/Navigation Row */}
-        <div className="flex flex-row items-center justify-between w-full p-3 ">
-          {/* Left Side: Role List Pill */}
-          <div className="w-[90px] h-[44px] rounded-[64.67px] bg-white flex items-center justify-center shadow-sm">
-            <span className="text-[12px] font-normal leading-[140%] tracking-[-0.02em] text-black">
-              Role List
-            </span>
-          </div>
-
+        <div className="flex flex-row items-center justify-end w-full p-3 ">
           {/* Right Side: Dropdowns */}
           <div className="flex gap-2 items-center">
             <PillDropdown

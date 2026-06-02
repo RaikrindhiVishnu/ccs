@@ -28,22 +28,18 @@ export default function DateRangePicker({
 
   const [open, setOpen]       = useState(false);
   const [applied, setApplied] = useState<Range | undefined>(initial); // ← shown in trigger always
-  const [pending, setPending] = useState<Range | undefined>(initial); // ← in-popover selection
+  const [pending, setPending] = useState<any>(initial); // ← in-popover selection
 
   // ── handlers ──────────────────────────────────────────────────────────────
-  const handleDayClick = (date: Date | undefined) => {
-    if (!date) return;
-    const d = new Date(date);
-    d.setHours(12, 0, 0, 0);
-    const end = addDays(d, 6);
-    end.setHours(12, 0, 0, 0);
-    setPending({ from: d, to: end });
+  const handleSelect = (range: any) => {
+    setPending(range);
   };
 
   const handleApply = () => {
-    if (pending) {
-      setApplied(pending);          // ← persists the label in trigger
-      onRangeChange?.(pending);
+    if (pending?.from && pending?.to) {
+      const confirmedRange = { from: pending.from, to: pending.to };
+      setApplied(confirmedRange);          // ← persists the label in trigger
+      onRangeChange?.(confirmedRange);
     }
     setOpen(false);
   };
@@ -125,8 +121,7 @@ export default function DateRangePicker({
             <DayPicker
               mode="range"
               selected={pending}
-              onDayClick={handleDayClick}
-              onSelect={() => {}}
+              onSelect={handleSelect}
               showOutsideDays={false}
               classNames={{
                 root: "w-full",
@@ -241,14 +236,14 @@ export default function DateRangePicker({
                 "text-[color:var(--brand-500)]",
               )}
             >
-              {pending
+              {pending?.from && pending?.to
                 ? `${format(pending.from, "MMM d")} – ${format(pending.to, "MMM d")}`
                 : "No range selected"}
             </span>
 
             <button
               onClick={handleApply}
-              disabled={!pending}
+              disabled={!pending?.from || !pending?.to}
               className={cn(
                 "flex items-center justify-center rounded-lg",
                 "w-[clamp(52px,4.5vw,62px)] h-[clamp(24px,2vw,28px)]",
