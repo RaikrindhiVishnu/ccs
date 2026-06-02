@@ -52,6 +52,66 @@ export interface SubscriberGrowthData {
 
 import { SuperAdminFarmlandData } from "../components/SuperAdminFarmlandCard";
 import { FarmlandListCardData } from "../components/SuperAdminFarmlandsListCard";
+import { SuperAdminUserCardData } from "../components/SuperAdminUserListCard";
+
+export interface AssignedFarmlandDetailsData {
+  id: string;
+  status: {
+    systemStatus: string;
+    liveStatus: string;
+  };
+  assetDetails: {
+    location: string;
+    agentName: string;
+    agentAvatar: string;
+    creationTime: string;
+    lastUpdated: string;
+  };
+  heroData: {
+    title: string;
+    location: string;
+    badge: string;
+    image: string;
+  };
+}
+
+export interface CustomerInformationData {
+  farmlandId: string;
+  ownerDetails: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    dob: string;
+    religion: string;
+    gender: string;
+    locationLink: string;
+    mapImage: string;
+  };
+  familyTree: {
+    owner: { name: string; info: string; avatar: string };
+    father: { name: string; info: string; avatar: string };
+    spouse: { name: string; info: string; avatar: string };
+    mother: { name: string; info: string; avatar: string };
+    daughter: { name: string; info: string; avatar: string };
+  };
+  landDetails: {
+    state: string;
+    district: string;
+    area: string;
+    acquisitionCategory: string;
+    agent: string;
+    landConversion: string;
+    valueForArea: string;
+    agentReferralLocation: string;
+    geoReference: {
+      coordinates: string;
+      gridElev: string;
+    };
+    largeAerialImage: string;
+    smallMapImage: string;
+  };
+}
 
 export interface DashboardData {
   visitors: VisitorStats;
@@ -63,4 +123,7 @@ export interface DashboardData {
   subscriberGrowth: SubscriberGrowthData;
   assignedFarmlands: SuperAdminFarmlandData[];
   farmlandsList: FarmlandListCardData[];
+  usersList: SuperAdminUserCardData[];
+  assignedFarmlandDetails: AssignedFarmlandDetailsData;
+  customerInformation: CustomerInformationData;
 }

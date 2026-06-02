@@ -82,7 +82,7 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
       { label: 'Dashboard',          path: '/super-admin/dashboard',           icon: 'LayoutDashboard' },
       { label: 'Assigned Farmlands', path: '/super-admin/farmlands',           icon: 'Layers' },
       { label: 'Farmlands List',     path: '/super-admin/farmlands-list',      icon: 'Box' },
-      { label: 'User Management',    path: '/super-admin/users',               icon: 'Users' },
+      { label: 'User Management',    path: '/super-admin/users-list',               icon: 'Users' },
     ],
   },
 

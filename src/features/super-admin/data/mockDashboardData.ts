@@ -142,5 +142,77 @@ export const mockDashboardData: DashboardData = {
       image: "https://images.unsplash.com/photo-1621508678036-7c08a91ec552?w=500&auto=format&fit=crop&q=60",
       agent: { name: "Vikram Gouda", avatar: "/super-admin/performers/performer1.png" }
     }
-  ]
+  ],
+
+  usersList: [
+    { id: "U01", name: "Ram Varma", email: "ram.varma@example.com", avatar: "https://i.pravatar.cc/150?u=ram", type: "NRI", isSubscribed: true, tier: "silver", source: "Website" },
+    { id: "U02", name: "Kishore Moore", email: "ram.kishore@example.com", avatar: "https://i.pravatar.cc/150?u=kishore", type: "Local", isSubscribed: true, tier: "gold", source: "Mobile" },
+    { id: "U03", name: "Ramesh Oberoi", email: "ramesh.oberoi@example.com", avatar: "https://i.pravatar.cc/150?u=ramesh", type: "Local", isSubscribed: false, tier: "bronze", source: "Website" },
+    { id: "U04", name: "Anita Desai", email: "anita.d@example.com", avatar: "https://i.pravatar.cc/150?u=anita", type: "NRI", isSubscribed: true, tier: "gold", source: "Mobile" },
+    { id: "U05", name: "Vikram Singh", email: "vikram.s@example.com", avatar: "https://i.pravatar.cc/150?u=vikram", type: "Local", isSubscribed: true, tier: "silver", source: "Website" },
+    { id: "U06", name: "Priya Patel", email: "priya.p@example.com", avatar: "https://i.pravatar.cc/150?u=priya", type: "NRI", isSubscribed: false, tier: "bronze", source: "Mobile" },
+    { id: "U07", name: "Arjun Reddy", email: "arjun.r@example.com", avatar: "https://i.pravatar.cc/150?u=arjun", type: "Local", isSubscribed: true, tier: "gold", source: "Website" },
+    { id: "U08", name: "Sunita Sharma", email: "sunita.s@example.com", avatar: "https://i.pravatar.cc/150?u=sunita", type: "NRI", isSubscribed: false, tier: "silver", source: "Mobile" },
+    { id: "U09", name: "Karan Johar", email: "karan.j@example.com", avatar: "https://i.pravatar.cc/150?u=karan", type: "Local", isSubscribed: false, tier: "bronze", source: "Website" },
+    { id: "U10", name: "Meera Bai", email: "meera.b@example.com", avatar: "https://i.pravatar.cc/150?u=meera", type: "NRI", isSubscribed: true, tier: "gold", source: "Mobile" },
+  ],
+
+  assignedFarmlandDetails: {
+    id: "GLC SOS 01",
+    status: {
+      systemStatus: "Active",
+      liveStatus: "Live on Website"
+    },
+    assetDetails: {
+      location: "West Godvari, AP",
+      agentName: "Ravi Kumar",
+      agentAvatar: "https://i.pravatar.cc/150?u=ravi",
+      creationTime: "6th Oct, 12:53 PM",
+      lastUpdated: "8th Oct, 09:15 AM"
+    },
+    heroData: {
+      title: "GLC SOS 01",
+      location: "West Godvari, AP",
+      badge: "LIVE ON WEBSITE",
+      image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=2000&auto=format&fit=crop"
+    }
+  },
+
+  customerInformation: {
+    farmlandId: "GLCSOS 01",
+    ownerDetails: {
+      firstName: "Ramudu",
+      lastName: "Kumar",
+      email: "ramudu@example.com",
+      phoneNumber: "+91-8577483738",
+      dob: "12 Oct 1980",
+      religion: "Hindu",
+      gender: "Male",
+      locationLink: "17.4835850, 78.3805050",
+      mapImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&auto=format&fit=crop"
+    },
+    familyTree: {
+      owner: { name: "Arjun Mehta", info: "Male, 42 yrs", avatar: "https://i.pravatar.cc/150?u=arjun2" },
+      father: { name: "Vikram Mehta", info: "Male, 72 yrs", avatar: "https://i.pravatar.cc/150?u=vikram" },
+      spouse: { name: "Priya Mehta", info: "Female, 40 yrs", avatar: "https://i.pravatar.cc/150?u=priya" },
+      mother: { name: "Sushila Mehta", info: "Female, 68 yrs", avatar: "https://i.pravatar.cc/150?u=sushila" },
+      daughter: { name: "Ananya Mehta", info: "Female, 12 yrs", avatar: "https://i.pravatar.cc/150?u=ananya" }
+    },
+    landDetails: {
+      state: "Andhra Pradesh",
+      district: "West Godavari",
+      area: "Thanuku",
+      acquisitionCategory: "Ancestral Property",
+      agent: "Agent Vinod",
+      landConversion: "Acres",
+      valueForArea: "1,00,000.00",
+      agentReferralLocation: "Another Location",
+      geoReference: {
+        coordinates: "N 38.2975° W 122.2869°",
+        gridElev: "GRID: 84T-QK • ELEV: 12m"
+      },
+      largeAerialImage: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&auto=format&fit=crop",
+      smallMapImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=400&auto=format&fit=crop"
+    }
+  }
 };

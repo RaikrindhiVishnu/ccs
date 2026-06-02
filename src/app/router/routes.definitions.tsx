@@ -83,7 +83,11 @@ import {
     SuperAdminLogin,
     SuperAdminFarmlands,
     SuperAdminAssignedFarmlandsList,
-    SuperAdminFarmlandsListPreview
+    SuperAdminFarmlandsListPreview,
+    SuperAdminFarmlandsListFull,
+    SuperAdminUsersListFull,
+    SuperAdminAssignedFarmlandDetails,
+    SuperAdminCustomerInformation
 } from './routes.config';
 
 
@@ -214,7 +218,6 @@ export const authRoutes: RouteObject[] = [
                 element: <Agentdetailpage />
             },
 
-            // Super Admin
             {
                 path: '/super-admin/dashboard',
                 element: <SuperAdminDashboard />
@@ -227,6 +230,18 @@ export const authRoutes: RouteObject[] = [
             }, {
                 path: '/super-admin/farmlands-list',
                 element: <SuperAdminFarmlandsListPreview />
+            }, {
+                path: '/super-admin/farmlands-list/all',
+                element: <SuperAdminFarmlandsListFull />
+            }, {
+                path: '/super-admin/users-list',
+                element: <SuperAdminUsersListFull />
+            }, {
+                path: '/super-admin/assigned-farmlands/:id',
+                element: <SuperAdminAssignedFarmlandDetails />
+            }, {
+                path: '/super-admin/assigned-farmlands/:id/customer-information',
+                element: <SuperAdminCustomerInformation />
             },
         ]
 

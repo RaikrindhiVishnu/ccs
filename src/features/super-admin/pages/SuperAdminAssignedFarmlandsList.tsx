@@ -61,7 +61,7 @@ const SuperAdminAssignedFarmlandsList: React.FC = () => {
               key={farmland.id}
               data={farmland}
               imagePosition={idx % 2 === 0 ? "top" : "bottom"}
-              onViewDetails={(id) => console.log("View Details:", id)}
+              onViewDetails={(id) => navigate(`/super-admin/assigned-farmlands/${id}`)}
             />
           ))}
         </div>

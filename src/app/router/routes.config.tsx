@@ -97,6 +97,18 @@ export const SuperAdminAssignedFarmlandsList = lazy(() => import ("../../feature
 
 export const SuperAdminFarmlandsListPreview = lazy(() => import ("../../features/super-admin/pages/SuperAdminFarmlandsListPreview"),);
 
+export const SuperAdminUsersListFull = lazy(
+  () => import("../../features/super-admin/pages/SuperAdminUsersListFull"),
+);
+
 export const SuperAdminFarmlandsListFull = lazy(
   () => import("../../features/super-admin/pages/SuperAdminFarmlandsListFull"),
+);
+
+export const SuperAdminAssignedFarmlandDetails = lazy(
+  () => import("../../features/super-admin/pages/SuperAdminAssignedFarmlandDetails"),
+);
+
+export const SuperAdminCustomerInformation = lazy(
+  () => import("../../features/super-admin/pages/SuperAdminCustomerInformation"),
 );

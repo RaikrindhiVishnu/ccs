@@ -56,7 +56,7 @@ const SuperAdminFarmlands: React.FC = () => {
           <Button
             onClick={() => navigate("/super-admin/assigned-farmlands")}
             className="rounded-full px-6 bg-[#2D3032] hover:bg-black text-white font-medium self-start md:self-auto flex items-center gap-2"
-          >
+           >
             View all
             <ArrowUpRight size={16} />
           </Button>
@@ -91,7 +91,7 @@ const SuperAdminFarmlands: React.FC = () => {
               key={farmland.id}
               data={farmland}
               imagePosition={idx % 2 === 0 ? "top" : "bottom"}
-              onViewDetails={(id) => console.log("View Details:", id)}
+              onViewDetails={(id) => navigate(`/super-admin/assigned-farmlands/${id}`)}
             />
           ))}
         </div>
