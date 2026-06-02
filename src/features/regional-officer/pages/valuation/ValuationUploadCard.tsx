@@ -19,8 +19,6 @@ interface ValuationUploadCardProps {
   onFileChooseClick: () => void;
   onFileDrop: (e: React.DragEvent<HTMLDivElement>) => void;
   onFileDelete: (fileId: string) => void;
-  onFileDrop: (e: React.DragEvent<HTMLDivElement>) => void;
-  onFileDelete: (fileId: string) => void;
   onCommentChange: (value: string) => void;
   onBack: () => void;
   onNext: () => void;
@@ -54,7 +52,7 @@ export const ValuationUploadCard: React.FC<ValuationUploadCardProps> = ({
   currentComment,
   isDragOver,
   setIsDragOver,
-  fileInputRef,
+  fileInputRef: _fileInputRef,
   onFileChooseClick,
   onFileDrop,
   onFileDelete,

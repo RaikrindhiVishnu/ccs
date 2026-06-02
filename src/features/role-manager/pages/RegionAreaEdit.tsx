@@ -290,10 +290,10 @@ const getFeatureBounds = (feature: any): maplibregl.LngLatBoundsLike => {
 const getRegionId = (f: any): number => {
   return Number(
     f.properties?.region_id ||
-      f.properties?.regionId ||
-      f.properties?.id ||
-      f.id ||
-      0,
+    f.properties?.regionId ||
+    f.properties?.id ||
+    f.id ||
+    0,
   );
 };
 
@@ -401,6 +401,12 @@ const RegionAreaEdit: React.FC = () => {
       ) {
         setAreasDropdownOpen(false);
       }
+      if (
+        editDropdownRef.current &&
+        !editDropdownRef.current.contains(target)
+      ) {
+        setEditDropdownOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -409,7 +415,7 @@ const RegionAreaEdit: React.FC = () => {
   // Floating Edit Form Card States
   const [regionName, setRegionName] = useState("");
   const [regionCode, setRegionCode] = useState("");
-  const [districtSearch, setDistrictSearch] = useState("");
+
   const [selectedDistricts, setSelectedDistricts] = useState<any[]>([]);
   // Ref so the one-time map click handler always reads the latest selectedDistricts
   // without needing to re-register (avoids stale closure → duplicate selection bug)
@@ -417,6 +423,10 @@ const RegionAreaEdit: React.FC = () => {
   useEffect(() => {
     selectedDistrictsRef.current = selectedDistricts;
   }, [selectedDistricts]);
+
+  const [editDropdownOpen, setEditDropdownOpen] = useState(false);
+  const [editSearchQuery, setEditSearchQuery] = useState("");
+  const editDropdownRef = useRef<HTMLDivElement>(null);
 
   // Reassignment and Confirmation Modal states
   const [reassignModalOpen, setReassignModalOpen] = useState(false);
@@ -578,7 +588,7 @@ const RegionAreaEdit: React.FC = () => {
   const parentRegionId =
     (editAreaId && urlAreaRegionId ? Number(urlAreaRegionId) : null) ||
     selectedRegionId;
-console.log(parentRegionId,selectedRegionId,"parentRegionId")
+  console.log(parentRegionId, selectedRegionId, "parentRegionId")
   // Query child areas of parent region for area mapping & selection
   // When urlAreaRegionId is present we can fire this query immediately on mount
   const { data: regionAreasData } = useGetAllAreasByRegionIdQuery(
@@ -784,6 +794,223 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
     }
     return buildRegionsGeoJSON(regionsByCountryData, geoMasterData);
   }, [regionsByCountryData, geoMasterData]);
+
+  const parentRegionDistrictIds = useMemo(() => {
+    if (!parentRegionId || !geoMasterData || !allRegionsData) return [];
+    const parentReg = allRegionsData.features.find(
+      (f: any) => getRegionId(f) === Number(parentRegionId)
+    );
+    if (!parentReg) return [];
+    return getDistrictIdsFromRegion(parentReg, geoMasterData);
+  }, [parentRegionId, geoMasterData, allRegionsData]);
+
+  const availableMandals = useMemo(() => {
+    if (!geoMasterData || parentRegionDistrictIds.length === 0) return [];
+    const list: any[] = [];
+    geoMasterData.countries.forEach((country) => {
+      country.states?.forEach((state) => {
+        state.districts?.forEach((district) => {
+          if (parentRegionDistrictIds.includes(district.i)) {
+            if (district.mandals) {
+              district.mandals.forEach((m) => {
+                if (!list.some((existing) => existing.i === m.i)) {
+                  list.push({
+                    ...m,
+                    district_id: district.i,
+                  });
+                }
+              });
+            }
+          }
+        });
+      });
+    });
+    return list;
+  }, [geoMasterData, parentRegionDistrictIds]);
+
+  const otherAssignedMandalIds = useMemo(() => {
+    const assigned = new Set<number>();
+    const list = regionAreasData?.data || [];
+    const currentAreaIdNum = Number(editAreaId);
+    list.forEach((area: any) => {
+      const areaIdNum = Number(area.id || area.area_id);
+      if (areaIdNum !== currentAreaIdNum) {
+        const mIds = area.mandal_ids || area.mandalIds || [];
+        mIds.forEach((mId: any) => {
+          const idNum = Number(mId);
+          if (!isNaN(idNum)) {
+            assigned.add(idNum);
+          }
+        });
+      }
+    });
+    return assigned;
+  }, [regionAreasData, editAreaId]);
+
+  const filteredEditItems = useMemo(() => {
+    if (editModeType !== "region") return [];
+    if (!geoMasterData || !selectedStateId) return [];
+    const stateObj = geoMasterData.countries
+      .flatMap((c) => c.states ?? [])
+      .find((s) => s.i === selectedStateId);
+    const districts = stateObj?.districts || [];
+    if (!editSearchQuery.trim()) return districts;
+    return districts.filter((d) =>
+      d.d.toLowerCase().includes(editSearchQuery.toLowerCase())
+    );
+  }, [geoMasterData, selectedStateId, editSearchQuery, editModeType]);
+
+  const filteredEditMandals = useMemo(() => {
+    if (editModeType !== "area") return [];
+    if (!availableMandals) return [];
+    if (!editSearchQuery.trim()) return availableMandals;
+    return availableMandals.filter((m) =>
+      m.d.toLowerCase().includes(editSearchQuery.toLowerCase())
+    );
+  }, [availableMandals, editSearchQuery, editModeType]);
+
+  const toggleEditDistrictSelection = (district: any) => {
+    const dtId = district.i;
+    const isAssignedToOther = otherAssignedDistrictIds.has(dtId);
+
+    const isAlreadySelected = selectedDistricts.some(
+      (d) => Number(d.id ?? d.featureId) === dtId
+    );
+
+    if (isAlreadySelected) {
+      if (map.current) {
+        map.current.setFeatureState(
+          { source: "districts-source", id: dtId },
+          { selected: false }
+        );
+      }
+      setSelectedDistricts((prev) => {
+        setReassignedDistricts((r) =>
+          r.filter((item) => item.districtId !== dtId)
+        );
+        return prev.filter((d) => Number(d.id ?? d.featureId) !== dtId);
+      });
+      return;
+    }
+
+    if (isAssignedToOther) {
+      const ownerRegion = allRegionsData.features.find((f: any) => {
+        const ids = getDistrictIdsFromRegion(f, geoMasterData);
+        return ids.includes(dtId);
+      });
+      if (ownerRegion) {
+        setPendingDistrict({
+          id: dtId,
+          name: district.d || "",
+          code: district.c || "",
+        });
+        setPendingOwnerRegion({
+          id: getRegionId(ownerRegion),
+          name:
+            ownerRegion.properties?.region_name ||
+            ownerRegion.properties?.name ||
+            "another region",
+          rawFeature: ownerRegion,
+        });
+        setReassignModalOpen(true);
+      }
+      return;
+    }
+
+    setSelectedDistricts((prev) => [
+      ...prev,
+      {
+        id: dtId,
+        featureId: dtId,
+        name: district.d,
+        code: district.c,
+        d: district.d,
+        properties: {
+          id: dtId,
+          name: district.d,
+          code: district.c,
+        },
+      },
+    ]);
+    if (map.current) {
+      map.current.setFeatureState(
+        { source: "districts-source", id: dtId },
+        { selected: true }
+      );
+    }
+  };
+
+  const toggleEditMandalSelection = (mandal: any) => {
+    const mId = mandal.i;
+    const isAssignedToOther = otherAssignedMandalIds.has(mId);
+
+    const isAlreadySelected = selectedDistricts.some(
+      (m) => Number(m.id ?? m.featureId) === mId
+    );
+
+    if (isAlreadySelected) {
+      setSelectedDistricts((prev) =>
+        prev.filter((d) => Number(d.id ?? d.featureId) !== mId)
+      );
+      if (map.current) {
+        map.current.setFeatureState(
+          { source: "mandals-source", id: mId },
+          { selected: false }
+        );
+      }
+      return;
+    }
+
+    if (isAssignedToOther) {
+      let areaId = 1;
+      let areaName = "Another Area";
+      const list = regionAreasData?.data || [];
+      const rawArea = list.find((area: any) => {
+        const mIds = area.mandal_ids || area.mandalIds || [];
+        return mIds.map(Number).includes(mId);
+      });
+      if (rawArea) {
+        areaId = rawArea.id || rawArea.area_id || 1;
+        areaName = rawArea.area_name || rawArea.areaName || "Another Area";
+      }
+
+      setPendingDistrict({
+        id: mId,
+        name: mandal.d || "This mandal",
+        code: mandal.c || "",
+        district_id: mandal.district_id,
+      });
+      setPendingOwnerRegion({
+        id: areaId,
+        name: areaName,
+      });
+      setReassignModalOpen(true);
+      return;
+    }
+
+    setSelectedDistricts((prev) => [
+      ...prev,
+      {
+        id: mId,
+        featureId: mId,
+        name: mandal.d,
+        code: mandal.c || "",
+        d: mandal.d,
+        properties: {
+          id: mId,
+          name: mandal.d,
+          code: mandal.c || "",
+          district_id: mandal.district_id,
+        },
+      },
+    ]);
+    if (map.current) {
+      map.current.setFeatureState(
+        { source: "mandals-source", id: mId },
+        { selected: true }
+      );
+    }
+  };
 
   // ── Pre-populate Form state, active state selection, and pre-selected districts/mandals ──
   const [hasInitialized, setHasInitialized] = useState(false);
@@ -998,13 +1225,13 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
         if (rawRegion) {
           setRegionName(
             rawRegion.properties?.region_name ||
-              rawRegion.properties?.name ||
-              "",
+            rawRegion.properties?.name ||
+            "",
           );
           setRegionCode(
             rawRegion.properties?.region_code ||
-              rawRegion.properties?.code ||
-              "",
+            rawRegion.properties?.code ||
+            "",
           );
 
           if (rawRegion.properties?.regional_officer_id) {
@@ -1593,7 +1820,7 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
               window.location.search,
             );
             const editAreaIdLocal = searchParamsLocal.get("editAreaId");
-            console.log(selectedRegionId,parentRegionId,"insideRegion")
+            console.log(selectedRegionId, parentRegionId, "insideRegion")
             if (!editAreaIdLocal) {
               // VIEW MODE click -> Navigate directly to Area Details or notify if unassigned
               if (mProps.areaId) {
@@ -2266,8 +2493,8 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
       const currentStateId = selectedState?.properties?.id;
       const stateFeatures = currentStateId
         ? features.filter(
-            (f: any) => Number(f.properties?.state_id) === currentStateId,
-          )
+          (f: any) => Number(f.properties?.state_id) === currentStateId,
+        )
         : features;
 
       const apiRegions = regionsByStateData?.data || [];
@@ -2346,6 +2573,8 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
     setSelectedIntelligenceOfficerId(null);
     setSelectedFieldOfficerId(null);
     setHasInitialized(false);
+    setEditDropdownOpen(false);
+    setEditSearchQuery("");
 
     if (editModeType === "area") {
       navigate("/role-manager/create-regions-and-areas?mode=view");
@@ -2582,6 +2811,13 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
           (id) => !data.lostDistrictIds.includes(id),
         );
 
+        if (newIds.length === 0) {
+          console.warn(
+            `[Background Silent Reassignment] Skipping source region ${sourceRegionId} because it would be left with 0 districts.`,
+          );
+          continue;
+        }
+
         const silentPayload = {
           region_id: sourceRegionId,
           regionName: activeProps.region_name || activeProps.name,
@@ -2664,8 +2900,14 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
       const errMsg =
         err?.data?.message ||
         err?.message ||
-        "Failed to update region. Please try again.";
-      toast.error(errMsg);
+        "";
+      if (errMsg.includes("already assigned to another region")) {
+        toast.error(
+          errMsg + " (Note: A region must always have at least one district. If the other region only has this one district, please assign another district to it first before reassigning this one.)"
+        );
+      } else {
+        toast.error(errMsg || "Failed to update region. Please try again.");
+      }
     }
   };
 
@@ -2907,33 +3149,157 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
                   </div>
                   {(!selectedFieldOfficerId ||
                     Number(selectedFieldOfficerId) === 0) && (
-                    <span className="text-[11px] font-semibold text-amber-600 ml-0.5 mt-0.5">
-                      Field Officer is currently unassigned for this area
-                    </span>
-                  )}
+                      <span className="text-[11px] font-semibold text-amber-600 ml-0.5 mt-0.5">
+                        Field Officer is currently unassigned for this area
+                      </span>
+                    )}
                 </div>
               )}
 
               {/* Tag Selection search + pills */}
-              <div className="flex flex-col gap-2">
+              <div ref={editDropdownRef} className="flex flex-col gap-2 relative">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-0.5">
                   {editModeType === "area"
-                    ? "Mandal Selection (Interact on Map)"
-                    : "District Selection (Interact on Map)"}
+                    ? "Mandal Selection"
+                    : "District Selection"}
                 </label>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setEditDropdownOpen(!editDropdownOpen)}
+                    className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 flex items-center justify-between text-sm font-semibold text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all hover:bg-slate-50/50"
+                  >
+                    <span className="truncate">
+                      {selectedDistricts.length > 0
+                        ? `${selectedDistricts.length} ${editModeType === "area" ? "Mandal(s)" : "District(s)"
+                        } Selected`
+                        : editModeType === "area"
+                          ? "Select Mandals"
+                          : "Select Districts"}
+                    </span>
+                    <svg
+                      className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${editDropdownOpen ? "rotate-180" : ""
+                        }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
 
-                <Input
-                  variant="form"
-                  placeholder={
-                    editModeType === "area"
-                      ? "Search selected mandals..."
-                      : "Search selected districts..."
-                  }
-                  value={districtSearch}
-                  onChange={(e) => setDistrictSearch(e.target.value)}
-                  icon={<Search size={14} className="text-slate-400" />}
-                  className="pl-9 pr-3 text-sm h-11 border-slate-200 bg-slate-50"
-                />
+                  {editDropdownOpen && (
+                    <div className="mt-2 bg-white border border-slate-200 rounded-[16px] shadow-lg p-3 flex flex-col gap-2 max-h-[200px] overflow-y-auto z-50">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder={
+                            editModeType === "area" ? "Search mandal..." : "Search district..."
+                          }
+                          value={editSearchQuery}
+                          onChange={(e) => setEditSearchQuery(e.target.value)}
+                          className="h-[36px] w-full rounded-[8px] border border-slate-200 px-3 pl-8 text-[13px] font-semibold outline-none focus:border-blue-500 transition-colors"
+                        />
+                        <svg
+                          className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                          />
+                        </svg>
+                      </div>
+
+                      <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-1 pr-1">
+                        {editModeType === "region" ? (
+                          filteredEditItems.length > 0 ? (
+                            filteredEditItems.map((district) => {
+                              const isAssigned = otherAssignedDistrictIds.has(district.i);
+                              const isSelected = selectedDistricts.some(
+                                (d) => Number(d.id ?? d.featureId) === district.i
+                              );
+
+                              return (
+                                <div
+                                  key={district.i}
+                                  onClick={() => toggleEditDistrictSelection(district)}
+                                  className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-semibold transition-all ${isSelected
+                                      ? "bg-blue-50 text-blue-600 hover:bg-blue-100/80"
+                                      : "hover:bg-slate-50 text-slate-700"
+                                    }`}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      type="checkbox"
+                                      checked={isSelected}
+                                      readOnly
+                                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span>{district.d}</span>
+                                  </div>
+
+                                  {isAssigned && (
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                                      Assigned Other
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div className="text-center text-slate-400 text-xs py-4">
+                              No districts found
+                            </div>
+                          )
+                        ) : filteredEditMandals.length > 0 ? (
+                          filteredEditMandals.map((mandal) => {
+                            const isAssigned = otherAssignedMandalIds.has(mandal.i);
+                            const isSelected = selectedDistricts.some(
+                              (m) => Number(m.id ?? m.featureId) === mandal.i
+                            );
+
+                            return (
+                              <div
+                                key={mandal.i}
+                                onClick={() => toggleEditMandalSelection(mandal)}
+                                className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-semibold transition-all ${isSelected
+                                    ? "bg-blue-50 text-blue-600 hover:bg-blue-100/80"
+                                    : "hover:bg-slate-50 text-slate-700"
+                                  }`}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    readOnly
+                                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                  />
+                                  <span>{mandal.d}</span>
+                                </div>
+
+                                {isAssigned && (
+                                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                                    Assigned Other
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div className="text-center text-slate-400 text-xs py-4">
+                            No mandals found
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pt-1 custom-scrollbar">
                   {selectedDistricts.length === 0 ? (
@@ -2944,15 +3310,6 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
                     </p>
                   ) : (
                     selectedDistricts
-                      .filter((d) => {
-                        const name = (
-                          d.name ||
-                          d.dtname ||
-                          d.d ||
-                          ""
-                        ).toLowerCase();
-                        return name.includes(districtSearch.toLowerCase());
-                      })
                       .map((d, i) => (
                         <div
                           key={i}
@@ -3136,11 +3493,10 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
                         setRegionSearch("");
                         setShowRegionsList(false);
                       }}
-                      className={`w-full text-left px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-0 ${
-                        activeFilter === option
+                      className={`w-full text-left px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-0 ${activeFilter === option
                           ? "bg-blue-50 text-blue-600"
                           : "bg-white text-slate-700 hover:bg-slate-50"
-                      }`}
+                        }`}
                     >
                       {option === "assigned"
                         ? "Assigned"
@@ -3166,13 +3522,12 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
                 <span>
                   {selectedRegionName
                     ? `Regions: ${selectedRegionName}`
-                    : `Regions: ${
-                        activeFilter === "assigned"
-                          ? assignedRegions.length
-                          : activeFilter === "unassigned"
-                            ? unassignedRegions.length
-                            : assignedRegions.length + unassignedRegions.length
-                      }`}
+                    : `Regions: ${activeFilter === "assigned"
+                      ? assignedRegions.length
+                      : activeFilter === "unassigned"
+                        ? unassignedRegions.length
+                        : assignedRegions.length + unassignedRegions.length
+                    }`}
                 </span>
                 <svg
                   className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${showRegionsList ? "rotate-180" : ""}`}
@@ -3272,11 +3627,10 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
                               }
                               setShowRegionsList(false);
                             }}
-                            className={`w-full text-left px-4 py-2.5 cursor-pointer transition-all duration-200 flex items-center justify-between gap-3 border-b border-slate-100 last:border-b-0 ${
-                              isSelected
+                            className={`w-full text-left px-4 py-2.5 cursor-pointer transition-all duration-200 flex items-center justify-between gap-3 border-b border-slate-100 last:border-b-0 ${isSelected
                                 ? "bg-blue-50 text-blue-600"
                                 : "bg-white hover:bg-slate-50 text-slate-700"
-                            }`}
+                              }`}
                           >
                             <span className="truncate text-xs font-bold">
                               {region.name}
@@ -3289,11 +3643,10 @@ console.log(parentRegionId,selectedRegionId,"parentRegionId")
                               )}
                               {activeFilter === "all" && (
                                 <span
-                                  className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
-                                    isAssignedRegion
+                                  className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${isAssignedRegion
                                       ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
                                       : "bg-slate-100 text-slate-500"
-                                  }`}
+                                    }`}
                                 >
                                   {isAssignedRegion ? "A" : "U"}
                                 </span>

@@ -1,14 +1,11 @@
 import React from 'react';
 import { 
   Search, 
-  Plus, 
   ArrowUpRight, 
   MapPin, 
   FileText, 
   Clock, 
   ChevronDown, 
-  MoreHorizontal,
-  Bell,
   Users,
   AlertCircle,
   Map,

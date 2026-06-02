@@ -1,5 +1,5 @@
 import { roleManagerApi } from "./roleManagerApi";
-import type { GeoMasterData, GeoMasterDataRaw } from "../types/masterDataTypes";
+import type { GeoMasterData } from "../types/masterDataTypes";
 import { transformTable } from "../utils/utils";
 
 export const masterDataApi = roleManagerApi.injectEndpoints({
@@ -10,12 +10,13 @@ export const masterDataApi = roleManagerApi.injectEndpoints({
         method: "POST",
         body: {},
       }),
-      transformResponse: (response: GeoMasterDataRaw): GeoMasterData => {
+      transformResponse: (response: any): GeoMasterData => {
+        const payload = response?.data ? response.data : response;
         return {
-          countries: transformTable(response.countrys),
-          states: transformTable(response.states),
-          districts: transformTable(response.districts),
-          mandals: transformTable(response.mandals),
+          countries: transformTable(payload?.countrys),
+          states: transformTable(payload?.states),
+          districts: transformTable(payload?.districts),
+          mandals: transformTable(payload?.mandals),
         };
       },
     }),

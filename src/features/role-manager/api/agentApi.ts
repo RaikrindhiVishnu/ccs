@@ -80,7 +80,7 @@ export const agentApi = roleManagerApi.injectEndpoints({
 
     updateAgentDetails: builder.mutation<any, UpdateAgentRequest>({
       query: (body) => ({
-        url: "/agent/updateAgent",
+        url: "/agents/updateAgent",
         method: "POST",
         body,
       }),

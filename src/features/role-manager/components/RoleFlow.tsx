@@ -15,7 +15,6 @@ interface RoleFlowProps {
   agentData?: any;
   stateId: string;
   regionId: string;
-  areaId: string;
 }
 
 export const RoleFlow: React.FC<RoleFlowProps> = ({
@@ -24,7 +23,6 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
   agentData,
   stateId,
   regionId,
-  areaId,
 }) => {
   const navigate = useNavigate();
 
@@ -78,11 +76,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
               : `RO-${regionOfficerData.data.regional_officer_role_id || regionOfficerData.data.regional_officer_id || "-"}`),
           contact:
             regionOfficerData.data.regional_officer_phone,
-          avatar:
-            regionOfficerData.data.regional_officer_avatar ||
-            regionOfficerData.data.avatar ||
-            regionOfficerData.data.profile_image ||
-            "",
+          avatar: regionOfficerData.data.regional_officer_profile_url || "",
         },
         {
           id: String(
@@ -112,11 +106,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
           contact:
             regionOfficerData.data
               .intelligence_officer_phone,
-          avatar:
-            regionOfficerData.data.intelligence_officer_avatar ||
-            regionOfficerData.data.avatar ||
-            regionOfficerData.data.profile_image ||
-            "",
+          avatar: regionOfficerData.data.intelligence_officer_profile_url || "",
         },
       ].filter((item) => item.name)
       : [];
@@ -136,7 +126,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
         role: "Field Officer" as const,
         roleId: fo.field_officer_user_code || fo.feild_officer_user_code || fo.user_code || fo.userCode || (fo.role_id ? String(fo.role_id) : "-"),
         contact: fo.phone,
-        avatar: fo.avatar || fo.profile_image || fo.image || "",
+        avatar: fo.profile_url || "",
       })
     )
     : [];
@@ -163,7 +153,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
     setSelectedFO(null);
     setSelectedFieldOfficerIndex(0);
     setLocalAgents([]);
-  }, [stateId, regionId, areaId]);
+  }, [stateId, regionId]);
 
   const handleFieldOfficerClick = async (
     officer: any,
@@ -173,13 +163,10 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
     setSelectedFieldOfficerIndex(index);
 
     try {
-      const targetId = officer.role_id;
+      const targetId = officer.originalId || officer.id;
 
       const response = await getAgentDetails({
-        state_id: stateId,
-        region_id: regionId,
-        area_id: areaId || officer.area_id || 0,
-        field_officer_id: targetId,
+        area_id: officer.area_id || 0,
       }).unwrap();
 
       setLocalAgents(response?.data || []);
@@ -220,7 +207,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
         role: "Agent" as const,
         roleId: ag.agent_user_code || ag.user_code || ag.userCode || (ag.role_id ? String(ag.role_id) : "-"),
         contact: ag.phone,
-        avatar: ag.avatar || ag.profile_image || ag.image || "",
+        avatar: ag.profile_url || "",
       })
     )
     : [];
@@ -234,10 +221,6 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
         .toLowerCase()
         .includes(searchAgent.toLowerCase())
   );
-
-  const actualIndex = selectedFieldOfficerIndex;
-
-  const foCount = filteredFOs.length;
 
   const foOffset = selectedFieldOfficerIndex / 3;
 

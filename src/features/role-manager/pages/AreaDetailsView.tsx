@@ -8,8 +8,6 @@ import { Typography } from "@/components/ui/typography";
 import { BackButton } from "@/components/ui/BackButton";
 
 import {
-  useGetAreaByIdQuery,
-  useGetAllAreasByRegionIdQuery,
   useGetAreaGeoJsonQuery,
 } from "../api/regionSelectionApi";
 
@@ -24,10 +22,10 @@ const AreaDetailsView: React.FC = () => {
     { skip: !areaId },
   );
   // Queries
-  const { data: areaDetailsData } = useGetAreaByIdQuery(
-    { area_id: Number(areaId) },
-    { skip: !areaId },
-  );
+  // const { data: areaDetailsData } = useGetAreaByIdQuery(
+  //   { area_id: Number(areaId) },
+  //   { skip: !areaId },
+  // );
 
   useEffect(() => {
     getAllFieldOfficers({
@@ -35,25 +33,25 @@ const AreaDetailsView: React.FC = () => {
     });
   }, []);
   // Dynamically resolve real backend area details using regionId & get_all_areas_by_region_id
-  const regionId =
-    areaDetailsData?.data?.regionId || areaDetailsData?.data?.region_id;
-  const { data: regionAreasData } = useGetAllAreasByRegionIdQuery(
-    { region_id: Number(regionId) },
-    { skip: !regionId },
-  );
+  // const regionId =
+  //   areaDetailsData?.data?.regionId || areaDetailsData?.data?.region_id;
+  // const { data: regionAreasData } = useGetAllAreasByRegionIdQuery(
+  //   { region_id: Number(regionId) },
+  //   { skip: !regionId },
+  // );
 
   // Match the dynamic area from either location state or fetched region list
   const matchedArea = useMemo(() => {
     if (location.state?.areaDetails) {
       return location.state.areaDetails;
     }
-    if (regionAreasData?.data) {
-      return regionAreasData.data.find(
-        (a: any) => Number(a.id) === Number(areaId),
-      );
-    }
+    // if (regionAreasData?.data) {
+    //   return regionAreasData.data.find(
+    //     (a: any) => Number(a.id) === Number(areaId),
+    //   );
+    // }
     return null;
-  }, [location.state?.areaDetails, regionAreasData, areaId]);
+  }, [location.state?.areaDetails, areaId]);
   const svgPaths = useMemo(() => {
     const geoFeatures =
       areaGeoJson?.data?.features || areaGeoJson?.features || [];
@@ -164,13 +162,11 @@ useEffect(() => {
     geoProps?.name ||
     matchedArea?.area_name ||
     matchedArea?.areaName ||
-    areaDetailsData?.data?.areaName ||
     `Area_${areaId}`;
   const areaCode =
     geoProps?.area_code ||
     matchedArea?.area_code ||
     matchedArea?.areaCode ||
-    areaDetailsData?.data?.areaCode ||
     `AREA-CODE-${areaId}`;
   const createdOn = geoProps?.created_on;
 

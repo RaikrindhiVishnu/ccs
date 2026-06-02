@@ -6,9 +6,8 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { decompressGeoJSON } from "../utils/utils";
 import { getRegionColors, getAreaColors } from "../utils/colorPalette";
-import { Maximize2, ChevronLeft, X, Loader2, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Maximize2, ChevronLeft, X, Loader2 } from "lucide-react";
+
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { setCreatedArea } from "../store/roleManagerSlice";
@@ -310,6 +309,7 @@ const RegionSelection: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const popup = useRef<maplibregl.Popup | null>(null);
+  const selectedRegionIdRef = useRef<any>(null);
 
   const [searchParams] = useSearchParams();
   const mode = searchParams.get("mode") || "region";
@@ -334,13 +334,22 @@ const RegionSelection: React.FC = () => {
   const [hoveredDistrictName, setHoveredDistrictName] = useState<string | null>(
     null,
   );
-  const [districtSearch, setDistrictSearch] = useState("");
+  const [districtDropdownOpen, setDistrictDropdownOpen] = useState(false);
+  const [districtSearchQuery, setDistrictSearchQuery] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const [formErrors, setFormErrors] = useState<{ regionName?: string; regionCode?: string; districts?: string; general?: string }>({});
 
   // Area Creation States
   const [selectedMandals, setSelectedMandals] = useState<any[]>([]);
   const [isAreaModalOpen, setIsAreaModalOpen] = useState(false);
   const [areaName, setAreaName] = useState("");
   const [areaCode, setAreaCode] = useState("");
+  const [mandalDropdownOpen, setMandalDropdownOpen] = useState(false);
+  const [mandalSearchQuery, setMandalSearchQuery] = useState("");
+  const mandalDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [formAreaErrors, setFormAreaErrors] = useState<{ areaName?: string; areaCode?: string; mandals?: string; general?: string }>({});
   const [hoveredMandalName, setHoveredMandalName] = useState<string | null>(
     null,
   );
@@ -348,11 +357,54 @@ const RegionSelection: React.FC = () => {
   // Automatically open/close modals based on selections
   useEffect(() => {
     setIsModalOpen(selectedDistricts.length > 0);
+    if (selectedDistricts.length === 0) setFormErrors({});
   }, [selectedDistricts.length]);
+
+  // Click outside to close district and mandal dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDistrictDropdownOpen(false);
+      }
+      if (mandalDropdownRef.current && !mandalDropdownRef.current.contains(event.target as Node)) {
+        setMandalDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     setIsAreaModalOpen(selectedMandals.length > 0);
+    if (selectedMandals.length === 0) {
+      setFormAreaErrors({});
+      setMandalSearchQuery("");
+      setMandalDropdownOpen(false);
+    }
   }, [selectedMandals.length]);
+
+  useEffect(() => {
+    selectedRegionIdRef.current =
+      selectedRegion?.properties?.region_id ??
+      selectedRegion?.properties?.id ??
+      selectedRegion?.id ??
+      null;
+  }, [selectedRegion]);
+
+  const handleRemoveMandal = (mandal: any) => {
+    const featId = mandal.id ?? mandal.featureId;
+    setSelectedMandals((prev) =>
+      prev.filter((m) => (m.id ?? m.featureId) !== featId),
+    );
+    if (mandal.featureId !== undefined && map.current) {
+      map.current.setFeatureState(
+        { source: "mandals-source", id: mandal.featureId },
+        { selected: false },
+      );
+    }
+  };
 
   const { data: allGeoJsonData } = useGetAllGeoJsonDataQuery();
   const regionsQuery = useGetRegionsByCountryIdQuery(
@@ -450,6 +502,162 @@ const RegionSelection: React.FC = () => {
       ? Number(selectedRegion.properties.stateId)
       : undefined);
 
+  const filteredDistricts = useMemo(() => {
+    if (!geoMasterData || !selectedStateId) return [];
+    const stateObj = geoMasterData.countries
+      .flatMap((c) => c.states ?? [])
+      .find((s) => s.i === selectedStateId);
+
+    if (!stateObj || !stateObj.districts) return [];
+
+    const districts = stateObj.districts;
+    if (!districtSearchQuery.trim()) return districts;
+
+    return districts.filter((d) =>
+      d.d.toLowerCase().includes(districtSearchQuery.toLowerCase())
+    );
+  }, [geoMasterData, selectedStateId, districtSearchQuery]);
+
+  const toggleDistrictSelection = (district: any) => {
+    const dtId = district.i;
+    const isAssigned = assignedDistrictIds.has(dtId);
+    if (isAssigned) {
+      toast.warning(`${district.d} is already part of an existing region.`);
+      return;
+    }
+
+    setSelectedDistricts((prev) => {
+      const isAlreadySelected = prev.find(
+        (d) => (d.id ?? d.featureId) === dtId
+      );
+
+      if (isAlreadySelected) {
+        if (map.current) {
+          map.current.setFeatureState(
+            { source: "districts-source", id: dtId },
+            { selected: false }
+          );
+        }
+        return prev.filter((d) => (d.id ?? d.featureId) !== dtId);
+      } else {
+        if (map.current) {
+          map.current.setFeatureState(
+            { source: "districts-source", id: dtId },
+            { selected: true }
+          );
+        }
+        return [
+          ...prev,
+          {
+            id: dtId,
+            code: district.c,
+            name: district.d,
+            featureId: dtId,
+            isAssigned: false,
+          },
+        ];
+      }
+    });
+  };
+
+  const selectedRegionDistrictIds = useMemo(() => {
+    if (!selectedRegion || !geoMasterData) return [];
+    return getDistrictIdsFromRegion(selectedRegion, geoMasterData);
+  }, [selectedRegion, geoMasterData]);
+
+  const regionMandals = useMemo(() => {
+    if (!geoMasterData || selectedRegionDistrictIds.length === 0) return [];
+    const allMandals: any[] = [];
+    geoMasterData.countries.forEach((country) => {
+      country.states?.forEach((state) => {
+        state.districts?.forEach((district) => {
+          if (selectedRegionDistrictIds.includes(district.i)) {
+            if (district.mandals) {
+              district.mandals.forEach((m) => {
+                if (!allMandals.some((existing) => existing.i === m.i)) {
+                  allMandals.push({
+                    ...m,
+                    district_id: district.i,
+                  });
+                }
+              });
+            }
+          }
+        });
+      });
+    });
+    return allMandals;
+  }, [geoMasterData, selectedRegionDistrictIds]);
+
+  const assignedMandalIds = useMemo(() => {
+    const assigned = new Set<number>();
+    const areasList = areasData?.data || [];
+    if (Array.isArray(areasList)) {
+      areasList.forEach((area) => {
+        if (Array.isArray(area.mandal_ids)) {
+          area.mandal_ids.forEach((mId: any) => {
+            const idNum = Number(mId);
+            if (!isNaN(idNum)) {
+              assigned.add(idNum);
+            }
+          });
+        }
+      });
+    }
+    return assigned;
+  }, [areasData]);
+
+  const filteredMandals = useMemo(() => {
+    if (!regionMandals) return [];
+    if (!mandalSearchQuery.trim()) return regionMandals;
+    return regionMandals.filter((m) =>
+      m.d.toLowerCase().includes(mandalSearchQuery.toLowerCase())
+    );
+  }, [regionMandals, mandalSearchQuery]);
+
+  const toggleMandalSelection = (mandal: any) => {
+    const mId = mandal.i;
+    const isAssigned = assignedMandalIds.has(mId);
+    if (isAssigned) {
+      toast.warning(`${mandal.d} is already part of an existing area.`);
+      return;
+    }
+
+    setSelectedMandals((prev) => {
+      const isAlreadySelected = prev.find(
+        (m) => (m.id ?? m.featureId) === mId
+      );
+
+      if (isAlreadySelected) {
+        if (map.current) {
+          map.current.setFeatureState(
+            { source: "mandals-source", id: mId },
+            { selected: false }
+          );
+        }
+        return prev.filter((m) => (m.id ?? m.featureId) !== mId);
+      } else {
+        if (map.current) {
+          map.current.setFeatureState(
+            { source: "mandals-source", id: mId },
+            { selected: true }
+          );
+        }
+        return [
+          ...prev,
+          {
+            id: mId,
+            code: mandal.c,
+            name: mandal.d,
+            featureId: mId,
+            district_id: mandal.district_id,
+            isAssigned: false,
+          },
+        ];
+      }
+    });
+  };
+
   const { data: regionOfficerDetailsRes } = useGetRegionOfficerDetailsQuery(
     {
       state_id: selectedStateId ? String(selectedStateId) : "",
@@ -532,6 +740,8 @@ const RegionSelection: React.FC = () => {
     setSelectedRegion(null);
     setHoveredMandalName(null);
     setSelectedDistricts([]);
+    setDistrictSearchQuery("");
+    setDistrictDropdownOpen(false);
 
     // Clear district data from map
     if (map.current?.getSource("districts-source")) {
@@ -812,7 +1022,6 @@ const RegionSelection: React.FC = () => {
         map.current.addSource("districts-source", {
           type: "geojson",
           data: districtsGeoJSON,
-          generateId: true,
         });
 
         map.current.addLayer(
@@ -1093,7 +1302,6 @@ const RegionSelection: React.FC = () => {
         map.current.addSource("mandals-source", {
           type: "geojson",
           data: mandalsGeoJSON,
-          generateId: true,
         });
 
         // Fill layer with dynamic area colors
@@ -1327,8 +1535,28 @@ const RegionSelection: React.FC = () => {
             // Click Handler for dynamic zoom & mandals rendering in Area Mode
             map.current?.on("click", "country-regions-fill", (e) => {
               if (mode !== "area") return;
-              if (e.features && e.features.length > 0 && !selectedRegion) {
+              if (e.features && e.features.length > 0) {
                 const feature = e.features[0];
+                const clickedId =
+                  feature.properties?.region_id ??
+                  feature.properties?.id ??
+                  feature.id;
+                const currentId = selectedRegionIdRef.current;
+                if (clickedId !== currentId) {
+                  setSelectedMandals((prev) => {
+                    prev.forEach((m) => {
+                      const featId =
+                        m.featureId !== undefined ? m.featureId : m.id;
+                      if (featId !== undefined) {
+                        map.current?.setFeatureState(
+                          { source: "mandals-source", id: featId },
+                          { selected: false },
+                        );
+                      }
+                    });
+                    return [];
+                  });
+                }
                 setSelectedRegion(feature);
 
                 // Zoom smoothly into the region bounds
@@ -1471,10 +1699,21 @@ const RegionSelection: React.FC = () => {
   };
 
   const handleCreateRegion = async () => {
-    if (!regionName || !regionCode || selectedDistricts.length === 0) {
-      toast.error("Please fill in all fields and select districts");
+    const errors: any = {};
+    if (!regionName.trim()) {
+      errors.regionName = "Region Name is required";
+    } else if (regionName.length > 30) {
+      errors.regionName = "Region Name cannot exceed 30 characters";
+    }
+    if (!regionCode.trim()) errors.regionCode = "Region Code is required";
+    if (selectedDistricts.length === 0) errors.districts = "Please select at least one district";
+
+    if (Object.keys(errors).length > 0) {
+      errors.general = "Please fill in all fields and select districts";
+      setFormErrors(errors);
       return;
     }
+    setFormErrors({});
 
     try {
       const districtIds = selectedDistricts.map((d) =>
@@ -1535,14 +1774,26 @@ const RegionSelection: React.FC = () => {
       setRegionCode("");
     } catch (err) {
       console.error("Failed to create region:", err);
-      toast.error("Failed to create region");
+      const errorMsg = (err as any)?.data?.message || (err as any)?.message || "Failed to create region";
+      toast.error(errorMsg);
     }
   };
   const handleCreateArea = async () => {
-    if (!areaName || !areaCode || selectedMandals.length === 0) {
-      toast.error("Please fill in all area fields and select mandals");
+    const errors: any = {};
+    if (!areaName.trim()) {
+      errors.areaName = "Area Name is required";
+    } else if (areaName.length > 30) {
+      errors.areaName = "Area Name cannot exceed 30 characters";
+    }
+    if (!areaCode.trim()) errors.areaCode = "Area Code is required";
+    if (selectedMandals.length === 0) errors.mandals = "Please select at least one mandal";
+
+    if (Object.keys(errors).length > 0) {
+      errors.general = "Please fill in all area fields and select mandals";
+      setFormAreaErrors(errors);
       return;
     }
+    setFormAreaErrors({});
 
     try {
       const assignments = selectedMandals.map((m) => ({
@@ -1631,7 +1882,8 @@ const RegionSelection: React.FC = () => {
       setAreaCode("");
     } catch (err) {
       console.error("Failed to create area:", err);
-      toast.error("Failed to create area");
+      const errorMsg = (err as any)?.data?.message || (err as any)?.message || "Failed to create area";
+      toast.error(errorMsg);
     }
   };
 
@@ -1797,176 +2049,483 @@ const RegionSelection: React.FC = () => {
 
       {/* Custom Creation Modal */}
       {isModalOpen && (
-        <div className="fixed inset-y-0 right-0 z-[100] flex items-center p-6 pointer-events-none">
-          <div className="relative w-full max-w-[460px] max-h-[90vh] flex flex-col bg-white rounded-[24px] border border-[var(--border-default)] shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden animate-in slide-in-from-right duration-300 p-6 pointer-events-auto">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex flex-col">
-                <h3 className="text-base font-bold text-[var(--text-primary)] font-heading leading-tight">
-                  Create Region
-                </h3>
-                <p className="text-[10px] text-[var(--text-secondary)] font-sans">
-                  {selectedState?.properties?.name ||
-                    selectedState?.properties?.STNAME ||
-                    "Andhra Pradesh"}{" "}
-                  state
-                </p>
+        <div className="fixed inset-x-0 bottom-0 md:inset-x-auto md:inset-y-0 md:right-0 z-[100] flex items-end md:items-center justify-center p-4 md:p-6 md:pr-8 pointer-events-none select-none">
+          <div className="relative w-full md:w-[430px] flex flex-col gap-4 pointer-events-auto items-end">
+            {formErrors.general && (
+              <div className="w-full bg-red-50 border border-red-100 rounded-xl p-4 flex items-center gap-3 text-red-600 shadow-sm animate-in slide-in-from-top-2">
+                <div className="bg-red-600 rounded-full w-5 h-5 flex items-center justify-center text-white font-bold text-xs shrink-0">!</div>
+                <span className="font-medium text-sm">{formErrors.general}</span>
               </div>
-              <button
-                onClick={() => {
-                  // Clear all selected districts on the map, which automatically closes the modal
-                  selectedDistricts.forEach((d) => {
-                    const featId =
-                      d.featureId !== undefined ? d.featureId : d.id;
-                    if (featId !== undefined && map.current) {
-                      map.current.setFeatureState(
-                        { source: "districts-source", id: featId },
-                        { selected: false },
-                      );
-                    }
-                  });
-                  setSelectedDistricts([]);
-                }}
-                className="p-1.5 rounded-full hover:bg-[var(--surface-page)] transition-colors border border-[var(--border-default)] shadow-sm cursor-pointer"
-              >
-                <X className="w-4 h-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)]" />
-              </button>
-            </div>
+            )}
+            <div className="relative w-full h-auto max-h-[50vh] md:max-h-[90vh] min-h-[400px] md:min-h-[489px] flex flex-col bg-white rounded-[24px] border border-[#E1E5EF] shadow-lg overflow-hidden animate-in slide-in-from-bottom md:slide-in-from-right duration-300 p-[20px] md:p-[28px] pointer-events-auto">
+              <div className="flex items-start justify-between mb-[26px]">
+                <div className="flex gap-3">
+                  <div className="mt-1 flex-shrink-0 w-[20px] h-[20px] rounded-[4px] bg-[#353535] flex items-center justify-center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                  </div>
+                  <div className="flex flex-col gap-[6px]">
+                    <h3 className="text-[24px] font-bold text-[#353535] font-['Plus_Jakarta_Sans'] leading-[30px]">
+                      Create Region
+                    </h3>
+                    <p className="text-[16px] text-[#353535] font-['Inter'] leading-[19px]">
+                      Creating regions in {selectedState?.properties?.name || selectedState?.properties?.STNAME || "Andhra Pradesh"}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    selectedDistricts.forEach((d) => {
+                      const featId = d.featureId !== undefined ? d.featureId : d.id;
+                      if (featId !== undefined && map.current) {
+                        map.current.setFeatureState(
+                          { source: "districts-source", id: featId },
+                          { selected: false },
+                        );
+                      }
+                    });
+                    setSelectedDistricts([]);
+                  }}
+                  className="p-1.5 rounded-full hover:bg-slate-100 transition-colors border border-transparent shadow-sm cursor-pointer"
+                >
+                  <X className="w-5 h-5 text-slate-400 hover:text-slate-600" />
+                </button>
+              </div>
 
-            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 mb-5 custom-scrollbar">
-              <Input
-                variant="form"
-                label="Enter Region Name"
-                placeholder="e.g. Nellore"
-                value={regionName}
-                onChange={(e) => setRegionName(e.target.value)}
-                className="px-3 text-sm h-10"
-              />
-
-              <Input
-                variant="form"
-                label="Enter Region Code"
-                placeholder="e.g. SAH-01"
-                value={regionCode}
-                onChange={(e) => setRegionCode(e.target.value)}
-                className="px-3 text-sm h-10"
-              />
-
-              <div className="flex flex-col gap-2">
-                <Input
-                  variant="form"
-                  label="Tag Sub-Regions"
-                  placeholder="Search"
-                  value={districtSearch}
-                  onChange={(e) => setDistrictSearch(e.target.value)}
-                  icon={
-                    <Search
-                      size={14}
-                      className="text-[var(--text-supporting)]"
+              <div className="flex-1 flex flex-col gap-5 overflow-y-auto custom-scrollbar pr-1">
+                <div className="flex flex-col gap-[12px]">
+                  <label className="text-[14px] font-bold text-[rgba(53,53,53,0.8)] font-['Plus_Jakarta_Sans'] leading-[18px]">
+                    Enter Region Name
+                  </label>
+                  <div className="relative">
+                    <input
+                      placeholder="e.g. Nellore"
+                      value={regionName}
+                      maxLength={30}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setRegionName(val);
+                        if (val.length >= 30) {
+                          setFormErrors({ ...formErrors, regionName: "Maximum 30 characters allowed", general: undefined });
+                        } else if (formErrors.regionName) {
+                          setFormErrors({ ...formErrors, regionName: undefined, general: undefined });
+                        }
+                      }}
+                      className={`h-[40px] w-full rounded-[12px] border ${formErrors.regionName ? 'border-red-500' : 'border-[#E1E5EF]'} bg-white px-3 text-[14px] font-medium font-['Plus_Jakarta_Sans'] text-[#353535] placeholder-[rgba(90,92,94,0.6)] outline-none focus:border-[#2780C4] transition-colors`}
                     />
-                  }
-                  className="pl-9 pr-3 text-sm h-10"
-                />
-                <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto pt-1 custom-scrollbar">
-                  {selectedDistricts
-                    .filter((d) => {
-                      const name = (
-                        d.name ||
-                        d.dtname ||
-                        d.d ||
-                        ""
-                      ).toLowerCase();
-                      return name.includes(districtSearch.toLowerCase());
-                    })
-                    .map((d, i) => (
-                      <div
-                        key={i}
-                        onClick={() => handleRemoveDistrict(d)}
-                        className="px-3 py-1 rounded-[12px] bg-white border border-[var(--border-default)] text-[var(--brand-500)] text-xs font-semibold flex items-center gap-1.5 hover:bg-slate-50 transition-all active:scale-95 group cursor-pointer"
+                  </div>
+                  {formErrors.regionName && <span className="text-red-500 text-xs mt-[-4px]">{formErrors.regionName}</span>}
+                </div>
+
+                <div className="flex flex-col gap-[12px]">
+                  <label className="text-[14px] font-bold text-[rgba(53,53,53,0.8)] font-['Plus_Jakarta_Sans'] leading-[18px]">
+                    Enter Region Code
+                  </label>
+                  <div className="relative">
+                    <input
+                      placeholder="e.g. SAH-01"
+                      value={regionCode}
+                      onChange={(e) => {
+                        setRegionCode(e.target.value);
+                        if (formErrors.regionCode) setFormErrors({ ...formErrors, regionCode: undefined, general: undefined });
+                      }}
+                      className={`h-[40px] w-full rounded-[12px] border ${formErrors.regionCode ? 'border-red-500' : 'border-[#E1E5EF]'} bg-white px-3 text-[14px] font-medium font-['Plus_Jakarta_Sans'] text-[#353535] placeholder-[rgba(90,92,94,0.6)] outline-none focus:border-[#2780C4] transition-colors`}
+                    />
+                  </div>
+                  {formErrors.regionCode && <span className="text-red-500 text-xs mt-[-4px]">{formErrors.regionCode}</span>}
+                </div>
+
+                <div ref={dropdownRef} className="flex flex-col gap-[12px] relative">
+                  <label className="text-[14px] font-bold text-[rgba(53,53,53,0.8)] font-['Plus_Jakarta_Sans'] leading-[18px]">
+                    Tag Sub-Regions
+                  </label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setDistrictDropdownOpen(!districtDropdownOpen)}
+                      className={`h-[40px] w-full rounded-[12px] border ${formErrors.districts ? 'border-red-500' : 'border-[#E1E5EF]'} bg-white px-3 flex items-center justify-between text-[14px] font-medium font-['Plus_Jakarta_Sans'] text-[#353535] outline-none focus:border-[#2780C4] transition-all hover:bg-slate-50/50`}
+                    >
+                      <span className="truncate">
+                        {selectedDistricts.length > 0
+                          ? `${selectedDistricts.length} District(s) Selected`
+                          : "Select Districts"}
+                      </span>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
+                          districtDropdownOpen ? "rotate-180" : ""
+                        }`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
                       >
-                        <span>{d.name || d.dtname || d.d}</span>
-                        <X className="w-3 h-3 text-[var(--brand-300)] group-hover:text-red-500 transition-colors" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {districtDropdownOpen && (
+                      <div className="mt-2 bg-white border border-[#E1E5EF] rounded-[16px] shadow-md p-3 flex flex-col gap-2 max-h-[200px] overflow-y-auto">
+                        <div className="relative">
+                          <input
+                            type="text"
+                            placeholder="Search district..."
+                            value={districtSearchQuery}
+                            onChange={(e) => setDistrictSearchQuery(e.target.value)}
+                            className="h-[36px] w-full rounded-[8px] border border-[#E1E5EF] px-3 pl-8 text-[13px] font-['Plus_Jakarta_Sans'] outline-none focus:border-[#2780C4] transition-colors"
+                          />
+                          <svg
+                            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            />
+                          </svg>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-1 pr-1">
+                          {filteredDistricts.length > 0 ? (
+                            filteredDistricts.map((district) => {
+                              const isAssigned = assignedDistrictIds.has(district.i);
+                              const isSelected = selectedDistricts.some(
+                                (d) => (d.id ?? d.featureId) === district.i
+                              );
+
+                              return (
+                                <div
+                                  key={district.i}
+                                  onClick={() => toggleDistrictSelection(district)}
+                                  className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${
+                                    isAssigned
+                                      ? "bg-slate-50 text-slate-400 cursor-not-allowed"
+                                      : isSelected
+                                      ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
+                                      : "hover:bg-slate-50 text-slate-700"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    {!isAssigned && (
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        readOnly
+                                        className="rounded border-slate-300 text-[#2780C4] focus:ring-[#2780C4]"
+                                      />
+                                    )}
+                                    <span>{district.d}</span>
+                                  </div>
+
+                                  {isAssigned && (
+                                    <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+                                     
+                                      <svg
+                                        className="w-4 h-4 text-emerald-600"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth="3"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          d="M5 13l4 4L19 7"
+                                        />
+                                      </svg>
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div className="text-center text-slate-400 text-xs py-4">
+                              No districts found
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    ))}
+                    )}
+                  </div>
+                  {formErrors.districts && <span className="text-red-500 text-xs mt-[-4px]">{formErrors.districts}</span>}
+                  
+                  <div className="flex flex-wrap gap-[10px] mt-1 max-h-24 overflow-y-auto custom-scrollbar">
+                    {selectedDistricts
+                      .map((d, i) => (
+                        <div
+                          key={i}
+                          onClick={() => {
+                            handleRemoveDistrict(d);
+                            if (selectedDistricts.length <= 1) setFormErrors({...formErrors, districts: "Please select at least one district.", general: "Please fill in all fields and select districts"});
+                          }}
+                          className="h-[40px] px-[25px] rounded-[9px] bg-white border border-[rgba(90,92,94,0.4)] flex items-center justify-center gap-[10px] cursor-pointer hover:bg-slate-50 transition-colors group"
+                        >
+                          <span className="text-[14px] font-medium font-['Plus_Jakarta_Sans'] text-[#2780C4] leading-[18px]">
+                            {d.name || d.dtname || d.d}
+                          </span>
+                          <X className="w-[12px] h-[12px] text-[rgba(90,92,94,0.7)] group-hover:text-red-500" />
+                        </div>
+                      ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <Button
-              variant="primary"
-              fullWidth
-              loading={isCreating}
-              onClick={handleCreateRegion}
-              className="mt-2 text-xs"
-            >
-              Save Region
-            </Button>
+              <div className="mt-[20px] flex justify-center w-full">
+                <button
+                  disabled={isCreating}
+                  onClick={handleCreateRegion}
+                  className="w-full max-w-[374px] h-[54px] bg-[#2780C4] rounded-[100px] flex items-center justify-center gap-[3.21px] hover:bg-[#1E6B9B] transition-colors active:scale-[0.98] disabled:opacity-70 border-0 cursor-pointer"
+                >
+                  {isCreating && <Loader2 className="w-4 h-4 text-white animate-spin mr-2" />}
+                  <span className="text-[12px] font-semibold text-white font-['Plus_Jakarta_Sans'] leading-[15px]">
+                    Save Region
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
       {/* Custom Area Creation Modal */}
       {isAreaModalOpen && (
-        <div className="fixed inset-y-0 right-0 z-[100] flex items-center p-6 pointer-events-none">
-          <div className="relative w-full max-w-[390px] max-h-[90vh] flex flex-col bg-white rounded-[24px] border border-[var(--border-default)] shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden animate-in slide-in-from-right duration-300 p-6 pointer-events-auto">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex flex-col">
-                <h3 className="text-base font-bold text-[var(--text-primary)] font-heading leading-tight">
-                  Create New Area
-                </h3>
-                <p className="text-[10px] text-[var(--text-secondary)] font-sans">
-                  Area Setup for Region
-                </p>
+        <div className="fixed inset-x-0 bottom-0 md:inset-x-auto md:inset-y-0 md:right-0 z-[100] flex items-end md:items-center justify-center p-4 md:p-6 md:pr-8 pointer-events-none select-none">
+          <div className="relative w-full md:w-[430px] flex flex-col gap-4 pointer-events-auto items-end">
+            {formAreaErrors.general && (
+              <div className="w-full bg-red-50 border border-red-100 rounded-xl p-4 flex items-center gap-3 text-red-600 shadow-sm animate-in slide-in-from-top-2">
+                <div className="bg-red-600 rounded-full w-5 h-5 flex items-center justify-center text-white font-bold text-xs shrink-0">!</div>
+                <span className="font-medium text-sm">{formAreaErrors.general}</span>
               </div>
-              <button
-                onClick={() => {
-                  // Clear all selected mandals on the map, which automatically closes the modal
-                  selectedMandals.forEach((m) => {
-                    const featId =
-                      m.featureId !== undefined ? m.featureId : m.id;
-                    if (featId !== undefined && map.current) {
-                      map.current.setFeatureState(
-                        { source: "mandals-source", id: featId },
-                        { selected: false },
-                      );
-                    }
-                  });
-                  setSelectedMandals([]);
-                }}
-                className="p-1.5 rounded-full hover:bg-[var(--surface-page)] transition-colors border border-[var(--border-default)] shadow-sm cursor-pointer"
-              >
-                <X className="w-4 h-4 text-[var(--text-secondary)] hover:text-[var(--text-primary)]" />
-              </button>
+            )}
+            <div className="relative w-full h-auto max-h-[50vh] md:max-h-[90vh] min-h-[400px] md:min-h-[489px] flex flex-col bg-white rounded-[24px] border border-[#E1E5EF] shadow-lg overflow-hidden animate-in slide-in-from-bottom md:slide-in-from-right duration-300 p-[20px] md:p-[28px] pointer-events-auto">
+              <div className="flex items-start justify-between mb-[26px]">
+                <div className="flex gap-3">
+                  <div className="mt-1 flex-shrink-0 w-[20px] h-[20px] rounded-[4px] bg-[#353535] flex items-center justify-center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                  </div>
+                  <div className="flex flex-col gap-[6px]">
+                    <h3 className="text-[24px] font-bold text-[#353535] font-['Plus_Jakarta_Sans'] leading-[30px]">
+                      Create Area
+                    </h3>
+                    <p className="text-[16px] text-[#353535] font-['Inter'] leading-[19px]">
+                      Area Setup for Region
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    selectedMandals.forEach((m) => {
+                      const featId = m.featureId !== undefined ? m.featureId : m.id;
+                      if (featId !== undefined && map.current) {
+                        map.current.setFeatureState(
+                          { source: "mandals-source", id: featId },
+                          { selected: false },
+                        );
+                      }
+                    });
+                    setSelectedMandals([]);
+                  }}
+                  className="p-1.5 rounded-full hover:bg-slate-100 transition-colors border border-transparent shadow-sm cursor-pointer"
+                >
+                  <X className="w-5 h-5 text-slate-400 hover:text-slate-600" />
+                </button>
+              </div>
+
+              <div className="flex-1 flex flex-col gap-5 overflow-y-auto custom-scrollbar pr-1">
+                <div className="flex flex-col gap-[12px]">
+                  <label className="text-[14px] font-bold text-[rgba(53,53,53,0.8)] font-['Plus_Jakarta_Sans'] leading-[18px]">
+                    Enter Area Name
+                  </label>
+                  <div className="relative">
+                    <input
+                      placeholder="e.g. West Godavari Hub"
+                      value={areaName}
+                      maxLength={30}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setAreaName(val);
+                        if (val.length >= 30) {
+                          setFormAreaErrors({ ...formAreaErrors, areaName: "Maximum 30 characters allowed", general: undefined });
+                        } else if (formAreaErrors.areaName) {
+                          setFormAreaErrors({ ...formAreaErrors, areaName: undefined, general: undefined });
+                        }
+                      }}
+                      className={`h-[40px] w-full rounded-[12px] border ${formAreaErrors.areaName ? 'border-red-500' : 'border-[#E1E5EF]'} bg-white px-3 text-[14px] font-medium font-['Plus_Jakarta_Sans'] text-[#353535] placeholder-[rgba(90,92,94,0.6)] outline-none focus:border-[#2780C4] transition-colors`}
+                    />
+                  </div>
+                  {formAreaErrors.areaName && <span className="text-red-500 text-xs mt-[-4px]">{formAreaErrors.areaName}</span>}
+                </div>
+
+                <div className="flex flex-col gap-[12px]">
+                  <label className="text-[14px] font-bold text-[rgba(53,53,53,0.8)] font-['Plus_Jakarta_Sans'] leading-[18px]">
+                    Enter Area Code
+                  </label>
+                  <div className="relative">
+                    <input
+                      placeholder="e.g. WGH-01"
+                      value={areaCode}
+                      onChange={(e) => {
+                        setAreaCode(e.target.value);
+                        if (formAreaErrors.areaCode) setFormAreaErrors({ ...formAreaErrors, areaCode: undefined, general: undefined });
+                      }}
+                      className={`h-[40px] w-full rounded-[12px] border ${formAreaErrors.areaCode ? 'border-red-500' : 'border-[#E1E5EF]'} bg-white px-3 text-[14px] font-medium font-['Plus_Jakarta_Sans'] text-[#353535] placeholder-[rgba(90,92,94,0.6)] outline-none focus:border-[#2780C4] transition-colors`}
+                    />
+                  </div>
+                  {formAreaErrors.areaCode && <span className="text-red-500 text-xs mt-[-4px]">{formAreaErrors.areaCode}</span>}
+                </div>
+
+                <div ref={mandalDropdownRef} className="flex flex-col gap-[12px] relative">
+                  <label className="text-[14px] font-bold text-[rgba(53,53,53,0.8)] font-['Plus_Jakarta_Sans'] leading-[18px]">
+                    Tag Sub-Areas (Mandals)
+                  </label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setMandalDropdownOpen(!mandalDropdownOpen)}
+                      className={`h-[40px] w-full rounded-[12px] border ${formAreaErrors.mandals ? 'border-red-500' : 'border-[#E1E5EF]'} bg-white px-3 flex items-center justify-between text-[14px] font-medium font-['Plus_Jakarta_Sans'] text-[#353535] outline-none focus:border-[#2780C4] transition-all hover:bg-slate-50/50`}
+                    >
+                      <span className="truncate">
+                        {selectedMandals.length > 0
+                          ? `${selectedMandals.length} Mandal(s) Selected`
+                          : "Select Mandals"}
+                      </span>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
+                          mandalDropdownOpen ? "rotate-180" : ""
+                        }`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {mandalDropdownOpen && (
+                      <div className="mt-2 bg-white border border-[#E1E5EF] rounded-[16px] shadow-md p-3 flex flex-col gap-2 max-h-[200px] overflow-y-auto">
+                        <div className="relative">
+                          <input
+                            type="text"
+                            placeholder="Search mandal..."
+                            value={mandalSearchQuery}
+                            onChange={(e) => setMandalSearchQuery(e.target.value)}
+                            className="h-[36px] w-full rounded-[8px] border border-[#E1E5EF] px-3 pl-8 text-[13px] font-['Plus_Jakarta_Sans'] outline-none focus:border-[#2780C4] transition-colors"
+                          />
+                          <svg
+                            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            />
+                          </svg>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-1 pr-1">
+                          {filteredMandals.length > 0 ? (
+                            filteredMandals.map((mandal) => {
+                              const isAssigned = assignedMandalIds.has(mandal.i);
+                              const isSelected = selectedMandals.some(
+                                (m) => (m.id ?? m.featureId) === mandal.i
+                              );
+
+                              return (
+                                <div
+                                  key={mandal.i}
+                                  onClick={() => toggleMandalSelection(mandal)}
+                                  className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${
+                                    isAssigned
+                                      ? "bg-slate-50 text-slate-400 cursor-not-allowed"
+                                      : isSelected
+                                      ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
+                                      : "hover:bg-slate-50 text-slate-700"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2">
+                                    {!isAssigned && (
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        readOnly
+                                        className="rounded border-slate-300 text-[#2780C4] focus:ring-[#2780C4]"
+                                      />
+                                    )}
+                                    <span>{mandal.d}</span>
+                                  </div>
+
+                                  {isAssigned && (
+                                    <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+                                      <svg
+                                        className="w-4 h-4 text-emerald-600"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth="3"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          d="M5 13l4 4L19 7"
+                                        />
+                                      </svg>
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <div className="text-center text-slate-400 text-xs py-4">
+                              No mandals found
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  {formAreaErrors.mandals && <span className="text-red-500 text-xs mt-[-4px]">{formAreaErrors.mandals}</span>}
+                  
+                  <div className="flex flex-wrap gap-[10px] mt-1 max-h-24 overflow-y-auto custom-scrollbar">
+                    {selectedMandals
+                      .map((m, i) => (
+                        <div
+                          key={i}
+                          onClick={() => {
+                            handleRemoveMandal(m);
+                            if (selectedMandals.length <= 1) setFormAreaErrors({...formAreaErrors, mandals: "Please select at least one mandal.", general: "Please fill in all area fields and select mandals"});
+                          }}
+                          className="h-[40px] px-[25px] rounded-[9px] bg-white border border-[rgba(90,92,94,0.4)] flex items-center justify-center gap-[10px] cursor-pointer hover:bg-slate-50 transition-colors group"
+                        >
+                          <span className="text-[14px] font-medium font-['Plus_Jakarta_Sans'] text-[#2780C4] leading-[18px]">
+                            {m.name || m.dtname || m.d || m.mandal_name}
+                          </span>
+                          <X className="w-[12px] h-[12px] text-[rgba(90,92,94,0.7)] group-hover:text-red-500" />
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-[20px] flex justify-center w-full">
+                <button
+                  disabled={isCreatingArea}
+                  onClick={handleCreateArea}
+                  className="w-full max-w-[374px] h-[54px] bg-[#2780C4] rounded-[100px] flex items-center justify-center gap-[3.21px] hover:bg-[#1E6B9B] transition-colors active:scale-[0.98] disabled:opacity-70 border-0 cursor-pointer"
+                >
+                  {isCreatingArea && <Loader2 className="w-4 h-4 text-white animate-spin mr-2" />}
+                  <span className="text-[12px] font-semibold text-white font-['Plus_Jakarta_Sans'] leading-[15px]">
+                    Save Area
+                  </span>
+                </button>
+              </div>
             </div>
-
-            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 mb-5 custom-scrollbar">
-              <Input
-                variant="form"
-                label="Area Name"
-                placeholder="e.g. West Godavari Hub"
-                value={areaName}
-                onChange={(e) => setAreaName(e.target.value)}
-                className="px-3 text-sm h-10"
-              />
-
-              <Input
-                variant="form"
-                label="Area Code"
-                placeholder="e.g. WGH-01"
-                value={areaCode}
-                onChange={(e) => setAreaCode(e.target.value)}
-                className="px-3 text-sm h-10"
-              />
-            </div>
-
-            <Button
-              variant="primary"
-              fullWidth
-              loading={isCreatingArea}
-              onClick={handleCreateArea}
-              className="mt-2 text-xs"
-            >
-              Save Area
-            </Button>
           </div>
         </div>
       )}

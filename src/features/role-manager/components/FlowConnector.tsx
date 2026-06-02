@@ -11,7 +11,7 @@ export const FlowConnector: React.FC<FlowConnectorProps> = ({
   className, 
   type = "branch",
   startOffset = 0.5,
-  targetsCount
+  targetsCount: _targetsCount
 }) => {
   const strokeColor = "var(--brand-500)";
   const strokeWidth = 1.2;

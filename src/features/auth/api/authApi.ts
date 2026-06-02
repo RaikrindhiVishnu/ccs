@@ -10,6 +10,14 @@ export const authApi = baseApi.injectEndpoints({
         body: credentials,
       }),
     }),
+     
+    forgotPassword: builder.mutation<{ success: boolean; message: string }, { login_id: string }>({
+  query: (body) => ({
+    url: "/auth/forgotPassword",
+    method: "POST",
+    body,
+  }),
+}),
 
     updatePassword: builder.mutation<any, { old_password: string; new_password: string }>({
       query: (body) => ({
@@ -51,4 +59,5 @@ export const {
   useApproveUserMutation,
   useGeneratePresignedUrlQuery,
   useUpdatePasswordMutation,
+    useForgotPasswordMutation,
 } = authApi;

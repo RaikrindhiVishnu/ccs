@@ -1,16 +1,14 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Typography } from "@/components/ui/typography";
-import arrowLeftIcon from "@/assets/arrow.svg";
+
 // ─── Image imports ────────────────────────────────────────────────────────────
 import regionalOfficerImg from "@/assets/role-regional-officer.svg";
 import intelligenceOfficerImg from "@/assets/role-intelligence-officer.svg";
 import fieldOfficerImg from "@/assets/role-field-officer.svg";
-import agentImg from "@/assets/role-agent.svg";
+import agentImg from "@/assets/agentui.svg";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-
 interface RoleItem {
   id: string;
   title: string;
@@ -18,11 +16,10 @@ interface RoleItem {
   badge: string;
   imageSrc: string;
   imageAlt: string;
-  onClick?: () => void;
+  imageClass: string;
 }
 
-// ─── Role data ────────────────────────────────────────────────────────────────
-
+// ─── Role data (Precise percentage metrics mapped to 1440px baseline) ─────────
 const ROLES: RoleItem[] = [
   {
     id: "regional-officer",
@@ -31,6 +28,7 @@ const ROLES: RoleItem[] = [
     badge: "Approval Authority",
     imageSrc: regionalOfficerImg,
     imageAlt: "Regional Officer",
+    imageClass: "w-[88.08%] h-[110.57%] left-[3.97%] top-[2%]",
   },
   {
     id: "intelligence-officer",
@@ -39,6 +37,7 @@ const ROLES: RoleItem[] = [
     badge: "Risk Assessment",
     imageSrc: intelligenceOfficerImg,
     imageAlt: "Intelligence Officer",
+    imageClass: "w-[98.92%] h-[124.47%] left-[-3.97%] top-[-10%]",
   },
   {
     id: "field-officer",
@@ -47,6 +46,7 @@ const ROLES: RoleItem[] = [
     badge: "Physical Verification",
     imageSrc: fieldOfficerImg,
     imageAlt: "Field Officer",
+    imageClass: "w-[107.94%] h-[135.65%] left-[-3.25%] top-[-9%]",
   },
   {
     id: "agent",
@@ -55,184 +55,162 @@ const ROLES: RoleItem[] = [
     badge: "Deal Sourcing",
     imageSrc: agentImg,
     imageAlt: "Agent",
+    imageClass: "w-[102.53%] h-[129.00%] left-[-3.25%] top-[-8%]",
   },
 ];
 
-// ─── Route map — must match paths in routes.config.tsx exactly ───────────────
+// ─── Route map ────────────────────────────────────────────────────────────────
 const ROLE_ROUTES: Record<string, string> = {
-  "regional-officer":     "/role-manager/regional-officer-create",
-  "intelligence-officer": "/role-manager/intellegence-officer-create", // matches routes.config typo
-  "field-officer":        "/role-manager/field-officer-create",
-  "agent":                "/role-manager/agent-create",
+  "regional-officer": "/role-manager/regional-officer-create",
+  "intelligence-officer": "/role-manager/intellegence-officer-create",
+  "field-officer": "/role-manager/field-officer-create",
+  "agent": "/role-manager/agent-create",
 };
 
 // ─── GoBackButton ─────────────────────────────────────────────────────────────
-
 const GoBackButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
   <button
     onClick={onClick}
     className={cn(
-      "inline-flex flex-row items-center gap-2 self-start",
-      "bg-[var(--surface-card)]",
-      "rounded-[60px]",
-      "px-5",
-      "h-10 lg:h-11 xl:h-[52px] 2xl:h-[56px]",
-      "shadow-[0px_0px_4px_rgba(0,0,0,0.12)]",
-      "transition-all duration-150 hover:opacity-80 active:scale-[0.97]",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-500)]",
-      "cursor-pointer border-0",
+      "flex flex-row items-center justify-start gap-[0.56vw] bg-white rounded-[4.17vw]",
+      "shadow-[0px_0px_4px_rgba(0,0,0,0.12)] border-0 cursor-pointer shrink-0",
+      "w-[16.94vw] h-[3.61vw] px-[1.39vw] py-[1.32vw]",
+      "transition-all duration-200 hover:opacity-90 active:scale-[0.98]",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2780C4]"
     )}
     aria-label="Go Back to Dashboard"
   >
-    <span className="flex items-center justify-center shrink-0 w-5 h-5 lg:w-6 lg:h-6">
-      <img src={arrowLeftIcon} alt="Back Arrow" className="w-5 h-5 shrink-0" />
-    </span>
-    <Typography
-      as="span"
-      variant="span"
-      className={cn(
-        "font-[family-name:var(--font-sans)] font-normal",
-        "text-[var(--text-primary)]",
-        "text-[13px] lg:text-[14px] xl:text-[16px] 2xl:text-[16px]",
-        "leading-[110%] whitespace-nowrap",
-      )}
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className="w-[1.67vw] h-[1.67vw] shrink-0 -rotate-90"
+      aria-hidden="true"
     >
+      <path
+        d="M12 5V19M12 5L6 11M12 5L18 11"
+        stroke="#000000"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+    <span className="font-sans font-normal text-[1.11vw] leading-[1.25vw] text-black whitespace-nowrap">
       Go Back to Dashboard
-    </Typography>
+    </span>
   </button>
 );
 
 // ─── RoleCard ─────────────────────────────────────────────────────────────────
-
-const RoleCard: React.FC<RoleItem> = ({
+const RoleCard: React.FC<RoleItem & { onClick?: () => void }> = ({
   title,
   description,
   badge,
   imageSrc,
   imageAlt,
+  imageClass,
   onClick,
 }) => (
   <div
     onClick={onClick}
     className={cn(
-      "relative flex flex-col w-full overflow-hidden",
-      "bg-[var(--surface-card)]",
-      "rounded-[32px] lg:rounded-[38px] xl:rounded-[46px] 2xl:rounded-[46px]",
-      "shadow-[0px_0px_8.4px_rgba(0,0,0,0.06)]",
-      "h-[280px] lg:h-[300px] xl:h-[331px] 2xl:h-[360px]",
-      "cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]",
+      "relative select-none cursor-pointer group transition-all duration-300",
+      "w-full aspect-[277/331] rounded-[16.6%] bg-transparent shrink-0",
+      "hover:translate-y-[-4px]"
     )}
   >
-    <div className={cn("relative w-full bg-[var(--surface-card)] shrink-0", "h-[52%]", "px-3 pt-4 pb-0")}>
-      <img src={imageSrc} alt={imageAlt} className="w-full h-full object-contain object-bottom" />
+    {/* Layer 1: Rounded White Circle Background (proportional sizes) */}
+    <div
+      className={cn(
+        "absolute w-full h-[96.67%] -top-[18.1%] left-0 rounded-[20%] bg-white",
+        "shadow-[0px_0px_8.4px_rgba(0,0,0,0.06)] overflow-hidden",
+        "transition-all duration-300 group-hover:shadow-[0px_8px_24px_rgba(0,0,0,0.12)]"
+      )}
+    >
+      {/* Layer 2: Overflow Image */}
+      <img
+        src={imageSrc}
+        alt={imageAlt}
+        className={cn(
+          "absolute max-w-none transition-transform duration-300 group-hover:scale-[1.03]",
+          imageClass
+        )}
+      />
     </div>
 
-    <div className={cn("flex flex-col flex-1 min-h-0 bg-[var(--surface-card)]", "px-5 pt-3 pb-5", "gap-1.5")}>
-      <Typography
-        as="h3"
-        variant="span"
+    {/* Layer 3: Notch Container and Stepped Background (51.96% height) */}
+    <div className="absolute bottom-0 left-0 w-full h-[51.96%]">
+      {/* Exact Stepped Notch SVG Shape */}
+      <svg
+        viewBox="0 0 277 172"
         className={cn(
-          "font-[family-name:var(--font-sans)] font-medium",
-          "text-[var(--text-primary)]",
-          "tracking-[-0.01em] leading-5",
-          "text-[13px] lg:text-[14px] xl:text-[16px] 2xl:text-[16px]",
+          "absolute inset-0 w-full h-full text-white fill-current",
+          "transition-colors duration-200"
         )}
       >
-        {title}
-      </Typography>
+        <path d="M 0,172 L 0,15 A 15,15 0 0 1 15,0 L 157.68,0 A 30,30 0 0 1 187.68,30 L 187.68,31 L 265,31 A 12,12 0 0 1 277,43 L 277,128 A 44,44 0 0 1 233,172 L 46,172 A 46,46 0 0 1 0,126 Z" />
+      </svg>
 
-      <Typography
-        as="p"
-        variant="span"
-        className={cn(
-          "font-[family-name:var(--font-sans)] font-normal",
-          "text-[var(--text-primary)] opacity-60",
-          "tracking-[-0.01em] leading-[18px]",
-          "text-[11px] lg:text-[12px] xl:text-[14px] 2xl:text-[14px]",
-          "flex-1",
-        )}
-      >
-        {description}
-      </Typography>
+      {/* Layer 4: Content Overlay (Proportional Paddings & Font Sizes) */}
+      <div className="absolute inset-0 flex flex-col justify-start pl-[7.22%] pr-[7.22%] pt-[10.27%] pb-[6.65%] z-10">
+        <h3 className="font-sans font-medium text-[1.11vw] leading-[125%] text-black tracking-[-0.01em]">
+          {title}
+        </h3>
 
-      <div
-        className={cn(
-          "inline-flex items-center justify-center self-start",
-          "bg-[var(--surface-page)] border-0 rounded-[17.5px]",
-          "px-3 lg:px-4",
-          "h-[28px] lg:h-[30px] xl:h-[35px] 2xl:h-[37px]",
-          "mt-0.5",
-        )}
-      >
-        <Typography
-          as="span"
-          variant="span"
-          className={cn(
-            "font-[family-name:var(--font-sans)] font-semibold",
-            "text-[var(--brand-500)] whitespace-nowrap",
-            "tracking-[-0.01em] leading-[15px]",
-            "text-[10px] lg:text-[11px] xl:text-[12px] 2xl:text-[12px]",
-          )}
-        >
-          {badge}
-        </Typography>
+        <p className="font-sans font-normal text-[0.97vw] leading-[128%] text-black/60 tracking-[-0.01em] mt-[3.49%] max-w-[95%]">
+          {description}
+        </p>
+
+        <div className="mt-auto self-start flex items-center justify-center bg-[#EAF3FA] h-[20.35%] rounded-full px-[5.77%] transition-all duration-200 group-hover:bg-[#d8e8f5]">
+          <span className="font-sans font-semibold text-[0.83vw] leading-none text-[#2780C4] tracking-[-0.01em] whitespace-nowrap">
+            {badge}
+          </span>
+        </div>
       </div>
     </div>
   </div>
 );
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
+// ─── Main Component ───────────────────────────────────────────────────────────
 const CreateRoles: React.FC = () => {
   const navigate = useNavigate();
 
   return (
     <div
       className={cn(
-        "min-h-screen bg-[var(--surface-page)]",
-        "px-[72px] xl:px-[116px] [@media(min-width:1440px)]:px-[164px] 2xl:px-[180px] [@media(min-width:1920px)]:px-[220px]",
-        "py-[38px] xl:py-[44px] [@media(min-width:1440px)]:py-[47px] 2xl:py-[52px] [@media(min-width:1920px)]:py-[60px]",
+        "min-h-screen w-full bg-[#F2F2F2] flex flex-col items-start justify-start overflow-x-hidden",
+        "pl-[4.44vw] pr-[4.44vw] pt-[3.26vw] pb-[4.17vw]"
       )}
     >
+      {/* Go Back button positioned exactly relative to viewport spacing */}
       <GoBackButton onClick={() => navigate("/role-manager/user-directory")} />
 
-      <Typography
-        as="h1"
-        variant="span"
+      {/* Heading positioned relative to viewport spacing */}
+      <h1
         className={cn(
-          "font-[family-name:var(--font-sans)] font-bold",
-          "text-[var(--text-primary)] tracking-[-0.6px] block",
-          "text-[22px] xl:text-[26px] [@media(min-width:1440px)]:text-[30px] [@media(min-width:1920px)]:text-[34px]",
-          "leading-[1.1] [@media(min-width:1440px)]:leading-[32px]",
-          "mt-[44px] xl:mt-[60px] [@media(min-width:1440px)]:mt-[70px] 2xl:mt-[76px] [@media(min-width:1920px)]:mt-[90px]",
+          "font-sans font-bold text-black tracking-[-0.02vw]",
+          "text-[2.08vw] leading-[2.22vw] mt-[4.86vw]"
         )}
       >
         Create Roles. Drive Accountability.
-      </Typography>
+      </h1>
 
-      <Typography
-        as="p"
-        variant="span"
+      {/* Description positioned relative to viewport spacing */}
+      <p
         className={cn(
-          "font-[family-name:var(--font-sans)] font-normal",
-          "text-[var(--text-primary)] opacity-60 block",
-          "text-[12px] xl:text-[15px] [@media(min-width:1440px)]:text-[16px] [@media(min-width:1920px)]:text-[17px]",
-          "leading-[22px] [@media(min-width:1440px)]:leading-[26px]",
-          "mt-[10px] xl:mt-[15px] [@media(min-width:1440px)]:mt-[19px] [@media(min-width:1920px)]:mt-[24px]",
-          "max-w-[640px] xl:max-w-[860px] [@media(min-width:1440px)]:max-w-[996px] [@media(min-width:1920px)]:max-w-[1120px]",
+          "font-sans font-normal text-black/60",
+          "text-[1.11vw] leading-[1.81vw] mt-[1.32vw] max-w-[69.17vw]"
         )}
       >
         Assign clear responsibilities across your land operations, from approvals and risk
         assessment to field verification and deal sourcing, so every step is structured,
         transparent, and easy to manage.
-      </Typography>
+      </p>
 
+      {/* Cards container: 4-columns guarantees cards stay in EXACTLY ONE SINGLE ROW */}
       <div
         className={cn(
-          "grid grid-cols-2 lg:grid-cols-4",
-          "gap-x-[20px] xl:gap-x-[36px] [@media(min-width:1440px)]:gap-x-[48px] [@media(min-width:1920px)]:gap-x-[60px]",
-          "gap-y-[20px] xl:gap-y-[36px] [@media(min-width:1440px)]:gap-y-[48px] [@media(min-width:1920px)]:gap-y-[60px]",
-          "mt-[40px] xl:mt-[80px] [@media(min-width:1440px)]:mt-[115px] 2xl:mt-[120px] [@media(min-width:1920px)]:mt-[130px]",
+          "w-full max-w-[86.94vw] grid grid-cols-4",
+          "gap-x-[3.33vw] gap-y-[4.17vw] mt-[7.99vw] ml-[1.88vw] pb-[20px]"
         )}
       >
         {ROLES.map((role) => (

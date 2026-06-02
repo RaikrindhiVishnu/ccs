@@ -102,7 +102,7 @@ export const ProfileHeaderCard: React.FC<ProfileHeaderCardProps> = ({
                 2xl:text-[1rem]
               "
             >
-              Application ID : {agent.applicationId}
+              Role ID : {agent.applicationId}
             </span>
           </div>
         </div>

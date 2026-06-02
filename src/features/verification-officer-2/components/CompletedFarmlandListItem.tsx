@@ -63,7 +63,7 @@ export const CompletedFarmlandListItem: React.FC<CompletedFarmlandListItemProps>
       {/* 4. Action Button */}
       <div className="flex items-center justify-end">
         <button 
-          onClick={() => navigate(`/verification-officer/completed-farmland/${encodeURIComponent(farmland.id)}`)}
+          onClick={() => navigate(`/verification-officer-2/completed-farmland/${encodeURIComponent(farmland.id)}`)}
           className="flex items-center justify-center hover:opacity-90 transition-opacity"
           style={{
             width: '107px',
