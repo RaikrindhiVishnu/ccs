@@ -19,6 +19,7 @@ import {
   useGetRegionGeoJsonQuery,
   useLazyGetRegionGeoJsonQuery,
   useGetAreaGeoJsonQuery,
+  useLazyGetAllAreasByRegionIdQuery,
 } from "../api/regionSelectionApi";
 import {
   useGetAllRegionalOfficersMutation,
@@ -589,12 +590,61 @@ const RegionAreaEdit: React.FC = () => {
     (editAreaId && urlAreaRegionId ? Number(urlAreaRegionId) : null) ||
     selectedRegionId;
   console.log(parentRegionId, selectedRegionId, "parentRegionId")
-  // Query child areas of parent region for area mapping & selection
-  // When urlAreaRegionId is present we can fire this query immediately on mount
   const { data: regionAreasData } = useGetAllAreasByRegionIdQuery(
     { region_id: Number(parentRegionId) },
     { skip: !parentRegionId },
   );
+
+  const isAreaMode = searchParams.get("mode") === "area";
+  const [triggerGetAreas] = useLazyGetAllAreasByRegionIdQuery();
+  const [regionsWithAreas, setRegionsWithAreas] = useState<Set<number> | null>(null);
+
+  const stateRegionsGeoJson = useMemo(() => {
+    if (!regionsByCountryData) return [];
+    try {
+      const decompressed = decompressGeoJSON(regionsByCountryData);
+      const features: any[] = decompressed?.features || [];
+      const currentStateId = selectedState?.properties?.id;
+      return currentStateId
+        ? features.filter(
+            (f: any) => Number(f.properties?.state_id) === currentStateId,
+          )
+        : features;
+    } catch {
+      return [];
+    }
+  }, [regionsByCountryData, selectedState]);
+
+  useEffect(() => {
+    if (!isAreaMode || stateRegionsGeoJson.length === 0) {
+      setRegionsWithAreas(null);
+      return;
+    }
+
+    const fetchAll = async () => {
+      const activeIds = new Set<number>();
+
+      await Promise.all(
+        stateRegionsGeoJson.map(async (f: any) => {
+          const regionId = Number(f.properties?.region_id || f.id);
+          if (!regionId) return;
+          try {
+            const res = await triggerGetAreas({ region_id: regionId }).unwrap();
+            const areas = res?.data || [];
+            if (areas.length > 0) {
+              activeIds.add(regionId);
+            }
+          } catch (e) {
+            console.error("Failed to fetch areas for region:", regionId, e);
+          }
+        })
+      );
+
+      setRegionsWithAreas(activeIds);
+    };
+
+    fetchAll();
+  }, [stateRegionsGeoJson, isAreaMode, triggerGetAreas, regionAreasData]);
 
   // Cache loaded areas globally for mock getAreaById fallback compatibility
   useEffect(() => {
@@ -2522,7 +2572,16 @@ const RegionAreaEdit: React.FC = () => {
       });
 
       const assigned = mappedFeatures
-        .filter((f: any) => f.isAssignedFromApi)
+        .filter((f: any) => {
+          if (isAreaMode) return true;
+          return f.isAssignedFromApi;
+        })
+        .filter((f: any) => {
+          if (!isAreaMode) return true;
+          if (!regionsWithAreas) return true; // loading fallback
+          const regionId = f.properties?.region_id || f.id;
+          return regionsWithAreas.has(Number(regionId));
+        })
         .map((f: any) => ({
           id: f.properties?.region_id || f.id,
           name: f.properties?.region_name || f.properties?.name || "Region",
@@ -2531,7 +2590,16 @@ const RegionAreaEdit: React.FC = () => {
         }));
 
       const unassigned = mappedFeatures
-        .filter((f: any) => !f.isAssignedFromApi)
+        .filter((f: any) => {
+          if (isAreaMode) return true;
+          return !f.isAssignedFromApi;
+        })
+        .filter((f: any) => {
+          if (!isAreaMode) return true;
+          if (!regionsWithAreas) return true; // loading fallback
+          const regionId = f.properties?.region_id || f.id;
+          return regionsWithAreas.has(Number(regionId));
+        })
         .map((f: any) => ({
           id: f.properties?.region_id || f.id,
           name: f.properties?.region_name || f.properties?.name || "Region",
@@ -2543,7 +2611,7 @@ const RegionAreaEdit: React.FC = () => {
     } catch {
       return { assignedRegions: [], unassignedRegions: [] };
     }
-  }, [regionsByCountryData, geoMasterData, selectedState, regionsByStateData]);
+  }, [regionsByCountryData, geoMasterData, selectedState, regionsByStateData, isAreaMode, regionsWithAreas]);
 
   const assignedRegionsRef = useRef(assignedRegions);
   useEffect(() => {
@@ -3539,283 +3607,523 @@ const RegionAreaEdit: React.FC = () => {
         </div>
       )}
       {/* Assign / Unassign Panel */}
+      {/* Assign / Unassign Panel */}
       {assignPanelOpen &&
         (selectedState || (editModeType === "area" && selectedRegion)) &&
         !isEditMode && (
-          <div className="fixed top-4 right-4 z-[100] flex flex-row gap-3 items-start select-none">
-            {/* Dropdown 1: Assigned/Un Assigned/All Filter */}
-            <div className="relative" ref={filterDropdownRef}>
-              <button
-                onClick={() => {
-                  setFilterDropdownOpen(!filterDropdownOpen);
-                  setShowRegionsList(false);
-                  setAreasDropdownOpen(false);
-                }}
-                className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
-              >
-                <span>
-                  {activeFilter === "assigned"
-                    ? "Assigned"
-                    : activeFilter === "unassigned"
-                      ? "Un Assigned"
-                      : "All"}
-                </span>
-                <svg
-                  className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${filterDropdownOpen ? "rotate-180" : ""}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-
-              {filterDropdownOpen && (
-                <div className="absolute right-0 top-11 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden w-36 py-1">
-                  {(["assigned", "unassigned", "all"] as const).map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => {
-                        setActiveFilter(option);
-                        setFilterDropdownOpen(false);
-                        setRegionSearch("");
-                        setShowRegionsList(false);
-                      }}
-                      className={`w-full text-left px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-0 ${activeFilter === option
-                        ? "bg-blue-50 text-blue-600"
-                        : "bg-white text-slate-700 hover:bg-slate-50"
+          <div className="fixed top-4 right-12 z-[100] flex flex-row gap-3 items-start select-none">
+            {editModeType === "area" ? (
+              <>
+                {/* Dropdown 1: Regions Select */}
+                <div className="relative" ref={regionsDropdownRef}>
+                  <button
+                    onClick={() => {
+                      setShowRegionsList(!showRegionsList);
+                      setFilterDropdownOpen(false);
+                      setAreasDropdownOpen(false);
+                    }}
+                    className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                  >
+                    <span>
+                      {selectedRegionName
+                        ? `Regions: ${selectedRegionName}`
+                        : `Regions: ${activeFilter === "assigned"
+                          ? assignedRegions.length
+                          : activeFilter === "unassigned"
+                            ? unassignedRegions.length
+                            : assignedRegions.length + unassignedRegions.length
                         }`}
+                    </span>
+                    <svg
+                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${showRegionsList ? "rotate-180" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
                     >
-                      {option === "assigned"
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {showRegionsList && (
+                    <div className="absolute right-0 top-11 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden w-64 flex flex-col">
+                      {/* Search bar inside Regions dropdown */}
+                      <div className="p-3 border-b border-slate-100 relative flex items-center">
+                        <input
+                          type="text"
+                          placeholder="Search"
+                          value={regionSearch}
+                          onChange={(e) => setRegionSearch(e.target.value)}
+                          className="w-full h-10 pl-3 pr-9 text-xs rounded-xl border border-slate-200 bg-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-sm transition-all font-semibold"
+                        />
+                        <Search className="absolute right-6 w-4 h-4 text-slate-400 pointer-events-none" />
+                      </div>
+
+                      <div className="max-h-60 overflow-y-auto py-1">
+                        {(() => {
+                          if (isAreaMode && !regionsWithAreas) {
+                            return (
+                              <div className="flex flex-col items-center justify-center py-6 gap-2">
+                                <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">
+                                  Checking Areas...
+                                </span>
+                              </div>
+                            );
+                          }
+
+                          const listToShow =
+                            activeFilter === "assigned"
+                              ? assignedRegions
+                              : activeFilter === "unassigned"
+                                ? unassignedRegions
+                                : [...assignedRegions, ...unassignedRegions];
+
+                          const filtered = listToShow.filter((r) =>
+                            r.name.toLowerCase().includes(regionSearch.toLowerCase()),
+                          );
+
+                          if (filtered.length === 0) {
+                            return (
+                              <p className="text-[11px] text-slate-400 italic text-center py-4">
+                                No {activeFilter === "all" ? "" : activeFilter === "assigned" ? "assigned" : "unassigned"}{" "}
+                                regions found.
+                              </p>
+                            );
+                          }
+
+                          return filtered.map((region, idx) => {
+                            const isSelected = selectedRegion && getRegionId(selectedRegion) === region.id;
+                            const isAssignedRegion = assignedRegions.some(
+                              (r) => r.id === region.id,
+                            );
+
+                            return (
+                              <button
+                                key={region.id ?? idx}
+                                onClick={() => {
+                                  if (isSelected) {
+                                    setSelectedRegion(null);
+                                  } else {
+                                    setSelectedRegion(region.rawFeature);
+                                    if (
+                                      region.rawFeature &&
+                                      map.current &&
+                                      geoMasterData
+                                    ) {
+                                      try {
+                                        const builtFeature =
+                                          buildRegionFeatureFromDistricts(
+                                            region.rawFeature,
+                                            geoMasterData,
+                                          );
+                                        const target =
+                                          builtFeature ||
+                                          region.rawFeature;
+                                        if (target?.geometry) {
+                                          map.current.fitBounds(
+                                            getFeatureBounds(target),
+                                            {
+                                              padding: 80,
+                                              duration: 1500,
+                                            },
+                                          );
+                                        }
+                                      } catch (err) {
+                                        console.error(
+                                          "Failed to zoom to region:",
+                                          err,
+                                        );
+                                      }
+                                    }
+                                  }
+                                  setShowRegionsList(false);
+                                }}
+                                className={`w-full text-left px-4 py-2.5 cursor-pointer transition-all duration-200 flex items-center justify-between gap-3 border-b border-slate-100 last:border-b-0 ${isSelected
+                                  ? "bg-blue-50 text-blue-600"
+                                  : "bg-white hover:bg-slate-50 text-slate-700"
+                                  }`}
+                              >
+                                <span className="truncate text-xs font-bold">
+                                  {region.name}
+                                </span>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  {region.code && (
+                                    <span className="text-[10px] font-mono text-slate-400">
+                                      {region.code}
+                                    </span>
+                                  )}
+                                  {activeFilter === "all" && (
+                                    <span
+                                      className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${isAssignedRegion
+                                        ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                                        : "bg-slate-100 text-slate-500"
+                                        }`}
+                                    >
+                                      {isAssignedRegion ? "A" : "U"}
+                                    </span>
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          });
+                        })()}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Dropdown 2: Assigned/Un Assigned/All Filter */}
+                <div className="relative" ref={filterDropdownRef}>
+                  <button
+                    onClick={() => {
+                      setFilterDropdownOpen(!filterDropdownOpen);
+                      setShowRegionsList(false);
+                      setAreasDropdownOpen(false);
+                    }}
+                    className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                  >
+                    <span>
+                      {activeFilter === "assigned"
                         ? "Assigned"
-                        : option === "unassigned"
+                        : activeFilter === "unassigned"
                           ? "Un Assigned"
                           : "All"}
-                    </button>
-                  ))}
+                    </span>
+                    <svg
+                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${filterDropdownOpen ? "rotate-180" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {filterDropdownOpen && (
+                    <div className="absolute right-0 top-11 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden w-36 py-1">
+                      {(["assigned", "unassigned", "all"] as const).map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => {
+                            setActiveFilter(option);
+                            setFilterDropdownOpen(false);
+                            setRegionSearch("");
+                            setShowRegionsList(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-0 ${activeFilter === option
+                            ? "bg-blue-50 text-blue-600"
+                            : "bg-white text-slate-700 hover:bg-slate-50"
+                            }`}
+                        >
+                          {option === "assigned"
+                            ? "Assigned"
+                            : option === "unassigned"
+                              ? "Un Assigned"
+                              : "All"}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Dropdown 2: Regions Select */}
-            <div className="relative" ref={regionsDropdownRef}>
-              <button
-                onClick={() => {
-                  setShowRegionsList(!showRegionsList);
-                  setFilterDropdownOpen(false);
-                  setAreasDropdownOpen(false);
-                }}
-                className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
-              >
-                <span>
-                  {selectedRegionName
-                    ? `Regions: ${selectedRegionName}`
-                    : `Regions: ${activeFilter === "assigned"
-                      ? assignedRegions.length
-                      : activeFilter === "unassigned"
-                        ? unassignedRegions.length
-                        : assignedRegions.length + unassignedRegions.length
-                    }`}
-                </span>
-                <svg
-                  className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${showRegionsList ? "rotate-180" : ""}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-
-              {showRegionsList && (
-                <div className="absolute right-0 top-11 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden w-64 flex flex-col">
-                  {/* Search bar inside Regions dropdown */}
-                  <div className="p-3 border-b border-slate-100 relative flex items-center">
-                    <input
-                      type="text"
-                      placeholder="Search"
-                      value={regionSearch}
-                      onChange={(e) => setRegionSearch(e.target.value)}
-                      className="w-full h-10 pl-3 pr-9 text-xs rounded-xl border border-slate-200 bg-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-sm transition-all font-semibold"
-                    />
-                    <Search className="absolute right-6 w-4 h-4 text-slate-400 pointer-events-none" />
-                  </div>
-
-                  <div className="max-h-60 overflow-y-auto py-1">
-                    {(() => {
-                      const listToShow =
-                        activeFilter === "assigned"
-                          ? assignedRegions
-                          : activeFilter === "unassigned"
-                            ? unassignedRegions
-                            : [...assignedRegions, ...unassignedRegions];
-
-                      const filtered = listToShow.filter((r) =>
-                        r.name.toLowerCase().includes(regionSearch.toLowerCase()),
-                      );
-
-                      if (filtered.length === 0) {
-                        return (
-                          <p className="text-[11px] text-slate-400 italic text-center py-4">
-                            No {activeFilter === "all" ? "" : activeFilter === "assigned" ? "assigned" : "unassigned"}{" "}
-                            regions found.
-                          </p>
-                        );
+                {/* Dropdown 3: Areas Select */}
+                {selectedRegion ? (
+                  <AreaEditSelector
+                    regionId={getRegionId(selectedRegion)}
+                    regionName={
+                      selectedRegion.properties?.region_name ||
+                      selectedRegion.properties?.regionName ||
+                      selectedRegion.properties?.name ||
+                      "—"
+                    }
+                    stateName={
+                      selectedState?.properties?.name ||
+                      selectedRegion?.properties?.state_name ||
+                      selectedRegion?.properties?.stateName ||
+                      "State"
+                    }
+                    selectedAreaId={activeAreaId}
+                    onAreaSelect={(areaId) => {
+                      setActiveAreaId(areaId);
+                    }}
+                    onClose={() => {
+                      setSelectedRegion(null);
+                      setActiveAreaId(null);
+                      if (editModeType === "area") {
+                        setAssignPanelOpen(false);
                       }
-
-                      return filtered.map((region, idx) => {
-                        const isSelected = selectedRegion && getRegionId(selectedRegion) === region.id;
-                        const isAssignedRegion = assignedRegions.some(
-                          (r) => r.id === region.id,
-                        );
-
-                        return (
-                          <button
-                            key={region.id ?? idx}
-                            onClick={() => {
-                              if (isSelected) {
-                                setSelectedRegion(null);
-                              } else {
-                                setSelectedRegion(region.rawFeature);
-                                if (
-                                  region.rawFeature &&
-                                  map.current &&
-                                  geoMasterData
-                                ) {
-                                  try {
-                                    const builtFeature =
-                                      buildRegionFeatureFromDistricts(
-                                        region.rawFeature,
-                                        geoMasterData,
-                                      );
-                                    const target =
-                                      builtFeature ||
-                                      region.rawFeature;
-                                    if (target?.geometry) {
-                                      map.current.fitBounds(
-                                        getFeatureBounds(target),
-                                        {
-                                          padding: 80,
-                                          duration: 1500,
-                                        },
-                                      );
-                                    }
-                                  } catch (err) {
-                                    console.error(
-                                      "Failed to zoom to region:",
-                                      err,
-                                    );
-                                  }
-                                }
-                              }
-                              setShowRegionsList(false);
-                            }}
-                            className={`w-full text-left px-4 py-2.5 cursor-pointer transition-all duration-200 flex items-center justify-between gap-3 border-b border-slate-100 last:border-b-0 ${isSelected
-                              ? "bg-blue-50 text-blue-600"
-                              : "bg-white hover:bg-slate-50 text-slate-700"
-                              }`}
-                          >
-                            <span className="truncate text-xs font-bold">
-                              {region.name}
-                            </span>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              {region.code && (
-                                <span className="text-[10px] font-mono text-slate-400">
-                                  {region.code}
-                                </span>
-                              )}
-                              {activeFilter === "all" && (
-                                <span
-                                  className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${isAssignedRegion
-                                    ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                                    : "bg-slate-100 text-slate-500"
-                                    }`}
-                                >
-                                  {isAssignedRegion ? "A" : "U"}
-                                </span>
-                              )}
-                            </div>
-                          </button>
-                        );
-                      });
-                    })()}
+                    }}
+                    mapRef={map}
+                    geoMasterData={geoMasterData}
+                    filter={activeFilter}
+                    isOpen={areasDropdownOpen}
+                    setIsOpen={(open) => {
+                      setAreasDropdownOpen(open);
+                      if (open) {
+                        setFilterDropdownOpen(false);
+                        setShowRegionsList(false);
+                      }
+                    }}
+                    areasDropdownRef={areasDropdownRef}
+                  />
+                ) : (
+                  <div className="relative">
+                    <button
+                      disabled
+                      className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-400 cursor-not-allowed opacity-60"
+                    >
+                      <span>Areas: 0</span>
+                      <svg
+                        className="w-3.5 h-3.5 text-slate-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
                   </div>
-                </div>
-              )}
-            </div>
-
-            {/* Dropdown 3: Areas Select */}
-            {editModeType === "area" && selectedRegion ? (
-              <AreaEditSelector
-                regionId={getRegionId(selectedRegion)}
-                regionName={
-                  selectedRegion.properties?.region_name ||
-                  selectedRegion.properties?.regionName ||
-                  selectedRegion.properties?.name ||
-                  "—"
-                }
-                stateName={
-                  selectedState?.properties?.name ||
-                  selectedRegion?.properties?.state_name ||
-                  selectedRegion?.properties?.stateName ||
-                  "State"
-                }
-                selectedAreaId={activeAreaId}
-                onAreaSelect={(areaId) => {
-                  setActiveAreaId(areaId);
-                }}
-                onClose={() => {
-                  setSelectedRegion(null);
-                  setActiveAreaId(null);
-                  if (editModeType === "area") {
-                    setAssignPanelOpen(false);
-                  }
-                }}
-                mapRef={map}
-                geoMasterData={geoMasterData}
-                filter={activeFilter}
-                isOpen={areasDropdownOpen}
-                setIsOpen={(open) => {
-                  setAreasDropdownOpen(open);
-                  if (open) {
-                    setFilterDropdownOpen(false);
-                    setShowRegionsList(false);
-                  }
-                }}
-                areasDropdownRef={areasDropdownRef}
-              />
+                )}
+              </>
             ) : (
-              <div className="relative">
-                <button
-                  disabled
-                  className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-400 cursor-not-allowed opacity-60"
-                >
-                  <span>Areas: 0</span>
-                  <svg
-                    className="w-3.5 h-3.5 text-slate-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
+              <>
+                {/* Dropdown 1: Assigned/Un Assigned/All Filter */}
+                <div className="relative" ref={filterDropdownRef}>
+                  <button
+                    onClick={() => {
+                      setFilterDropdownOpen(!filterDropdownOpen);
+                      setShowRegionsList(false);
+                      setAreasDropdownOpen(false);
+                    }}
+                    className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-              </div>
+                    <span>
+                      {activeFilter === "assigned"
+                        ? "Assigned"
+                        : activeFilter === "unassigned"
+                          ? "Un Assigned"
+                          : "All"}
+                    </span>
+                    <svg
+                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${filterDropdownOpen ? "rotate-180" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {filterDropdownOpen && (
+                    <div className="absolute right-0 top-11 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden w-36 py-1">
+                      {(["assigned", "unassigned", "all"] as const).map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => {
+                            setActiveFilter(option);
+                            setFilterDropdownOpen(false);
+                            setRegionSearch("");
+                            setShowRegionsList(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-0 ${activeFilter === option
+                            ? "bg-blue-50 text-blue-600"
+                            : "bg-white text-slate-700 hover:bg-slate-50"
+                            }`}
+                        >
+                          {option === "assigned"
+                            ? "Assigned"
+                            : option === "unassigned"
+                              ? "Un Assigned"
+                              : "All"}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Dropdown 2: Regions Select */}
+                <div className="relative" ref={regionsDropdownRef}>
+                  <button
+                    onClick={() => {
+                      setShowRegionsList(!showRegionsList);
+                      setFilterDropdownOpen(false);
+                      setAreasDropdownOpen(false);
+                    }}
+                    className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                  >
+                    <span>
+                      {selectedRegionName
+                        ? `Regions: ${selectedRegionName}`
+                        : `Regions: ${activeFilter === "assigned"
+                          ? assignedRegions.length
+                          : activeFilter === "unassigned"
+                            ? unassignedRegions.length
+                            : assignedRegions.length + unassignedRegions.length
+                        }`}
+                    </span>
+                    <svg
+                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${showRegionsList ? "rotate-180" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {showRegionsList && (
+                    <div className="absolute right-0 top-11 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden w-64 flex flex-col">
+                      {/* Search bar inside Regions dropdown */}
+                      <div className="p-3 border-b border-slate-100 relative flex items-center">
+                        <input
+                          type="text"
+                          placeholder="Search"
+                          value={regionSearch}
+                          onChange={(e) => setRegionSearch(e.target.value)}
+                          className="w-full h-10 pl-3 pr-9 text-xs rounded-xl border border-slate-200 bg-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-sm transition-all font-semibold"
+                        />
+                        <Search className="absolute right-6 w-4 h-4 text-slate-400 pointer-events-none" />
+                      </div>
+
+                      <div className="max-h-60 overflow-y-auto py-1">
+                        {(() => {
+                          if (isAreaMode && !regionsWithAreas) {
+                            return (
+                              <div className="flex flex-col items-center justify-center py-6 gap-2">
+                                <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">
+                                  Checking Areas...
+                                </span>
+                              </div>
+                            );
+                          }
+
+                          const listToShow =
+                            activeFilter === "assigned"
+                              ? assignedRegions
+                              : activeFilter === "unassigned"
+                                ? unassignedRegions
+                                : [...assignedRegions, ...unassignedRegions];
+
+                          const filtered = listToShow.filter((r) =>
+                            r.name.toLowerCase().includes(regionSearch.toLowerCase()),
+                          );
+
+                          if (filtered.length === 0) {
+                            return (
+                              <p className="text-[11px] text-slate-400 italic text-center py-4">
+                                No {activeFilter === "all" ? "" : activeFilter === "assigned" ? "assigned" : "unassigned"}{" "}
+                                regions found.
+                              </p>
+                            );
+                          }
+
+                          return filtered.map((region, idx) => {
+                            const isSelected = selectedRegion && getRegionId(selectedRegion) === region.id;
+                            const isAssignedRegion = assignedRegions.some(
+                              (r) => r.id === region.id,
+                            );
+
+                            return (
+                              <button
+                                key={region.id ?? idx}
+                                onClick={() => {
+                                  if (isSelected) {
+                                    setSelectedRegion(null);
+                                  } else {
+                                    setSelectedRegion(region.rawFeature);
+                                    if (
+                                      region.rawFeature &&
+                                      map.current &&
+                                      geoMasterData
+                                    ) {
+                                      try {
+                                        const builtFeature =
+                                          buildRegionFeatureFromDistricts(
+                                            region.rawFeature,
+                                            geoMasterData,
+                                          );
+                                        const target =
+                                          builtFeature ||
+                                          region.rawFeature;
+                                        if (target?.geometry) {
+                                          map.current.fitBounds(
+                                            getFeatureBounds(target),
+                                            {
+                                              padding: 80,
+                                              duration: 1500,
+                                            },
+                                          );
+                                        }
+                                      } catch (err) {
+                                        console.error(
+                                          "Failed to zoom to region:",
+                                          err,
+                                        );
+                                      }
+                                    }
+                                  }
+                                  setShowRegionsList(false);
+                                }}
+                                className={`w-full text-left px-4 py-2.5 cursor-pointer transition-all duration-200 flex items-center justify-between gap-3 border-b border-slate-100 last:border-b-0 ${isSelected
+                                  ? "bg-blue-50 text-blue-600"
+                                  : "bg-white hover:bg-slate-50 text-slate-700"
+                                  }`}
+                              >
+                                <span className="truncate text-xs font-bold">
+                                  {region.name}
+                                </span>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  {region.code && (
+                                    <span className="text-[10px] font-mono text-slate-400">
+                                      {region.code}
+                                    </span>
+                                  )}
+                                  {activeFilter === "all" && (
+                                    <span
+                                      className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${isAssignedRegion
+                                        ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                                        : "bg-slate-100 text-slate-500"
+                                        }`}
+                                    >
+                                      {isAssignedRegion ? "A" : "U"}
+                                    </span>
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          });
+                        })()}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </div>
         )}
