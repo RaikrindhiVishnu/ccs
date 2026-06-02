@@ -174,7 +174,7 @@ function LoginCard({
     <div
       className={`absolute top-1/2 -translate-y-1/2 right-4 md:right-[4vw] lg:right-[8.54vw] bg-[var(--surface-card)] flex flex-col box-border shadow-[0px_8px_32px_rgba(0,0,0,0.07)] border border-[var(--border-soft)] rounded-4xl px-[clamp(1.5rem,3.33vw,3rem)] pt-[clamp(1rem,3.5vh,3rem)] pb-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:pt-[3.26vw] min-[1440px]:pb-[3.26vw] min-[1440px]:px-[3.33vw] lg:px-[3.33vw] w-[calc(100%-2rem)] sm:w-[clamp(25rem,38.19vw,34.375rem)] lg:w-[38.19vw] lg:shadow-[0px_1px_3.5px_rgba(0,0,0,0.06)] lg:rounded-[2.22vw] h-auto max-h-[calc(100vh-2.5rem)] ${className}`}
     >
-      <div className="flex flex-col flex-1 overflow-y-auto custom-scrollbar pr-1 -mr-1 lg:overflow-visible lg:pr-0 lg:mr-0 gap-[clamp(1rem,2vh,2rem)] min-[1440px]:gap-0">
+      <div className="flex flex-col flex-1 overflow-y-auto custom-scrollbar pr-1 -mr-1 lg:pr-0 lg:mr-0 gap-[clamp(1rem,2vh,2rem)] min-[1440px]:gap-0">
         {children}
       </div>
     </div>
@@ -380,27 +380,38 @@ function ForgotPasswordScreen({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) { setError("Email is required"); return; }
-    if (!/\S+@\S+\.\S+/.test(email)) { setError("Enter a valid email address"); return; }
+    const targetEmail = email.trim();
+    if (!targetEmail) { setError("Email address required"); return; }
+    if (!/\S+@\S+\.\S+/.test(targetEmail)) { setError("Enter a valid email address"); return; }
+
+    // Validate that the email is registered
+    const isRegistered = MOCK_USERS.some(
+      (u) => u.login_id.toLowerCase() === targetEmail.toLowerCase()
+    );
+    if (!isRegistered) {
+      setError("Email address is not registered.");
+      return;
+    }
+
     setError("");
     try {
-      await forgotPassword({ login_id: email }).unwrap();
-      onSuccess(maskEmail(email));
+      await forgotPassword({ login_id: targetEmail }).unwrap();
+      onSuccess(maskEmail(targetEmail));
     } catch {
       setError("Something went wrong. Please try again.");
     }
   };
 
   return (
-    <LoginCard className="min-[1440px]:h-[41.81vw]">
-      <CardLogo className="min-[1440px]:mb-[1.72vw]" />
+    <LoginCard className="min-[1440px]:h-auto">
+      <CardLogo className="min-[1440px]:mb-[3.2vw]" />
 
       <div className="mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 lg:flex lg:flex-col shrink-0 min-[1440px]:mb-[1.11vw]">
         <h2 className="font-heading font-bold text-[var(--text-heading)] text-[clamp(1.25rem,1.66vw,1.5rem)] lg:text-[1.67vw] lg:leading-[2.92vw] leading-snug tracking-[-0.05625rem] m-0 mb-[clamp(0.25rem,0.4vw,0.5rem)] min-[1440px]:mb-[0.56vw] ">
           Forgot Your Password?
         </h2>
         <p className="font-sans font-normal text-[var(--text-secondary)] text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] lg:leading-[1.53vw] leading-normal m-0 min-[1440px]:max-w-[20.35vw]">
-          Enter your Registered Mail to Receive a Temporary Password
+          Enter your registered email address to receive a temporary password.
         </p>
       </div>
 
@@ -410,31 +421,32 @@ function ForgotPasswordScreen({
       >
         <InputField
           id="forgot-email"
-          label="Enter Registered Mail"
-          placeholder="Enter Your Registered Mail Here"
+          label="Email Address"
+          placeholder="Please enter your registered Email address"
           type="text"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           icon={User}
           error={error}
-          className="min-[1440px]:mt-[1.67vw] min-[1440px]:gap-[0.83vw]"
+          className="min-[1440px]:mt-[1vw] min-[1440px]:gap-[0.83vw]"
         />
 
-        <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:mt-[2.36vw] flex flex-col gap-3">
-          <PrimaryButton type="submit" disabled={isLoading} variant="secondary" className=" lg:rounded-full lg:text-[1.11vw]">
-            {isLoading ? "Sending…" : "Send Password"}
+        <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:mt-[1.8vw] flex flex-col gap-4">
+          <PrimaryButton type="submit" disabled={isLoading} variant="secondary" className="lg:rounded-full lg:text-[1.11vw]">
+            {isLoading ? "Sending…" : "Reset Password"}
           </PrimaryButton>
           <button
             type="button"
             onClick={onBack}
-            className="border-none cursor-pointer p-0 bg-transparent font-semibold text-[#3D4949] hover:text-[var(--text-heading)] transition-colors text-[14px] self-center"
+            className="border-none cursor-pointer p-0 bg-transparent font-semibold text-[#3D4949] hover:text-[var(--text-heading)] transition-colors text-[14px] self-center flex items-center justify-center gap-2"
           >
+            <ArrowLeft className="w-4 h-4" />
             Back to Login
           </button>
         </div>
       </form>
 
-      <SecureFooter className="min-[1440px]:mt-[5.21vw] min-[1440px]:pt-0" />
+      <SecureFooter className="min-[1440px]:mt-[2vw] min-[1440px]:pt-0" />
     </LoginCard>
   );
 }
@@ -457,7 +469,7 @@ function ForgotPasswordSuccessScreen({
  rounded-[24px] lg:rounded-[1.67vw]
  w-[calc(100%-2rem)] sm:w-[clamp(25rem,42.36vw,38.125rem)] lg:w-[42.36vw]
  h-auto max-h-[calc(100vh-2.5rem)]
- overflow-y-auto lg:overflow-visible
+ overflow-y-auto
  px-[clamp(1.5rem,4vw,3.5rem)] py-[clamp(1.5rem,4vh,3rem)] lg:px-[2.22vw]
  flex flex-col items-center
  ">
