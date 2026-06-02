@@ -138,25 +138,24 @@ function PrimaryButton({
 
 function CardLogo({ className = "" }: { className?: string }) {
   return (
-    <div className={`flex flex-col mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 shrink-0 ${className}`}>
-
+    <div className={`flex flex-col shrink-0 ${className}`}>
       <img
         src={GlcLogo}
         alt="Green Land Capital"
-        className="w-[clamp(7.5rem,9.8vw,9.4375rem)] lg:w-[10.49vw] h-auto object-contain"
+        className="w-[151px] h-[73.26px] object-contain"
       />
     </div>
   );
 }
+
 function SecureFooter({ className = "" }: { className?: string }) {
   return (
-    <div className={`flex items-center justify-center gap-4 -pt-[clamp(0.5rem,1.5vh,1rem)] ${className}`}>
-
+    <div className={`flex items-center justify-center gap-4 ${className}`}>
       <ShieldCheck
         strokeWidth={1.8}
-        className="shrink-0 text-[var(--status-success)] w-4 h-5 lg:w-[1.11vw] lg:h-[1.39vw]"
+        className="shrink-0 text-[#006D3A] w-4 h-5"
       />
-      <span className="font-sans font-normal text-[var(--text-secondary)]/80 text-xs leading-tight lg:text-[0.83vw] lg:leading-[1.11vw]">
+      <span className="font-sans font-normal text-[#3D4949]/80 text-[12px] leading-[16px] tracking-normal">
         Secured by TechGy Innovations. End-to-end encrypted connection.
       </span>
     </div>
@@ -172,9 +171,9 @@ function LoginCard({
 }) {
   return (
     <div
-      className={`absolute top-1/2 -translate-y-1/2 right-4 md:right-[4vw] lg:right-[8.54vw] bg-[var(--surface-card)] flex flex-col box-border shadow-[0px_8px_32px_rgba(0,0,0,0.07)] border border-[var(--border-soft)] rounded-4xl px-[clamp(1.5rem,3.33vw,3rem)] pt-[clamp(1rem,3.5vh,3rem)] pb-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:pt-[3.26vw] min-[1440px]:pb-[3.26vw] min-[1440px]:px-[3.33vw] lg:px-[3.33vw] w-[calc(100%-2rem)] sm:w-[clamp(25rem,38.19vw,34.375rem)] lg:w-[38.19vw] lg:shadow-[0px_1px_3.5px_rgba(0,0,0,0.06)] lg:rounded-[2.22vw] h-auto max-h-[calc(100vh-2.5rem)] ${className}`}
+      className={`absolute top-1/2 -translate-y-1/2 right-4 md:right-[4vw] lg:right-[123px] bg-white flex flex-col box-border shadow-[0px_1px_3.5px_rgba(0,0,0,0.06)] border border-[#F3F3F5] rounded-[32px] px-[20px] py-[30px] sm:px-[48px] sm:pt-[47px] sm:pb-[47px] w-[calc(100%-2rem)] sm:w-[550px] lg:w-[550px] lg:h-[701px] h-auto max-h-[calc(100vh-2.5rem)] ${className}`}
     >
-      <div className="flex flex-col flex-1 overflow-y-auto custom-scrollbar pr-1 -mr-1 lg:pr-0 lg:mr-0 gap-[clamp(1rem,2vh,2rem)] min-[1440px]:gap-0">
+      <div className="flex flex-col flex-1 overflow-y-auto custom-scrollbar pr-1 -mr-1 lg:pr-0 lg:mr-0">
         {children}
       </div>
     </div>
@@ -278,14 +277,20 @@ function LoginScreen({
   );
 
   return (
-    <LoginCard className="min-[1440px]:h-auto min-[1440px]:min-h-[48.68vw]">
-      <CardLogo className="min-[1440px]:mb-[3.2vw]" />
+    <LoginCard>
+      <CardLogo className="lg:mb-[25px]" />
 
-      <div className="mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 lg:flex lg:flex-col lg:items-start shrink-0 min-[1440px]:mb-[1.94vw]">
-        <h1 className="font-heading font-bold text-[var(--text-heading)] text-[clamp(1.25rem,1.66vw,1.5rem)] lg:text-[1.67vw] lg:leading-[2.78vw] leading-snug tracking-[-0.05625rem] lg:tracking-[-0.06vw] m-0 mb-[clamp(0.25rem,0.4vw,0.5rem)] min-[1440px]:mb-[0.97vw]">
+      <div className="flex flex-col items-start gap-[14px] lg:mb-[28px]">
+        <h1 
+          className="m-0 text-[#1A1C1D] text-[24px] font-bold leading-[40px] tracking-[-0.9px]"
+          style={{ fontFamily: "'Manrope', sans-serif" }}
+        >
           Role Manager Login
         </h1>
-        <p className="font-sans font-normal text-[var(--text-secondary)] text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] lg:leading-[1.81vw] leading-normal m-0">
+        <p 
+          className="m-0 text-[#3D4949] text-[16px] leading-[26px] font-normal"
+          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+        >
           Secure access for authorized Role Managers.
           <br />
           Please authenticate to continue.
@@ -294,7 +299,7 @@ function LoginScreen({
 
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col flex-1 gap-[clamp(0.75rem,2.5vh,1.5rem)] w-full"
+        className="flex flex-col w-full"
       >
         <InputField
           id="login-id"
@@ -305,13 +310,13 @@ function LoginScreen({
           onChange={(e) => setLoginId(e.target.value)}
           icon={User}
           error={errors.loginId}
-          className="min-[1440px]:mt-[1vw]"
+          className="lg:mb-[24px]"
         />
 
         <InputField
           id="login-password"
           label="Password"
-          className="min-[1440px]:mt-[1vw]"
+          className="lg:mb-[20px]"
           placeholder="Enter Password"
           type={showPw ? "text" : "password"}
           value={password}
@@ -321,41 +326,29 @@ function LoginScreen({
           rightEl={<EyeBtn />}
         />
 
-        <div className="flex justify-end -mt-[clamp(0.25rem,1vh,0.75rem)] min-[1440px]:mt-[0.97vw]">
+        <div className="flex justify-end lg:mb-[36px]">
           <button
             type="button"
             onClick={onForgotPassword}
-            className="
-      border-none
-      cursor-pointer
-      p-0
-      font-semibold
-      text-[#3D4949]
-      hover:text-[var(--text-heading)]
-      transition-colors
-      text-[13px]
-      leading-[18px]
-      sm:text-[14px]
-      sm:leading-[20px]
-      lg:text-[0.97vw]
-      lg:leading-[1.38vw]
-      tracking-normal
-      align-middle
-      whitespace-nowrap
-    "
+            className="border-none cursor-pointer p-0 font-semibold text-[#3D4949] hover:text-[#1A1C1D] transition-colors text-[14px] leading-[20px]"
+            style={{ fontFamily: "'Inter', sans-serif" }}
           >
             Forgot Password?
           </button>
         </div>
 
-        <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:mt-[1.2vw]">
-          <PrimaryButton type="submit" disabled={loading} className="lg:rounded-full lg:text-[1.11vw]">
+        <div>
+          <PrimaryButton 
+            type="submit" 
+            disabled={loading} 
+            className="lg:h-[52px] lg:rounded-[48px] lg:text-[16px] lg:leading-[16px]"
+          >
             {loading ? "Signing In..." : "Sign In"}
           </PrimaryButton>
         </div>
       </form>
 
-      <SecureFooter className="min-[1440px]:mt-[1vw] min-[1440px]:pt-0" />
+      <SecureFooter className="lg:mt-[31px]" />
     </LoginCard>
   );
 }
@@ -403,21 +396,27 @@ function ForgotPasswordScreen({
   };
 
   return (
-    <LoginCard className="min-[1440px]:h-auto">
-      <CardLogo className="min-[1440px]:mb-[3.2vw]" />
+    <LoginCard>
+      <CardLogo className="lg:mb-[25px]" />
 
-      <div className="mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 lg:flex lg:flex-col shrink-0 min-[1440px]:mb-[1.11vw]">
-        <h2 className="font-heading font-bold text-[var(--text-heading)] text-[clamp(1.25rem,1.66vw,1.5rem)] lg:text-[1.67vw] lg:leading-[2.92vw] leading-snug tracking-[-0.05625rem] m-0 mb-[clamp(0.25rem,0.4vw,0.5rem)] min-[1440px]:mb-[0.56vw] ">
+      <div className="flex flex-col items-start gap-[14px] lg:mb-[28px]">
+        <h2 
+          className="m-0 text-[#1A1C1D] text-[24px] font-bold leading-[40px] tracking-[-0.9px]"
+          style={{ fontFamily: "'Manrope', sans-serif" }}
+        >
           Forgot Your Password?
         </h2>
-        <p className="font-sans font-normal text-[var(--text-secondary)] text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] lg:leading-[1.53vw] leading-normal m-0 min-[1440px]:max-w-[20.35vw]">
+        <p 
+          className="m-0 text-[#3D4949] text-[16px] leading-[26px] font-normal"
+          style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+        >
           Enter your registered email address to receive a temporary password.
         </p>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col flex-1 min-[1440px]:flex-none gap-[clamp(0.75rem,2.5vh,1.5rem)] w-full min-[1440px]:gap-0"
+        className="flex flex-col w-full"
       >
         <InputField
           id="forgot-email"
@@ -428,17 +427,22 @@ function ForgotPasswordScreen({
           onChange={(e) => setEmail(e.target.value)}
           icon={User}
           error={error}
-          className="min-[1440px]:mt-[1vw] min-[1440px]:gap-[0.83vw]"
+          className="lg:mb-[24px]"
         />
 
-        <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:mt-[1.8vw] flex flex-col gap-4">
-          <PrimaryButton type="submit" disabled={isLoading} variant="secondary" className="lg:rounded-full lg:text-[1.11vw]">
+        <div className="flex flex-col gap-4 lg:mb-[36px]">
+          <PrimaryButton 
+            type="submit" 
+            disabled={isLoading} 
+            variant="secondary" 
+            className="lg:h-[52px] lg:rounded-[48px] lg:text-[16px] lg:leading-[16px]"
+          >
             {isLoading ? "Sending…" : "Reset Password"}
           </PrimaryButton>
           <button
             type="button"
             onClick={onBack}
-            className="border-none cursor-pointer p-0 bg-transparent font-semibold text-[#3D4949] hover:text-[var(--text-heading)] transition-colors text-[14px] self-center flex items-center justify-center gap-2"
+            className="border-none cursor-pointer p-0 bg-transparent font-semibold text-[#3D4949] hover:text-[#1A1C1D] transition-colors text-[14px] self-center flex items-center justify-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Login
@@ -446,7 +450,7 @@ function ForgotPasswordScreen({
         </div>
       </form>
 
-      <SecureFooter className="min-[1440px]:mt-[2vw] min-[1440px]:pt-0" />
+      <SecureFooter className="lg:mt-[31px]" />
     </LoginCard>
   );
 }
@@ -699,13 +703,16 @@ function Background() {
     <div className="absolute inset-0 overflow-hidden select-none">
       <img src={MainLoginBg} alt="Background" className="w-full h-full object-cover" />
       <div className="absolute inset-0 bg-black/20" />
-      <div className="hidden md:block absolute left-8 md:left-[6vw] xl:left-[7.64vw] 2xl:left-[6.875rem] bottom-20 md:bottom-[6.5vh] xl:bottom-[6.25rem] max-w-max flex flex-col justify-end">
-        <span className="font-sans font-bold text-white drop-shadow-lg text-3xl md:text-[3.2vw] xl:text-[3.33vw] 2xl:text-[3rem] leading-none tracking-tight block whitespace-nowrap">
-          Welcome To
-        </span>
-        <span className="font-sans font-normal text-white drop-shadow-lg text-4xl md:text-[3.8vw] xl:text-[3.89vw] 2xl:text-[3.5rem] leading-none tracking-normal block mt-3 whitespace-nowrap">
-          Greenland Capital
-        </span>
+      <div 
+        className="hidden lg:block absolute left-[110px] bottom-[110px] w-[482px] h-[134px] text-white select-none pointer-events-none"
+        style={{
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          fontWeight: 600,
+          fontSize: "48px",
+          lineHeight: "60px",
+        }}
+      >
+        Welcome To<br />Greenland Capital
       </div>
     </div>
   );
