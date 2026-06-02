@@ -1,7 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -20,6 +19,7 @@ type Props = {
 
 // ─── Figma constants ──────────────────────────────────────────────────────────
 
+/*
 const DEFAULT_DATA: DataItem[] = [
   {
     label: "Direct Referrals (Internal)",
@@ -42,11 +42,11 @@ const DEFAULT_DATA: DataItem[] = [
     color: "var(--pie-3)", // Dark Blue
   },
 ];
+*/
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function AgentAcquisitionSources({
-  data = DEFAULT_DATA,
   title = "Workforce structure",
   subtitle = "Yearly overview of employee statuses",
   className,
@@ -54,6 +54,7 @@ export function AgentAcquisitionSources({
   const [timeframe, setTimeframe] = useState<"Weekly" | "Monthly" | "Yearly">("Monthly");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  /*
   const timeframedData = useMemo(() => {
     switch (timeframe) {
       case "Weekly":
@@ -75,9 +76,9 @@ export function AgentAcquisitionSources({
         return data;
     }
   }, [timeframe, data]);
+  */
 
-  const total = useMemo(() => timeframedData.reduce((s, d) => s + d.value, 0), [timeframedData]);
-
+  
   return (
     <Card
       className={`w-full h-full flex flex-col min-h-0 box-border bg-[color:var(--surface-card)] rounded-[2rem] shadow-[var(--shadow-card-sm)] p-[clamp(1rem,1.67vw,2rem)] ${className ?? ""}`}
@@ -156,8 +157,17 @@ export function AgentAcquisitionSources({
       </div>
 
       {/* ── Body: donut + legend ──────────────────────────────────────────── */}
+      <div className="flex flex-row items-center justify-center flex-1 min-h-0">
+        <Typography
+          as="span"
+          className="text-[var(--text-primary)] opacity-60 font-medium text-[clamp(0.875rem,1vw,1rem)]"
+        >
+          No data available
+        </Typography>
+      </div>
+
+      {/* TODO: Integrate API data later
       <div className="flex flex-row items-center flex-1 min-h-0 gap-[clamp(1rem,3vw,2rem)]">
-        {/* ── Donut ────────────────────────────────────────────────────── */}
         <div
           className="relative shrink-0 flex items-center justify-center"
           style={{
@@ -165,10 +175,8 @@ export function AgentAcquisitionSources({
             height: "clamp(8.5rem,14.5vw,14.5rem)",
           }}
         >
-          {/* Outer ring border (extremely subtle guide circle) */}
           <div className="absolute inset-0 rounded-full border border-black/[0.04] box-border" />
 
-          {/* Recharts PieChart */}
           <div className="w-full h-full absolute">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -192,7 +200,6 @@ export function AgentAcquisitionSources({
             </ResponsiveContainer>
           </div>
 
-          {/* Inner circle content */}
           <div
             className="absolute rounded-full bg-[var(--priority-center-bg)] flex flex-col items-center justify-center pointer-events-none"
             style={{
@@ -215,11 +222,9 @@ export function AgentAcquisitionSources({
           </div>
         </div>
 
-        {/* ── Legend ───────────────────────────────────────────────────── */}
         <div className="flex-1 flex flex-col justify-center gap-[clamp(0.5rem,1.5vh,0.875rem)]">
           {timeframedData.map((item) => (
             <div key={item.label} className="flex items-center gap-[0.4375rem]">
-              {/* Dot */}
               <span
                 aria-hidden
                 className="inline-block rounded-full shrink-0"
@@ -230,7 +235,6 @@ export function AgentAcquisitionSources({
                 }}
               />
 
-              {/* Label */}
               <Typography
                 as="span"
                 className="font-[family-name:'Plus_Jakarta_Sans',sans-serif] font-medium text-[clamp(0.5625rem,0.65vw,0.625rem)] leading-[1.3] shrink-0 text-[color:var(--text-strong)]"
@@ -238,7 +242,6 @@ export function AgentAcquisitionSources({
                 {item.label}
               </Typography>
 
-              {/* Dashed separator line */}
               <div
                 className="flex-1 min-w-[0.625rem]"
                 style={{
@@ -248,7 +251,6 @@ export function AgentAcquisitionSources({
                 aria-hidden
               />
 
-              {/* Value */}
               <Typography
                 as="span"
                 className="font-[family-name:'Plus_Jakarta_Sans',sans-serif] font-medium text-[clamp(0.6875rem,0.9vw,0.875rem)] leading-[1.29] shrink-0 text-[color:var(--text-strong)]"
@@ -259,6 +261,7 @@ export function AgentAcquisitionSources({
           ))}
         </div>
       </div>
+      */}
     </Card>
   );
 }
