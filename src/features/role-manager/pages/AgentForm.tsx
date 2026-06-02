@@ -756,9 +756,6 @@ export default function AgentForm({
       );
     }
   };
-  if (successCardProps) {
-    return <Successcard {...successCardProps} />;
-  }
 
   const isVerified = isEdit && !!initialData?.firstName;
 
@@ -823,6 +820,10 @@ export default function AgentForm({
       });
     }
   }, [isViewMode, agentData, initialData, getLocationHierarchyDetails]);
+
+  if (successCardProps) {
+    return <Successcard {...successCardProps} />;
+  }
 
   if (isViewMode) {
     const data = agentData?.data || initialData;
@@ -908,7 +909,6 @@ export default function AgentForm({
                 <InfoField label="Email" value={email} />
                 <InfoField label="Phone number" value={phone} />
                 <InfoField label="Date Of Birth" value={dateOfBirth} />
-                <InfoField label="PAN Number" value={watch("panNumber") || data?.panCardNumber || data?.id_proof?.pan_card_number || "N/A"} />
                 <InfoField label="Address" value={watch("address") || data?.address || data?.address?.address || "N/A"} />
                 <InfoField label="State" value={watch("addressState") || data?.state || data?.address?.state || "N/A"} />
                 <InfoField label="City / Village" value={watch("city") || data?.city || data?.address?.city || "N/A"} />
@@ -1266,14 +1266,6 @@ export default function AgentForm({
               maxLength={6}
               disabled={isViewMode}
             />
-            <RHFTextField
-              name="panNumber"
-              control={control}
-              label="PAN Card Number"
-              placeholder="Enter PAN Number"
-              maxLength={30}
-              disabled={isViewMode}
-            />
           </div>
         </FormSection>
 
@@ -1441,8 +1433,13 @@ export default function AgentForm({
               </button>
               <Button
                 variant="primary"
-                onClick={handleSubmit(handleSave, () => {
-                  toast.error("Please fix validation errors before saving.");
+                onClick={handleSubmit(handleSave, (errors) => {
+                  const firstError = Object.values(errors)[0] as any;
+                  if (firstError?.message) {
+                    toast.error(firstError.message);
+                  } else {
+                    toast.error("Please fix validation errors before saving.");
+                  }
                 })}
                 loading={isLoading || isSubmitting}
                 className="
