@@ -12,7 +12,7 @@ interface Props {
   subtitle?: string;
 }
 
-const AgentOnboardingVelocity: React.FC<Props> = ({}) => {
+const AgentOnboardingVelocity: React.FC<Props> = ({ }) => {
   const [dateRange, setDateRange] = React.useState<{
     from: Date;
     to: Date;
@@ -46,7 +46,7 @@ const AgentOnboardingVelocity: React.FC<Props> = ({}) => {
     currentDate.setHours(0, 0, 0, 0);
     const endDate = new Date(end);
     endDate.setHours(23, 59, 59, 999);
-    
+
     while (currentDate <= endDate) {
       dates.push(new Date(currentDate));
       currentDate.setDate(currentDate.getDate() + 1);
@@ -78,15 +78,15 @@ const AgentOnboardingVelocity: React.FC<Props> = ({}) => {
       value: value,
     };
   });
-const maxValue =
-  chartData.length > 0
-    ? Math.max(...chartData.map((item) => item.value))
-    : 0;
+  const maxValue =
+    chartData.length > 0
+      ? Math.max(...chartData.map((item) => item.value))
+      : 0;
 
-const dynamicYMax =
-  maxValue > 10
-    ? Math.ceil(maxValue * 1.2)
-    : 10;
+  const dynamicYMax =
+    maxValue > 10
+      ? Math.ceil(maxValue * 1.2)
+      : 10;
   return (
     <Card
       className={cn(
@@ -143,9 +143,9 @@ const dynamicYMax =
 
             {roleDropdownOpen && (
               <>
-                <div 
-                  className="fixed inset-0 z-10" 
-                  onClick={() => setRoleDropdownOpen(false)} 
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setRoleDropdownOpen(false)}
                 />
                 <div className="absolute right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-20 w-44">
                   {(["Agent", "Field Officer", "Regional Officer", "Intelligence Officer"] as const).map((r) => (
@@ -169,6 +169,7 @@ const dynamicYMax =
           <DateRangePicker
             from={dateRange.from}
             to={dateRange.to}
+            maxDays={7}
             onRangeChange={(range) => {
               if (range) setDateRange(range);
             }}
@@ -177,15 +178,15 @@ const dynamicYMax =
       </div>
 
       {/* Content */}
-    <div
-  className="
+      <div
+        className="
     relative
     w-full
     h-full
     min-h-0
     overflow-hidden
   "
->
+      >
         {isLoading ? (
           <div className="flex h-full items-center justify-center text-sm text-[var(--text-muted)]">
             Loading...
@@ -207,7 +208,7 @@ const dynamicYMax =
                 chartData[0],
               )?.label
             }
-           yMax={dynamicYMax}
+            yMax={dynamicYMax}
             tooltipLabel="Agents"
           />
         )}
