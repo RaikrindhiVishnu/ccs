@@ -11,11 +11,20 @@ export const rtkQueryErrorLogger: Middleware = () => (next) => (action) => {
     const payload = action.payload as any;
     
     // Attempt to extract the server error message
-    const errorMessage =
+    let errorMessage =
       payload?.data?.message ||
       payload?.message ||
       payload?.error ||
-      "An error occurred while connecting to the server.";
+      "Something went wrong. Please try again.";
+
+    if (
+      typeof errorMessage === "string" &&
+      (errorMessage.toLowerCase().includes("connecting to the server") ||
+        errorMessage.toLowerCase().includes("failed to fetch") ||
+        errorMessage.toLowerCase().includes("fetch_error"))
+    ) {
+      errorMessage = "Something went wrong. Please try again.";
+    }
 
     // Display the error inside a rich Sonner toast
     toast.error(errorMessage);

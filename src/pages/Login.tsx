@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff, Lock, User, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Lock, User, ShieldCheck, ArrowLeft } from "lucide-react";
 import MainLoginBg from "@/assets/main login.svg";
 import GlcLogo from "@/assets/glc-logo.svg";
 import { useUpdatePasswordMutation } from "@/features/auth/api/authApi";
@@ -178,8 +178,10 @@ function LoginCard({
 // ─── SCREEN 1 · Login ─────────────────────────────────────────────────────────
 function LoginScreen({
   onSuccess,
+  onForgotPassword,
 }: {
   onSuccess: (d: { is_first_login: number; passwordUsed: string }) => void;
+  onForgotPassword: () => void;
 }) {
   const dispatch = useDispatch();
   const [login] = useLoginMutation();
@@ -191,7 +193,7 @@ function LoginScreen({
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!loginId.trim()) e.loginId = "Login ID is required";
+    if (!loginId.trim()) e.loginId = "Email address required";
     else if (!/\S+@\S+\.\S+/.test(loginId)) e.loginId = "Enter a valid email";
     if (!password) e.password = "Password is required";
     else if (password.length < 6)
@@ -218,19 +220,19 @@ function LoginScreen({
     if (mockUser) {
       const roleCode = ROLE_CODES[mockUser.role_id];
       dispatch(
-        setCredentials({
-          user: {
-            id: mockUser.id,
-            login_id: mockUser.login_id,
-            first_name: mockUser.first_name,
-            last_name: mockUser.last_name,
-            role_id: mockUser.role_id,
-            role: roleCode,
-            is_first_login: 0,
-          },
-          accessToken: "mock-token-" + roleCode.toLowerCase(),
-          refreshToken: "mock-refresh-" + roleCode.toLowerCase(),
-        })
+          setCredentials({
+            user: {
+              id: mockUser.id,
+              login_id: mockUser.login_id,
+              first_name: mockUser.first_name,
+              last_name: mockUser.last_name,
+              role_id: mockUser.role_id,
+              role: roleCode,
+              is_first_login: 0,
+            },
+            accessToken: "mock-token-" + roleCode.toLowerCase(),
+            refreshToken: "mock-refresh-" + roleCode.toLowerCase(),
+          })
       );
       onSuccess({ is_first_login: 0, passwordUsed: password });
       return;
@@ -245,19 +247,19 @@ function LoginScreen({
         password,
       }).unwrap();
       dispatch(
-        setCredentials({
-          user: {
-            id: response.id,
-            login_id: response.login_id,
-            first_name: response.first_name,
-            last_name: response.last_name,
-            role_id: response.role_id,
-            role: ROLE_CODES[response.role_id] || "",
-            is_first_login: response.is_first_login,
-          },
-          accessToken: response.token,
-          refreshToken: response.refreshToken,
-        })
+          setCredentials({
+            user: {
+              id: response.id,
+              login_id: response.login_id,
+              first_name: response.first_name,
+              last_name: response.last_name,
+              role_id: response.role_id,
+              role: ROLE_CODES[response.role_id] || "",
+              is_first_login: response.is_first_login,
+            },
+            accessToken: response.token,
+            refreshToken: response.refreshToken,
+          })
       );
 
       onSuccess({
@@ -267,7 +269,7 @@ function LoginScreen({
     } catch (err: any) {
       setErrors({
         password:
-          err?.data?.error || "Invalid credentials",
+            err?.data?.error || "Invalid credentials",
       });
     } finally {
       setLoading(false);
@@ -275,89 +277,210 @@ function LoginScreen({
   };
 
   const EyeBtn = () => (
-    <button
-      type="button"
-      onClick={() => setShowPw((v) => !v)}
-      className="border-none bg-transparent cursor-pointer p-0 flex items-center opacity-45 hover:opacity-75 transition-opacity"
-      aria-label={showPw ? "Hide password" : "Show password"}
-    >
-      {showPw ? (
-        <Eye
-          strokeWidth={1.8}
-          className="text-[var(--text-secondary)] w-5 h-5"
-        />
-      ) : (
-        <EyeOff
-          strokeWidth={1.8}
-          className="text-[var(--text-secondary)] w-5 h-5"
-        />
-      )}
-    </button>
+      <button
+          type="button"
+          onClick={() => setShowPw((v) => !v)}
+          className="border-none bg-transparent cursor-pointer p-0 flex items-center opacity-45 hover:opacity-75 transition-opacity"
+          aria-label={showPw ? "Hide password" : "Show password"}
+      >
+        {showPw ? (
+            <Eye
+                strokeWidth={1.8}
+                className="text-[var(--text-secondary)] w-5 h-5"
+            />
+        ) : (
+            <EyeOff
+                strokeWidth={1.8}
+                className="text-[var(--text-secondary)] w-5 h-5"
+            />
+        )}
+      </button>
   );
+
+  return (
+      <LoginCard>
+        <CardLogo />
+
+        {/* Heading block — Figma: top 145px from card top, logo ends ~120px, so ~25px gap */}
+        <div className="mb-[clamp(0.75rem,2.5vh,1.5rem)] min-[1440px]:absolute min-[1440px]:left-[48px] min-[1440px]:right-[48px] min-[1440px]:top-[160px] min-[1440px]:h-[106px] min-[1440px]:m-0 min-[1440px]:gap-[14px] min-[1440px]:flex min-[1440px]:flex-col min-[1440px]:align-start">
+          {/* Title: Manrope 700, 24px, tracking -0.9px, color #1A1C1D */}
+          <h1 className="font-heading font-bold text-[var(--text-heading)] text-[clamp(1.25rem,1.66vw,1.5rem)] min-[1440px]:text-[24px] min-[1440px]:leading-[40px] leading-snug tracking-[-0.05625rem] min-[1440px]:tracking-[-0.9px] min-[1440px]:w-[454px] min-[1440px]:h-[40px] m-0 mb-[clamp(0.25rem,0.4vw,0.5rem)] min-[1440px]:mb-0">
+            Role Manager Login
+          </h1>
+          {/* Subtitle: Plus Jakarta Sans 400, 16px, lh 26px, #3D4949 */}
+          <p className="font-sans font-normal text-[var(--text-secondary)] text-[clamp(0.875rem,1.11vw,1rem)] min-[1440px]:text-[16px] min-[1440px]:leading-[26px] min-[1440px]:w-[454px] min-[1440px]:h-[52px] leading-normal m-0">
+            Secure access for authorized Role Managers.
+            <br />
+            Please authenticate to continue.
+          </p>
+        </div>
+
+        {/* Form — Figma gap between inputs: 24px (login id gap + password margin) */}
+        <form
+            onSubmit={handleSubmit}
+            className="flex flex-col flex-1 gap-[clamp(0.75rem,2.5vh,1.5rem)] min-[1440px]:absolute min-[1440px]:left-[48px] min-[1440px]:right-[48px] min-[1440px]:top-[299px] min-[1440px]:h-auto min-[1440px]:m-0 min-[1440px]:gap-[20px] min-[1440px]:flex"
+        >
+          <InputField
+              id="login-id"
+              label="Email Address"
+              placeholder="Please Enter your registered Email address"
+              type="text"
+              value={loginId}
+              onChange={(e) => setLoginId(e.target.value)}
+              icon={User}
+              error={errors.loginId}
+              className="min-[1440px]:relative min-[1440px]:left-0 min-[1440px]:right-0 min-[1440px]:h-auto min-[1440px]:m-0 min-[1440px]:gap-[8px] min-[1440px]:flex min-[1440px]:flex-col"
+          />
+
+          <InputField
+              id="login-password"
+              label="Password"
+              placeholder="Enter Password"
+              type={showPw ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              icon={Lock}
+              error={errors.password}
+              labelRight={
+                <button
+                    type="button"
+                    onClick={onForgotPassword}
+                    className="border-none bg-transparent cursor-pointer p-0 font-sans font-medium text-[var(--text-secondary)] hover:text-[var(--text-heading)] transition-colors text-sm"
+                >
+                  Forgot Password?
+                </button>
+              }
+              rightEl={<EyeBtn />}
+              className="min-[1440px]:relative min-[1440px]:left-0 min-[1440px]:right-0 min-[1440px]:h-auto min-[1440px]:m-0 min-[1440px]:gap-[8px] min-[1440px]:flex min-[1440px]:flex-col"
+          />
+
+          {/* Submit button — Figma: 48px top margin from last input */}
+          <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:relative min-[1440px]:left-0 min-[1440px]:right-0 min-[1440px]:h-auto min-[1440px]:mt-[12px] min-[1440px]:m-0">
+            <PrimaryButton type="submit" disabled={loading} className="min-[1440px]:h-[52px] min-[1440px]:rounded-[48px] min-[1440px]:py-[20px]">
+              {loading ? "Signing In..." : "Sign In"}
+            </PrimaryButton>
+          </div>
+        </form>
+
+        <SecureFooter />
+      </LoginCard>
+  );
+}
+
+// ─── SCREEN 1.5 · Forgot Password ──────────────────────────────────────────
+function ForgotPasswordScreen({
+  onBack,
+}: {
+  onBack: () => void;
+}) {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setError("Email address required");
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(trimmedEmail)) {
+      setError("Enter a valid email");
+      return;
+    }
+
+    const isRegistered = MOCK_USERS.some(
+      (u) => u.login_id.toLowerCase() === trimmedEmail.toLowerCase()
+    );
+    if (!isRegistered) {
+      setError("Email address is not registered.");
+      return;
+    }
+
+    setSuccess(true);
+  };
 
   return (
     <LoginCard>
       <CardLogo />
 
-      {/* Heading block — Figma: top 145px from card top, logo ends ~120px, so ~25px gap */}
-      <div className="mb-[clamp(0.75rem,2.5vh,1.5rem)] min-[1440px]:absolute min-[1440px]:left-[48px] min-[1440px]:right-[48px] min-[1440px]:top-[145px] min-[1440px]:h-[106px] min-[1440px]:m-0 min-[1440px]:gap-[14px] min-[1440px]:flex min-[1440px]:flex-col min-[1440px]:align-start">
-        {/* Title: Manrope 700, 24px, tracking -0.9px, color #1A1C1D */}
-        <h1 className="font-heading font-bold text-[var(--text-heading)] text-[clamp(1.25rem,1.66vw,1.5rem)] min-[1440px]:text-[24px] min-[1440px]:leading-[40px] leading-snug tracking-[-0.05625rem] min-[1440px]:tracking-[-0.9px] min-[1440px]:w-[454px] min-[1440px]:h-[40px] m-0 mb-[clamp(0.25rem,0.4vw,0.5rem)] min-[1440px]:mb-0">
-          Role Manager Login
-        </h1>
-        {/* Subtitle: Plus Jakarta Sans 400, 16px, lh 26px, #3D4949 */}
-        <p className="font-sans font-normal text-[var(--text-secondary)] text-[clamp(0.875rem,1.11vw,1rem)] min-[1440px]:text-[16px] min-[1440px]:leading-[26px] min-[1440px]:w-[454px] min-[1440px]:h-[52px] leading-normal m-0">
-          Secure access for authorised role managers.
-          <br />
-          Please authenticate to continue.
+      <div className="mb-[clamp(0.75rem,2.5vh,1.5rem)] min-[1440px]:absolute min-[1440px]:left-[48px] min-[1440px]:right-[48px] min-[1440px]:top-[160px] min-[1440px]:h-[106px] min-[1440px]:m-0 min-[1440px]:gap-[14px] min-[1440px]:flex min-[1440px]:flex-col min-[1440px]:align-start">
+        <h2 className="font-sans font-bold text-[var(--text-heading)] text-[clamp(1.25rem,1.66vw,1.5rem)] min-[1440px]:text-[24px] min-[1440px]:leading-[42px] leading-snug m-0 mb-[clamp(0.25rem,0.4vw,0.5rem)] min-[1440px]:mb-0">
+          Forgot Your Password?
+        </h2>
+        <p className="font-sans font-normal text-[var(--text-secondary)] text-[clamp(0.875rem,1.11vw,1rem)] min-[1440px]:text-[16px] min-[1440px]:leading-[22px] min-[1440px]:w-[454px] min-[1440px]:h-[45px] leading-normal m-0">
+          Enter your registered email address to receive a temporary password.
         </p>
       </div>
 
-      {/* Form — Figma gap between inputs: 24px (login id gap + password margin) */}
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col flex-1 gap-[clamp(0.75rem,2.5vh,1.5rem)] min-[1440px]:absolute min-[1440px]:left-[48px] min-[1440px]:right-[48px] min-[1440px]:top-[279px] min-[1440px]:h-[292px] min-[1440px]:m-0 min-[1440px]:gap-0 min-[1440px]:block"
-      >
-        <InputField
-          id="login-id"
-          label="Login ID"
-          placeholder="Enter your assigned ID"
-          type="text"
-          value={loginId}
-          onChange={(e) => setLoginId(e.target.value)}
-          icon={User}
-          error={errors.loginId}
-          className="min-[1440px]:absolute min-[1440px]:left-0 min-[1440px]:right-0 min-[1440px]:top-[10px] min-[1440px]:h-[84px] min-[1440px]:m-0 min-[1440px]:gap-[8px] min-[1440px]:flex min-[1440px]:flex-col"
-        />
-
-        <InputField
-          id="login-password"
-          label="Password"
-          placeholder="Enter Password"
-          type={showPw ? "text" : "password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          icon={Lock}
-          error={errors.password}
-          labelRight={
-            <button
-              type="button"
-              className="border-none bg-transparent cursor-pointer p-0 font-sans font-medium text-[var(--text-secondary)] hover:text-[var(--text-heading)] transition-colors text-sm"
+      {success ? (
+        <div className="flex flex-col items-center justify-center flex-1 gap-3 py-6 min-[1440px]:absolute min-[1440px]:left-[48px] min-[1440px]:right-[48px] min-[1440px]:top-[299px] min-[1440px]:w-[454px]">
+          <div className="rounded-full bg-[var(--status-success-soft)] flex items-center justify-center w-14 h-14">
+            <svg
+              className="w-6 h-6"
+              viewBox="0 0 24 24"
+              fill="none"
             >
-              Forgot Password?
-            </button>
-          }
-          rightEl={<EyeBtn />}
-          className="min-[1440px]:absolute min-[1440px]:left-0 min-[1440px]:right-0 min-[1440px]:top-[94px] min-[1440px]:h-[108px] min-[1440px]:pt-[24px] min-[1440px]:m-0 min-[1440px]:gap-[8px] min-[1440px]:flex min-[1440px]:flex-col"
-        />
-
-        {/* Submit button — Figma: 48px top margin from last input */}
-        <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:absolute min-[1440px]:left-0 min-[1440px]:right-0 min-[1440px]:top-[192px] min-[1440px]:h-[100px] min-[1440px]:pt-[48px] min-[1440px]:m-0">
-          <PrimaryButton type="submit" disabled={loading} className="min-[1440px]:h-[52px] min-[1440px]:rounded-[48px] min-[1440px]:py-[20px]">
-            {loading ? "Signing in…" : "LOGIN"}
-          </PrimaryButton>
+              <path
+                d="M5 12l5 5L19 7"
+                stroke="#006D3A"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <p className="font-sans font-semibold text-[var(--status-success)] text-center text-base m-0">
+            Reset request sent!
+          </p>
+          <p className="font-sans text-[var(--text-secondary)] text-sm text-center m-0">
+            A temporary password has been sent to your email address.
+          </p>
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex items-center justify-center gap-2 border-none bg-transparent cursor-pointer font-sans font-semibold text-[var(--text-secondary)] hover:text-[var(--text-heading)] transition-colors text-sm mt-6"
+          >
+            <ArrowLeft size={16} />
+            Back to Login
+          </button>
         </div>
-      </form>
+      ) : (
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col flex-1 gap-[clamp(0.75rem,2.5vh,1.5rem)] min-[1440px]:absolute min-[1440px]:left-[48px] min-[1440px]:right-[48px] min-[1440px]:top-[299px] min-[1440px]:h-auto min-[1440px]:m-0 min-[1440px]:gap-[20px] min-[1440px]:flex"
+        >
+          <InputField
+            id="reset-email"
+            label="Email Address"
+            placeholder="Please enter your registered Email address"
+            type="text"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            icon={User}
+            error={error}
+            className="min-[1440px]:relative min-[1440px]:left-0 min-[1440px]:right-0 min-[1440px]:h-auto min-[1440px]:m-0 min-[1440px]:gap-[8px] min-[1440px]:flex min-[1440px]:flex-col"
+          />
+
+          <div className="mt-2 min-[1440px]:relative min-[1440px]:left-0 min-[1440px]:right-0 min-[1440px]:h-auto min-[1440px]:mt-[12px] min-[1440px]:m-0">
+            <PrimaryButton type="submit" className="min-[1440px]:h-[52px] min-[1440px]:rounded-[48px] min-[1440px]:py-[20px]">
+              Reset Password
+            </PrimaryButton>
+          </div>
+
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex items-center justify-center gap-2 border-none bg-transparent cursor-pointer font-sans font-semibold text-[var(--text-secondary)] hover:text-[var(--text-heading)] transition-colors text-sm mx-auto mt-4"
+          >
+            <ArrowLeft size={16} />
+            Back to Login
+          </button>
+        </form>
+      )}
 
       <SecureFooter />
     </LoginCard>
@@ -643,7 +766,7 @@ function Background() {
 // ─── Root ─────────────────────────────────────────────────────────────────────
 export default function LoginFlow() {
   const navigate = useNavigate();
-  type Screen = "login" | "update-default" | "change-password" | "dashboard";
+  type Screen = "login" | "update-default" | "change-password" | "dashboard" | "forgot-password";
   const [screen, setScreen] = useState<Screen>("login");
   const [oldPassword, setOldPassword] = useState("");
 
@@ -666,7 +789,16 @@ export default function LoginFlow() {
     <div className="fixed inset-0 font-sans overflow-hidden">
       <Background />
 
-      {screen === "login" && <LoginScreen onSuccess={handleLoginSuccess} />}
+      {screen === "login" && (
+        <LoginScreen
+          onSuccess={handleLoginSuccess}
+          onForgotPassword={() => setScreen("forgot-password")}
+        />
+      )}
+
+      {screen === "forgot-password" && (
+        <ForgotPasswordScreen onBack={() => setScreen("login")} />
+      )}
 
       {screen === "update-default" && (
         <UpdateDefaultPasswordScreen
