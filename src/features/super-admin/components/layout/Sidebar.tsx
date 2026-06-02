@@ -1,5 +1,5 @@
 import * as Icons from "lucide-react";
-import sidebarImg from "@/assets/sidebar.png";
+
 import { NavLink, useNavigate } from "react-router-dom";
 import { type NavItem } from "@/core/config/layoutConfig";
 
@@ -64,10 +64,10 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems = [] }) => {
         {/* Profile avatar */}
         <div
           onClick={() => navigate("/super-admin/profile")}
-          className="w-12 h-12 rounded-xl overflow-hidden bg-gray-800 shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
+          className="w-12 h-12 rounded-xl bg-[#252729] flex justify-center items-center shrink-0 cursor-pointer hover:bg-[#2D3032] transition-colors"
           title="Profile"
         >
-          <img src={sidebarImg} alt="profile" className="w-full h-full object-cover" />
+          <Icons.User size={22} className="text-[#8E9093]" />
         </div>
       </div>
     </div>
