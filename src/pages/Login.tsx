@@ -11,12 +11,13 @@ import { UserRole, ROLE_CODES } from "@/features/auth/types";
 
 // ─── Dev Mock Users ───────────────────────────────────────────────────────────
 const MOCK_USERS = [
-  { login_id: "manager@glc.com", password: "manager@123", role_id: UserRole.ROLEMNGR, first_name: "Harish", last_name: "Kumar", id: 102 },
-  { login_id: "ccs@glc.com", password: "ccs@123456", role_id: UserRole.CCS, first_name: "CCS", last_name: "Officer", id: 103 },
-  { login_id: "field.officer@glc.com", password: "field.officer@123", role_id: UserRole.FO, first_name: "Field", last_name: "Officer", id: 104 },
-  { login_id: "io@glc.com", password: "io@123456", role_id: UserRole.IO, first_name: "Intelligence", last_name: "Officer", id: 105 },
-  { login_id: "regional@glc.com", password: "regional@123", role_id: UserRole.RO, first_name: "Edward", last_name: "Janowski", id: 106 },
-  { login_id: "vo2@glc.com", password: "vo2@123", role_id: UserRole.VO2, first_name: "Verification", last_name: "Officer 2", id: 107 },
+  { login_id: "manager@glc.com",      password: "manager@123",      role_id: UserRole.ROLEMNGR, first_name: "Harish",        last_name: "Kumar",    id: 102 },
+  { login_id: "ccs@glc.com",          password: "ccs@123456",       role_id: UserRole.CCS,      first_name: "CCS",           last_name: "Officer",  id: 103 },
+  { login_id: "field.officer@glc.com",password: "field.officer@123",role_id: UserRole.FO,       first_name: "Field",         last_name: "Officer",  id: 104 },
+  { login_id: "io@glc.com",           password: "io@123456",        role_id: UserRole.IO,       first_name: "Intelligence",  last_name: "Officer",  id: 105 },
+  { login_id: "regional@glc.com",     password: "regional@123",     role_id: UserRole.RO,       first_name: "Edward",        last_name: "Janowski", id: 106 },
+  { login_id: "vo1@glc.com",          password: "vo1@123",          role_id: UserRole.VO1,      first_name: "Verification",  last_name: "Officer 1",id: 108 },
+  { login_id: "vo2@glc.com",          password: "vo2@123",          role_id: UserRole.VO2,      first_name: "Verification",  last_name: "Officer 2",id: 107 },
 ];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
