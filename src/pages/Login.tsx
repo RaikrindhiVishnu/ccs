@@ -278,17 +278,17 @@ function LoginScreen({
 
   return (
     <LoginCard>
-      <CardLogo className="lg:mb-[25px]" />
+      <CardLogo className="lg:mb-[20px]" />
 
-      <div className="flex flex-col items-start gap-[14px] lg:mb-[28px]">
+      <div className="flex flex-col items-start gap-[10px] lg:mb-[20px]">
         <h1 
-          className="m-0 text-[#1A1C1D] text-[24px] font-bold leading-[40px] tracking-[-0.9px]"
+          className="m-0 text-[#1A1C1D] text-[24px] font-bold leading-[32px] tracking-[-0.9px]"
           style={{ fontFamily: "'Manrope', sans-serif" }}
         >
           Role Manager Login
         </h1>
         <p 
-          className="m-0 text-[#3D4949] text-[16px] leading-[26px] font-normal"
+          className="m-0 text-[#3D4949] text-[15px] leading-[22px] font-normal"
           style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
         >
           Secure access for authorized Role Managers.
@@ -310,13 +310,13 @@ function LoginScreen({
           onChange={(e) => setLoginId(e.target.value)}
           icon={User}
           error={errors.loginId}
-          className="lg:mb-[24px]"
+          className="lg:mb-[16px]"
         />
 
         <InputField
           id="login-password"
           label="Password"
-          className="lg:mb-[20px]"
+          className="lg:mb-[16px]"
           placeholder="Enter Password"
           type={showPw ? "text" : "password"}
           value={password}
@@ -326,7 +326,7 @@ function LoginScreen({
           rightEl={<EyeBtn />}
         />
 
-        <div className="flex justify-end lg:mb-[36px]">
+        <div className="flex justify-end lg:mb-[24px]">
           <button
             type="button"
             onClick={onForgotPassword}
@@ -348,7 +348,7 @@ function LoginScreen({
         </div>
       </form>
 
-      <SecureFooter className="lg:mt-[31px]" />
+      <SecureFooter className="lg:mt-[24px]" />
     </LoginCard>
   );
 }
@@ -397,17 +397,17 @@ function ForgotPasswordScreen({
 
   return (
     <LoginCard>
-      <CardLogo className="lg:mb-[25px]" />
+      <CardLogo className="lg:mb-[20px]" />
 
-      <div className="flex flex-col items-start gap-[14px] lg:mb-[28px]">
+      <div className="flex flex-col items-start gap-[10px] lg:mb-[20px]">
         <h2 
-          className="m-0 text-[#1A1C1D] text-[24px] font-bold leading-[40px] tracking-[-0.9px]"
+          className="m-0 text-[#1A1C1D] text-[24px] font-bold leading-[32px] tracking-[-0.9px]"
           style={{ fontFamily: "'Manrope', sans-serif" }}
         >
           Forgot Your Password?
         </h2>
         <p 
-          className="m-0 text-[#3D4949] text-[16px] leading-[26px] font-normal"
+          className="m-0 text-[#3D4949] text-[15px] leading-[22px] font-normal"
           style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
         >
           Enter your registered email address to receive a temporary password.
@@ -427,10 +427,10 @@ function ForgotPasswordScreen({
           onChange={(e) => setEmail(e.target.value)}
           icon={User}
           error={error}
-          className="lg:mb-[24px]"
+          className="lg:mb-[16px]"
         />
 
-        <div className="flex flex-col gap-4 lg:mb-[36px]">
+        <div className="flex flex-col gap-4 lg:mb-[24px]">
           <PrimaryButton 
             type="submit" 
             disabled={isLoading} 
@@ -450,7 +450,7 @@ function ForgotPasswordScreen({
         </div>
       </form>
 
-      <SecureFooter className="lg:mt-[31px]" />
+      <SecureFooter className="lg:mt-[24px]" />
     </LoginCard>
   );
 }
@@ -529,7 +529,7 @@ function ForgotPasswordSuccessScreen({
           Done
         </button>
       </div>
-      <SecureFooter className="lg:mt-[31px]" />
+      <SecureFooter className="lg:mt-[24px]" />
     </div>
   );
 }
@@ -575,7 +575,7 @@ function UpdateDefaultPasswordScreen({
         </div>
       </div>
 
-      <SecureFooter className="lg:mt-[31px]" />
+      <SecureFooter className="lg:mt-[24px]" />
     </LoginCard>
   );
 }
@@ -693,7 +693,7 @@ function ChangePasswordScreen({ onDone, oldPassword }: { onDone: () => void; old
         </form>
       )}
 
-      <SecureFooter className="lg:mt-[31px]" />
+      <SecureFooter className="lg:mt-[24px]" />
     </LoginCard>
   );
 }
