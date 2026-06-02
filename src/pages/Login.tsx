@@ -278,15 +278,15 @@ function LoginScreen({
   );
 
   return (
-    <LoginCard className="min-[1440px]:h-[48.68vw]">
-      <CardLogo className="min-[1440px]:mb-[1.72vw]" />
+    <LoginCard className="min-[1440px]:h-auto min-[1440px]:min-h-[48.68vw]">
+      <CardLogo className="min-[1440px]:mb-[3.2vw]" />
 
       <div className="mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 lg:flex lg:flex-col lg:items-start shrink-0 min-[1440px]:mb-[1.94vw]">
-        <h1 className="font-heading font-bold text-[var(--text-heading)] text-[clamp(1.25rem,1.66vw,1.5rem)] lg:text-[1.67vw] lg:leading-[2.78vw] leading-snug tracking-[-0.05625rem] lg:tracking-[-0.06vw] m-0 mb-[clamp(0.25rem,0.4vw,0.5rem)] min-[1440px]:mb-[0.97vw] ">
+        <h1 className="font-heading font-bold text-[var(--text-heading)] text-[clamp(1.25rem,1.66vw,1.5rem)] lg:text-[1.67vw] lg:leading-[2.78vw] leading-snug tracking-[-0.05625rem] lg:tracking-[-0.06vw] m-0 mb-[clamp(0.25rem,0.4vw,0.5rem)] min-[1440px]:mb-[0.97vw]">
           Role Manager Login
         </h1>
         <p className="font-sans font-normal text-[var(--text-secondary)] text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] lg:leading-[1.81vw] leading-normal m-0">
-          Secure access for authorised role managers.
+          Secure access for authorized Role Managers.
           <br />
           Please authenticate to continue.
         </p>
@@ -298,20 +298,20 @@ function LoginScreen({
       >
         <InputField
           id="login-id"
-          label="Login ID"
-          placeholder="Enter your assigned ID"
+          label="Email Address"
+          placeholder="Please Enter your registered Email address"
           type="text"
           value={loginId}
           onChange={(e) => setLoginId(e.target.value)}
           icon={User}
           error={errors.loginId}
-          className="min-[1440px]:mt-[1.67vw]"
+          className="min-[1440px]:mt-[1vw]"
         />
 
         <InputField
           id="login-password"
           label="Password"
-          className="min-[1440px]:mt-[1.67vw]"
+          className="min-[1440px]:mt-[1vw]"
           placeholder="Enter Password"
           type={showPw ? "text" : "password"}
           value={password}
@@ -348,14 +348,14 @@ function LoginScreen({
           </button>
         </div>
 
-        <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:mt-[1.67vw]">
-          <PrimaryButton type="submit" disabled={loading} className=" lg:rounded-full lg:text-[1.11vw]">
-            {loading ? "Signing in…" : "LOGIN"}
+        <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:mt-[1.2vw]">
+          <PrimaryButton type="submit" disabled={loading} className="lg:rounded-full lg:text-[1.11vw]">
+            {loading ? "Signing In..." : "Sign In"}
           </PrimaryButton>
         </div>
       </form>
 
-      <SecureFooter />
+      <SecureFooter className="min-[1440px]:mt-[1vw] min-[1440px]:pt-0" />
     </LoginCard>
   );
 }
