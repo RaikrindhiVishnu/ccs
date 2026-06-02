@@ -529,6 +529,7 @@ function ForgotPasswordSuccessScreen({
           Done
         </button>
       </div>
+      <SecureFooter className="lg:mt-[31px]" />
     </div>
   );
 }
@@ -574,7 +575,7 @@ function UpdateDefaultPasswordScreen({
         </div>
       </div>
 
-      <SecureFooter className="min-[1440px]:mt-[1.39vw] min-[1440px]:pt-0" />
+      <SecureFooter className="lg:mt-[31px]" />
     </LoginCard>
   );
 }
@@ -692,7 +693,7 @@ function ChangePasswordScreen({ onDone, oldPassword }: { onDone: () => void; old
         </form>
       )}
 
-      <SecureFooter className="min-[1440px]:mt-[1.39vw] min-[1440px]:pt-0" />
+      <SecureFooter className="lg:mt-[31px]" />
     </LoginCard>
   );
 }
