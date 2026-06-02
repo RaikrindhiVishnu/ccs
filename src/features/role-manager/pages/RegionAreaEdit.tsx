@@ -1668,12 +1668,37 @@ const RegionAreaEdit: React.FC = () => {
   useEffect(() => {
     if (!map.current || !geoMasterData || mapLoaded === 0) return;
 
-    const showMandals = editModeType === "area" || !!selectedRegion;
+    const showMandals = editModeType === "area";
     if (!showMandals) {
       if (map.current.getLayer("mandals-fill")) {
         map.current.setLayoutProperty("mandals-fill", "visibility", "none");
         map.current.setLayoutProperty("mandals-line", "visibility", "none");
         map.current.setLayoutProperty("mandals-labels", "visibility", "none");
+      }
+      
+      if (map.current.getLayer("regions-fill")) {
+        if (selectedRegion) {
+          const regionId = getRegionId(selectedRegion);
+          map.current.setFilter("regions-fill", [
+            "==",
+            ["coalesce", ["get", "region_id"], ["get", "id"]],
+            regionId,
+          ]);
+        } else {
+          map.current.setFilter("regions-fill", null);
+        }
+      }
+      if (map.current.getLayer("regions-line")) {
+        if (selectedRegion) {
+          const regionId = getRegionId(selectedRegion);
+          map.current.setFilter("regions-line", [
+            "==",
+            ["coalesce", ["get", "region_id"], ["get", "id"]],
+            regionId,
+          ]);
+        } else {
+          map.current.setFilter("regions-line", null);
+        }
       }
       return;
     }
@@ -1702,10 +1727,6 @@ const RegionAreaEdit: React.FC = () => {
           }
           areasList = regionAreasData?.data || [];
         }
-      } else if (selectedRegion) {
-        parentRegionId = getRegionId(selectedRegion);
-        districtIds = getDistrictIdsFromRegion(selectedRegion, geoMasterData);
-        areasList = regionAreasData?.data || [];
       }
 
       // Filter out current area
