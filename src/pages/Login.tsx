@@ -49,31 +49,31 @@ function InputField({
   className = "",
 }: InputFieldProps) {
   return (
-    <div className={`flex flex-col w-full gap-[clamp(0.375rem,0.4vw,0.5rem)] ${className}`}>
+    <div className={`flex flex-col w-full gap-[8px] ${className}`}>
       {(label || labelRight) && (
-        <div className="flex items-center justify-between h-5 ">
+        <div className="flex items-center justify-between h-5">
           {label && (
             <label
               htmlFor={id}
-              className="font-sans font-medium text-[var(--text-secondary)] text-[clamp(0.75rem,0.97vw,0.875rem)] lg:text-[0.97vw] leading-none"
+              className="font-sans font-medium text-[#3D4949] text-[14px] leading-[20px]"
             >
               {label}
             </label>
           )}
           {labelRight && (
-            <div className="text-[clamp(0.75rem,0.97vw,0.875rem)] lg:text-[0.97vw] font-medium text-[var(--text-secondary)]">
+            <div className="text-[14px] font-medium text-[#3D4949]">
               {labelRight}
             </div>
           )}
         </div>
       )}
 
-      <div className="relative flex items-center w-full bg-[var(--surface-page)] h-[clamp(2.75rem,5.5vh,3.5rem)] min-[1440px]:h-[3.89vw] rounded-full">
+      <div className="relative flex items-center w-full bg-[#F3F3F5] h-[56px] rounded-[32px]">
         {Icon && (
-          <span className="absolute pointer-events-none flex items-center opacity-50 left-[clamp(0.875rem,1.11vw,1.25rem)] lg:left-[1.11vw]">
+          <span className="absolute pointer-events-none flex items-center opacity-50 left-[16px]">
             <Icon
               strokeWidth={1.8}
-              className="text-[var(--text-secondary)] w-[clamp(1rem,1.25vw,1.25rem)] lg:w-[1.11vw] h-[clamp(1rem,1.25vw,1.25rem)] lg:h-[1.11vw]"
+              className="text-[#6D7A7A] w-[13.33px] h-[13.33px]"
             />
           </span>
         )}
@@ -84,20 +84,20 @@ function InputField({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full h-full bg-transparent border-none outline-none font-sans font-normal text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/60 rounded-full text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] ${Icon ? "pl-[clamp(2.5rem,3.47vw,3.125rem)] lg:pl-[3.33vw]" : "pl-[clamp(0.875rem,1.11vw,1.25rem)] lg:pl-[1.11vw]"
-            } ${rightEl ? "pr-[clamp(2.5rem,3.47vw,3.125rem)] lg:pr-[3.33vw]" : "pr-[clamp(0.875rem,1.11vw,1.25rem)] lg:pr-[1.11vw]"
+          className={`w-full h-full bg-transparent border-none outline-none font-sans font-normal text-[#1A1C1D] placeholder:text-[#6D7A7A]/60 rounded-[32px] text-[16px] ${Icon ? "pl-[48px]" : "pl-[16px]"
+            } ${rightEl ? "pr-[48px]" : "pr-[16px]"
             }`}
         />
 
         {rightEl && (
-          <span className="absolute flex items-center right-[clamp(0.875rem,1.11vw,1.25rem)] lg:right-[1.11vw]">
+          <span className="absolute flex items-center right-[16px]">
             {rightEl}
           </span>
         )}
       </div>
 
       {error && (
-        <p className="font-sans text-red-600 text-[clamp(0.6875rem,0.83vw,0.75rem)] mt-0.5">
+        <p className="font-sans text-red-600 text-[12px] mt-0.5">
           {error}
         </p>
       )}
