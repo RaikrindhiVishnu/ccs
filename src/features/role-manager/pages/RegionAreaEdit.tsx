@@ -1848,6 +1848,12 @@ const RegionAreaEdit: React.FC = () => {
                     "region_map_is_zoomed",
                     isZoomed ? "true" : "false",
                   );
+                  if (selectedRegion) {
+                    sessionStorage.setItem(
+                      "selected_region_id",
+                      String(getRegionId(selectedRegion)),
+                    );
+                  }
                 }
                 navigate(`/role-manager/area-details/${mProps.areaId}`, {
                   state: {
@@ -2437,6 +2443,7 @@ const RegionAreaEdit: React.FC = () => {
 
             if (savedSelectedState) {
               setSelectedState(JSON.parse(savedSelectedState));
+              setAssignPanelOpen(true);
             }
             if (savedIsZoomed === "true") {
               setIsZoomed(true);
@@ -2543,6 +2550,42 @@ const RegionAreaEdit: React.FC = () => {
     assignedRegionsRef.current = assignedRegions;
   }, [assignedRegions]);
 
+  // Restore selectedState or selectedRegion when returning to View Mode
+  useEffect(() => {
+    if (isEditMode) return;
+
+    const mode = searchParams.get("mode") || "region";
+
+    if (mode === "region") {
+      const savedSelectedState = sessionStorage.getItem("region_map_selected_state");
+      if (savedSelectedState) {
+        try {
+          const stateObj = JSON.parse(savedSelectedState);
+          setSelectedState(stateObj);
+          setAssignPanelOpen(true);
+          setIsZoomed(true);
+        } catch (e) {
+          console.error("Failed to restore selected state:", e);
+        }
+        sessionStorage.removeItem("region_map_selected_state");
+      }
+    } else if (mode === "area") {
+      const savedRegionId = sessionStorage.getItem("selected_region_id");
+      if (savedRegionId && allRegionsData?.features?.length > 0) {
+        const regionIdNum = Number(savedRegionId);
+        const matchedRegion = allRegionsData.features.find(
+          (f: any) => getRegionId(f) === regionIdNum
+        );
+        if (matchedRegion && !selectedRegion) {
+          setSelectedRegion(matchedRegion);
+          setAssignPanelOpen(true);
+          setIsZoomed(true);
+          sessionStorage.removeItem("selected_region_id");
+        }
+      }
+    }
+  }, [allRegionsData, selectedRegion, isEditMode, searchParams]);
+
   const resetView = () => {
     map.current?.flyTo({
       center: [78.9629, 20.5937],
@@ -2577,11 +2620,38 @@ const RegionAreaEdit: React.FC = () => {
     setEditSearchQuery("");
 
     if (editModeType === "area") {
-      navigate("/role-manager/create-regions-and-areas?mode=view");
+      if (selectedRegion) {
+        sessionStorage.setItem(
+          "selected_region_id",
+          String(getRegionId(selectedRegion)),
+        );
+      }
+      navigate("/role-manager/region-area-edit?mode=area");
       return;
     }
 
-    // Zoom back out to the state view instead of starting overview!
+    if (editModeType === "region") {
+      if (selectedState) {
+        sessionStorage.setItem(
+          "region_map_selected_state",
+          JSON.stringify(selectedState),
+        );
+        if (map.current) {
+          const center = map.current.getCenter();
+          sessionStorage.setItem(
+            "region_map_center",
+            JSON.stringify([center.lng, center.lat]),
+          );
+          sessionStorage.setItem(
+            "region_map_zoom",
+            map.current.getZoom().toString(),
+          );
+          sessionStorage.setItem("region_map_is_zoomed", "true");
+        }
+      }
+      navigate("/role-manager/region-area-edit?mode=region");
+      return;
+    }
     if (selectedState && map.current) {
       map.current.fitBounds(getFeatureBounds(selectedState), {
         padding: 100,
@@ -2737,9 +2807,14 @@ const RegionAreaEdit: React.FC = () => {
 
         toast.success("Area updated successfully!");
 
-        // Return to country view by clearing params and resetting the map state
-        // Force a full refresh to completely clear map layers and state
-        window.location.href = "/role-manager/region-area-dashboard";
+        // Return to initial map view with the assigned/unassigned filters restored
+        if (selectedRegion) {
+          sessionStorage.setItem(
+            "selected_region_id",
+            String(getRegionId(selectedRegion)),
+          );
+        }
+        window.location.href = "/role-manager/region-area-edit?mode=area";
       } catch (err: any) {
         console.error("RegionAreaEdit: Area update failed:", err);
         toast.error(
@@ -2893,8 +2968,26 @@ const RegionAreaEdit: React.FC = () => {
       setSelectedIntelligenceOfficerId(null);
       setSearchParams({});
 
-      // 4. Navigate back to dashboard view
-      navigate("/role-manager/region-area-dashboard");
+      // 4. Navigate back to initial map view with the assigned/unassigned filters restored
+      if (selectedState) {
+        sessionStorage.setItem(
+          "region_map_selected_state",
+          JSON.stringify(selectedState),
+        );
+        if (map.current) {
+          const center = map.current.getCenter();
+          sessionStorage.setItem(
+            "region_map_center",
+            JSON.stringify([center.lng, center.lat]),
+          );
+          sessionStorage.setItem(
+            "region_map_zoom",
+            map.current.getZoom().toString(),
+          );
+          sessionStorage.setItem("region_map_is_zoomed", "true");
+        }
+      }
+      window.location.href = "/role-manager/region-area-edit?mode=region";
     } catch (err: any) {
       console.error("RegionAreaEdit: Update failed:", err);
       const errMsg =
@@ -3230,8 +3323,8 @@ const RegionAreaEdit: React.FC = () => {
                                   key={district.i}
                                   onClick={() => toggleEditDistrictSelection(district)}
                                   className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-semibold transition-all ${isSelected
-                                      ? "bg-blue-50 text-blue-600 hover:bg-blue-100/80"
-                                      : "hover:bg-slate-50 text-slate-700"
+                                    ? "bg-blue-50 text-blue-600 hover:bg-blue-100/80"
+                                    : "hover:bg-slate-50 text-slate-700"
                                     }`}
                                 >
                                   <div className="flex items-center gap-2">
@@ -3269,8 +3362,8 @@ const RegionAreaEdit: React.FC = () => {
                                 key={mandal.i}
                                 onClick={() => toggleEditMandalSelection(mandal)}
                                 className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-semibold transition-all ${isSelected
-                                    ? "bg-blue-50 text-blue-600 hover:bg-blue-100/80"
-                                    : "hover:bg-slate-50 text-slate-700"
+                                  ? "bg-blue-50 text-blue-600 hover:bg-blue-100/80"
+                                  : "hover:bg-slate-50 text-slate-700"
                                   }`}
                               >
                                 <div className="flex items-center gap-2">
@@ -3494,8 +3587,8 @@ const RegionAreaEdit: React.FC = () => {
                         setShowRegionsList(false);
                       }}
                       className={`w-full text-left px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-0 ${activeFilter === option
-                          ? "bg-blue-50 text-blue-600"
-                          : "bg-white text-slate-700 hover:bg-slate-50"
+                        ? "bg-blue-50 text-blue-600"
+                        : "bg-white text-slate-700 hover:bg-slate-50"
                         }`}
                     >
                       {option === "assigned"
@@ -3628,8 +3721,8 @@ const RegionAreaEdit: React.FC = () => {
                               setShowRegionsList(false);
                             }}
                             className={`w-full text-left px-4 py-2.5 cursor-pointer transition-all duration-200 flex items-center justify-between gap-3 border-b border-slate-100 last:border-b-0 ${isSelected
-                                ? "bg-blue-50 text-blue-600"
-                                : "bg-white hover:bg-slate-50 text-slate-700"
+                              ? "bg-blue-50 text-blue-600"
+                              : "bg-white hover:bg-slate-50 text-slate-700"
                               }`}
                           >
                             <span className="truncate text-xs font-bold">
@@ -3644,8 +3737,8 @@ const RegionAreaEdit: React.FC = () => {
                               {activeFilter === "all" && (
                                 <span
                                   className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${isAssignedRegion
-                                      ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                                      : "bg-slate-100 text-slate-500"
+                                    ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                                    : "bg-slate-100 text-slate-500"
                                     }`}
                                 >
                                   {isAssignedRegion ? "A" : "U"}
