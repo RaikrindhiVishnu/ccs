@@ -171,9 +171,9 @@ function LoginCard({
 }) {
   return (
     <div
-      className={`absolute top-1/2 -translate-y-1/2 right-4 md:right-[4vw] lg:right-[123px] bg-white flex flex-col box-border shadow-[0px_1px_3.5px_rgba(0,0,0,0.06)] border border-[#F3F3F5] rounded-[32px] px-[20px] py-[30px] sm:px-[48px] sm:pt-[47px] sm:pb-[47px] w-[calc(100%-2rem)] sm:w-[550px] lg:w-[550px] lg:h-[701px] h-auto max-h-[calc(100vh-2.5rem)] ${className}`}
+      className={`absolute top-1/2 -translate-y-1/2 right-4 md:right-[4vw] lg:right-[123px] bg-white flex flex-col box-border shadow-[0px_1px_3.5px_rgba(0,0,0,0.06)] border border-[#F3F3F5] rounded-[32px] px-[20px] py-[30px] sm:px-[48px] sm:pt-[47px] sm:pb-[47px] w-[calc(100%-2rem)] sm:w-[550px] lg:w-[550px] lg:h-[701px] h-auto max-h-[calc(100vh-2.5rem)] overflow-hidden ${className}`}
     >
-      <div className="flex flex-col flex-1 overflow-y-auto custom-scrollbar pr-1 -mr-1 lg:pr-0 lg:mr-0">
+      <div className="flex flex-col flex-1 overflow-y-auto lg:overflow-hidden custom-scrollbar pr-1 -mr-1 lg:pr-0 lg:mr-0">
         {children}
       </div>
     </div>
@@ -473,7 +473,7 @@ function ForgotPasswordSuccessScreen({
  rounded-[24px] lg:rounded-[1.67vw]
  w-[calc(100%-2rem)] sm:w-[clamp(25rem,42.36vw,38.125rem)] lg:w-[42.36vw]
  h-auto max-h-[calc(100vh-2.5rem)]
- overflow-y-auto
+ overflow-y-auto lg:overflow-hidden
  px-[clamp(1.5rem,4vw,3.5rem)] py-[clamp(1.5rem,4vh,3rem)] lg:px-[2.22vw]
  flex flex-col items-center
  ">
