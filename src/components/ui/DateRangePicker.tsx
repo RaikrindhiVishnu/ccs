@@ -14,6 +14,8 @@ interface DateRangePickerProps {
   to?: Date;
   onRangeChange?: (range: { from: Date; to: Date } | undefined) => void;
   className?: string;
+  /** When set, selecting a start date auto-sets end to startDate + (maxDays-1) */
+  maxDays?: number;
 }
 
 type Range = { from: Date; to: Date };
@@ -23,28 +25,61 @@ export default function DateRangePicker({
   to,
   onRangeChange,
   className,
+  maxDays,
 }: DateRangePickerProps) {
   const initial: Range | undefined = from && to ? { from, to } : undefined;
 
   const [open, setOpen]       = useState(false);
-  const [applied, setApplied] = useState<Range | undefined>(initial); // ← shown in trigger always
-  const [pending, setPending] = useState<any>(initial); // ← in-popover selection
+  const [applied, setApplied] = useState<Range | undefined>(initial);
+  const [pending, setPending] = useState<any>(initial);
+  // Tracks which month the calendar shows — always reopens on the applied range's month
+  const [calendarMonth, setCalendarMonth] = useState<Date>(
+    initial?.from ?? new Date()
+  );
 
   // ── handlers ──────────────────────────────────────────────────────────────
   const handleSelect = (range: any) => {
+    if (maxDays) {
+      if (!range?.from) return; // deselect — ignore
+
+      // Detect which date the user actually clicked by diffing against previous pending.
+      // DayPicker range mode delivers different shapes depending on interaction:
+      //   { from: newDate, to: undefined }  → fresh first click
+      //   { from: oldFrom, to: newDate }    → extended rightward
+      //   { from: newDate, to: oldTo }      → extended leftward (reset)
+      const prevFrom = pending?.from?.getTime();
+      const prevTo   = pending?.to?.getTime();
+      const newFrom  = range.from?.getTime();
+      const newTo    = range.to?.getTime();
+
+      let clickedDate: Date;
+      if (newTo && newTo !== prevTo) {
+        clickedDate = range.to;   // extended right → clicked = new to
+      } else if (newFrom && newFrom !== prevFrom) {
+        clickedDate = range.from; // fresh click or extended left → clicked = new from
+      } else {
+        clickedDate = range.from; // fallback
+      }
+
+      const snapped = { from: clickedDate, to: addDays(clickedDate, maxDays - 1) };
+      // Only update PREVIEW — user must click Apply to confirm
+      setPending(snapped);
+      return;
+    }
     setPending(range);
   };
 
+  // Apply: confirm pending → applied, notify parent, close
   const handleApply = () => {
     if (pending?.from && pending?.to) {
-      const confirmedRange = { from: pending.from, to: pending.to };
-      setApplied(confirmedRange);          // ← persists the label in trigger
-      onRangeChange?.(confirmedRange);
+      const confirmed = { from: pending.from, to: pending.to };
+      setApplied(confirmed);
+      onRangeChange?.(confirmed);
     }
     setOpen(false);
   };
 
-  // Clear ×  — resets everything and notifies parent
+  // Clear ×: reset everything
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
     setApplied(undefined);
@@ -52,15 +87,21 @@ export default function DateRangePicker({
     onRangeChange?.(undefined);
   };
 
-  // When popover opens, seed pending from whatever is applied
+  // Open popover: seed pending + jump calendar to the applied range's month
   const handleOpenChange = (val: boolean) => {
     setOpen(val);
-    if (val) setPending(applied);
+    if (val) {
+      setPending(applied);
+      // Re-open on the applied month, not today
+      if (applied?.from) setCalendarMonth(applied.from);
+    }
   };
 
   // ── trigger label ──────────────────────────────────────────────────────────
   const triggerLabel = applied
     ? `${format(applied.from, "MMM d")} – ${format(applied.to, "MMM d, yyyy")}`
+    : maxDays
+    ? `Pick start (${maxDays}d)`
     : "Set Range";
 
   // ── render ────────────────────────────────────────────────────────────────
@@ -68,7 +109,7 @@ export default function DateRangePicker({
     <div className={cn("flex items-center", className)}>
       <Popover open={open} onOpenChange={handleOpenChange}>
 
-        {/* ── Trigger — always shows applied range after apply ── */}
+        {/* ── Trigger ── */}
         <PopoverTrigger asChild>
           <button
             className={cn(
@@ -78,10 +119,8 @@ export default function DateRangePicker({
               "font-[family-name:var(--font-sans)] font-normal",
               "text-[clamp(10px,0.7vw,12px)]",
               applied
-                ? // ── active state: brand tinted ──
-                  "border-[color:var(--brand-500)] bg-[color:var(--brand-50)] text-[color:var(--brand-500)]"
-                : // ── default state ──
-                  "border-[color:var(--text-primary)] text-[color:var(--text-primary)] hover:bg-[color:var(--brand-tint)]",
+                ? "border-[color:var(--brand-500)] bg-[color:var(--brand-50)] text-[color:var(--brand-500)]"
+                : "border-[color:var(--text-primary)] text-[color:var(--text-primary)] hover:bg-[color:var(--brand-tint)]",
             )}
           >
             {!applied && (
@@ -90,7 +129,6 @@ export default function DateRangePicker({
 
             <span>{triggerLabel}</span>
 
-            {/* ✕ clear — only visible when a range is applied */}
             {applied && (
               <span
                 role="button"
@@ -123,6 +161,9 @@ export default function DateRangePicker({
               selected={pending}
               onSelect={handleSelect}
               showOutsideDays={false}
+              disabled={false}
+              month={calendarMonth}
+              onMonthChange={setCalendarMonth}
               classNames={{
                 root: "w-full",
                 months: "w-full",
@@ -174,10 +215,12 @@ export default function DateRangePicker({
                   ),
 
                 DayButton: ({ day, modifiers, ...props }) => {
-                  const isStart  = modifiers.range_start;
-                  const isEnd    = modifiers.range_end;
-                  const isMiddle = modifiers.range_middle;
+                  const isStart    = modifiers.range_start;
+                  const isEnd      = modifiers.range_end;
+                  const isMiddle   = modifiers.range_middle;
                   const isSelected = isStart || isEnd;
+                  const isFuture   = day.date > new Date();
+                  const isToday    = modifiers.today;
 
                   return (
                     <div
@@ -198,15 +241,20 @@ export default function DateRangePicker({
 
                       <button
                         {...props}
+                        disabled={false}
                         className={cn(
                           "relative z-10 flex items-center justify-center rounded-full",
                           "w-[clamp(24px,1.9vw,28px)] h-[clamp(24px,1.9vw,28px)]",
                           "font-[family-name:var(--font-sans)] font-medium leading-none",
-                          "text-[clamp(10px,0.75vw,12px)] transition-colors",
+                          "text-[clamp(10px,0.75vw,12px)] transition-colors cursor-pointer",
                           isSelected
                             ? "bg-[color:var(--brand-500)] text-white font-bold shadow-[var(--shadow-card-sm)]"
                             : isMiddle
                             ? "bg-transparent text-[color:var(--text-primary)] hover:bg-[color:var(--brand-100)]"
+                            : isFuture
+                            ? "bg-transparent text-[color:var(--text-primary)] opacity-60 hover:opacity-100 hover:bg-[color:var(--brand-50)]"
+                            : isToday
+                            ? "bg-transparent text-[color:var(--brand-500)] font-bold hover:bg-[color:var(--brand-50)]"
                             : "bg-transparent text-[color:var(--text-primary)] hover:bg-[color:var(--brand-50)]",
                         )}
                       >
@@ -228,7 +276,7 @@ export default function DateRangePicker({
               "border-t border-[color:var(--border-subtle)]",
             )}
           >
-            {/* Preview of pending selection */}
+            {/* Pending preview label */}
             <span
               className={cn(
                 "font-[family-name:var(--font-sans)] font-bold",
