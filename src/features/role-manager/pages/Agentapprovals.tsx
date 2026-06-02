@@ -1,5 +1,8 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "@/app/store/store";
+import { setAgentApprovalsFilterType, setAgentApprovalsDateRange } from "@/features/role-manager/store/roleManagerSlice";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
@@ -36,9 +39,17 @@ export const AgentApprovalsPage = () => {
   const [agentList, setAgentList] = React.useState<Agent[]>([]);
 
   // Date filter states
-  const [filterType, setFilterType] = React.useState<"today" | "month" | "custom">("today");
-  const [dateRange, setDateRange] = React.useState<{ from: Date; to: Date } | undefined>(undefined);
+  const dispatch = useDispatch();
+  const filterType = useSelector((state: RootState) => state.roleManager.agentApprovalsFilterType);
+  const dateRangeStrings = useSelector((state: RootState) => state.roleManager.agentApprovalsDateRange);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
+
+  const dateRange = React.useMemo(() => {
+    return {
+      from: dateRangeStrings?.from ? new Date(dateRangeStrings.from) : undefined,
+      to: dateRangeStrings?.to ? new Date(dateRangeStrings.to) : undefined,
+    };
+  }, [dateRangeStrings]);
 
   // Calculate dates based on filter selection
   const dateParams = React.useMemo(() => {
@@ -47,17 +58,27 @@ export const AgentApprovalsPage = () => {
     };
 
     if (filterType === "today") {
-      const todayStr = formatYYYYMMDD(new Date());
-      return { startDate: todayStr, endDate: todayStr };
+      const today = new Date();
+      const nextDay = new Date(today);
+      nextDay.setDate(today.getDate() + 1);
+      
+      return { startDate: formatYYYYMMDD(today), endDate: formatYYYYMMDD(nextDay) };
     } else if (filterType === "month") {
       const now = new Date();
       const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
       const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      return { startDate: formatYYYYMMDD(firstDay), endDate: formatYYYYMMDD(lastDay) };
+      
+      const nextDay = new Date(lastDay);
+      nextDay.setDate(lastDay.getDate() + 1);
+
+      return { startDate: formatYYYYMMDD(firstDay), endDate: formatYYYYMMDD(nextDay) };
     } else if (filterType === "custom" && dateRange?.from && dateRange?.to) {
+      const nextDay = new Date(dateRange.to);
+      nextDay.setDate(dateRange.to.getDate() + 1);
+
       return {
         startDate: formatYYYYMMDD(dateRange.from),
-        endDate: formatYYYYMMDD(dateRange.to)
+        endDate: formatYYYYMMDD(nextDay)
       };
     }
     return null;
@@ -113,9 +134,13 @@ export const AgentApprovalsPage = () => {
 
   React.useEffect(() => {
     if (pendingStatusId !== null) {
+      // Don't fetch if 'custom' is selected but both dates haven't been picked yet
+      if (filterType === "custom" && !dateParams) {
+        return;
+      }
       fetchPendingAgents(pendingStatusId, dateParams);
     }
-  }, [pendingStatusId, dateParams]);
+  }, [pendingStatusId, dateParams, filterType]);
 
   const ITEMS_PER_PAGE = 7;
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -226,7 +251,7 @@ export const AgentApprovalsPage = () => {
                     <button
                       type="button"
                       onClick={() => {
-                        setFilterType("today");
+                        dispatch(setAgentApprovalsFilterType("today"));
                         setDropdownOpen(false);
                       }}
                       className={cn(
@@ -239,7 +264,7 @@ export const AgentApprovalsPage = () => {
                     <button
                       type="button"
                       onClick={() => {
-                        setFilterType("month");
+                        dispatch(setAgentApprovalsFilterType("month"));
                         setDropdownOpen(false);
                       }}
                       className={cn(
@@ -252,7 +277,7 @@ export const AgentApprovalsPage = () => {
                     <button
                       type="button"
                       onClick={() => {
-                        setFilterType("custom");
+                        dispatch(setAgentApprovalsFilterType("custom"));
                         setDropdownOpen(false);
                       }}
                       className={cn(
@@ -272,7 +297,12 @@ export const AgentApprovalsPage = () => {
                 from={dateRange?.from}
                 to={dateRange?.to}
                 onRangeChange={(range) => {
-                  if (range) setDateRange(range);
+                  if (range) {
+                    dispatch(setAgentApprovalsDateRange({
+                      from: range.from ? range.from.toISOString() : null,
+                      to: range.to ? range.to.toISOString() : null
+                    }));
+                  }
                 }}
               />
             )}

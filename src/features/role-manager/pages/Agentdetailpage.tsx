@@ -82,7 +82,9 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
         district: boolean;
         area: boolean;
         hierarchy: boolean;
-    }>({ district: false, area: false, hierarchy: false });
+        regionNull: boolean;
+        areaNullInHierarchy: boolean;
+    }>({ district: false, area: false, hierarchy: false, regionNull: false, areaNullInHierarchy: false });
 
     React.useEffect(() => {
         if (!isNaN(userId)) {
@@ -123,18 +125,39 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
 
             getLocationHierarchyDetails({ district_id: Number(districtId), mandal_id: Number(mandalId) }).unwrap().then((res) => {
                 if (res?.success) {
-                    setHierarchyData(res.data);
-                    setTerritoryStatus("assigned");
-                    setTerritoryError({ district: false, area: false, hierarchy: false });
+                    const hierarchyRegion = res.data?.region ?? null;
+                    const hierarchyArea   = res.data?.area   ?? null;
+
+                    if (!hierarchyRegion && !hierarchyArea) {
+                        // Both region and area are null
+                        setHierarchyData(res.data);
+                        setTerritoryStatus("not_assigned");
+                        setTerritoryError({ district: false, area: false, hierarchy: false, regionNull: true, areaNullInHierarchy: true });
+                    } else if (!hierarchyRegion) {
+                        // Only region is null
+                        setHierarchyData(res.data);
+                        setTerritoryStatus("not_assigned");
+                        setTerritoryError({ district: false, area: false, hierarchy: false, regionNull: true, areaNullInHierarchy: false });
+                    } else if (!hierarchyArea) {
+                        // Only area is null
+                        setHierarchyData(res.data);
+                        setTerritoryStatus("not_assigned");
+                        setTerritoryError({ district: false, area: false, hierarchy: false, regionNull: false, areaNullInHierarchy: true });
+                    } else {
+                        // Both region and area are present — fully assigned
+                        setHierarchyData(res.data);
+                        setTerritoryStatus("assigned");
+                        setTerritoryError({ district: false, area: false, hierarchy: false, regionNull: false, areaNullInHierarchy: false });
+                    }
                 } else {
                     setHierarchyData(null);
                     setTerritoryStatus("not_assigned");
-                    setTerritoryError({ district: false, area: false, hierarchy: true });
+                    setTerritoryError({ district: false, area: false, hierarchy: true, regionNull: false, areaNullInHierarchy: false });
                 }
             }).catch(() => {
                 setHierarchyData(null);
                 setTerritoryStatus("not_assigned");
-                setTerritoryError({ district: false, area: false, hierarchy: true });
+                setTerritoryError({ district: false, area: false, hierarchy: true, regionNull: false, areaNullInHierarchy: false });
             });
         } else { // No district_id or mandal_id present at all
             setHierarchyData(null);
@@ -142,7 +165,9 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
             setTerritoryError({
                 district: !districtId,
                 area: !mandalId,
-                hierarchy: false
+                hierarchy: false,
+                regionNull: false,
+                areaNullInHierarchy: false
             });
         }
     }, [data, getLocationHierarchyDetails]);
@@ -438,25 +463,25 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
                                         {
                                             hierarchyData.regional_officer && (
                                                 <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)]">
-                                                    RO: {
-                                                        hierarchyData.regional_officer.first_name
-                                                    }
-                                                    {
-                                                        hierarchyData.regional_officer.last_name
-                                                    } </span>
+                                                    RO: {hierarchyData.regional_officer.first_name} {hierarchyData.regional_officer.last_name}
+                                                </span>
+                                            )
+                                        }
+                                        {
+                                            hierarchyData.intelligence_officer && (
+                                                <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)]">
+                                                    IO: {hierarchyData.intelligence_officer.first_name} {hierarchyData.intelligence_officer.last_name}
+                                                </span>
                                             )
                                         }
                                         {
                                             hierarchyData.field_officer && (
                                                 <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)]">
-                                                    FO: {
-                                                        hierarchyData.field_officer.first_name
-                                                    }
-                                                    {
-                                                        hierarchyData.field_officer.last_name
-                                                    } </span>
+                                                    FO: {hierarchyData.field_officer.first_name} {hierarchyData.field_officer.last_name}
+                                                </span>
                                             )
-                                        } </div>
+                                        }
+                                    </div>
                                 )
                             }
 
@@ -470,26 +495,40 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
                                         {
                                             territoryError.district && (
                                                 <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                                                    • District ID — Not Assigned to Agent Profile
+                                                    • District ID — Not assigned to this agent's profile.
                                                 </span>
                                             )
                                         }
                                         {
                                             territoryError.area && (
                                                 <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                                                    • Area (Mandal) ID — Not Assigned to Agent Profile
+                                                    • Mandal (Area) ID — Not assigned to this agent's profile.
+                                                </span>
+                                            )
+                                        }
+                                        {
+                                            territoryError.regionNull && (
+                                                <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
+                                                    • Region — Not mapped for this agent's district &amp; mandal. Please create or assign a Region first.
+                                                </span>
+                                            )
+                                        }
+                                        {
+                                            territoryError.areaNullInHierarchy && (
+                                                <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
+                                                    • Area — Not mapped for this agent's district &amp; mandal. Please create or assign an Area first.
                                                 </span>
                                             )
                                         }
                                         {
                                             territoryError.hierarchy && (
                                                 <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                                                    • Region / Area Mapping — Not created or mapped for this District & Mandal.
+                                                    • Territory hierarchy could not be verified — please try again or contact support.
                                                 </span>
                                             )
                                         }
                                         <span className="text-[0.6875rem] lg:text-[0.75rem] text-[color:var(--text-secondary)] mt-0.5">
-                                            Agent cannot be approved until territory assigned/created.
+                                            Agent cannot be approved until the territory is fully assigned.
                                         </span>
                                     </div>
                                 )

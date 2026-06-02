@@ -24,10 +24,6 @@ const AgentOnboardingVelocity: React.FC<Props> = ({ }) => {
     return { from, to };
   });
 
-  const [selectedRole, setSelectedRole] = React.useState<
-    "Agent" | "Field Officer" | "Regional Officer" | "Intelligence Officer"
-  >("Agent");
-  const [roleDropdownOpen, setRoleDropdownOpen] = React.useState(false);
 
   const {
     data: apiData,
@@ -61,14 +57,7 @@ const AgentOnboardingVelocity: React.FC<Props> = ({ }) => {
       return item.onboardingDate.startsWith(dateStr);
     });
 
-    let value = matchingItem ? matchingItem.totalAgents : 0;
-    if (selectedRole === "Field Officer") {
-      value = Math.max(1, Math.round(value * 0.3 + (date.getDate() % 2 === 0 ? 1 : 0)));
-    } else if (selectedRole === "Regional Officer") {
-      value = Math.max(1, Math.round(value * 0.1 + (date.getDate() % 3 === 0 ? 1 : 0)));
-    } else if (selectedRole === "Intelligence Officer") {
-      value = Math.max(1, Math.round(value * 0.08 + (date.getDate() % 4 === 0 ? 1 : 0)));
-    }
+    const value = matchingItem ? matchingItem.totalAgents : 0;
 
     return {
       label: date.toLocaleDateString("en-US", {
@@ -102,7 +91,7 @@ const AgentOnboardingVelocity: React.FC<Props> = ({ }) => {
             variant="p"
             className="m-0 font-medium text-[clamp(0.875rem,1.5vw,1.25rem)] leading-[110%] text-[var(--text-primary)]"
           >
-            {selectedRole} Onboarding Velocity
+            Agent Onboarding Velocity
           </Typography>
 
           <Typography
@@ -110,61 +99,11 @@ const AgentOnboardingVelocity: React.FC<Props> = ({ }) => {
             variant="p"
             className="m-0 font-normal text-[clamp(0.6875rem,1vw,0.875rem)] leading-[110%] text-[var(--text-primary)] opacity-60"
           >
-            Overview of onboarding stats for {selectedRole}s
+            Overview of onboarding stats for Agents
           </Typography>
         </div>
 
         <div className="shrink-0 flex items-center gap-2">
-          {/* Role selector dropdown */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setRoleDropdownOpen((prev) => !prev)}
-              className="box-border flex flex-row items-center justify-center shrink-0 px-3 py-1 gap-1.5 border border-[color:var(--text-primary)] rounded-[1.875rem] font-[family-name:'Plus_Jakarta_Sans',sans-serif] font-normal text-xs leading-[1.33] text-[color:var(--text-primary)] cursor-pointer bg-transparent whitespace-nowrap opacity-80 hover:opacity-100 transition-opacity"
-            >
-              {selectedRole}s
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 16 16"
-                fill="none"
-                className={`shrink-0 transition-transform ${roleDropdownOpen ? "-rotate-90" : "rotate-90"}`}
-                aria-hidden
-              >
-                <path
-                  d="M6 4L10 8L6 12"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-
-            {roleDropdownOpen && (
-              <>
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setRoleDropdownOpen(false)}
-                />
-                <div className="absolute right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-20 w-44">
-                  {(["Agent", "Field Officer", "Regional Officer", "Intelligence Officer"] as const).map((r) => (
-                    <button
-                      key={r}
-                      type="button"
-                      onClick={() => {
-                        setSelectedRole(r);
-                        setRoleDropdownOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 font-sans cursor-pointer bg-transparent border-none"
-                    >
-                      {r}s
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
 
           <DateRangePicker
             from={dateRange.from}

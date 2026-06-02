@@ -38,14 +38,7 @@ import ProfileBackButton from "../components/ui/BackButton";
 import { uploadUserDocument } from "@/core/utils/fileUpload";
 // ─── Dropdown option lists ────────────────────────────────────────────────────
 
-const BANK_OPTIONS = [
-  "HDFC Bank",
-  "SBI",
-  "ICICI Bank",
-  "Axis Bank",
-  "Bank of Baroda",
-  "Canara Bank",
-];
+/* BANK_OPTIONS removed */
 
 // ─── Image Preview Helper ───────────────────────────────────────────────────
 
@@ -659,7 +652,7 @@ export default function AgentForm({
               bank_name: values.bankName,
               id_proof_frontUrl: aadharFrontKey,
               id_proof_backUrl: aadharBackKey,
-              pan_card_number: values.panNumber,
+              pan_card_number: values.panNumber || "",
               pan_card_url: panKey,
             },
           };
@@ -707,7 +700,7 @@ export default function AgentForm({
             bank_name: values.bankName,
             id_proof_frontUrl: aadharFrontKey,
             id_proof_backUrl: aadharBackKey,
-            pan_card_number: values.panNumber,
+            pan_card_number: values.panNumber || "",
             pan_card_url: panKey,
           },
         };
@@ -762,10 +755,12 @@ export default function AgentForm({
   // ── Territory validation for view mode ──
   const [viewTerritoryStatus, setViewTerritoryStatus] = useState<"loading" | "assigned" | "not_assigned">("loading");
   const [viewHierarchyData, setViewHierarchyData] = useState<any>(null);
-  const [viewTerritoryError, setViewTerritoryError] = useState<{ district: boolean; area: boolean; hierarchy: boolean }>({
+  const [viewTerritoryError, setViewTerritoryError] = useState<{ district: boolean; area: boolean; hierarchy: boolean; missingRegion?: boolean; missingArea?: boolean }>({
     district: false,
     area: false,
     hierarchy: false,
+    missingRegion: false,
+    missingArea: false,
   });
 
   useEffect(() => {
@@ -796,9 +791,24 @@ export default function AgentForm({
         .unwrap()
         .then((res) => {
           if (res?.success) {
-            setViewHierarchyData(res.data);
-            setViewTerritoryStatus("assigned");
-            setViewTerritoryError({ district: false, area: false, hierarchy: false });
+            const hasRegion = !!res.data?.region;
+            const hasArea = !!res.data?.area;
+
+            if (hasRegion && hasArea) {
+              setViewHierarchyData(res.data);
+              setViewTerritoryStatus("assigned");
+              setViewTerritoryError({ district: false, area: false, hierarchy: false, missingRegion: false, missingArea: false });
+            } else {
+              setViewHierarchyData(res.data);
+              setViewTerritoryStatus("not_assigned");
+              setViewTerritoryError({ 
+                district: false, 
+                area: false, 
+                hierarchy: !hasRegion && !hasArea, 
+                missingRegion: !hasRegion && hasArea, 
+                missingArea: hasRegion && !hasArea 
+              });
+            }
           } else {
             setViewHierarchyData(null);
             setViewTerritoryStatus("not_assigned");
@@ -935,6 +945,11 @@ export default function AgentForm({
                         RO: {viewHierarchyData.regional_officer.first_name} {viewHierarchyData.regional_officer.last_name}
                       </span>
                     )}
+                    {viewHierarchyData.intelligence_officer && (
+                      <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)]">
+                        IO: {viewHierarchyData.intelligence_officer.first_name} {viewHierarchyData.intelligence_officer.last_name}
+                      </span>
+                    )}
                     {viewHierarchyData.field_officer && (
                       <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)]">
                         FO: {viewHierarchyData.field_officer.first_name} {viewHierarchyData.field_officer.last_name}
@@ -962,6 +977,16 @@ export default function AgentForm({
                     {viewTerritoryError.hierarchy && (
                       <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
                         • Region / Area Mapping — Not created or mapped for this District & Mandal.
+                      </span>
+                    )}
+                    {viewTerritoryError.missingArea && (
+                      <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
+                        • Region is created but Area is not created.
+                      </span>
+                    )}
+                    {viewTerritoryError.missingRegion && (
+                      <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
+                        • Area is created but Region is not created.
                       </span>
                     )}
                     {/* <span className="text-[0.6875rem] lg:text-[0.75rem] text-[color:var(--text-secondary)] mt-0.5">
@@ -1339,12 +1364,12 @@ export default function AgentForm({
         {/* ── BANK DETAILS ── */}
         <FormSection title="Enter Bank Details">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
-            <RHFDropdown
+            <RHFTextField
               name="bankName"
               control={control}
               label="Bank Name"
-              options={BANK_OPTIONS}
-              placeholder="Select Bank"
+              placeholder="Enter Bank Name"
+              maxLength={50}
               disabled={isViewMode}
             />
             <RHFTextField
