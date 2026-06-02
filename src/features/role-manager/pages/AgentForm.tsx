@@ -23,7 +23,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useState, useEffect } from "react"; // kept only for profileImage                       // kept only for profileImage
 import Successcard from "@/components/ui/Successcard";
-import { useGetAllMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
+import { useGetAllMasterDataQuery, useGetAllGeoMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 
 import { getRoleId } from "@/features/role-manager/utils/getRoleId";
 import { useSelector } from "react-redux";
@@ -108,6 +108,7 @@ export default function AgentForm({
   roleType,
   isViewMode = false,
 }: AgentFormProps) {
+  const { data: geoMasterData } = useGetAllGeoMasterDataQuery();
   const states = useSelector((state: any) => state.roleManager.states);
 
 
@@ -337,6 +338,31 @@ export default function AgentForm({
     }
   }, [selectedAreaObj, getLocationHierarchyDetails]);
 
+  // Fetch initial hierarchy for existing agent on load (edit mode)
+  useEffect(() => {
+    if (!isEdit) return;
+    const srcData = agentData?.data || initialData;
+    if (!srcData) return;
+
+    const geo = parseGeoAssignments(srcData.geo_assignments);
+    const districtId = srcData.district_id || geo?.district_id;
+    const mandalId = srcData.mandal_id || geo?.mandal_id;
+
+    if (districtId && mandalId) {
+      getLocationHierarchyDetails({
+        district_id: Number(districtId),
+        mandal_id: Number(mandalId),
+      })
+        .unwrap()
+        .then((res) => {
+          if (res?.success) {
+            setHierarchy(res.data);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isEdit, agentData, initialData, getLocationHierarchyDetails]);
+
   // Pre-fill state from agentData or initialData
   useEffect(() => {
     const dataObj = agentData?.data || initialData;
@@ -386,7 +412,7 @@ export default function AgentForm({
 
   const getProfilePic = (srcData: any) => {
     if (!srcData) return "";
-    let val = srcData.avatar_url || srcData.avatar || srcData.profile_image || srcData.profilePicture || srcData.profile_url || srcData.id_proof?.avatar || srcData.id_proof?.profile_image || srcData.id_proof?.profile_url;
+    let val = srcData.profile_url || srcData.avatar_url || srcData.avatar || srcData.profile_image || srcData.profilePicture || srcData.id_proof?.profile_url || srcData.id_proof?.avatar || srcData.id_proof?.profile_image || srcData.id_proof?.profile_url;
     if (!val || val === "null" || val === "undefined") {
       const email = srcData.email || srcData.emailAddress;
       if (email) {
@@ -526,17 +552,32 @@ export default function AgentForm({
   const handleSave = async (values: AgentFormValues) => {
     try {
       let res: any = null;
+      const existingGeo = parseGeoAssignments(agentData?.data?.geo_assignments || (initialData as any)?.geo_assignments);
+      const existingDistrictId = agentData?.data?.district_id || existingGeo?.district_id;
+      const existingMandalId = agentData?.data?.mandal_id || existingGeo?.mandal_id;
+
       const selectedStateObj = states.find((s: any) => s.desc === values.state);
-      const stateIdVal = selectedStateObj?.id ? Number(selectedStateObj.id) : 1;
+      const stateIdVal = selectedStateObj?.id 
+        ? Number(selectedStateObj.id) 
+        : (agentData?.data?.state_id || existingGeo?.state_id || 1);
 
       const selectedRegionObj = regionsData?.data?.find((r: any) => r.region_name === values.region);
-      const regionIdVal = selectedRegionObj?.id ? Number(selectedRegionObj.id) : 1;
+      const regionIdVal = selectedRegionObj?.id 
+        ? Number(selectedRegionObj.id) 
+        : (hierarchy?.region?.id ? Number(hierarchy.region.id) : (agentData?.data?.region_id || existingGeo?.region_id || 1));
 
       const selectedAreaObj = areasData?.data?.find((a: any) => a.area_name === values.area);
-      const areaIdVal = selectedAreaObj?.area_id ? Number(selectedAreaObj.area_id) : 1;
+      const areaIdVal = selectedAreaObj?.area_id 
+        ? Number(selectedAreaObj.area_id) 
+        : (hierarchy?.area?.id ? Number(hierarchy.area.id) : (agentData?.data?.areas_id || existingGeo?.areas_id || 1));
 
-      const districtIdVal = selectedAreaObj?.district_ids?.[0] ? Number(selectedAreaObj.district_ids[0]) : 1;
-      const mandalIdVal = selectedAreaObj?.mandal_ids?.[0] ? Number(selectedAreaObj.mandal_ids[0]) : 1;
+      const districtIdVal = selectedAreaObj?.district_ids?.[0] 
+        ? Number(selectedAreaObj.district_ids[0]) 
+        : (existingDistrictId ? Number(existingDistrictId) : 1);
+
+      const mandalIdVal = selectedAreaObj?.mandal_ids?.[0] 
+        ? Number(selectedAreaObj.mandal_ids[0]) 
+        : (existingMandalId ? Number(existingMandalId) : 1);
 
       // 1. Resolve S3 keys (either existing string URLs/keys or default fallbacks)
       let aadharFrontKey = typeof values.aadharFront === "string" ? values.aadharFront : getDoc(agentData?.data, "front") || getDoc(initialData, "front") || "front.png";
@@ -592,7 +633,7 @@ export default function AgentForm({
             dob: values.dob || dobState || "",
             role_id: Number(roleIdState || agentRoleId),
             profile_image: profilePicKey !== "profile.png" ? profilePicKey : undefined,
-            avatar: profilePicKey !== "profile.png" ? profilePicKey : undefined,
+            profile_url: profilePicKey !== "profile.png" ? profilePicKey : undefined,
 
             address: {
               address: values.address || addressState || "",
@@ -656,7 +697,7 @@ export default function AgentForm({
             areas_id: areaIdVal,
           },
 
-          avatar: profilePicKey !== "profile.png" ? profilePicKey : undefined,
+          profile_url: profilePicKey !== "profile.png" ? profilePicKey : undefined,
 
           id_proof: {
             bank_account_name: `${values.firstName} ${values.lastName}`,
@@ -721,6 +762,68 @@ export default function AgentForm({
 
   const isVerified = isEdit && !!initialData?.firstName;
 
+  // ── Territory validation for view mode ──
+  const [viewTerritoryStatus, setViewTerritoryStatus] = useState<"loading" | "assigned" | "not_assigned">("loading");
+  const [viewHierarchyData, setViewHierarchyData] = useState<any>(null);
+  const [viewTerritoryError, setViewTerritoryError] = useState<{ district: boolean; area: boolean; hierarchy: boolean }>({
+    district: false,
+    area: false,
+    hierarchy: false,
+  });
+
+  useEffect(() => {
+    if (!isViewMode) return;
+    const srcData = agentData?.data || initialData;
+    if (!srcData) return;
+
+    // Parse geo_assignments for fallback
+    const parseGeo = (geoField: any) => {
+      if (!geoField) return null;
+      if (typeof geoField === "string") {
+        try { return JSON.parse(geoField); } catch { return null; }
+      }
+      return geoField;
+    };
+    const geo = parseGeo(srcData.geo_assignments);
+
+    // Read from top-level first, then fallback to geo_assignments
+    const districtId = srcData.district_id || geo?.district_id;
+    const mandalId = srcData.mandal_id || geo?.mandal_id;
+
+    if (districtId && mandalId) {
+      setViewTerritoryStatus("loading");
+      getLocationHierarchyDetails({
+        district_id: Number(districtId),
+        mandal_id: Number(mandalId),
+      })
+        .unwrap()
+        .then((res) => {
+          if (res?.success) {
+            setViewHierarchyData(res.data);
+            setViewTerritoryStatus("assigned");
+            setViewTerritoryError({ district: false, area: false, hierarchy: false });
+          } else {
+            setViewHierarchyData(null);
+            setViewTerritoryStatus("not_assigned");
+            setViewTerritoryError({ district: false, area: false, hierarchy: true });
+          }
+        })
+        .catch(() => {
+          setViewHierarchyData(null);
+          setViewTerritoryStatus("not_assigned");
+          setViewTerritoryError({ district: false, area: false, hierarchy: true });
+        });
+    } else {
+      setViewHierarchyData(null);
+      setViewTerritoryStatus("not_assigned");
+      setViewTerritoryError({
+        district: !districtId,
+        area: !mandalId,
+        hierarchy: false,
+      });
+    }
+  }, [isViewMode, agentData, initialData, getLocationHierarchyDetails]);
+
   if (isViewMode) {
     const data = agentData?.data || initialData;
     const isFromDirectory = location.state?.from === "/role-manager/user-directory";
@@ -753,9 +856,29 @@ export default function AgentForm({
     const areaObj = areasData?.data?.find((a: any) => a.area_name === watch("area") || a.area_id === data?.geo_assignments?.areas_id);
     const areaName = areaObj?.area_name || data?.area || "N/A";
 
+    const parseGeo = (geoField: any) => {
+      if (!geoField) return null;
+      if (typeof geoField === "string") {
+        try { return JSON.parse(geoField); } catch { return null; }
+      }
+      return geoField;
+    };
+    const geo = parseGeo(data?.geo_assignments);
+    
+    const districtId = data?.district_id || geo?.district_id;
+    const mandalId = data?.mandal_id || geo?.mandal_id;
+    
+    const districtObj = geoMasterData?.districts?.find((d: any) => d.id === Number(districtId));
+    const districtName = districtObj?.desc || "N/A";
+    
+    const mandalObj = geoMasterData?.mandals?.find((m: any) => m.id === Number(mandalId));
+    const mandalName = mandalObj?.desc || "N/A";
+
     // Operating Territory
     const operatingTerritory = [
       areaName,
+      mandalName,
+      districtName,
       regionName,
       stateName,
     ].filter((val) => val && val !== "N/A").join(", ") || "N/A";
@@ -790,7 +913,62 @@ export default function AgentForm({
                 <InfoField label="State" value={watch("addressState") || data?.state || data?.address?.state || "N/A"} />
                 <InfoField label="City / Village" value={watch("city") || data?.city || data?.address?.city || "N/A"} />
                 <InfoField label="Pincode" value={watch("pincode") || data?.pincode || data?.address?.pincode || "N/A"} />
-                <InfoField label="Operating Territory" value={operatingTerritory} className="col-span-2 xl:col-span-3" />
+                <InfoField label="Operating Territory" value={viewTerritoryStatus === "not_assigned" ? "Not Assigned" : operatingTerritory} className="col-span-2 xl:col-span-3" />
+
+                {/* Territory Assignment Status */}
+                {viewTerritoryStatus === "loading" && (
+                  <div className="col-span-2 xl:col-span-3">
+                    <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)] italic">
+                      Verifying territory assignment...
+                    </span>
+                  </div>
+                )}
+
+                {viewTerritoryStatus === "assigned" && viewHierarchyData && (
+                  <div className="col-span-2 xl:col-span-3 flex flex-col gap-1">
+                    <span className="inline-flex items-center gap-1.5 text-[0.8125rem] lg:text-[0.875rem] font-semibold text-[#16a34a]">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                      Territory Assigned
+                    </span>
+                    {viewHierarchyData.regional_officer && (
+                      <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)]">
+                        RO: {viewHierarchyData.regional_officer.first_name} {viewHierarchyData.regional_officer.last_name}
+                      </span>
+                    )}
+                    {viewHierarchyData.field_officer && (
+                      <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)]">
+                        FO: {viewHierarchyData.field_officer.first_name} {viewHierarchyData.field_officer.last_name}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {viewTerritoryStatus === "not_assigned" && (
+                  <div className="col-span-2 xl:col-span-3 flex flex-col gap-1.5">
+                    <span className="inline-flex items-center gap-1.5 text-[0.8125rem] lg:text-[0.875rem] font-semibold text-[#dc2626]">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                      Territory Not Assigned
+                    </span>
+                    {viewTerritoryError.district && (
+                      <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
+                        • District ID — Not Assigned to Agent Profile
+                      </span>
+                    )}
+                    {viewTerritoryError.area && (
+                      <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
+                        • Area (Mandal) ID — Not Assigned to Agent Profile
+                      </span>
+                    )}
+                    {viewTerritoryError.hierarchy && (
+                      <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
+                        • Region / Area Mapping — Not created or mapped for this District & Mandal.
+                      </span>
+                    )}
+                    {/* <span className="text-[0.6875rem] lg:text-[0.75rem] text-[color:var(--text-secondary)] mt-0.5">
+                      Agent cannot be approved until territory hierarchy is properly assigned/created.
+                    </span> */}
+                  </div>
+                )}
               </div>
             </SectionCard>
 
@@ -822,8 +1000,14 @@ export default function AgentForm({
                 </button>
                 <button
                   type="button"
-                  onClick={handleBackToDirectory}
-                  className="font-medium font-[family-name:'Inter',sans-serif] text-white px-[1.75rem] lg:px-[2rem] py-[0.5rem] rounded-full bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)] text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] hover:opacity-90 active:scale-[0.97] transition-all duration-150"
+                  onClick={viewTerritoryStatus === "assigned" ? handleBackToDirectory : undefined}
+                  disabled={viewTerritoryStatus !== "assigned"}
+                  title={viewTerritoryStatus !== "assigned" ? "Cannot approve — territory is not assigned" : "Approve this agent"}
+                  className={`font-medium font-[family-name:'Inter',sans-serif] text-white px-[1.75rem] lg:px-[2rem] py-[0.5rem] rounded-full text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] transition-all duration-150 ${
+                    viewTerritoryStatus === "assigned"
+                      ? "bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)] hover:opacity-90 active:scale-[0.97] cursor-pointer"
+                      : "bg-gray-300 cursor-not-allowed opacity-60"
+                  }`}
                 >
                   Approve
                 </button>

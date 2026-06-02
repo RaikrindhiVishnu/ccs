@@ -16,7 +16,6 @@ import { useForm, Controller } from "react-hook-form"; // added Controller
 import type { Control } from "react-hook-form"; // type-only import
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAppSelector } from "@/core/hooks";
 import {
   regionalOfficerSchema,
   type RegionalOfficerFormValues,
@@ -28,6 +27,7 @@ import { useGetAllMasterDataQuery, useGetAllGeoMasterDataQuery } from "@/feature
 import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 import { uploadUserDocument } from "@/core/utils/fileUpload";
 import { useGetRegionalOfficerByIdMutation } from "@/features/role-manager/api/roleManagerApi";
+import { useGetRegionsByStateIdQuery, useGetAllAreasByRegionIdQuery } from "../api/regionSelectionApi";
 import ProfileHeaderCard from "../components/ui/ProfileHeaderCard";
 import SectionCard from "../components/ui/SectionCard";
 import InfoField from "../components/ui/InfoField";
@@ -306,8 +306,6 @@ export default function CreateRegionalOfficer() {
   const isEditMode = !!userId;
   const { data: geoMasterData } = useGetAllGeoMasterDataQuery();
   const states = geoMasterData?.states || [];
-  const allDistricts = geoMasterData?.districts || [];
-  const allMandals = geoMasterData?.mandals || [];
 
 
   const [createRegionalOfficer, { isLoading }] =
@@ -376,6 +374,21 @@ export default function CreateRegionalOfficer() {
   const [getRegionalOfficerById, { data: regionalOfficerData }] =
     useGetRegionalOfficerByIdMutation();
 
+  const dataForGeo = regionalOfficerData?.data || initialData;
+  const geoStateId = dataForGeo?.geo_assignments?.state_id || dataForGeo?.state_id || dataForGeo?.address_state_id || dataForGeo?.address?.state_id;
+
+  const { data: regionsData } = useGetRegionsByStateIdQuery(
+    { state_id: Number(geoStateId) },
+    { skip: !geoStateId }
+  );
+
+  const geoRegionId = dataForGeo?.geo_assignments?.region_id || dataForGeo?.region_id || dataForGeo?.region;
+
+  const { data: areasData } = useGetAllAreasByRegionIdQuery(
+    { region_id: Number(geoRegionId) },
+    { skip: !geoRegionId }
+  );
+
   const fetchedRef = useRef<any>(null);
 
   useEffect(() => {
@@ -399,7 +412,7 @@ export default function CreateRegionalOfficer() {
         addressState: stateVal || "",
         city: initialData.city || "",
         pincode: initialData.pincode || "",
-        profilePicture: initialData.avatar_url || initialData.avatar || initialData.profile_image || initialData.profilePicture || undefined,
+        profilePicture: initialData.profile_url || initialData.avatar_url || initialData.avatar || initialData.profile_image || initialData.profilePicture || undefined,
         aadharFront: initialData.id_proof_front_url || initialData.id_proof?.id_proof_frontUrl || undefined,
         aadharBack: initialData.id_proof_back_url || initialData.id_proof?.id_proof_backUrl || undefined,
         panCard: initialData.pan_card_url || initialData.id_proof?.pan_card_url || undefined,
@@ -422,7 +435,7 @@ export default function CreateRegionalOfficer() {
         addressState: stateVal || "",
         city: data.address?.city || data.city || "",
         pincode: data.address?.pincode || data.pincode || "",
-        profilePicture: data.avatar_url || data.avatar || data.profile_image || data.profilePicture || data.profile_url || (data.emailAddress || data.email ? (localStorage.getItem(`avatar_key_${(data.emailAddress || data.email).trim().toLowerCase()}`) || `users/${(data.emailAddress || data.email).trim().toLowerCase()}/documents/profile_image/download.png`) : undefined),
+        profilePicture: data.profile_url || data.avatar_url || data.avatar || data.profile_image || data.profilePicture || (data.emailAddress || data.email ? (localStorage.getItem(`avatar_key_${(data.emailAddress || data.email).trim().toLowerCase()}`) || `users/${(data.emailAddress || data.email).trim().toLowerCase()}/documents/profile_image/download.png`) : undefined),
         aadharFront: data.id_proof_front_url || data.id_proof?.id_proof_frontUrl || undefined,
         aadharBack: data.id_proof_back_url || data.id_proof?.id_proof_backUrl || undefined,
         panCard: data.pan_card_url || data.id_proof?.pan_card_url || undefined,
@@ -497,7 +510,7 @@ export default function CreateRegionalOfficer() {
         emailAddress: values.email,
         phoneNumber: values.mobile,
         dob: values.dob,
-        avatar: profilePictureKey || undefined,
+        profile_url: profilePictureKey || undefined,
         profile_image: profilePictureKey || undefined,
         role_id: regionalOfficerRoleId,
         address: {
@@ -544,7 +557,7 @@ export default function CreateRegionalOfficer() {
     
     // Retrieve correct avatar URL: prioritize cached local storage key
     const cachedAvatarKey = localStorage.getItem(`avatar_key_${(data?.emailAddress || data?.email || "").trim().toLowerCase()}`);
-    const avatarUrl = cachedAvatarKey || data?.avatar_url || data?.avatar || data?.profile_image || (data?.emailAddress || data?.email ? `users/${(data.emailAddress || data.email).trim().toLowerCase()}/documents/profile_image/download.png` : "");
+    const avatarUrl = cachedAvatarKey || data?.profile_url || data?.avatar_url || data?.avatar || data?.profile_image || (data?.emailAddress || data?.email ? `users/${(data.emailAddress || data.email).trim().toLowerCase()}/documents/profile_image/download.png` : "");
 
     const officer = {
       name,
@@ -561,17 +574,18 @@ export default function CreateRegionalOfficer() {
       ? new Date(rawDob).toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' })
       : "N/A";
 
-    const stateObj = states.find((s: any) => s.desc === watch("addressState") || s.id === data?.geo_assignments?.state_id || s.desc === data?.state);
-    const districtObj = allDistricts.find((d: any) => d.id === data?.geo_assignments?.district_id || d.desc === data?.district);
-    const mandalObj = allMandals.find((m: any) => m.id === data?.geo_assignments?.mandal_id || m.desc === data?.mandal || m.desc === data?.area);
-
+    const stateObj = states.find((s: any) => s.desc === watch("addressState") || s.id === data?.geo_assignments?.state_id || s.desc === data?.state || s.id === data?.state_id || s.id === data?.address_state_id);
     const stateName = stateObj?.desc || data?.state || "N/A";
-    const districtName = districtObj?.desc || data?.district || "N/A";
-    const mandalName = mandalObj?.desc || data?.mandal || "N/A";
+
+    const regionObj = regionsData?.data?.find((r: any) => r.id === (data?.geo_assignments?.region_id || data?.region_id) || r.region_name === data?.region);
+    const regionName = regionObj?.region_name || data?.region || "N/A";
+
+    const areaObj = areasData?.data?.find((a: any) => (a.area_id ?? a.id) === (data?.geo_assignments?.areas_id || data?.geo_assignments?.area_id || data?.area_id) || a.area_name === data?.area);
+    const areaName = areaObj?.area_name || data?.area || "N/A";
 
     const operatingTerritory = [
-      mandalName,
-      districtName,
+      areaName,
+      regionName,
       stateName,
     ].filter((val) => val && val !== "N/A").join(", ") || "N/A";
 

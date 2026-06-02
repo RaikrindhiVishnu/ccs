@@ -34,7 +34,7 @@ const AssignedFarmlands: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLand, setSelectedLand] = useState<LandDetail | null>(null);
 
-  const handleViewDetails = (id: string, agent: string, area: string, amount: string, cost: string, image: string) => {
+  const handleViewDetails = (id: string, _agent?: string, _area?: string, _amount?: string, _cost?: string, _image?: string) => {
     navigate(`/regional-officer/assigned-farmlands-details/${id.replace(/\s+/g, '-').toLowerCase()}`);
   };
 

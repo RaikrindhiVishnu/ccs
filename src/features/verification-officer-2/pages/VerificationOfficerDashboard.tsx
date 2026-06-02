@@ -1,4 +1,3 @@
-import React from 'react';
 import DailyClearanceStatus from '../components/DailyClearanceStatus';
 import ActiveReviewCard from '../components/ActiveReviewCard';
 import WeeklyAssetCertification from '../components/WeeklyAssetCertification';

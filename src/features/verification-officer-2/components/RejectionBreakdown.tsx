@@ -1,4 +1,3 @@
-import React from 'react';
 import { dashboardMockData } from '../Data/dashboardMockData';
 import { Check, CheckCheck } from 'lucide-react';
 

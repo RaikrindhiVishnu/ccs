@@ -51,7 +51,7 @@ const RegionAndArea: React.FC = () => {
         <div className="flex items-center justify-between px-[clamp(0.75rem,1.5vw,1.5rem)] py-[clamp(0.625rem,1.2vw,1.125rem)] border-b border-[var(--border)] bg-white relative z-10">
           <Typography
             variant="h2"
-            className="text-2xl font-semibold text-[var(--text-primary)]"
+            className="font-sans font-bold text-[clamp(24px,2.5vw,48px)] leading-[100%] tracking-[0px] text-black"
           >
             Regions &amp; Area Data
           </Typography>

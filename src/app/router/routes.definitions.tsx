@@ -1,135 +1,258 @@
-import type { RouteObject } from 'react-router-dom';
-import { RootLayout } from '@/components/common/layouts/RootLayout';
-import { DashboardRedirect } from './DashboardRedirect';
-import { VerificationOfficer2Layout } from '@/components/common/layouts/VerificationOfficer2Layout';
+import type {RouteObject}
+from 'react-router-dom';
+import {RootLayout} from '@/components/common/layouts/RootLayout';
+import {DashboardRedirect} from './DashboardRedirect';
+import {VerificationOfficer2Layout} from '@/components/common/layouts/VerificationOfficer2Layout';
 import CreateRegionsAndAreas from '@/features/role-manager/pages/Createregionsandareas';
 import CreateRoles from '@/features/role-manager/pages/Createroles';
 import {
-  CcsDashboard,
-  RoleManagerDetails,
-  AgentApprovals,
-  Agentdetailpage,
-  FarmlandRequest,
-  FarmlandList,
-  RoleManagerDashboard,
-  UserDirectory,
-  DesignSystem,
-  Login,
-  Home,
-  AgentCreate,
-  AgentEdit,
-  RegionAndArea,
-  RegionSelection,
-  ActiveVerifications,
-  GeospatialAudit,
-  SendPaymentLink,
-  ProcessingFeeScreen,
-  IODashboard,
-  
-  // Regional Officer imports
-  Assignedfarmland,
-  AssignedFarmlandList,
-  Farmlanddocument,
-  CreateFieldOfficer,
-  CreateintellegenceOfficer,
-  CreateregionalOfficer,
-  EditFieldOfficer,
-  EditIntelligenceOfficer,
-  EditRegionalOfficer,
-  RegionalOfficerDashboard,
-  AssignedFarmlands,
-  RequestedInfo,
-  RequestedInfoDetails,
-  RequestedInfoReason,
-  Drafts,
-  FarmlandsList,
-  FarmlandDetails,
-  LandDocument,
-  FamilyTree,
-  LandDetails,
-  CustomerLandDetails,
-  SubmitForm,
-  LandBoundaries,
-  RegionalOfficerLayout,
-  FieldOfficerDashboard,
-  VerificationOfficerDashboard,
-  VerificationOfficerAssignedFarmlands,
-  VerificationOfficerInProgressFarmlands,
-  VerificationOfficerCompletedFarmlands,
-  VerificationOfficerCompletedFarmlandDetails,
-  VerificationOfficerAssignedFarmlandsOwnerDetails,
+    CcsDashboard,
+    RoleManagerDetails,
+    AgentApprovals,
+    Agentdetailpage,
+    FarmlandRequest,
+    FarmlandList,
+    RoleManagerDashboard,
+    UserDirectory,
+    DesignSystem,
+    Login,
+    Home,
+    AgentCreate,
+    AgentEdit,
+    RegionAndArea,
+    RegionSelection,
+    ActiveVerifications,
+    GeospatialAudit,
+    SendPaymentLink,
+    ProcessingFeeScreen,
+    IODashboard,
 
-  // Dev imports
-  DraftsPage,
-  FieldOfficerLayout,
-  RequestInfoPage,
-  FarmlandAlertsPage,
-  FarmlandAlertDetailsPage,
-  TopPerformerDetailsPage,
-  AgentDetailsPage,
-  AssignedFarmlandPage,
-  FarmlandWorkflowPage,
-  DraftsDetailPage,
-  RequestInfoDetailsPage,
-  LandDocumentsPage,
-  AssignOfficersPage,
-  AssignFieldOfficerPage,
-  RegionDetailsView,
-  AreaDetailsView,
-  RegionAreaEdit,
-  UpdatePassword,
+    // Regional Officer imports
+    Assignedfarmland,
+    AssignedFarmlandList,
+    Farmlanddocument,
+    CreateFieldOfficer,
+    CreateintellegenceOfficer,
+    CreateregionalOfficer,
+    EditFieldOfficer,
+    EditIntelligenceOfficer,
+    EditRegionalOfficer,
+    RegionalOfficerDashboard,
+    AssignedFarmlands,
+    RequestedInfo,
+    RequestedInfoDetails,
+    RequestedInfoReason,
+    Drafts,
+    FarmlandsList,
+    FarmlandDetails,
+    LandDocument,
+    FamilyTree,
+    LandDetails,
+    CustomerLandDetails,
+    SubmitForm,
+    LandBoundaries,
+    RegionalOfficerLayout,
+    FieldOfficerDashboard,
+    VerificationOfficerDashboard,
+    VerificationOfficerAssignedFarmlands,
+    VerificationOfficerInProgressFarmlands,
+    VerificationOfficerCompletedFarmlands,
+    VerificationOfficerCompletedFarmlandDetails,
+    VerificationOfficerAssignedFarmlandsOwnerDetails,
+
+  // Verification Officer 1 (VO1)
+  VerificationOfficer1Dashboard,
+  VerificationOfficer1AssignedFarmlands,
+  VerificationOfficer1InProgressFarmlands,
+  VerificationOfficer1CompletedFarmlands,
+  VerificationOfficer1CompletedFarmlandDetails,
+  VerificationOfficer1AssignedFarmlandsOwnerDetails,
+  VerificationOfficer1Layout,
+
+    // Dev imports
+    DraftsPage,
+    FieldOfficerLayout,
+    RequestInfoPage,
+    FarmlandAlertsPage,
+    FarmlandAlertDetailsPage,
+    TopPerformerDetailsPage,
+    AgentDetailsPage,
+    AssignedFarmlandPage,
+    FarmlandWorkflowPage,
+    DraftsDetailPage,
+    RequestInfoDetailsPage,
+    LandDocumentsPage,
+    AssignOfficersPage,
+    AssignFieldOfficerPage,
+    RegionDetailsView,
+    AreaDetailsView,
+    RegionAreaEdit,
+    UpdatePassword,
+    SuperAdminDashboard,
+    SuperAdminLogin,
+    SuperAdminFarmlands,
+    SuperAdminAssignedFarmlandsList,
+    SuperAdminFarmlandsListPreview,
+    SuperAdminFarmlandsListFull,
+    SuperAdminUsersListFull,
+    SuperAdminAssignedFarmlandDetails,
+    SuperAdminCustomerInformation
 } from './routes.config';
 
 
 export const guestRoutes: RouteObject[] = [
-  {
-    path: '/login',
-    element: <Login />,
-  },
+    {
+        path: '/login',
+        element: <Login />
+    }, {
+        path: '/super-admin/login',
+        element: <SuperAdminLogin />
+    },
 ];
 
 export const authRoutes: RouteObject[] = [
-  {
-    element: <RootLayout />,
-    children: [
-      { path: '/',                              element: <DashboardRedirect /> },
-      { path: '/ccs/dashboard',                 element: <CcsDashboard /> },
-      { path: '/home',                          element: <Home /> },
-      { path: '/pending-cases',                 element: <ActiveVerifications /> },
-      { path: '/geospatial-audit',              element: <GeospatialAudit /> },
-      { path: '/farmland-request',              element: <FarmlandRequest /> },
-      { path: '/farmland-list',                 element: <FarmlandList /> },
-      { path: '/send-payment-link',             element: <SendPaymentLink /> },
-      { path: '/processing-fee',                element: <ProcessingFeeScreen /> },
-      { path: '/role-manager/dashboard',        element: <RoleManagerDashboard /> },
-      { path: '/role-manager/user-directory',   element: <UserDirectory /> },
-      { path: '/role-manager/create-regions-and-areas', element: <CreateRegionsAndAreas /> },
-      { path: '/role-manager/create-roles',     element: <CreateRoles /> },
-      { path: '/role-manager/region-area-dashboard', element: <RegionAndArea /> },
-      { path: '/role-manager/region-creation',  element: <RegionSelection /> },
-      { path: '/io/dashboard',                  element: <IODashboard /> },
-      { path: '/field-officer/dashboard',       element: <FieldOfficerDashboard /> },
-      
-      // Dev additions
-      { path: '/io/Assignedfarmland',           element: <Assignedfarmland /> },
-      { path: '/io/assigned-farmland/list',     element: <AssignedFarmlandList /> },
-      { path: '/io/farmland-document/:id',      element: <Farmlanddocument /> },
-      { path: '/role-manager/agent-create',     element: <AgentCreate /> },
-      { path: '/role-manager/field-officer-create', element: <CreateFieldOfficer /> },
-      { path: '/role-manager/intellegence-officer-create', element: <CreateintellegenceOfficer /> },
-      { path: '/role-manager/regional-officer-create', element: <CreateregionalOfficer /> },
-      { path: '/role-manager/agent-edit',       element: <AgentEdit /> },
-      { path: '/role-manager/edit-field-officer', element: <EditFieldOfficer /> },
-      { path: '/role-manager/edit-field-officer/:id', element: <EditFieldOfficer /> },
-      { path: '/role-manager/edit-intelligence-officer', element: <EditIntelligenceOfficer /> },
-      { path: '/role-manager/edit-intelligence-officer/:id', element: <EditIntelligenceOfficer /> },
-      { path: '/role-manager/edit-regional-officer/:id', element: <EditRegionalOfficer /> },
-      { path: '/role-manager/profile',          element: <RoleManagerDetails /> },
-      { path: '/role-manager/profile/:id',      element: <RoleManagerDetails /> },
-      { path: '/role-manager/update-password',  element: <UpdatePassword /> },
-      { path: '/role-manager/agent-approvals',  element: <AgentApprovals /> },
-      { path: '/role-manager/agent-details/:id', element: <Agentdetailpage /> },
-    ],
+    {
+        element: <RootLayout />,
+        children: [
+            {
+                path: '/',
+                element: <DashboardRedirect />
+            },
+            {
+                path: '/ccs/dashboard',
+                element: <CcsDashboard />
+            },
+            {
+                path: '/home',
+                element: <Home />
+            },
+            {
+                path: '/pending-cases',
+                element: <ActiveVerifications />
+            }, {
+                path: '/geospatial-audit',
+                element: <GeospatialAudit />
+            }, {
+                path: '/farmland-request',
+                element: <FarmlandRequest />
+            }, {
+                path: '/farmland-list',
+                element: <FarmlandList />
+            }, {
+                path: '/send-payment-link',
+                element: <SendPaymentLink />
+            }, {
+                path: '/processing-fee',
+                element: <ProcessingFeeScreen />
+            }, {
+                path: '/role-manager/dashboard',
+                element: <RoleManagerDashboard />
+            }, {
+                path: '/role-manager/user-directory',
+                element: <UserDirectory />
+            }, {
+                path: '/role-manager/create-regions-and-areas',
+                element: <CreateRegionsAndAreas />
+            }, {
+                path: '/role-manager/create-roles',
+                element: <CreateRoles />
+            }, {
+                path: '/role-manager/region-area-dashboard',
+                element: <RegionAndArea />
+            }, {
+                path: '/role-manager/region-creation',
+                element: <RegionSelection />
+            }, {
+                path: '/io/dashboard',
+                element: <IODashboard />
+            }, {
+                path: '/field-officer/dashboard',
+                element: <FieldOfficerDashboard />
+            },
+
+            // Dev additions
+            {
+                path: '/io/Assignedfarmland',
+                element: <Assignedfarmland />
+            }, {
+                path: '/io/assigned-farmland/list',
+                element: <AssignedFarmlandList />
+            }, {
+                path: '/io/farmland-document/:id',
+                element: <Farmlanddocument />
+            }, {
+                path: '/role-manager/agent-create',
+                element: <AgentCreate />
+            }, {
+                path: '/role-manager/field-officer-create',
+                element: <CreateFieldOfficer />
+            }, {
+                path: '/role-manager/intellegence-officer-create',
+                element: <CreateintellegenceOfficer />
+            }, {
+                path: '/role-manager/regional-officer-create',
+                element: <CreateregionalOfficer />
+            }, {
+                path: '/role-manager/agent-edit',
+                element: <AgentEdit />
+            }, {
+                path: '/role-manager/edit-field-officer',
+                element: <EditFieldOfficer />
+            }, {
+                path: '/role-manager/edit-field-officer/:id',
+                element: <EditFieldOfficer />
+            }, {
+                path: '/role-manager/edit-intelligence-officer',
+                element: <EditIntelligenceOfficer />
+            }, {
+                path: '/role-manager/edit-intelligence-officer/:id',
+                element: <EditIntelligenceOfficer />
+            }, {
+                path: '/role-manager/edit-regional-officer/:id',
+                element: <EditRegionalOfficer />
+            }, {
+                path: '/role-manager/profile',
+                element: <RoleManagerDetails />
+            }, {
+                path: '/role-manager/profile/:id',
+                element: <RoleManagerDetails />
+            }, {
+                path: '/role-manager/update-password',
+                element: <UpdatePassword />
+            }, {
+                path: '/role-manager/agent-approvals',
+                element: <AgentApprovals />
+            }, {
+                path: '/role-manager/agent-details/:id',
+                element: <Agentdetailpage />
+            },
+
+            {
+                path: '/super-admin/dashboard',
+                element: <SuperAdminDashboard />
+            }, {
+                path: '/super-admin/farmlands',
+                element: <SuperAdminFarmlands />
+            }, {
+                path: '/super-admin/assigned-farmlands',
+                element: <SuperAdminAssignedFarmlandsList />
+            }, {
+                path: '/super-admin/farmlands-list',
+                element: <SuperAdminFarmlandsListPreview />
+            }, {
+                path: '/super-admin/farmlands-list/all',
+                element: <SuperAdminFarmlandsListFull />
+            }, {
+                path: '/super-admin/users-list',
+                element: <SuperAdminUsersListFull />
+            }, {
+                path: '/super-admin/assigned-farmlands/:id',
+                element: <SuperAdminAssignedFarmlandDetails />
+            }, {
+                path: '/super-admin/assigned-farmlands/:id/customer-information',
+                element: <SuperAdminCustomerInformation />
+            },
+        ]
 
   },
   {
@@ -175,6 +298,40 @@ export const authRoutes: RouteObject[] = [
   {
     path: '/verification-officer-2/assigned-farmlands-owner-details/:id',
     element: <VerificationOfficerAssignedFarmlandsOwnerDetails />,
+  },
+  {
+    path: "verification-officer-1",
+    element: <VerificationOfficer1Layout />,
+    children: [
+      {
+        index: true,
+        element: <VerificationOfficer1Dashboard />,
+      },
+      {
+        path: "dashboard",
+        element: <VerificationOfficer1Dashboard />,
+      },
+      {
+        path: "assigned-farmlands",
+        element: <VerificationOfficer1AssignedFarmlands />,
+      },
+      {
+        path: "in-progress-farmlands",
+        element: <VerificationOfficer1InProgressFarmlands />,
+      },
+      {
+        path: "completed-farmland",
+        element: <VerificationOfficer1CompletedFarmlands />,
+      },
+    ],
+  },
+  {
+    path: '/verification-officer-1/completed-farmland/:id',
+    element: <VerificationOfficer1CompletedFarmlandDetails />,
+  },
+  {
+    path: '/verification-officer-1/assigned-farmlands-owner-details/:id',
+    element: <VerificationOfficer1AssignedFarmlandsOwnerDetails />,
   },
   {
     path: '/regional-officer/requested-info-details/:id',
@@ -268,10 +425,26 @@ export const authRoutes: RouteObject[] = [
 ];
 
 export const publicRoutes: RouteObject[] = [
-  { path: '/design-system',                    element: <DesignSystem /> },
-  { path: '/design-system',                 element: <DesignSystem /> },
-  { path: '/role-manager/agent-create',     element: <AgentCreate /> },
-  { path: '/role-manager/agent-edit',       element: <AgentEdit /> },
-  { path: '/role-manager/agent-approvals',  element: <AgentApprovals /> },
-  { path: '/role-manager/agent-details',    element: <Agentdetailpage /> },
+    {
+        path: '/design-system',
+        element: <DesignSystem />
+    },
+    {
+        path: '/design-system',
+        element: <DesignSystem />
+    },
+    {
+        path: '/role-manager/agent-create',
+        element: <AgentCreate />
+    },
+    {
+        path: '/role-manager/agent-edit',
+        element: <AgentEdit />
+    }, {
+        path: '/role-manager/agent-approvals',
+        element: <AgentApprovals />
+    }, {
+        path: '/role-manager/agent-details',
+        element: <Agentdetailpage />
+    },
 ];

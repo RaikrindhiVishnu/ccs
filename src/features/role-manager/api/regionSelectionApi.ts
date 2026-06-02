@@ -58,7 +58,7 @@ export const regionSelectionApi = roleManagerApi.injectEndpoints({
       {
         region_id: number;
         regionalOfficerId: number;
-        inteligenceOfficerId: number;
+        inteligenceOfficerId?: number;
       }
     >({
       query: (body) => ({
