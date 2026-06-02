@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import { useRoleLayout } from '@/core/hooks/useRoleLayout';
 import { RoleManagerLayout } from './RoleManagerLayout';
+import { SuperAdminLayout } from './SuperAdminLayout';
 import { CcsOfficerLayout } from './CcsOfficerLayout';
 import { FieldOfficerLayout } from './FieldOfficerLayout';
 import { IntelligenceOfficerLayout } from './IntelligenceOfficerLayout';
@@ -11,6 +12,7 @@ import type { LayoutVariant } from '@/core/config/layoutConfig';
 // To add a new role layout → create new component + add one line here.
 const LAYOUT_MAP: Record<LayoutVariant, ComponentType> = {
   'sidebar-role-manager': RoleManagerLayout,
+  'sidebar-super-admin':  SuperAdminLayout,
   'sidebar-ccs-officer':  CcsOfficerLayout,
   'sidebar-intelligence-officer': IntelligenceOfficerLayout,
   'header-only':          FieldOfficerLayout,
