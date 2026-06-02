@@ -492,44 +492,14 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
                                             Territory Not Assigned
                                         </span>
-                                        {
-                                            territoryError.district && (
-                                                <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                                                    • District ID — Not assigned to this agent's profile.
-                                                </span>
-                                            )
-                                        }
-                                        {
-                                            territoryError.area && (
-                                                <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                                                    • Mandal (Area) ID — Not assigned to this agent's profile.
-                                                </span>
-                                            )
-                                        }
-                                        {
-                                            territoryError.regionNull && (
-                                                <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                                                    • Region — Not mapped for this agent's district &amp; mandal. Please create or assign a Region first.
-                                                </span>
-                                            )
-                                        }
-                                        {
-                                            territoryError.areaNullInHierarchy && (
-                                                <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                                                    • Area — Not mapped for this agent's district &amp; mandal. Please create or assign an Area first.
-                                                </span>
-                                            )
-                                        }
-                                        {
-                                            territoryError.hierarchy && (
-                                                <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
-                                                    • Territory hierarchy could not be verified — please try again or contact support.
-                                                </span>
-                                            )
-                                        }
-                                        <span className="text-[0.6875rem] lg:text-[0.75rem] text-[color:var(--text-secondary)] mt-0.5">
-                                            Agent cannot be approved until the territory is fully assigned.
-                                        </span>
+                                        <div className="flex flex-col gap-1 pl-6 mt-1">
+                                            <span className="text-[0.75rem] lg:text-[0.8125rem] font-medium text-[color:var(--text-secondary)]">
+                                                Region: {(!territoryError.district && !territoryError.area && !territoryError.hierarchy && !territoryError.regionNull) ? `✅ ${hierarchyData?.region?.name || ""}` : "❌"}
+                                            </span>
+                                            <span className="text-[0.75rem] lg:text-[0.8125rem] font-medium text-[color:var(--text-secondary)]">
+                                                Area: {(!territoryError.district && !territoryError.area && !territoryError.hierarchy && !territoryError.areaNullInHierarchy) ? `✅ ${hierarchyData?.area?.name || ""}` : "❌"}
+                                            </span>
+                                        </div>
                                     </div>
                                 )
                             } </div>

@@ -122,7 +122,7 @@ export const AgentApprovalsPage = () => {
           name,
           location: item.location || [item.address, item.city, item.pincode].filter(Boolean).join(", ") || "Location Not Available",
           status: "Pending Review",
-          avatarUrl: item.profile_url || item.avatar || item.profile_image || "",
+          avatarUrl: item.area?.profile_url || item.profile_url || item.avatar || item.profile_image || "",
           initials,
         };
       });
