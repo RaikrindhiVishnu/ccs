@@ -1,7 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 
 export interface SuperAdminFarmlandData {

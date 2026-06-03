@@ -5,7 +5,7 @@ import SuperAdminHeader from "@/features/super-admin/components/SuperAdminHeader
 import VisitorSalesCard from "@/features/super-admin/components/VisitorSalesCard";
 import FarmlandStatsCard from "@/features/super-admin/components/FarmlandStatsCard";
 import SuperAdminUserListCard from "@/features/super-admin/components/SuperAdminUserListCard";
-import type { SuperAdminUserCardData } from "@/features/super-admin/components/SuperAdminUserListCard";
+
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 
 const SuperAdminUsersListFull: React.FC = () => {

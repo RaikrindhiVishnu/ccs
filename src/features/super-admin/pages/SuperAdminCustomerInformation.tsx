@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Bell, Check, Phone, Mail, CalendarDays, MapPin } from 'lucide-react';
+import { ArrowLeft, Bell, Check, MapPin } from 'lucide-react';
 import { useViewportScale } from '@/hooks/useViewportScale';
 import { mockDashboardData } from '@/features/super-admin/data/mockDashboardData';
 

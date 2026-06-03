@@ -53,6 +53,30 @@ export const VerificationOfficerCompletedFarmlandDetails = lazy(() => import (".
 export const VerificationOfficerAssignedFarmlandsOwnerDetails = lazy(() => import ("../../features/verification-officer-2/pages/AssignedFarmlandsOwnerDetails"),);
 export const VerificationOfficerLayout = lazy(() => import ("../../components/common/layouts/VerificationOfficer2Layout"),);
 
+// Verification Officer 1 (VO1)
+export const VerificationOfficer1Dashboard = lazy(
+  () => import("../../features/verification-officer-1/pages/Dashboard"),
+);
+export const VerificationOfficer1AssignedFarmlands = lazy(
+  () => import("../../features/verification-officer-1/pages/AssignedFarmlands"),
+);
+export const VerificationOfficer1InProgressFarmlands = lazy(
+  () => import("../../features/verification-officer-1/pages/InProgressFarmlands"),
+);
+export const VerificationOfficer1CompletedFarmlands = lazy(
+  () => import("../../features/verification-officer-1/pages/CompletedFarmlands"),
+);
+export const VerificationOfficer1CompletedFarmlandDetails = lazy(
+  () => import("../../features/verification-officer-1/pages/CompletedFarmlandDetails"),
+);
+export const VerificationOfficer1AssignedFarmlandsOwnerDetails = lazy(
+  () => import("../../features/verification-officer-1/pages/AuditRoom"),
+);
+export const VerificationOfficer1Layout = lazy(
+  () => import("../../components/common/layouts/VerificationOfficer1Layout"),
+);
+
+
 // Dev Imports
 export const Assignedfarmland = lazy(() => import ("../../features/io/pages/Assignedfarmland"),);
 export const AssignedFarmlandList = lazy(() => import ("../../features/io/components/AssignedFarmlandList"),);

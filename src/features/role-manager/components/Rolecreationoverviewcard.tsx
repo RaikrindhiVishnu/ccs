@@ -27,31 +27,31 @@ const SERIES: {
   barColor: string;
   dotColor: string;
 }[] = [
-  {
-    key: "ro",
-    label: "R.O",
-    barColor: "var(--pie-3)",
-    dotColor: "var(--brand-500)",
-  },
-  {
-    key: "io",
-    label: "I.O",
-    barColor: "var(--brand-400)",
-    dotColor: "var(--pie-1)",
-  },
-  {
-    key: "fo",
-    label: "F.O",
-    barColor: "var(--pie-1)",
-    dotColor: "var(--chart-fo)",
-  },
-  {
-    key: "agents",
-    label: "Agents",
-    barColor: "var(--brand-bar)",
-    dotColor: "var(--chart-agents)",
-  },
-];
+    {
+      key: "ro",
+      label: "R.O",
+      barColor: "var(--pie-3)",
+      dotColor: "var(--brand-500)",
+    },
+    {
+      key: "io",
+      label: "I.O",
+      barColor: "var(--brand-400)",
+      dotColor: "var(--pie-1)",
+    },
+    {
+      key: "fo",
+      label: "F.O",
+      barColor: "var(--pie-1)",
+      dotColor: "var(--chart-fo)",
+    },
+    {
+      key: "agents",
+      label: "Agents",
+      barColor: "var(--brand-bar)",
+      dotColor: "var(--chart-agents)",
+    },
+  ];
 
 interface TooltipState {
   visible: boolean;
@@ -105,7 +105,7 @@ export function RoleCreationOverviewCard({
     currentDate.setHours(0, 0, 0, 0);
     const endDate = new Date(end);
     endDate.setHours(23, 59, 59, 999);
-    
+
     while (currentDate <= endDate) {
       dates.push(new Date(currentDate));
       currentDate.setDate(currentDate.getDate() + 1);
@@ -200,6 +200,7 @@ export function RoleCreationOverviewCard({
         <DateRangePicker
           from={dateRange.from}
           to={dateRange.to}
+          maxDays={7}
           onRangeChange={(range) => {
             if (range) setDateRange(range);
           }}
@@ -318,12 +319,12 @@ export function RoleCreationOverviewCard({
                         minHeight: total > 0 ? "0.5rem" : undefined,
                       }}
                       onMouseEnter={(e) =>
-                        ((e.currentTarget as HTMLDivElement).style.opacity =
-                          "0.85")
+                      ((e.currentTarget as HTMLDivElement).style.opacity =
+                        "0.85")
                       }
                       onMouseLeave={(e) =>
-                        ((e.currentTarget as HTMLDivElement).style.opacity =
-                          "1")
+                      ((e.currentTarget as HTMLDivElement).style.opacity =
+                        "1")
                       }
                     >
                       {[...SERIES].reverse().map((s) => {

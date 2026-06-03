@@ -146,7 +146,7 @@ const RegionCreationVelocity: React.FC = () => {
     currentDate.setHours(0, 0, 0, 0);
     const endDate = new Date(end);
     endDate.setHours(23, 59, 59, 999);
-    
+
     while (currentDate <= endDate) {
       dates.push(new Date(currentDate));
       currentDate.setDate(currentDate.getDate() + 1);
@@ -168,22 +168,22 @@ const RegionCreationVelocity: React.FC = () => {
       value: matchingItem ? matchingItem.totalRegions : 0,
     };
   });
-const maxValue =
-  chartData.length > 0
-    ? Math.max(...chartData.map((item) => item.value))
-    : 0;
+  const maxValue =
+    chartData.length > 0
+      ? Math.max(...chartData.map((item) => item.value))
+      : 0;
 
-const yAxisMax = Math.ceil(maxValue * 1.2);
+  const yAxisMax = Math.ceil(maxValue * 1.2);
 
-const tickCount = 5;
+  const tickCount = 5;
 
-const step =
-  yAxisMax > 0 ? Math.ceil(yAxisMax / tickCount) : 1;
+  const step =
+    yAxisMax > 0 ? Math.ceil(yAxisMax / tickCount) : 1;
 
-const ticks = Array.from(
-  { length: tickCount + 1 },
-  (_, i) => i * step
-);
+  const ticks = Array.from(
+    { length: tickCount + 1 },
+    (_, i) => i * step
+  );
 
   const PEAK_VAL =
     chartData.length > 0 ? Math.max(...chartData.map((item) => item.value)) : 0;
@@ -215,6 +215,7 @@ const ticks = Array.from(
         <DateRangePicker
           from={dateRange.from}
           to={dateRange.to}
+          maxDays={7}
           onRangeChange={(range) => {
             if (range) setDateRange(range);
           }}
@@ -310,16 +311,16 @@ const ticks = Array.from(
 
               {/* Y-axis */}
               <YAxis
-  domain={[0, yAxisMax]}
-  ticks={ticks}
-  axisLine={false}
-  tickLine={false}
-  tick={{
-    fill: "var(--chart-axis-text)",
-    fontSize: 11,
-    fontFamily: "var(--font-sans)",
-  }}
-/>
+                domain={[0, yAxisMax]}
+                ticks={ticks}
+                axisLine={false}
+                tickLine={false}
+                tick={{
+                  fill: "var(--chart-axis-text)",
+                  fontSize: 11,
+                  fontFamily: "var(--font-sans)",
+                }}
+              />
 
               <Tooltip content={<CustomTooltip />} />
 

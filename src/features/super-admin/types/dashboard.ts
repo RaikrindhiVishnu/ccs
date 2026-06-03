@@ -50,9 +50,9 @@ export interface SubscriberGrowthData {
   unitsTotal: number;
 }
 
-import { SuperAdminFarmlandData } from "../components/SuperAdminFarmlandCard";
-import { FarmlandListCardData } from "../components/SuperAdminFarmlandsListCard";
-import { SuperAdminUserCardData } from "../components/SuperAdminUserListCard";
+import type { SuperAdminFarmlandData } from "../components/SuperAdminFarmlandCard";
+import type { FarmlandListCardData } from "../components/SuperAdminFarmlandsListCard";
+import type { SuperAdminUserCardData } from "../components/SuperAdminUserListCard";
 
 export interface AssignedFarmlandDetailsData {
   id: string;

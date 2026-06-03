@@ -178,13 +178,29 @@ useEffect(() => {
     ? new Date(createdOn).toLocaleTimeString()
     : "—";
 
- const fieldOfficer = {
-  name: geoProps?.field_officer_name || "Unassigned",
-  code: geoProps?.field_officer_id 
-    ? `FO-${geoProps.field_officer_id}` 
-    : "—",
-  avatar_url: null,
-};
+  const fieldOfficer = useMemo(() => {
+    const rawId = geoProps?.field_officer_id;
+    const hasId = rawId && Number(rawId) !== 0 && String(rawId) !== "null";
+    
+    if (hasId) {
+      const officersList = Array.isArray(fieldOfficersData?.data) ? fieldOfficersData.data : (Array.isArray(fieldOfficersData) ? fieldOfficersData : []);
+      const matched = officersList.find((o: any) => Number(o.id) === Number(rawId));
+      if (matched) {
+        const fullName = `${matched.first_name || ""} ${matched.last_name || ""}`.trim();
+        const officerCode = matched.user_code || (matched.code && matched.id ? `${matched.code}-${matched.id}` : `FO-${matched.id}`);
+        return {
+          name: fullName || geoProps?.field_officer_name || "Unassigned",
+          code: officerCode,
+          avatar_url: matched.avatar_url || null,
+        };
+      }
+    }
+    return {
+      name: geoProps?.field_officer_name || "Unassigned",
+      code: hasId ? `FO-${rawId}` : "—",
+      avatar_url: null,
+    };
+  }, [geoProps?.field_officer_id, geoProps?.field_officer_name, fieldOfficersData]);
 useEffect(() => {
   if (areaGeoJson) {
     const features = areaGeoJson?.data?.features || areaGeoJson?.features || [];
@@ -379,7 +395,7 @@ useEffect(() => {
                       variant="span"
                       className="text-[#64748B] font-medium text-[13px]"
                     >
-                      Officer Code: {fieldOfficer.code || "—"}
+                      ID: {fieldOfficer.code || "—"}
                     </Typography>
                   </div>
                 </div>

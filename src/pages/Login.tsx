@@ -138,7 +138,6 @@ function PrimaryButton({
 function CardLogo({ className = "" }: { className?: string }) {
   return (
     <div className={`flex flex-col mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 shrink-0 ${className}`}>
-
       <img
         src={GlcLogo}
         alt="Green Land Capital"
@@ -198,7 +197,7 @@ function LoginScreen({
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!loginId.trim()) e.loginId = "Login ID is required";
+    if (!loginId.trim()) e.loginId = "Email address required";
     else if (!/\S+@\S+\.\S+/.test(loginId)) e.loginId = "Enter a valid email";
     if (!password) e.password = "Password is required";
     else if (password.length < 6) e.password = "Password must be at least 6 characters";
@@ -217,19 +216,19 @@ function LoginScreen({
     if (mockUser) {
       const roleCode = ROLE_CODES[mockUser.role_id];
       dispatch(
-        setCredentials({
-          user: {
-            id: mockUser.id,
-            login_id: mockUser.login_id,
-            first_name: mockUser.first_name,
-            last_name: mockUser.last_name,
-            role_id: mockUser.role_id,
-            role: roleCode,
-            is_first_login: 0,
-          },
-          accessToken: "mock-token-" + roleCode.toLowerCase(),
-          refreshToken: "mock-refresh-" + roleCode.toLowerCase(),
-        })
+          setCredentials({
+            user: {
+              id: mockUser.id,
+              login_id: mockUser.login_id,
+              first_name: mockUser.first_name,
+              last_name: mockUser.last_name,
+              role_id: mockUser.role_id,
+              role: roleCode,
+              is_first_login: 0,
+            },
+            accessToken: "mock-token-" + roleCode.toLowerCase(),
+            refreshToken: "mock-refresh-" + roleCode.toLowerCase(),
+          })
       );
       onSuccess({ is_first_login: 0, passwordUsed: password });
       return;
@@ -239,19 +238,19 @@ function LoginScreen({
       setLoading(true);
       const response = await login({ login_id: loginId, password }).unwrap();
       dispatch(
-        setCredentials({
-          user: {
-            id: response.id,
-            login_id: response.login_id,
-            first_name: response.first_name,
-            last_name: response.last_name,
-            role_id: response.role_id,
-            role: ROLE_CODES[response.role_id] || "",
-            is_first_login: response.is_first_login,
-          },
-          accessToken: response.token,
-          refreshToken: response.refreshToken,
-        })
+          setCredentials({
+            user: {
+              id: response.id,
+              login_id: response.login_id,
+              first_name: response.first_name,
+              last_name: response.last_name,
+              role_id: response.role_id,
+              role: ROLE_CODES[response.role_id] || "",
+              is_first_login: response.is_first_login,
+            },
+            accessToken: response.token,
+            refreshToken: response.refreshToken,
+          })
       );
       onSuccess({ is_first_login: response.is_first_login, passwordUsed: password });
     } catch (err: any) {
@@ -285,7 +284,7 @@ function LoginScreen({
           Role Manager Login
         </h1>
         <p className="font-sans font-normal text-[var(--text-secondary)] text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] lg:leading-[1.81vw] leading-normal m-0">
-          Secure access for authorised role managers.
+          Secure access for authorized Role Managers.
           <br />
           Please authenticate to continue.
         </p>
@@ -297,8 +296,8 @@ function LoginScreen({
       >
         <InputField
           id="login-id"
-          label="Login ID"
-          placeholder="Enter your assigned ID"
+          label="Email Address"
+          placeholder="Enter your registered Email address"
           type="text"
           value={loginId}
           onChange={(e) => setLoginId(e.target.value)}
@@ -349,7 +348,7 @@ function LoginScreen({
 
         <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:mt-[1.67vw]">
           <PrimaryButton type="submit" disabled={loading} className=" lg:rounded-full lg:text-[1.11vw]">
-            {loading ? "Signing in…" : "LOGIN"}
+            {loading ? "Signing In..." : "Sign In"}
           </PrimaryButton>
         </div>
       </form>
