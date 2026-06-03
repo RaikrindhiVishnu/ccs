@@ -114,10 +114,10 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
     <div
       className="
         relative min-h-screen w-full
-        bg-[#F9F9F9]
-        px-[clamp(1rem,2.78vw,2.5rem)]
-        py-[clamp(1.5rem,2.5vw,2.125rem)]
-        flex flex-col gap-[clamp(1.25rem,2.22vw,1.875rem)]
+        bg-[var(--chart-bg)]
+        px-[clamp(1.775rem,2.78vw,3.3rem)]
+        py-[clamp(1.6rem,2.5vw,3rem)]
+        flex flex-col gap-[clamp(1.42rem,2.22vw,2.66rem)]
         font-[family-name:var(--font-sans)]
       "
     >
@@ -129,11 +129,11 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
           size="default"
           onClick={onBack}
           className="
-            w-[clamp(15.25rem,16.67vw,20rem)]
-            h-[clamp(2.25rem,3.61vw,4.375rem)]
-            text-[clamp(0.6875rem,1.11vw,1.3125rem)]
-            py-[clamp(0.625rem,1.32vw,1.5625rem)]
-            px-[clamp(0.75rem,1.39vw,1.6875rem)]
+            w-[clamp(15.5rem,16.67vw,20rem)]
+            h-[clamp(2.31rem,3.61vw,4.3rem)]
+            text-[clamp(0.71rem,1.11vw,1.33rem)]
+            py-[clamp(0.84rem,1.32vw,1.58rem)]
+            px-[clamp(0.8875rem,1.39vw,1.66rem)]
             font-[family-name:var(--font-sans)]
             text-[var(--text-button)]
           "
@@ -207,7 +207,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                   font-bold
                   font-[var(--font-sans)]
                   text-[var(--text-primary)]
-                  text-[clamp(0.6875rem,1.11vw,1rem)]
+                  text-[clamp(0.71rem,1.11vw,1.33rem)]
                 "
               >
                 {initials}
@@ -221,215 +221,275 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
       <div className="flex flex-col gap-[clamp(1rem,1.53vw,1.375rem)] w-full">
         
         {/* Row 1: Left Steps Card + Right Tabs Card */}
-        <div className="flex flex-col lg:flex-row gap-[clamp(1rem,1.67vw,1.625rem)] w-full items-stretch">
+        <div className="flex flex-col lg:flex-row gap-[clamp(1rem,1.11vw,1.625rem)] w-full items-stretch">
           
-        {/* Left Side: ID & Steps Card */}
-        <Card
-          className="
-            relative bg-white border-none
-            rounded-[1.5rem]
-            w-full lg:w-[clamp(18.25rem,28.47vw,25.625rem)]
-            h-[clamp(20rem,30.76vw,27.6875rem)]
-            shadow-[0_1.25rem_2.5rem_rgba(0,49,50,0.06)]
-            shrink-0
-          "
-        >
-          {/* Farmland ID Header */}
-          <span
+          {/* Left Side: ID & Steps Card */}
+          <Card
             className="
-              absolute text-[var(--text-primary)] font-medium
-              left-[clamp(1.3125rem,2.08vw,1.875rem)] top-[clamp(1.3125rem,2.08vw,1.875rem)]
-              w-[clamp(4.25rem,6.67vw,6rem)] h-[clamp(0.875rem,1.39vw,1.25rem)]
-              font-[family-name:var(--font-sans)] text-[clamp(0.6875rem,1.11vw,1rem)] leading-[clamp(0.875rem,1.39vw,1.25rem)]
+              relative bg-white border-none
+              rounded-[24px]
+              w-full lg:w-[clamp(25.625rem,28.47vw,45rem)]
+              h-[clamp(27.6875rem,30.76vw,50rem)]
+              shadow-[0_1.25rem_2.5rem_rgba(0,49,50,0.06)]
+              shrink-0
             "
           >
-            Farmland ID:
-          </span>
-          <Typography
-            as="h2"
-            className="
-              absolute text-[var(--text-primary)] font-medium
-              left-[clamp(1.3125rem,2.08vw,1.875rem)] top-[clamp(2.625rem,4.17vw,3.75rem)]
-              w-[clamp(8.625rem,13.54vw,12.1875rem)] h-[clamp(1.9375rem,3.06vw,2.75rem)]
-              font-[family-name:var(--font-sans)] text-[clamp(1.5rem,2.43vw,2.1875rem)] leading-[clamp(1.9375rem,3.06vw,2.75rem)]
-            "
-          >
-            {farmlandId}
-          </Typography>
+            {/* Farmland ID Header */}
+            <span
+              className="
+                absolute text-black font-medium
+                left-[clamp(1.25rem,2.08vw,3rem)] top-[clamp(1.25rem,2.08vw,3rem)]
+                w-[clamp(4.5rem,6.67vw,10rem)] h-[clamp(0.95rem,1.39vw,2rem)]
+                font-[family-name:var(--font-sans)] text-[clamp(0.75rem,1.11vw,1.5rem)] leading-[clamp(0.95rem,1.39vw,2rem)]
+              "
+            >
+              Farmland ID:
+            </span>
+            <Typography
+              as="h2"
+              className="
+                absolute text-black font-medium whitespace-nowrap
+                left-[clamp(1.25rem,2.08vw,3rem)] top-[clamp(2.5rem,4.17vw,6rem)]
+                w-[clamp(12rem,24.3vw,30rem)] h-[clamp(2rem,3.06vw,5rem)]
+                font-[family-name:var(--font-sans)] text-[clamp(1.5rem,2.43vw,3.5rem)] leading-[clamp(2rem,3.06vw,5rem)]
+              "
+            >
+              {farmlandId}
+            </Typography>
 
-          {/* Steps Container (Frame 2147239921) */}
-          <div
-            className="
-              absolute w-[clamp(8.125rem,12.78vw,11.5rem)] h-[clamp(6rem,9.44vw,8.5rem)]
-              left-[calc(50%-clamp(4.0625rem,6.39vw,5.75rem))] top-[calc(50%-clamp(3rem,4.72vw,4.25rem))]
-            "
-          >
-            {/* Frame 2147239964 */}
-            <div className="absolute w-full h-full left-0 top-0">
-              
-              {/* Line 495 */}
-              <div
-                className="
-                  absolute left-0 w-0 border-l border-[rgba(0,120,250,0.25)]
-                  top-[clamp(0.3125rem,0.56vw,0.5rem)] h-[clamp(4.0625rem,6.39vw,5.75rem)]
-                "
-              />
-
-              {/* Step 1: Customer Information Container */}
-              <div
-                onClick={() => onStepChange?.("customer")}
-                className="
-                  absolute flex flex-col cursor-pointer
-                  left-[clamp(0.5rem,0.76vw,0.6875rem)] top-0
-                  w-[clamp(7.6875rem,12.01vw,10.8125rem)] h-[clamp(3rem,4.72vw,4.25rem)]
-                  pl-[clamp(1.0625rem,1.67vw,1.5rem)] pb-[clamp(1.375rem,2.22vw,2rem)] gap-[clamp(0.1875rem,0.28vw,0.25rem)]
-                "
-              >
-                {/* Checkbox Bullet (Checked/Filled State) */}
-                <div
-                  className="
-                    absolute bg-[var(--brand-400)] transition-all duration-200
-                    w-[clamp(0.55rem,0.86vw,0.7775rem)] h-[clamp(0.55rem,0.86vw,0.7775rem)]
-                    left-[clamp(-1.0625rem,-1.18vw,-0.75rem)] top-[clamp(0.0625rem,0.14vw,0.125rem)]
-                    rounded-[clamp(0.275rem,0.43vw,0.38875rem)]
-                    shadow-[0_0_0_clamp(0.18125rem,0.29vw,0.259375rem)_#FFFFFF,0_0_0_clamp(0.275rem,0.43vw,0.38875rem)_rgba(37,99,235,0.1)]
-                  "
-                />
+            {/* Steps Container (Frame 2147239921) */}
+            <div
+              className="
+                absolute
+                w-[clamp(11.5rem,12.78vw,18.4rem)]
+                h-[clamp(8.5rem,9.44vw,13.6rem)]
+                left-[calc(50%-clamp(5.75rem,6.39vw,9.2rem))]
+                top-[calc(50%-clamp(4.25rem,4.72vw,6.8rem)+0.5px)]
+              "
+            >
+              {/* Frame 2147239964 */}
+              <div className="absolute w-full h-full left-0 top-0">
                 
-                {/* Customer Information text */}
-                <span
-                  className="
-                    flex items-center font-semibold uppercase tracking-normal
-                    w-[clamp(6.625rem,10.35vw,9.3125rem)] h-[clamp(1.5625rem,2.5vw,2.25rem)]
-                    font-[family-name:var(--font-sans)] text-[clamp(0.625rem,0.97vw,0.875rem)] leading-[clamp(0.8125rem,1.25vw,1.125rem)]
-                    text-[var(--text-subtle)]
-                  "
-                >
-                  Customer Information
-                </span>
-
-                {/* Subtext Date */}
-                <span
-                  className="
-                    flex items-center font-normal
-                    w-[clamp(6.625rem,10.35vw,9.3125rem)] h-[clamp(0.625rem,0.97vw,0.875rem)]
-                    font-[family-name:var(--font-inter)] text-[clamp(0.5rem,0.76vw,0.6875rem)] leading-[clamp(0.625rem,0.97vw,0.875rem)]
-                    text-[var(--text-label-gray)]
-                  "
-                >
-                  Oct 24 • 09:00 AM
-                </span>
-              </div>
-
-              {/* Step 2: Local Intelligence Container */}
-              <div
-                onClick={() => onStepChange?.("local")}
-                className="
-                  absolute flex flex-col cursor-pointer
-                  left-[clamp(0.5rem,0.76vw,0.6875rem)] top-[clamp(3.8125rem,5.97vw,5.375rem)]
-                  w-[clamp(7.6875rem,12.01vw,10.8125rem)] h-[clamp(2.1875rem,3.47vw,3.125rem)]
-                  pl-[clamp(1.0625rem,1.67vw,1.5rem)] pb-[clamp(1.375rem,2.22vw,2rem)] gap-[clamp(0.1875rem,0.28vw,0.25rem)]
-                "
-              >
-                {/* Checkbox Bullet (Active State with Black outline) */}
+                {/* Line 495 */}
                 <div
                   className="
-                    absolute bg-[var(--brand-400)] border-2 border-[var(--text-primary)] transition-all duration-200
-                    w-[clamp(0.55rem,0.86vw,0.7775rem)] h-[clamp(0.55rem,0.86vw,0.7775rem)]
-                    left-[clamp(-1.0625rem,-1.18vw,-0.75rem)] top-[clamp(0.0625rem,0.14vw,0.125rem)]
-                    rounded-[clamp(0.275rem,0.43vw,0.38875rem)]
-                    shadow-[0_0_0_clamp(0.18125rem,0.29vw,0.259375rem)_#FFFFFF,0_0_0_clamp(0.275rem,0.43vw,0.38875rem)_rgba(37,99,235,0.1)]
+                    absolute left-[clamp(1.125rem,1.25vw,1.8rem)] top-[clamp(0.5rem,0.56vw,0.8rem)] w-[1px] h-[clamp(5.75rem,6.39vw,9.2rem)]
+                    border-l border-[rgba(0,120,250,0.25)]
                   "
                 />
 
-                {/* Local Intelligence text */}
-                <span
+                {/* Step 1: Customer Information Container */}
+                <div
+                  onClick={() => onStepChange?.("customer")}
                   className="
-                    flex items-center font-semibold uppercase tracking-normal
-                    w-[clamp(6.625rem,10.35vw,9.3125rem)] h-[clamp(0.75rem,1.25vw,1.125rem)]
-                    font-[family-name:var(--font-sans)] text-[clamp(0.625rem,0.97vw,0.875rem)] leading-[clamp(0.8125rem,1.25vw,1.125rem)]
-                    text-[var(--brand-500)]
+                    absolute left-[clamp(0.6875rem,0.76vw,1.1rem)] top-0 w-[clamp(10.8125rem,12.01vw,17.3rem)] h-[clamp(4.25rem,4.72vw,6.8rem)]
+                    pl-[clamp(1.5rem,1.67vw,2.4rem)] pb-[clamp(2rem,2.22vw,3.2rem)] flex flex-col gap-[clamp(0.25rem,0.28vw,0.4rem)] cursor-pointer
                   "
                 >
-                  Local Intelligence
-                </span>
-              </div>
+                  {/* Checkbox Bullet */}
+                  <div
+                    className="
+                      absolute left-[clamp(0.4375rem,0.49vw,0.7rem)] top-[clamp(0.125rem,0.14vw,0.2rem)] w-[clamp(0.7775rem,0.86vw,1.244rem)] h-[clamp(0.7775rem,0.86vw,1.244rem)] rounded-full
+                      box-sizing-border-box transition-all duration-200
+                      bg-[#3D93D1] shadow-[0_0_0_clamp(0.26rem,0.29vw,0.415rem)_#FFFFFF,0_0_0_clamp(0.39rem,0.43vw,0.622rem)_rgba(37,99,235,0.1)]
+                    "
+                  />
+                  
+                  {/* Customer Information text */}
+                  <span
+                    className="
+                      w-[clamp(9.3125rem,10.35vw,14.9rem)] h-[clamp(2.25rem,2.5vw,3.6rem)] flex items-center font-[family-name:var(--font-sans)]
+                      font-semibold text-[clamp(0.875rem,0.97vw,1.4rem)] leading-[clamp(1.125rem,1.25vw,1.8rem)] uppercase tracking-normal
+                      text-[#5A5C5E]
+                    "
+                  >
+                    Customer Information
+                  </span>
 
+                  {/* Subtext Date */}
+                  <span
+                    className="
+                      w-[clamp(9.3125rem,10.35vw,14.9rem)] h-[clamp(0.875rem,0.97vw,1.4rem)] flex items-center font-[family-name:var(--font-outfit)]
+                      font-normal text-[clamp(0.6875rem,0.76vw,1.1rem)] leading-[clamp(0.875rem,0.97vw,1.4rem)]
+                      text-[#9AA3AD]
+                    "
+                  >
+                    Oct 24 • 09:00 AM
+                  </span>
+                </div>
+
+                {/* Step 2: Local Intelligence Container */}
+                <div
+                  onClick={() => onStepChange?.("local")}
+                  className="
+                    absolute left-[clamp(0.6875rem,0.76vw,1.1rem)] top-[clamp(5.375rem,5.97vw,8.6rem)] w-[clamp(10.8125rem,12.01vw,17.3rem)] h-[clamp(3.125rem,3.47vw,5rem)]
+                    pl-[clamp(1.5rem,1.67vw,2.4rem)] pb-[clamp(2rem,2.22vw,3.2rem)] flex flex-col gap-[clamp(0.25rem,0.28vw,0.4rem)] cursor-pointer
+                  "
+                >
+                  {/* Checkbox Bullet */}
+                  <div
+                    className="
+                      absolute left-[clamp(0.4375rem,0.49vw,0.7rem)] top-[clamp(0.125rem,0.18vw,0.25rem)] w-[clamp(0.7775rem,0.86vw,1.244rem)] h-[clamp(0.7775rem,0.86vw,1.244rem)] rounded-full
+                      box-sizing-border-box transition-all duration-200
+                      bg-[#3D93D1] border-2 border-black
+                      shadow-[0_0_0_clamp(0.26rem,0.29vw,0.415rem)_#FFFFFF,0_0_0_clamp(0.39rem,0.43vw,0.622rem)_rgba(37,99,235,0.1)]
+                    "
+                  />
+
+                  {/* Local Intelligence text */}
+                  <span
+                    className="
+                      w-[clamp(9.3125rem,10.35vw,14.9rem)] h-[clamp(1.125rem,1.25vw,1.8rem)] flex items-center font-[family-name:var(--font-sans)]
+                      font-semibold text-[clamp(0.875rem,0.97vw,1.4rem)] leading-[clamp(1.125rem,1.25vw,1.8rem)] uppercase tracking-normal
+                      text-[#138FFF]
+                    "
+                  >
+                    Local Intelligence
+                  </span>
+                </div>
+
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
 
           {/* Right Top Card: Sub-tab Pills Table */}
           <Card
             className="
               relative bg-white border-none rounded-[1.5rem]
-              p-[clamp(1rem,2vw,1.875rem)]
+              p-[clamp(1.25rem,2.08vw,3rem)]
               shadow-[0_1.25rem_2.5rem_rgba(0,49,50,0.06)]
               flex-grow w-full
-              h-[clamp(20rem,30.76vw,27.6875rem)]
+              h-[clamp(27.6875rem,30.76vw,50rem)]
               overflow-y-auto custom-scrollbar
             "
           >
             {/* Pills Container */}
-            <div className="flex flex-wrap gap-[clamp(0.625rem,1.11vw,1rem)]">
-              {subTabs.map((tab) => {
-                const isActive = activeSubTab === tab.id;
-                const isSelected = !!selections[tab.id];
+            <div className="flex flex-col gap-[clamp(1rem,2.08vw,3.5rem)] w-full">
+              {/* Row 1: Issues, Liabilities, Loans */}
+              <div className="flex flex-row flex-wrap items-center gap-[clamp(0.6rem,1.11vw,1.8rem)]">
+                {subTabs.slice(0, 3).map((tab) => {
+                  const isActive = activeSubTab === tab.id;
+                  const isSelected = !!selections[tab.id];
 
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveSubTab(tab.id)}
-                    className={`
-                      box-sizing-border-box
-                      flex flex-row items-center justify-between
-                      px-[clamp(0.75rem,1.5vw,1.375rem)]
-                      py-[clamp(0.375rem,0.8vw,0.725rem)]
-                      h-[clamp(2rem,2.86vw,2.576rem)]
-                      rounded-[4.53125rem]
-                      transition-all duration-200 cursor-pointer
-                      ${
-                        isActive
-                          ? "bg-[var(--chart-bg)] border-[0.045rem] border-[var(--brand-500)] shadow-[0_2.625rem_1.0625rem_rgba(0,0,0,0.01)] text-[var(--text-secondary)]"
-                          : "bg-[var(--chart-bg)] border border-transparent hover:border-[var(--border)] text-[var(--text-secondary)]"
-                      }
-                    `}
-                  >
-                    <div className="flex items-center gap-[clamp(0.5rem,1vw,1rem)]">
-                      {/* Checkbox or Bullet Icon */}
-                      {isActive ? (
-                        <div
-                          className="
-                            w-[clamp(0.75rem,1.25vw,1.125rem)] h-[clamp(0.75rem,1.25vw,1.125rem)]
-                            rounded-full bg-[var(--brand-400)]
-                            border-[clamp(0.125rem,0.27vw,0.25rem)] border-white shrink-0 shadow-sm
-                          "
-                        />
-                      ) : isSelected ? (
-                        <div
-                          className="
-                            w-[clamp(0.75rem,1.25vw,1.125rem)] h-[clamp(0.75rem,1.25vw,1.125rem)]
-                            rounded-full bg-[rgba(39,128,196,0.66)]
-                            border-[clamp(0.125rem,0.27vw,0.25rem)] border-white shrink-0 shadow-sm
-                          "
-                        />
-                      ) : (
-                        <div
-                          className="
-                            w-[clamp(0.75rem,1.25vw,1.125rem)] h-[clamp(0.75rem,1.25vw,1.125rem)]
-                            rounded-full bg-[#FFFFFF]
-                            border-2 border-[rgba(122,149,28,0.43)] shrink-0
-                          "
-                        />
-                      )}
-                      
-                      <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(0.6875rem,0.97vw,0.875rem)] leading-none text-center">
-                        {tab.label}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveSubTab(tab.id)}
+                      className={`
+                        box-sizing-border-box
+                        flex flex-row items-center justify-between
+                        px-[clamp(0.8rem,1.53vw,2rem)]
+                        py-[clamp(0.4rem,0.8vw,1.2rem)]
+                        h-[clamp(2rem,2.86vw,4.5rem)]
+                        rounded-[5rem]
+                        transition-all duration-200 cursor-pointer
+                        shadow-[0_42px_17px_rgba(0,0,0,0.01)]
+                        ${
+                          isActive
+                             ? "bg-[#F9F9F9] border-[0.725581px] border-[#2780C4] text-[rgba(90,92,94,0.74)]"
+                             : "bg-[#F9F9F9] border border-transparent hover:border-[#2780C4] text-[rgba(90,92,94,0.74)]"
+                        }
+                      `}
+                    >
+                      <div className="flex items-center gap-[clamp(0.6rem,1.39vw,2rem)]">
+                        {/* Checkbox or Bullet Icon */}
+                        {isActive ? (
+                          <div
+                            className="
+                              w-[clamp(0.875rem,1.25vw,2.2rem)] h-[clamp(0.875rem,1.25vw,2.2rem)]
+                              rounded-full bg-[#3D93D1]
+                              border-[4px] border-white shrink-0 shadow-sm
+                            "
+                          />
+                        ) : isSelected ? (
+                          <div
+                            className="
+                              w-[clamp(0.875rem,1.25vw,2.2rem)] h-[clamp(0.875rem,1.25vw,2.2rem)]
+                              rounded-full bg-[rgba(39,128,196,0.66)]
+                              border-[4px] border-white shrink-0 shadow-sm
+                            "
+                          />
+                        ) : (
+                          <div
+                            className="
+                              w-[clamp(0.625rem,0.86vw,1.5rem)] h-[clamp(0.625rem,0.86vw,1.5rem)]
+                              rounded-full bg-[#FFFFFF]
+                              border-[2.07px] border-[rgba(122,149,28,0.43)] shrink-0
+                            "
+                          />
+                        )}
+                        
+                        <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(0.75rem,0.97vw,1.6rem)] leading-[clamp(0.95rem,1.25vw,2rem)] text-center">
+                          {tab.label}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Row 2: Mindset, Source, Agreements, Transactions */}
+              <div className="flex flex-row flex-wrap items-center gap-[clamp(0.6rem,1.11vw,1.8rem)]">
+                {subTabs.slice(3).map((tab) => {
+                  const isActive = activeSubTab === tab.id;
+                  const isSelected = !!selections[tab.id];
+
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveSubTab(tab.id)}
+                      className={`
+                        box-sizing-border-box
+                        flex flex-row items-center justify-between
+                        px-[clamp(0.8rem,1.53vw,2rem)]
+                        py-[clamp(0.4rem,0.8vw,1.2rem)]
+                        h-[clamp(2rem,2.86vw,4.5rem)]
+                        rounded-[5rem]
+                        transition-all duration-200 cursor-pointer
+                        shadow-[0_42px_17px_rgba(0,0,0,0.01)]
+                        ${
+                          isActive
+                             ? "bg-[#F9F9F9] border-[0.725581px] border-[#2780C4] text-[rgba(90,92,94,0.74)]"
+                             : "bg-[#F9F9F9] border border-transparent hover:border-[#2780C4] text-[rgba(90,92,94,0.74)]"
+                        }
+                      `}
+                    >
+                      <div className="flex items-center gap-[clamp(0.6rem,1.39vw,2rem)]">
+                        {/* Checkbox or Bullet Icon */}
+                        {isActive ? (
+                          <div
+                            className="
+                              w-[clamp(0.875rem,1.25vw,2.2rem)] h-[clamp(0.875rem,1.25vw,2.2rem)]
+                              rounded-full bg-[#3D93D1]
+                              border-[4px] border-white shrink-0 shadow-sm
+                            "
+                          />
+                        ) : isSelected ? (
+                          <div
+                            className="
+                              w-[clamp(0.875rem,1.25vw,2.2rem)] h-[clamp(0.875rem,1.25vw,2.2rem)]
+                              rounded-full bg-[rgba(39,128,196,0.66)]
+                              border-[4px] border-white shrink-0 shadow-sm
+                            "
+                          />
+                        ) : (
+                          <div
+                            className="
+                              w-[clamp(0.625rem,0.86vw,1.5rem)] h-[clamp(0.625rem,0.86vw,1.5rem)]
+                              rounded-full bg-[#FFFFFF]
+                              border-[2.07px] border-[rgba(122,149,28,0.43)] shrink-0
+                            "
+                          />
+                        )}
+                        
+                        <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(0.75rem,0.97vw,1.6rem)] leading-[clamp(0.95rem,1.25vw,2rem)] text-center">
+                          {tab.label}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </Card>
 
@@ -438,30 +498,24 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
         {/* Row 2: Bottom Card: Details Form Area */}
         <Card
           className="
-            relative bg-white border-none rounded-[1.5rem]
-            p-[clamp(1rem,2.5vw,2.25rem)]
+            relative bg-white border-none rounded-[24px]
+            p-[clamp(1.25rem,2.08vw,3rem)]
             shadow-[0_1.25rem_2.5rem_rgba(0,49,50,0.06)]
             w-full
-            h-[clamp(20rem,30.76vw,27.6875rem)]
-            flex flex-col justify-between
+            h-[clamp(27.6875rem,30.76vw,45rem)]
           "
         >
           {/* Split Content Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-[clamp(1.5rem,3.33vw,4rem)] w-full items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.035fr_1fr] gap-[clamp(1.5rem,3.2vw,4rem)] w-full items-start">
             
             {/* Left Column: Radio Buttons / Question */}
-            <div className="flex flex-col gap-[clamp(0.75rem,1.5vw,1.5rem)]">
-              <Typography
-                as="h3"
-                className="
-                  font-[family-name:var(--font-sans)] font-semibold text-[clamp(1rem,1.39vw,1.25rem)] leading-snug text-[var(--text-primary)]
-                "
-              >
+            <div className="flex flex-col gap-[clamp(1rem,1.67vw,2.5rem)]">
+              <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(1.125rem,1.39vw,1.8rem)] leading-[clamp(1.4rem,1.74vw,2.25rem)] text-black">
                 {currentTab.question}
-              </Typography>
+              </span>
 
               {/* Options wrapper */}
-              <div className="flex items-center gap-[clamp(0.75rem,1.87vw,1.6875rem)]">
+              <div className="flex items-center gap-[clamp(1rem,1.875rem,3rem)]">
                 {currentTab.options.map((option) => {
                   const isOptionSelected = selections[currentTab.id] === option;
                   return (
@@ -470,26 +524,29 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                       onClick={() =>
                         setSelections((prev) => ({ ...prev, [currentTab.id]: option }))
                       }
-                      className="
+                      className={`
                         box-sizing-border-box
                         flex flex-row items-center justify-center
-                        px-[clamp(0.75rem,1.25vw,1.125rem)] py-[clamp(0.375rem,0.69vw,0.625rem)]
-                        h-[clamp(1.875rem,2.64vw,2.375rem)]
-                        border border-[var(--btn-outline-dark-border)]
-                        rounded-[2.0625rem]
+                        px-[clamp(0.8rem,1.25vw,2rem)] py-[clamp(0.4rem,0.69vw,1.2rem)]
+                        h-[clamp(1.8rem,2.64vw,4.5rem)]
+                        border rounded-[33px]
                         transition-all duration-200 cursor-pointer
-                        bg-white hover:bg-[rgba(0,0,0,0.02)]
-                      "
+                        ${
+                          isOptionSelected
+                            ? "border-[#2780C4] bg-[rgba(39,128,196,0.04)]"
+                            : "border-[rgba(0,0,0,0.26)] bg-white"
+                        }
+                      `}
                     >
-                      <div className="flex items-center gap-[0.625rem]">
+                      <div className="flex items-center gap-[clamp(0.4rem,0.69vw,1.2rem)]">
                         {/* Circle bullet */}
                         <div
                           className={`
-                            w-[0.75rem] h-[0.75rem] rounded-full bg-white border-2 transition-colors
-                            ${isOptionSelected ? "border-[var(--brand-500)] bg-[var(--brand-500)]" : "border-[var(--performance-area-start)] bg-white"}
+                            w-[clamp(0.625rem,0.83vw,1.5rem)] h-[clamp(0.625rem,0.83vw,1.5rem)] rounded-full bg-white border-[2px] transition-colors
+                            ${isOptionSelected ? "border-[#2780C4] bg-[#2780C4]" : "border-[#85BFE5] bg-white"}
                           `}
                         />
-                        <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(0.6875rem,0.97vw,0.875rem)] leading-none text-[var(--text-primary)]">
+                        <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(0.75rem,0.97vw,1.6rem)] leading-[clamp(0.95rem,1.25vw,2rem)] text-black">
                           {option}
                         </span>
                       </div>
@@ -500,18 +557,13 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
             </div>
 
             {/* Right Column: Comments / Mic Button */}
-            <div className="flex flex-col gap-[clamp(0.625rem,1.11vw,1rem)] w-full">
-              <Typography
-                as="h3"
-                className="
-                  font-[family-name:var(--font-sans)] font-semibold text-[clamp(1.125rem,1.67vw,1.5rem)] leading-none text-[var(--text-primary)]
-                "
-              >
+            <div className="flex flex-col gap-[clamp(0.8rem,1.25vw,2rem)] w-full">
+              <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(1.25rem,1.67vw,2.5rem)] leading-[clamp(1.5rem,2.08vw,3rem)] text-black">
                 Add Comments
-              </Typography>
+              </span>
 
               {/* Comment Text Box */}
-              <div className="relative w-full h-[clamp(6.875rem,12.57vw,10rem)]">
+              <div className="relative w-full h-[clamp(8rem,12.57vw,18rem)] bg-[rgba(187,219,240,0.38)] border border-[#96C9ED] rounded-[18px]">
                 <textarea
                   value={comments[currentTab.id]}
                   onChange={(e) =>
@@ -519,26 +571,24 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                   }
                   placeholder="Type comments here..."
                   className="
-                    w-full h-full bg-[rgba(187,219,240,0.38)]
-                    border border-[var(--btn-secondary)] rounded-[1.125rem]
-                    p-4 pr-12 outline-none resize-none
-                    font-[family-name:var(--font-sans)] text-[clamp(0.8125rem,1.11vw,1rem)] text-[var(--text-primary)]
-                    focus:ring-1 focus:ring-[var(--brand-500)]
+                    w-full h-full bg-transparent
+                    p-4 pr-12 outline-none border-none resize-none
+                    font-[family-name:var(--font-sans)] text-[clamp(0.75rem,0.97vw,1.6rem)] text-black
                   "
                 />
 
                 {/* Microphone Icon Button */}
                 <button
                   className="
-                    absolute right-[1rem] bottom-[1rem]
-                    w-[clamp(1.75rem,2.22vw,2rem)] h-[clamp(1.75rem,2.22vw,2rem)] rounded-[5.625rem]
-                    bg-[var(--brand-500)] hover:bg-[var(--brand-600)]
+                    absolute right-[clamp(0.8rem,1.39vw,2rem)] bottom-[clamp(0.8rem,1.39vw,2rem)]
+                    w-[clamp(1.8rem,2.22vw,3.5rem)] h-[clamp(1.8rem,2.22vw,3.5rem)] rounded-full
+                    bg-[#2680C4] hover:bg-[#1f6da9]
                     flex items-center justify-center
                     cursor-pointer transition-colors shadow-sm
                   "
                   aria-label="Voice comments"
                 >
-                  <Mic className="w-[1rem] h-[1rem] text-white" />
+                  <Mic className="w-[clamp(0.875rem,1.25vw,2rem)] h-[clamp(0.875rem,1.25vw,2rem)] text-white" />
                 </button>
               </div>
             </div>
@@ -546,25 +596,19 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
           </div>
 
           {/* Bottom Actions footer */}
-          <div
-            className="
-              flex flex-row justify-end items-center gap-[clamp(0.5rem,0.83vw,0.75rem)]
-              w-full border-t border-[var(--border)] pt-[clamp(0.75rem,1.25vw,1.125rem)]
-              mt-4
-            "
-          >
+          <div className="absolute bottom-[clamp(1rem,1.8vw,2.5rem)] right-[clamp(1rem,1.7vw,2.5rem)] flex flex-row items-center gap-[clamp(0.5rem,0.83vw,1.5rem)]">
             <button
               onClick={onBack}
               className="
                 box-sizing-border-box
                 flex flex-row justify-center items-center
-                w-[clamp(5.625rem,8.4vw,7.5625rem)] h-[clamp(1.875rem,2.64vw,2.375rem)]
-                border border-[var(--btn-outline-primary-border)]
-                rounded-[2.0625rem]
+                w-[clamp(5.5rem,8.4vw,11rem)] h-[clamp(1.8rem,2.64vw,3.5rem)]
+                border border-[rgba(39,128,196,0.8)]
+                rounded-[33px]
                 cursor-pointer transition-opacity hover:opacity-80
               "
             >
-              <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.6875rem,0.97vw,0.875rem)] leading-[1.125rem] text-[var(--btn-outline-primary-text)] text-center">
+              <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.75rem,0.97vw,1.5rem)] leading-[18px] text-[rgba(39,128,196,0.8)] text-center">
                 Back
               </span>
             </button>
@@ -573,13 +617,13 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
               onClick={onNext}
               className="
                 flex flex-row justify-center items-center
-                w-[clamp(5.625rem,8.4vw,7.5625rem)] h-[clamp(1.875rem,2.64vw,2.375rem)]
-                bg-[var(--brand-500)] hover:bg-[var(--brand-600)]
-                rounded-[2.0625rem]
+                w-[clamp(5.5rem,8.4vw,11rem)] h-[clamp(1.8rem,2.64vw,3.5rem)]
+                bg-[#2780C4] hover:bg-[#1f6da9]
+                rounded-[33px]
                 cursor-pointer transition-opacity hover:opacity-90
               "
             >
-              <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(0.6875rem,0.97vw,0.875rem)] leading-[1.125rem] text-white text-center">
+              <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(0.75rem,0.97vw,1.5rem)] leading-[18px] text-white text-center">
                 Next
               </span>
             </button>
