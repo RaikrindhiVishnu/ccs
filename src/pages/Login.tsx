@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff, Lock, User, ShieldCheck, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Lock, User, ShieldCheck } from "lucide-react";
 import MainLoginBg from "@/assets/main login.svg";
 import GlcLogo from "@/assets/glc-logo.svg";
 import SharpIcon from "@/assets/sharp.svg";
