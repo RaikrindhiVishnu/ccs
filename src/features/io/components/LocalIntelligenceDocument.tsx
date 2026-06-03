@@ -115,9 +115,9 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
       className="
         relative min-h-screen w-full
         bg-[#F9F9F9]
-        px-[clamp(16px,2.78vw,40px)]
-        py-[clamp(24px,2.5vw,34px)]
-        flex flex-col gap-[clamp(20px,2.22vw,30px)]
+        px-[clamp(1rem,2.78vw,2.5rem)]
+        py-[clamp(1.5rem,2.5vw,2.125rem)]
+        flex flex-col gap-[clamp(1.25rem,2.22vw,1.875rem)]
         font-[family-name:var(--font-sans)]
       "
     >
@@ -129,25 +129,25 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
           size="default"
           onClick={onBack}
           className="
-            w-[clamp(244px,16.67vw,320px)]
-            h-[clamp(36px,3.61vw,70px)]
-            text-[clamp(11px,1.11vw,21px)]
-            py-[clamp(10px,1.32vw,25px)]
-            px-[clamp(12px,1.39vw,27px)]
+            w-[clamp(15.25rem,16.67vw,20rem)]
+            h-[clamp(2.25rem,3.61vw,4.375rem)]
+            text-[clamp(0.6875rem,1.11vw,1.3125rem)]
+            py-[clamp(0.625rem,1.32vw,1.5625rem)]
+            px-[clamp(0.75rem,1.39vw,1.6875rem)]
             font-[family-name:var(--font-sans)]
             text-[var(--text-button)]
           "
         />
 
         {/* Right: bell + avatar */}
-        <div className="flex items-center gap-[clamp(8px,0.9vw,13px)]">
+        <div className="flex items-center gap-[clamp(0.5rem,0.9vw,0.8125rem)]">
           {/* Bell */}
           <button
             className="
               relative
               flex items-center justify-center bg-[var(--surface-card)] rounded-full shrink-0
-              w-[clamp(36px,3.61vw,52px)]
-              h-[clamp(36px,3.61vw,52px)]
+              w-[clamp(2.25rem,3.61vw,3.25rem)]
+              h-[clamp(2.25rem,3.61vw,3.25rem)]
               shadow-sm
               border border-[var(--border)]
               hover:opacity-85 transition-opacity
@@ -159,8 +159,8 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
               strokeWidth={1.5}
               color="var(--text-primary)"
               className="
-                w-[clamp(16px,1.67vw,24px)]
-                h-[clamp(16px,1.67vw,24px)]
+                w-[clamp(1rem,1.67vw,1.5rem)]
+                h-[clamp(1rem,1.67vw,1.5rem)]
               "
             />
 
@@ -168,10 +168,10 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
               className="
                 absolute rounded-full
                 bg-[var(--status-danger)]
-                w-[clamp(4px,0.4vw,6px)]
-                h-[clamp(4px,0.4vw,6px)]
-                top-[clamp(6px,0.7vw,10px)]
-                right-[clamp(6px,0.7vw,10px)]
+                w-[clamp(0.25rem,0.4vw,0.375rem)]
+                h-[clamp(0.25rem,0.4vw,0.375rem)]
+                top-[clamp(0.375rem,0.7vw,0.625rem)]
+                right-[clamp(0.375rem,0.7vw,0.625rem)]
               "
             />
           </button>
@@ -187,8 +187,8 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
               bg-[var(--surface-card)]
               transition-opacity
               hover:opacity-90
-              w-[clamp(36px,3.61vw,52px)]
-              h-[clamp(36px,3.61vw,52px)]
+              w-[clamp(2.25rem,3.61vw,3.25rem)]
+              h-[clamp(2.25rem,3.61vw,3.25rem)]
               border border-[rgba(0,0,0,0.05)]
               cursor-pointer
             "
@@ -207,7 +207,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                   font-bold
                   font-[var(--font-sans)]
                   text-[var(--text-primary)]
-                  text-[clamp(11px,1.11vw,16px)]
+                  text-[clamp(0.6875rem,1.11vw,1rem)]
                 "
               >
                 {initials}
@@ -218,19 +218,19 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
       </div>
 
       {/* Main Layout Area */}
-      <div className="flex flex-col gap-[clamp(16px,1.53vw,22px)] w-full">
+      <div className="flex flex-col gap-[clamp(1rem,1.53vw,1.375rem)] w-full">
         
         {/* Row 1: Left Steps Card + Right Tabs Card */}
-        <div className="flex flex-col lg:flex-row gap-[clamp(16px,1.67vw,26px)] w-full items-stretch">
+        <div className="flex flex-col lg:flex-row gap-[clamp(1rem,1.67vw,1.625rem)] w-full items-stretch">
           
         {/* Left Side: ID & Steps Card */}
         <Card
           className="
             relative bg-white border-none
-            rounded-[24px]
-            w-full lg:w-[clamp(292px,28.47vw,410px)]
-            h-[clamp(320px,30.76vw,443px)]
-            shadow-[0px_20px_40px_rgba(0,49,50,0.06)]
+            rounded-[1.5rem]
+            w-full lg:w-[clamp(18.25rem,28.47vw,25.625rem)]
+            h-[clamp(20rem,30.76vw,27.6875rem)]
+            shadow-[0_1.25rem_2.5rem_rgba(0,49,50,0.06)]
             shrink-0
           "
         >
@@ -238,9 +238,9 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
           <span
             className="
               absolute text-[var(--text-primary)] font-medium
-              left-[clamp(21px,2.08vw,30px)] top-[clamp(21px,2.08vw,30px)]
-              w-[clamp(68px,6.67vw,96px)] h-[clamp(14px,1.39vw,20px)]
-              font-[family-name:var(--font-sans)] text-[clamp(11px,1.11vw,16px)] leading-[clamp(14px,1.39vw,20px)]
+              left-[clamp(1.3125rem,2.08vw,1.875rem)] top-[clamp(1.3125rem,2.08vw,1.875rem)]
+              w-[clamp(4.25rem,6.67vw,6rem)] h-[clamp(0.875rem,1.39vw,1.25rem)]
+              font-[family-name:var(--font-sans)] text-[clamp(0.6875rem,1.11vw,1rem)] leading-[clamp(0.875rem,1.39vw,1.25rem)]
             "
           >
             Farmland ID:
@@ -249,9 +249,9 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
             as="h2"
             className="
               absolute text-[var(--text-primary)] font-medium
-              left-[clamp(21px,2.08vw,30px)] top-[clamp(42px,4.17vw,60px)]
-              w-[clamp(138px,13.54vw,195px)] h-[clamp(31px,3.06vw,44px)]
-              font-[family-name:var(--font-sans)] text-[clamp(24px,2.43vw,35px)] leading-[clamp(31px,3.06vw,44px)]
+              left-[clamp(1.3125rem,2.08vw,1.875rem)] top-[clamp(2.625rem,4.17vw,3.75rem)]
+              w-[clamp(8.625rem,13.54vw,12.1875rem)] h-[clamp(1.9375rem,3.06vw,2.75rem)]
+              font-[family-name:var(--font-sans)] text-[clamp(1.5rem,2.43vw,2.1875rem)] leading-[clamp(1.9375rem,3.06vw,2.75rem)]
             "
           >
             {farmlandId}
@@ -260,8 +260,8 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
           {/* Steps Container (Frame 2147239921) */}
           <div
             className="
-              absolute w-[clamp(130px,12.78vw,184px)] h-[clamp(96px,9.44vw,136px)]
-              left-[calc(50%-clamp(65px,6.39vw,92px))] top-[calc(50%-clamp(48px,4.72vw,68px))]
+              absolute w-[clamp(8.125rem,12.78vw,11.5rem)] h-[clamp(6rem,9.44vw,8.5rem)]
+              left-[calc(50%-clamp(4.0625rem,6.39vw,5.75rem))] top-[calc(50%-clamp(3rem,4.72vw,4.25rem))]
             "
           >
             {/* Frame 2147239964 */}
@@ -271,7 +271,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
               <div
                 className="
                   absolute left-0 w-0 border-l border-[rgba(0,120,250,0.25)]
-                  top-[clamp(5px,0.56vw,8px)] h-[clamp(65px,6.39vw,92px)]
+                  top-[clamp(0.3125rem,0.56vw,0.5rem)] h-[clamp(4.0625rem,6.39vw,5.75rem)]
                 "
               />
 
@@ -280,19 +280,19 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 onClick={() => onStepChange?.("customer")}
                 className="
                   absolute flex flex-col cursor-pointer
-                  left-[clamp(8px,0.76vw,11px)] top-0
-                  w-[clamp(123px,12.01vw,173px)] h-[clamp(48px,4.72vw,68px)]
-                  pl-[clamp(17px,1.67vw,24px)] pb-[clamp(22px,2.22vw,32px)] gap-[clamp(3px,0.28vw,4px)]
+                  left-[clamp(0.5rem,0.76vw,0.6875rem)] top-0
+                  w-[clamp(7.6875rem,12.01vw,10.8125rem)] h-[clamp(3rem,4.72vw,4.25rem)]
+                  pl-[clamp(1.0625rem,1.67vw,1.5rem)] pb-[clamp(1.375rem,2.22vw,2rem)] gap-[clamp(0.1875rem,0.28vw,0.25rem)]
                 "
               >
                 {/* Checkbox Bullet (Checked/Filled State) */}
                 <div
                   className="
                     absolute bg-[var(--brand-400)] transition-all duration-200
-                    w-[clamp(8.8px,0.86vw,12.44px)] h-[clamp(8.8px,0.86vw,12.44px)]
-                    left-[clamp(-17px,-1.18vw,-12px)] top-[clamp(1px,0.14vw,2px)]
-                    rounded-[clamp(4.4px,0.43vw,6.22px)]
-                    shadow-[0_0_0_clamp(2.9px,0.29vw,4.15px)_#FFFFFF,0_0_0_clamp(4.4px,0.43vw,6.22px)_rgba(37,99,235,0.1)]
+                    w-[clamp(0.55rem,0.86vw,0.7775rem)] h-[clamp(0.55rem,0.86vw,0.7775rem)]
+                    left-[clamp(-1.0625rem,-1.18vw,-0.75rem)] top-[clamp(0.0625rem,0.14vw,0.125rem)]
+                    rounded-[clamp(0.275rem,0.43vw,0.38875rem)]
+                    shadow-[0_0_0_clamp(0.18125rem,0.29vw,0.259375rem)_#FFFFFF,0_0_0_clamp(0.275rem,0.43vw,0.38875rem)_rgba(37,99,235,0.1)]
                   "
                 />
                 
@@ -300,8 +300,8 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 <span
                   className="
                     flex items-center font-semibold uppercase tracking-normal
-                    w-[clamp(106px,10.35vw,149px)] h-[clamp(25px,2.5vw,36px)]
-                    font-[family-name:var(--font-sans)] text-[clamp(10px,0.97vw,14px)] leading-[clamp(13px,1.25vw,18px)]
+                    w-[clamp(6.625rem,10.35vw,9.3125rem)] h-[clamp(1.5625rem,2.5vw,2.25rem)]
+                    font-[family-name:var(--font-sans)] text-[clamp(0.625rem,0.97vw,0.875rem)] leading-[clamp(0.8125rem,1.25vw,1.125rem)]
                     text-[var(--text-subtle)]
                   "
                 >
@@ -312,8 +312,8 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 <span
                   className="
                     flex items-center font-normal
-                    w-[clamp(106px,10.35vw,149px)] h-[clamp(10px,0.97vw,14px)]
-                    font-[family-name:var(--font-inter)] text-[clamp(8px,0.76vw,11px)] leading-[clamp(10px,0.97vw,14px)]
+                    w-[clamp(6.625rem,10.35vw,9.3125rem)] h-[clamp(0.625rem,0.97vw,0.875rem)]
+                    font-[family-name:var(--font-inter)] text-[clamp(0.5rem,0.76vw,0.6875rem)] leading-[clamp(0.625rem,0.97vw,0.875rem)]
                     text-[var(--text-label-gray)]
                   "
                 >
@@ -326,19 +326,19 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 onClick={() => onStepChange?.("local")}
                 className="
                   absolute flex flex-col cursor-pointer
-                  left-[clamp(8px,0.76vw,11px)] top-[clamp(61px,5.97vw,86px)]
-                  w-[clamp(123px,12.01vw,173px)] h-[clamp(35px,3.47vw,50px)]
-                  pl-[clamp(17px,1.67vw,24px)] pb-[clamp(22px,2.22vw,32px)] gap-[clamp(3px,0.28vw,4px)]
+                  left-[clamp(0.5rem,0.76vw,0.6875rem)] top-[clamp(3.8125rem,5.97vw,5.375rem)]
+                  w-[clamp(7.6875rem,12.01vw,10.8125rem)] h-[clamp(2.1875rem,3.47vw,3.125rem)]
+                  pl-[clamp(1.0625rem,1.67vw,1.5rem)] pb-[clamp(1.375rem,2.22vw,2rem)] gap-[clamp(0.1875rem,0.28vw,0.25rem)]
                 "
               >
                 {/* Checkbox Bullet (Active State with Black outline) */}
                 <div
                   className="
                     absolute bg-[var(--brand-400)] border-2 border-[var(--text-primary)] transition-all duration-200
-                    w-[clamp(8.8px,0.86vw,12.44px)] h-[clamp(8.8px,0.86vw,12.44px)]
-                    left-[clamp(-17px,-1.18vw,-12px)] top-[clamp(1px,0.14vw,2px)]
-                    rounded-[clamp(4.4px,0.43vw,6.22px)]
-                    shadow-[0_0_0_clamp(2.9px,0.29vw,4.15px)_#FFFFFF,0_0_0_clamp(4.4px,0.43vw,6.22px)_rgba(37,99,235,0.1)]
+                    w-[clamp(0.55rem,0.86vw,0.7775rem)] h-[clamp(0.55rem,0.86vw,0.7775rem)]
+                    left-[clamp(-1.0625rem,-1.18vw,-0.75rem)] top-[clamp(0.0625rem,0.14vw,0.125rem)]
+                    rounded-[clamp(0.275rem,0.43vw,0.38875rem)]
+                    shadow-[0_0_0_clamp(0.18125rem,0.29vw,0.259375rem)_#FFFFFF,0_0_0_clamp(0.275rem,0.43vw,0.38875rem)_rgba(37,99,235,0.1)]
                   "
                 />
 
@@ -346,8 +346,8 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 <span
                   className="
                     flex items-center font-semibold uppercase tracking-normal
-                    w-[clamp(106px,10.35vw,149px)] h-[clamp(12px,1.25vw,18px)]
-                    font-[family-name:var(--font-sans)] text-[clamp(10px,0.97vw,14px)] leading-[clamp(13px,1.25vw,18px)]
+                    w-[clamp(6.625rem,10.35vw,9.3125rem)] h-[clamp(0.75rem,1.25vw,1.125rem)]
+                    font-[family-name:var(--font-sans)] text-[clamp(0.625rem,0.97vw,0.875rem)] leading-[clamp(0.8125rem,1.25vw,1.125rem)]
                     text-[var(--brand-500)]
                   "
                 >
@@ -362,16 +362,16 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
           {/* Right Top Card: Sub-tab Pills Table */}
           <Card
             className="
-              relative bg-white border-none rounded-[24px]
-              p-[clamp(16px,2vw,30px)]
-              shadow-[0px_20px_40px_rgba(0,49,50,0.06)]
+              relative bg-white border-none rounded-[1.5rem]
+              p-[clamp(1rem,2vw,1.875rem)]
+              shadow-[0_1.25rem_2.5rem_rgba(0,49,50,0.06)]
               flex-grow w-full
-              h-[clamp(320px,30.76vw,443px)]
+              h-[clamp(20rem,30.76vw,27.6875rem)]
               overflow-y-auto custom-scrollbar
             "
           >
             {/* Pills Container */}
-            <div className="flex flex-wrap gap-[clamp(10px,1.11vw,16px)]">
+            <div className="flex flex-wrap gap-[clamp(0.625rem,1.11vw,1rem)]">
               {subTabs.map((tab) => {
                 const isActive = activeSubTab === tab.id;
                 const isSelected = !!selections[tab.id];
@@ -383,47 +383,47 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                     className={`
                       box-sizing-border-box
                       flex flex-row items-center justify-between
-                      px-[clamp(12px,1.5vw,22px)]
-                      py-[clamp(6px,0.8vw,11.6px)]
-                      h-[clamp(32px,2.86vw,41.22px)]
-                      rounded-[72.5px]
+                      px-[clamp(0.75rem,1.5vw,1.375rem)]
+                      py-[clamp(0.375rem,0.8vw,0.725rem)]
+                      h-[clamp(2rem,2.86vw,2.576rem)]
+                      rounded-[4.53125rem]
                       transition-all duration-200 cursor-pointer
                       ${
                         isActive
-                          ? "bg-[var(--chart-bg)] border-[0.72px] border-[var(--brand-500)] shadow-[0px_42px_17px_rgba(0,0,0,0.01)] text-[var(--text-secondary)]"
+                          ? "bg-[var(--chart-bg)] border-[0.045rem] border-[var(--brand-500)] shadow-[0_2.625rem_1.0625rem_rgba(0,0,0,0.01)] text-[var(--text-secondary)]"
                           : "bg-[var(--chart-bg)] border border-transparent hover:border-[var(--border)] text-[var(--text-secondary)]"
                       }
                     `}
                   >
-                    <div className="flex items-center gap-[clamp(8px,1vw,16px)]">
+                    <div className="flex items-center gap-[clamp(0.5rem,1vw,1rem)]">
                       {/* Checkbox or Bullet Icon */}
                       {isActive ? (
                         <div
                           className="
-                            w-[clamp(12px,1.25vw,18px)] h-[clamp(12px,1.25vw,18px)]
+                            w-[clamp(0.75rem,1.25vw,1.125rem)] h-[clamp(0.75rem,1.25vw,1.125rem)]
                             rounded-full bg-[var(--brand-400)]
-                            border-[clamp(2px,0.27vw,4px)] border-white shrink-0 shadow-sm
+                            border-[clamp(0.125rem,0.27vw,0.25rem)] border-white shrink-0 shadow-sm
                           "
                         />
                       ) : isSelected ? (
                         <div
                           className="
-                            w-[clamp(12px,1.25vw,18px)] h-[clamp(12px,1.25vw,18px)]
+                            w-[clamp(0.75rem,1.25vw,1.125rem)] h-[clamp(0.75rem,1.25vw,1.125rem)]
                             rounded-full bg-[rgba(39,128,196,0.66)]
-                            border-[clamp(2px,0.27vw,4px)] border-white shrink-0 shadow-sm
+                            border-[clamp(0.125rem,0.27vw,0.25rem)] border-white shrink-0 shadow-sm
                           "
                         />
                       ) : (
                         <div
                           className="
-                            w-[clamp(12px,1.25vw,18px)] h-[clamp(12px,1.25vw,18px)]
+                            w-[clamp(0.75rem,1.25vw,1.125rem)] h-[clamp(0.75rem,1.25vw,1.125rem)]
                             rounded-full bg-[#FFFFFF]
                             border-2 border-[rgba(122,149,28,0.43)] shrink-0
                           "
                         />
                       )}
                       
-                      <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(11px,0.97vw,14px)] leading-none text-center">
+                      <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(0.6875rem,0.97vw,0.875rem)] leading-none text-center">
                         {tab.label}
                       </span>
                     </div>
@@ -438,30 +438,30 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
         {/* Row 2: Bottom Card: Details Form Area */}
         <Card
           className="
-            relative bg-white border-none rounded-[24px]
-            p-[clamp(16px,2.5vw,36px)]
-            shadow-[0px_20px_40px_rgba(0,49,50,0.06)]
+            relative bg-white border-none rounded-[1.5rem]
+            p-[clamp(1rem,2.5vw,2.25rem)]
+            shadow-[0_1.25rem_2.5rem_rgba(0,49,50,0.06)]
             w-full
-            h-[clamp(320px,30.76vw,443px)]
+            h-[clamp(20rem,30.76vw,27.6875rem)]
             flex flex-col justify-between
           "
         >
           {/* Split Content Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-[clamp(24px,3.33vw,64px)] w-full items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-[clamp(1.5rem,3.33vw,4rem)] w-full items-start">
             
             {/* Left Column: Radio Buttons / Question */}
-            <div className="flex flex-col gap-[clamp(12px,1.5vw,24px)]">
+            <div className="flex flex-col gap-[clamp(0.75rem,1.5vw,1.5rem)]">
               <Typography
                 as="h3"
                 className="
-                  font-[family-name:var(--font-sans)] font-semibold text-[clamp(16px,1.39vw,20px)] leading-snug text-[var(--text-primary)]
+                  font-[family-name:var(--font-sans)] font-semibold text-[clamp(1rem,1.39vw,1.25rem)] leading-snug text-[var(--text-primary)]
                 "
               >
                 {currentTab.question}
               </Typography>
 
               {/* Options wrapper */}
-              <div className="flex items-center gap-[clamp(12px,1.87vw,27px)]">
+              <div className="flex items-center gap-[clamp(0.75rem,1.87vw,1.6875rem)]">
                 {currentTab.options.map((option) => {
                   const isOptionSelected = selections[currentTab.id] === option;
                   return (
@@ -473,23 +473,23 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                       className="
                         box-sizing-border-box
                         flex flex-row items-center justify-center
-                        px-[clamp(12px,1.25vw,18px)] py-[clamp(6px,0.69vw,10px)]
-                        h-[clamp(30px,2.64vw,38px)]
+                        px-[clamp(0.75rem,1.25vw,1.125rem)] py-[clamp(0.375rem,0.69vw,0.625rem)]
+                        h-[clamp(1.875rem,2.64vw,2.375rem)]
                         border border-[var(--btn-outline-dark-border)]
-                        rounded-[33px]
+                        rounded-[2.0625rem]
                         transition-all duration-200 cursor-pointer
                         bg-white hover:bg-[rgba(0,0,0,0.02)]
                       "
                     >
-                      <div className="flex items-center gap-[10px]">
+                      <div className="flex items-center gap-[0.625rem]">
                         {/* Circle bullet */}
                         <div
                           className={`
-                            w-[12px] h-[12px] rounded-full bg-white border-2 transition-colors
+                            w-[0.75rem] h-[0.75rem] rounded-full bg-white border-2 transition-colors
                             ${isOptionSelected ? "border-[var(--brand-500)] bg-[var(--brand-500)]" : "border-[var(--performance-area-start)] bg-white"}
                           `}
                         />
-                        <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(11px,0.97vw,14px)] leading-none text-[var(--text-primary)]">
+                        <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(0.6875rem,0.97vw,0.875rem)] leading-none text-[var(--text-primary)]">
                           {option}
                         </span>
                       </div>
@@ -500,18 +500,18 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
             </div>
 
             {/* Right Column: Comments / Mic Button */}
-            <div className="flex flex-col gap-[clamp(10px,1.11vw,16px)] w-full">
+            <div className="flex flex-col gap-[clamp(0.625rem,1.11vw,1rem)] w-full">
               <Typography
                 as="h3"
                 className="
-                  font-[family-name:var(--font-sans)] font-semibold text-[clamp(18px,1.67vw,24px)] leading-none text-[var(--text-primary)]
+                  font-[family-name:var(--font-sans)] font-semibold text-[clamp(1.125rem,1.67vw,1.5rem)] leading-none text-[var(--text-primary)]
                 "
               >
                 Add Comments
               </Typography>
 
               {/* Comment Text Box */}
-              <div className="relative w-full h-[clamp(110px,12.57vw,160px)]">
+              <div className="relative w-full h-[clamp(6.875rem,12.57vw,10rem)]">
                 <textarea
                   value={comments[currentTab.id]}
                   onChange={(e) =>
@@ -520,9 +520,9 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                   placeholder="Type comments here..."
                   className="
                     w-full h-full bg-[rgba(187,219,240,0.38)]
-                    border border-[var(--btn-secondary)] rounded-[18px]
+                    border border-[var(--btn-secondary)] rounded-[1.125rem]
                     p-4 pr-12 outline-none resize-none
-                    font-[family-name:var(--font-sans)] text-[clamp(13px,1.11vw,16px)] text-[var(--text-primary)]
+                    font-[family-name:var(--font-sans)] text-[clamp(0.8125rem,1.11vw,1rem)] text-[var(--text-primary)]
                     focus:ring-1 focus:ring-[var(--brand-500)]
                   "
                 />
@@ -530,15 +530,15 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 {/* Microphone Icon Button */}
                 <button
                   className="
-                    absolute right-[16px] bottom-[16px]
-                    w-[clamp(28px,2.22vw,32px)] h-[clamp(28px,2.22vw,32px)] rounded-[90px]
+                    absolute right-[1rem] bottom-[1rem]
+                    w-[clamp(1.75rem,2.22vw,2rem)] h-[clamp(1.75rem,2.22vw,2rem)] rounded-[5.625rem]
                     bg-[var(--brand-500)] hover:bg-[var(--brand-600)]
                     flex items-center justify-center
                     cursor-pointer transition-colors shadow-sm
                   "
                   aria-label="Voice comments"
                 >
-                  <Mic className="w-[16px] h-[16px] text-white" />
+                  <Mic className="w-[1rem] h-[1rem] text-white" />
                 </button>
               </div>
             </div>
@@ -548,8 +548,8 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
           {/* Bottom Actions footer */}
           <div
             className="
-              flex flex-row justify-end items-center gap-[clamp(8px,0.83vw,12px)]
-              w-full border-t border-[var(--border)] pt-[clamp(12px,1.25vw,18px)]
+              flex flex-row justify-end items-center gap-[clamp(0.5rem,0.83vw,0.75rem)]
+              w-full border-t border-[var(--border)] pt-[clamp(0.75rem,1.25vw,1.125rem)]
               mt-4
             "
           >
@@ -558,13 +558,13 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
               className="
                 box-sizing-border-box
                 flex flex-row justify-center items-center
-                w-[clamp(90px,8.4vw,121px)] h-[clamp(30px,2.64vw,38px)]
+                w-[clamp(5.625rem,8.4vw,7.5625rem)] h-[clamp(1.875rem,2.64vw,2.375rem)]
                 border border-[var(--btn-outline-primary-border)]
-                rounded-[33px]
+                rounded-[2.0625rem]
                 cursor-pointer transition-opacity hover:opacity-80
               "
             >
-              <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(11px,0.97vw,14px)] leading-[18px] text-[var(--btn-outline-primary-text)] text-center">
+              <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.6875rem,0.97vw,0.875rem)] leading-[1.125rem] text-[var(--btn-outline-primary-text)] text-center">
                 Back
               </span>
             </button>
@@ -573,13 +573,13 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
               onClick={onNext}
               className="
                 flex flex-row justify-center items-center
-                w-[clamp(90px,8.4vw,121px)] h-[clamp(30px,2.64vw,38px)]
+                w-[clamp(5.625rem,8.4vw,7.5625rem)] h-[clamp(1.875rem,2.64vw,2.375rem)]
                 bg-[var(--brand-500)] hover:bg-[var(--brand-600)]
-                rounded-[33px]
+                rounded-[2.0625rem]
                 cursor-pointer transition-opacity hover:opacity-90
               "
             >
-              <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(11px,0.97vw,14px)] leading-[18px] text-white text-center">
+              <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(0.6875rem,0.97vw,0.875rem)] leading-[1.125rem] text-white text-center">
                 Next
               </span>
             </button>

@@ -1,7 +1,6 @@
 import * as React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { BackButton } from "@/components/ui/BackButton";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { FARMLAND_CARD_DUMMY } from "@/features/io/data/Farmlandcarddummydata";
@@ -13,7 +12,6 @@ import { LocalIntelligenceDocument } from "./LocalIntelligenceDocument";
 import { Bell } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/core/hooks";
 import { logOut } from "@/features/auth/store/authSlice";
-
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 /* TYPES & INTERFACES                                                           */
@@ -50,7 +48,7 @@ export interface FarmlandDetailPageProps {
 
 const MapPinIcon = () => (
   <svg
-    className="w-[clamp(9px,0.83vw,32px)] h-[clamp(11px,1.04vw,40px)] shrink-0 text-[var(--text-secondary)]"
+    className="w-[clamp(0.5625rem,0.83vw,2rem)] h-[clamp(0.6875rem,1.04vw,2.5rem)] shrink-0 text-[var(--text-secondary)]"
     viewBox="0 0 12 15"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -85,8 +83,8 @@ const AgentAvatar = ({
       className="
         flex items-center justify-center shrink-0 overflow-hidden rounded-full
         bg-[var(--border-subtle)]
-        w-[clamp(28px,2.78vw,125px)]
-        h-[clamp(28px,2.78vw,125px)]
+        w-[clamp(1.75rem,2.78vw,7.8125rem)]
+        h-[clamp(1.75rem,2.78vw,7.8125rem)]
       "
     >
       {avatarUrl ? (
@@ -95,7 +93,7 @@ const AgentAvatar = ({
         <span
           className="
             font-bold text-[var(--text-primary)]
-            text-[clamp(11px,0.97vw,43px)]
+            text-[clamp(0.6875rem,0.97vw,2.6875rem)]
             font-[family-name:var(--font-sans)]
           "
         >
@@ -108,14 +106,14 @@ const AgentAvatar = ({
 
 const InfoField = ({
   label,
-  fontSizeClass = "text-[clamp(9px,0.83vw,37px)] leading-[clamp(12px,1.11vw,50px)]",
+  fontSizeClass = "text-[clamp(0.5625rem,0.83vw,2.3125rem)] leading-[clamp(0.75rem,1.11vw,3.125rem)]",
   children,
 }: {
   label: string;
   fontSizeClass?: string;
   children: React.ReactNode;
 }) => (
-  <div className="flex flex-col gap-[clamp(2px,0.28vw,12px)]">
+  <div className="flex flex-col gap-[clamp(0.125rem,0.28vw,0.75rem)]">
     <span
       className={`
         font-normal uppercase tracking-[0.6px]
@@ -144,18 +142,18 @@ const StatusBox = ({
       flex flex-row justify-between items-center
       bg-[var(--status-pending-bg)]
       border border-[var(--border-default)]
-      rounded-[clamp(20px,2.22vw,100px)]
-      p-[clamp(16px,1.67vw,75px)]
+      rounded-[clamp(1.25rem,2.22vw,6.25rem)]
+      p-[clamp(1rem,1.67vw,4.6875rem)]
       w-full
     "
   >
-    <div className="flex flex-col gap-[clamp(2px,0.28vw,12px)]">
+    <div className="flex flex-col gap-[clamp(0.125rem,0.28vw,0.75rem)]">
       <span
         className="
           font-normal uppercase tracking-[0.6px]
           text-[var(--text-secondary)]
-          text-[clamp(9px,0.83vw,37px)]
-          leading-[clamp(12px,1.11vw,50px)]
+          text-[clamp(0.5625rem,0.83vw,2.3125rem)]
+          leading-[clamp(0.75rem,1.11vw,3.125rem)]
           font-[family-name:var(--font-sans)]
         "
       >
@@ -164,8 +162,8 @@ const StatusBox = ({
       <span
         className="
           font-medium text-[var(--text-primary)]
-          text-[clamp(14px,1.25vw,56px)]
-          leading-[clamp(20px,1.94vw,87px)]
+          text-[clamp(0.875rem,1.25vw,3.5rem)]
+          leading-[clamp(1.25rem,1.94vw,5.4375rem)]
           font-[family-name:var(--font-sans)]
         "
       >
@@ -189,13 +187,13 @@ const HeroSection = ({
     className="
       relative overflow-hidden flex flex-col justify-end items-start
       w-full
-      h-[clamp(260px,28.4vw,1280px)]
+      h-[clamp(16.25rem,28.4vw,80rem)]
       min-h-[300px]
       bg-[var(--border-default)]
-      rounded-[clamp(20px,2.22vw,100px)]
+      rounded-[clamp(1.25rem,2.22vw,6.25rem)]
       shadow-[0px_20px_40px_rgba(0,49,50,0.04)]
-      mt-[clamp(18px,1.94vw,28px)]
-      pb-[clamp(24px,2.81vw,54px)]
+      mt-[clamp(1.125rem,1.94vw,1.75rem)]
+      pb-[clamp(1.5rem,2.81vw,3.375rem)]
     "
   >
     {/* Background image */}
@@ -214,26 +212,26 @@ const HeroSection = ({
     <div
       className="
         relative z-10 flex flex-row justify-between items-center w-full
-        px-[clamp(32px,10vw,192px)]
+        px-[clamp(2rem,10vw,12rem)]
       "
     >
       {/* Left: badge + name + location */}
-      <div className="flex flex-col gap-[clamp(6px,0.56vw,25px)]">
+      <div className="flex flex-col gap-[clamp(0.375rem,0.56vw,1.5625rem)]">
         {/* Badge pill */}
         <div
           className="
             inline-flex items-center self-start
             bg-[var(--illus-card-white-bg)] border border-[var(--border-soft)]
             backdrop-filter backdrop-blur-[6px] rounded-full
-            px-[clamp(8px,0.83vw,37px)]
-            py-[clamp(2px,0.28vw,12px)]
+            px-[clamp(0.5rem,0.83vw,2.3125rem)]
+            py-[clamp(0.125rem,0.28vw,0.75rem)]
           "
         >
           <span
             className="
               font-bold uppercase tracking-[0.6px] text-white
-              text-[clamp(9px,0.83vw,37px)]
-              leading-[clamp(12px,1.11vw,50px)]
+              text-[clamp(0.5625rem,0.83vw,2.3125rem)]
+              leading-[clamp(0.75rem,1.11vw,3.125rem)]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -245,8 +243,8 @@ const HeroSection = ({
         <h2
           className="
             font-extrabold text-white tracking-[-1.2px]
-            text-[clamp(32px,3.33vw,150px)]
-            leading-[clamp(32px,3.33vw,150px)]
+            text-[clamp(2rem,3.33vw,9.375rem)]
+            leading-[clamp(2rem,3.33vw,9.375rem)]
             drop-shadow-[0px_2px_2px_rgba(0,0,0,0.06)]
             font-[family-name:var(--font-sans)]
           "
@@ -255,13 +253,13 @@ const HeroSection = ({
         </h2>
 
         {/* Location */}
-        <div className="flex items-center gap-[clamp(2px,0.28vw,12px)]">
+        <div className="flex items-center gap-[clamp(0.125rem,0.28vw,0.75rem)]">
           <MapPinIcon />
           <span
             className="
               font-normal text-[var(--border-subtle)]
-              text-[clamp(12px,1.11vw,50px)]
-              leading-[clamp(18px,1.67vw,75px)]
+              text-[clamp(0.75rem,1.11vw,3.125rem)]
+              leading-[clamp(1.125rem,1.67vw,4.6875rem)]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -276,11 +274,11 @@ const HeroSection = ({
           flex flex-col items-end justify-center
           bg-[var(--surface-card)] border border-[var(--border-soft)]
           backdrop-filter backdrop-blur-[10px]
-          rounded-[clamp(10px,1.11vw,50px)]
-          p-[clamp(16px,1.67vw,75px)]
-          gap-[clamp(2px,0.28vw,12px)]
-          w-[clamp(120px,11.67vw,525px)]
-          h-[clamp(80px,7.36vw,331px)]
+          rounded-[clamp(0.625rem,1.11vw,3.125rem)]
+          p-[clamp(1rem,1.67vw,4.6875rem)]
+          gap-[clamp(0.125rem,0.28vw,0.75rem)]
+          w-[clamp(7.5rem,11.67vw,32.8125rem)]
+          h-[clamp(5rem,7.36vw,20.6875rem)]
           shrink-0
         "
       >
@@ -288,8 +286,8 @@ const HeroSection = ({
           className="
             font-semibold uppercase tracking-[0.6px] text-right
             text-[var(--text-secondary)]
-            text-[clamp(9px,0.83vw,37px)]
-            leading-[clamp(12px,1.11vw,50px)]
+            text-[clamp(0.5625rem,0.83vw,2.3125rem)]
+            leading-[clamp(0.75rem,1.11vw,3.125rem)]
             font-[family-name:var(--font-sans)]
           "
         >
@@ -298,8 +296,8 @@ const HeroSection = ({
         <span
           className="
             font-bold text-[var(--text-strong)] text-right
-            text-[clamp(20px,2.08vw,93px)]
-            leading-[clamp(24px,2.5vw,112px)]
+            text-[clamp(1.25rem,2.08vw,5.8125rem)]
+            leading-[clamp(1.5rem,2.5vw,7rem)]
             font-[family-name:var(--font-sans)]
           "
         >
@@ -321,18 +319,18 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
       bg-[var(--surface-card)]
       border border-[var(--border-soft)]
       shadow-[var(--shadow-card)]
-      rounded-[clamp(20px,2.22vw,100px)]
-      pt-[clamp(20px,2.22vw,100px)]
-      px-[clamp(20px,2.22vw,100px)]
-      pb-[clamp(40px,5.21vw,234px)]
-      gap-[clamp(16px,1.67vw,75px)]
+      rounded-[clamp(1.25rem,2.22vw,6.25rem)]
+      pt-[clamp(1.25rem,2.22vw,6.25rem)]
+      px-[clamp(1.25rem,2.22vw,6.25rem)]
+      pb-[clamp(2.5rem,5.21vw,14.625rem)]
+      gap-[clamp(1rem,1.67vw,4.6875rem)]
       h-full
     "
   >
     {/* Heading */}
     <div
       className="
-        pb-[clamp(10px,1.11vw,50px)]
+        pb-[clamp(0.625rem,1.11vw,3.125rem)]
         border-b border-[var(--border-subtle)]
       "
     >
@@ -341,8 +339,8 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
         variant="h4"
         className="
           font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-          text-[clamp(14px,1.39vw,62px)]
-          leading-[clamp(20px,1.94vw,87px)]
+          text-[clamp(0.875rem,1.39vw,3.875rem)]
+          leading-[clamp(1.25rem,1.94vw,5.4375rem)]
         "
       >
         Asset Details
@@ -353,7 +351,7 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
     <div
       className="
         flex flex-col
-        gap-[clamp(12px,1.39vw,62px)]
+        gap-[clamp(0.75rem,1.39vw,3.875rem)]
       "
     >
       {/* Farmland ID */}
@@ -361,8 +359,8 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
         <span
           className="
             font-medium text-[var(--text-primary)]
-            text-[clamp(12px,1.11vw,50px)]
-            leading-[clamp(18px,1.67vw,75px)]
+            text-[clamp(0.75rem,1.11vw,3.125rem)]
+            leading-[clamp(1.125rem,1.67vw,4.6875rem)]
             font-[family-name:var(--font-sans)]
           "
         >
@@ -372,7 +370,7 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
 
       {/* Assigned Agent */}
       <InfoField label="ASSIGNED AGENT">
-        <div className="flex items-center gap-[clamp(8px,0.83vw,37px)]">
+        <div className="flex items-center gap-[clamp(0.5rem,0.83vw,2.3125rem)]">
           <AgentAvatar
             name={data.assignedAgent.name}
             avatarUrl={data.assignedAgent.avatarUrl}
@@ -380,8 +378,8 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
           <span
             className="
               font-medium text-[var(--text-primary)]
-              text-[clamp(12px,1.11vw,50px)]
-              leading-[clamp(18px,1.67vw,75px)]
+              text-[clamp(0.75rem,1.11vw,3.125rem)]
+              leading-[clamp(1.125rem,1.67vw,4.6875rem)]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -391,16 +389,16 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
       </InfoField>
 
       {/* Creation Time + Last Updated */}
-      <div className="grid grid-cols-2 gap-x-[clamp(16px,2vw,90px)]">
+      <div className="grid grid-cols-2 gap-x-[clamp(1rem,2vw,5.625rem)]">
         <InfoField
           label="CREATION TIME"
-          fontSizeClass="text-[clamp(8px,0.69vw,31px)] leading-[clamp(11px,1.04vw,46px)]"
+          fontSizeClass="text-[clamp(0.5rem,0.69vw,1.9375rem)] leading-[clamp(0.6875rem,1.04vw,2.875rem)]"
         >
           <span
             className="
               font-normal text-[var(--text-primary)]
-              text-[clamp(11px,0.97vw,43px)]
-              leading-[clamp(15px,1.39vw,62px)]
+              text-[clamp(0.6875rem,0.97vw,2.6875rem)]
+              leading-[clamp(0.9375rem,1.39vw,3.875rem)]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -409,13 +407,13 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
         </InfoField>
         <InfoField
           label="LAST UPDATED"
-          fontSizeClass="text-[clamp(8px,0.69vw,31px)] leading-[clamp(11px,1.04vw,46px)]"
+          fontSizeClass="text-[clamp(0.5rem,0.69vw,1.9375rem)] leading-[clamp(0.6875rem,1.04vw,2.875rem)]"
         >
           <span
             className="
               font-normal text-[var(--text-primary)]
-              text-[clamp(11px,0.97vw,43px)]
-              leading-[clamp(15px,1.39vw,62px)]
+              text-[clamp(0.6875rem,0.97vw,2.6875rem)]
+              leading-[clamp(0.9375rem,1.39vw,3.875rem)]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -438,16 +436,16 @@ const CurrentStatusCard = ({ data }: { data: FarmlandDetailData }) => (
       bg-[var(--surface-card)]
       border border-[var(--border-soft)]
       shadow-[var(--shadow-card)]
-      rounded-[clamp(20px,2.22vw,100px)]
-      p-[clamp(20px,2.22vw,100px)]
-      gap-[clamp(16px,1.67vw,75px)]
+      rounded-[clamp(1.25rem,2.22vw,6.25rem)]
+      p-[clamp(1.25rem,2.22vw,6.25rem)]
+      gap-[clamp(1rem,1.67vw,4.6875rem)]
       h-full
     "
   >
     {/* Heading */}
     <div
       className="
-        pb-[clamp(10px,1.11vw,50px)]
+        pb-[clamp(0.625rem,1.11vw,3.125rem)]
         border-b border-[var(--border-subtle)]
       "
     >
@@ -456,8 +454,8 @@ const CurrentStatusCard = ({ data }: { data: FarmlandDetailData }) => (
         variant="h4"
         className="
           font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-          text-[clamp(14px,1.39vw,62px)]
-          leading-[clamp(20px,1.94vw,87px)]
+          text-[clamp(0.875rem,1.39vw,3.875rem)]
+          leading-[clamp(1.25rem,1.94vw,5.4375rem)]
         "
       >
         Current Status
@@ -468,7 +466,7 @@ const CurrentStatusCard = ({ data }: { data: FarmlandDetailData }) => (
     <div
       className="
         flex flex-col
-        gap-[clamp(16px,2.22vw,100px)]
+        gap-[clamp(1rem,2.22vw,6.25rem)]
         flex-1 justify-center
       "
     >
@@ -522,25 +520,25 @@ const TopNav = ({
         size="default"
         onClick={onBack}
         className="
-          w-[clamp(244px,16.94vw,320px)]
-          h-[clamp(36px,3.61vw,52px)]
-          text-[clamp(11px,1.11vw,16px)]
-          py-[clamp(10px,1.32vw,19px)]
-          px-[clamp(12px,1.39vw,20px)]
+          w-[clamp(15.25rem,16.94vw,20rem)]
+          h-[clamp(2.25rem,3.61vw,3.25rem)]
+          text-[clamp(0.6875rem,1.11vw,1rem)]
+          py-[clamp(0.625rem,1.32vw,1.1875rem)]
+          px-[clamp(0.75rem,1.39vw,1.25rem)]
           font-[family-name:var(--font-sans)]
           text-[var(--text-button)]
         "
       />
 
       {/* Right: bell + avatar */}
-      <div className="flex items-center gap-[clamp(8px,0.9vw,13px)]">
+      <div className="flex items-center gap-[clamp(0.5rem,0.9vw,0.8125rem)]">
         {/* Bell */}
         <button
           className="
             relative
             flex items-center justify-center bg-[var(--surface-card)] rounded-full shrink-0
-            w-[clamp(36px,3.61vw,52px)]
-            h-[clamp(36px,3.61vw,52px)]
+            w-[clamp(2.25rem,3.61vw,3.25rem)]
+            h-[clamp(2.25rem,3.61vw,3.25rem)]
             shadow-sm
             border border-[var(--border)]
             hover:opacity-85 transition-opacity
@@ -552,8 +550,8 @@ const TopNav = ({
             strokeWidth={1.5}
             color="var(--text-primary)"
             className="
-              w-[clamp(16px,1.67vw,24px)]
-              h-[clamp(16px,1.67vw,24px)]
+              w-[clamp(1rem,1.67vw,1.5rem)]
+              h-[clamp(1rem,1.67vw,1.5rem)]
             "
           />
 
@@ -561,10 +559,10 @@ const TopNav = ({
             className="
               absolute rounded-full
               bg-[var(--status-danger)]
-              w-[clamp(4px,0.4vw,6px)]
-              h-[clamp(4px,0.4vw,6px)]
-              top-[clamp(6px,0.7vw,10px)]
-              right-[clamp(6px,0.7vw,10px)]
+              w-[clamp(0.25rem,0.4vw,0.375rem)]
+              h-[clamp(0.25rem,0.4vw,0.375rem)]
+              top-[clamp(0.375rem,0.7vw,0.625rem)]
+              right-[clamp(0.375rem,0.7vw,0.625rem)]
             "
           />
         </button>
@@ -580,8 +578,8 @@ const TopNav = ({
             bg-[var(--surface-card)]
             transition-opacity
             hover:opacity-90
-            w-[clamp(36px,3.61vw,52px)]
-            h-[clamp(36px,3.61vw,52px)]
+            w-[clamp(2.25rem,3.61vw,3.25rem)]
+            h-[clamp(2.25rem,3.61vw,3.25rem)]
             border border-[rgba(0,0,0,0.05)]
             cursor-pointer
           "
@@ -600,7 +598,7 @@ const TopNav = ({
                 font-bold
                 font-[var(--font-sans)]
                 text-[var(--text-primary)]
-                text-[clamp(11px,1.11vw,16px)]
+                text-[clamp(0.6875rem,1.11vw,1rem)]
               "
             >
               {initials}
@@ -626,10 +624,10 @@ const BottomActions = ({
   <div
     className="
       flex flex-row justify-end items-center
-      gap-[clamp(10px,1.11vw,50px)]
-      mt-[clamp(8px,2.85vw,41px)]
-      pt-[clamp(16px,2.22vw,32px)]
-      pb-[clamp(24px,3.33vw,48px)]
+      gap-[clamp(0.625rem,1.11vw,3.125rem)]
+      mt-[clamp(0.5rem,2.85vw,2.5625rem)]
+      pt-[clamp(1rem,2.22vw,2rem)]
+      pb-[clamp(1.5rem,3.33vw,3rem)]
     "
   >
     {/* Back */}
@@ -641,9 +639,9 @@ const BottomActions = ({
         font-medium text-[rgba(0,0,0,0.8)]
         bg-transparent
         transition-opacity hover:opacity-75
-        w-[clamp(90px,8.4vw,378px)]
-        h-[clamp(30px,2.64vw,118px)]
-        text-[clamp(11px,0.97vw,43px)]
+        w-[clamp(5.625rem,8.4vw,23.625rem)]
+        h-[clamp(1.875rem,2.64vw,7.375rem)]
+        text-[clamp(0.6875rem,0.97vw,2.6875rem)]
         font-[family-name:var(--font-sans)]
       "
     >
@@ -658,9 +656,9 @@ const BottomActions = ({
         rounded-full bg-[#2780C4] hover:bg-[#1f6da9]
         font-semibold text-white
         transition-opacity hover:opacity-90
-        w-[clamp(90px,8.4vw,378px)]
-        h-[clamp(30px,2.64vw,118px)]
-        text-[clamp(11px,0.97vw,43px)]
+        w-[clamp(5.625rem,8.4vw,23.625rem)]
+        h-[clamp(1.875rem,2.64vw,7.375rem)]
+        text-[clamp(0.6875rem,0.97vw,2.6875rem)]
         font-[family-name:var(--font-sans)]
       "
     >
@@ -845,32 +843,32 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
         className="
           mx-auto w-full
           max-w-full
-          pt-[clamp(24px,2.36vw,34px)]
+          pt-[clamp(1.5rem,2.36vw,2.125rem)]
           pb-0
           flex flex-col
         "
       >
-        {/* Top nav wrapped in its own 40px figma padding */}
-        <div className="px-[clamp(16px,2.78vw,40px)] w-full">
+        {/* Top nav wrapped in its own 40px padding */}
+        <div className="px-[clamp(1rem,2.78vw,2.5rem)] w-full">
           <TopNav onBack={handleBack} />
         </div>
 
-        {/* Main page content wrapper in its own 96px figma padding */}
+        {/* Main page content wrapper in its own 96px padding */}
         <div
           className="
             flex flex-col w-full
-            px-[clamp(32px,6.67vw,96px)]
+            px-[clamp(2rem,6.67vw,6rem)]
           "
         >
           {/* Page heading */}
-          <div className="flex flex-col gap-2 mt-[clamp(20px,2.08vw,30px)]">
+          <div className="flex flex-col gap-2 mt-[clamp(1.25rem,2.08vw,1.875rem)]">
             <Typography
               as="h1"
               className="
                 font-extrabold tracking-[-1.2px] text-[var(--text-primary)]
                 font-[family-name:var(--font-heading)]
-                text-[clamp(20px,1.94vw,87px)]
-                leading-[clamp(32px,3.33vw,150px)]
+                text-[clamp(1.25rem,1.94vw,5.4375rem)]
+                leading-[clamp(2rem,3.33vw,9.375rem)]
               "
             >
               Assigned Farmlands
@@ -886,8 +884,8 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
               grid
               grid-cols-1
               md:grid-cols-2
-              gap-[clamp(16px,2.7vw,121px)]
-              mt-[clamp(32px,3.33vw,48px)]
+              gap-[clamp(1rem,2.7vw,7.5625rem)]
+              mt-[clamp(2rem,3.33vw,3rem)]
             "
           >
             <AssetDetailsCard data={displayData} />

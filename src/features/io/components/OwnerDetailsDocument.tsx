@@ -79,10 +79,10 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
     <div
       className="
         relative min-h-screen w-full
-        bg-[#F2F2F2]
-        px-[clamp(16px,2.78vw,54px)]
-        py-[clamp(24px,2.5vw,48px)]
-        flex flex-col gap-[clamp(20px,2.22vw,43px)]
+        bg-[var(--surface-page)]
+        px-[clamp(1rem,2.78vw,3.375rem)]
+        py-[clamp(1.5rem,2.5vw,3rem)]
+        flex flex-col gap-[clamp(1.25rem,2.22vw,2.6875rem)]
         font-[family-name:var(--font-sans)]
       "
     >
@@ -94,25 +94,25 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
           size="default"
           onClick={onBack}
           className="
-            w-[clamp(244px,16.67vw,320px)]
-            h-[clamp(36px,3.61vw,70px)]
-            text-[clamp(11px,1.11vw,21px)]
-            py-[clamp(10px,1.32vw,25px)]
-            px-[clamp(12px,1.39vw,27px)]
+            w-[clamp(15.25rem,16.67vw,20rem)]
+            h-[clamp(2.25rem,3.61vw,4.375rem)]
+            text-[clamp(0.6875rem,1.11vw,1.3125rem)]
+            py-[clamp(0.625rem,1.32vw,1.5625rem)]
+            px-[clamp(0.75rem,1.39vw,1.6875rem)]
             font-[family-name:var(--font-sans)]
             text-[var(--text-button)]
           "
         />
 
         {/* Right: bell + avatar */}
-        <div className="flex items-center gap-[clamp(8px,0.9vw,13px)]">
+        <div className="flex items-center gap-[clamp(0.5rem,0.9vw,0.8125rem)]">
           {/* Bell */}
           <button
             className="
               relative
               flex items-center justify-center bg-[var(--surface-card)] rounded-full shrink-0
-              w-[clamp(36px,3.61vw,52px)]
-              h-[clamp(36px,3.61vw,52px)]
+              w-[clamp(2.25rem,3.61vw,3.25rem)]
+              h-[clamp(2.25rem,3.61vw,3.25rem)]
               shadow-sm
               border border-[var(--border)]
               hover:opacity-85 transition-opacity
@@ -124,8 +124,8 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
               strokeWidth={1.5}
               color="var(--text-primary)"
               className="
-                w-[clamp(16px,1.67vw,24px)]
-                h-[clamp(16px,1.67vw,24px)]
+                w-[clamp(1rem,1.67vw,1.5rem)]
+                h-[clamp(1rem,1.67vw,1.5rem)]
               "
             />
 
@@ -133,10 +133,10 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
               className="
                 absolute rounded-full
                 bg-[var(--status-danger)]
-                w-[clamp(4px,0.4vw,6px)]
-                h-[clamp(4px,0.4vw,6px)]
-                top-[clamp(6px,0.7vw,10px)]
-                right-[clamp(6px,0.7vw,10px)]
+                w-[clamp(0.25rem,0.4vw,0.375rem)]
+                h-[clamp(0.25rem,0.4vw,0.375rem)]
+                top-[clamp(0.375rem,0.7vw,0.625rem)]
+                right-[clamp(0.375rem,0.7vw,0.625rem)]
               "
             />
           </button>
@@ -152,8 +152,8 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
               bg-[var(--surface-card)]
               transition-opacity
               hover:opacity-90
-              w-[clamp(36px,3.61vw,52px)]
-              h-[clamp(36px,3.61vw,52px)]
+              w-[clamp(2.25rem,3.61vw,3.25rem)]
+              h-[clamp(2.25rem,3.61vw,3.25rem)]
               border border-[rgba(0,0,0,0.05)]
               cursor-pointer
             "
@@ -172,7 +172,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                   font-bold
                   font-[var(--font-sans)]
                   text-[var(--text-primary)]
-                  text-[clamp(11px,1.11vw,16px)]
+                  text-[clamp(0.6875rem,1.11vw,1rem)]
                 "
               >
                 {initials}
@@ -185,8 +185,8 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
       {/* Main Grid Layout */}
       <div
         className="
-          grid grid-cols-1 lg:grid-cols-[clamp(280px,28.47vw,547px)_1fr]
-          gap-[clamp(16px,1.67vw,32px)]
+          grid grid-cols-1 lg:grid-cols-[clamp(17.5rem,28.47vw,34.1875rem)_1fr]
+          gap-[clamp(1rem,1.67vw,2rem)]
           w-full items-start
         "
       >
@@ -194,17 +194,17 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
         <Card
           className="
             relative bg-white border-none
-            rounded-[24px]
-            w-[clamp(280px,28.47vw,547px)]
-            h-[clamp(250px,24.03vw,461px)]
-            shadow-[0px_20px_40px_rgba(0,49,50,0.06)]
+            rounded-[1.5rem]
+            w-[clamp(17.5rem,28.47vw,34.1875rem)]
+            h-[clamp(15.625rem,24.03vw,28.8125rem)]
+            shadow-[0_1.25rem_2.5rem_rgba(0,49,50,0.06)]
           "
         >
           {/* Farmland ID Header */}
           <span
             className="
-              absolute left-[30px] top-[30px]
-              text-[16px] font-medium text-black font-[family-name:var(--font-sans)]
+              absolute left-[1.875rem] top-[1.875rem]
+              text-[1rem] font-medium text-black font-[family-name:var(--font-sans)]
             "
           >
             Farmland ID:
@@ -212,8 +212,8 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
           <Typography
             as="h2"
             className="
-              absolute left-[30px] top-[60px]
-              text-[35px] font-medium text-black leading-[44px]
+              absolute left-[1.875rem] top-[3.75rem]
+              text-[2.1875rem] font-medium text-black leading-[2.75rem]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -224,19 +224,19 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
           <div
             className="
               absolute
-              w-[184px]
-              h-[136px]
-              left-[calc(50%-184px/2)]
-              top-[calc(50%-136px/2+49px)]
+              w-[11.5rem]
+              h-[8.5rem]
+              left-[calc(50%-11.5rem/2)]
+              top-[calc(50%-8.5rem/2+3.0625rem)]
             "
           >
             {/* Frame 2147239964 */}
-            <div className="absolute w-[184px] h-[136px] left-0 top-0">
+            <div className="absolute w-[11.5rem] h-[8.5rem] left-0 top-0">
               
               {/* Line 495 */}
               <div
                 className="
-                  absolute left-0 top-[8px] w-[2px] h-[92px]
+                  absolute left-0 top-[0.5rem] w-[0.125rem] h-[5.75rem]
                   border-l border-[rgba(0,120,250,0.25)]
                 "
               />
@@ -248,19 +248,19 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                   onStepChange?.("customer");
                 }}
                 className="
-                  absolute left-[11px] top-0 w-[173px] h-[68px]
-                  pl-[24px] pb-[32px] flex flex-col gap-[4px] cursor-pointer
+                  absolute left-[0.6875rem] top-0 w-[10.8125rem] h-[4.25rem]
+                  pl-[1.5rem] pb-[2rem] flex flex-col gap-[0.25rem] cursor-pointer
                 "
               >
                 {/* Checkbox Bullet */}
                 <div
                   className={`
-                    absolute left-[-17px] top-[2px] w-[12.44px] h-[12.44px] rounded-full
+                    absolute left-[-1.0625rem] top-[0.125rem] w-[0.7775rem] h-[0.7775rem] rounded-full
                     box-sizing-border-box transition-all duration-200
                     ${
                       activeStep === "customer"
-                        ? "bg-[#3D93D1] border-2 border-black shadow-[0_0_0_4.14px_#ffffff,0_0_0_6.22px_rgba(37,99,235,0.1)]"
-                        : "bg-white border-[2.07px] border-[rgba(122,149,28,0.43)]"
+                        ? "bg-[#3D93D1] border-2 border-black shadow-[0_0_0_0.25875rem_#ffffff,0_0_0_0.38875rem_rgba(37,99,235,0.1)]"
+                        : "bg-white border-[0.129375rem] border-[rgba(122,149,28,0.43)]"
                     }
                   `}
                 />
@@ -268,8 +268,8 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                 {/* Customer Information text */}
                 <span
                   className={`
-                    w-[149px] h-[36px] flex items-center font-[family-name:var(--font-sans)]
-                    font-semibold text-[14px] leading-[18px] uppercase tracking-normal
+                    w-[9.3125rem] h-[2.25rem] flex items-center font-[family-name:var(--font-sans)]
+                    font-semibold text-[0.875rem] leading-[1.125rem] uppercase tracking-normal
                     ${activeStep === "customer" ? "text-[#138FFF]" : "text-[rgba(0,0,0,0.5)]"}
                   `}
                 >
@@ -284,19 +284,19 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                   onStepChange?.("local");
                 }}
                 className="
-                  absolute left-[11px] top-[86px] w-[173px] h-[50px]
-                  pl-[24px] pb-[32px] flex flex-col gap-[4px] cursor-pointer
+                  absolute left-[0.6875rem] top-[5.375rem] w-[10.8125rem] h-[3.125rem]
+                  pl-[1.5rem] pb-[2rem] flex flex-col gap-[0.25rem] cursor-pointer
                 "
               >
                 {/* Checkbox Bullet */}
                 <div
                   className={`
-                    absolute left-[-17px] top-[2px] w-[12.44px] h-[12.44px] rounded-full
+                    absolute left-[-1.0625rem] top-[0.125rem] w-[0.7775rem] h-[0.7775rem] rounded-full
                     box-sizing-border-box transition-all duration-200
                     ${
                       activeStep === "local"
-                        ? "bg-[#3D93D1] border-2 border-black shadow-[0_0_0_4.14px_#ffffff,0_0_0_6.22px_rgba(37,99,235,0.1)]"
-                        : "bg-white border-[2.07px] border-[#85BFE5]"
+                        ? "bg-[#3D93D1] border-2 border-black shadow-[0_0_0_0.25875rem_#ffffff,0_0_0_0.38875rem_rgba(37,99,235,0.1)]"
+                        : "bg-white border-[0.129375rem] border-[#85BFE5]"
                     }
                   `}
                 />
@@ -304,8 +304,8 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                 {/* Local Intelligence text */}
                 <span
                   className={`
-                    w-[149px] h-[18px] flex items-center font-[family-name:var(--font-sans)]
-                    font-semibold text-[14px] leading-[18px] uppercase tracking-normal
+                    w-[9.3125rem] h-[1.125rem] flex items-center font-[family-name:var(--font-sans)]
+                    font-semibold text-[0.875rem] leading-[1.125rem] uppercase tracking-normal
                     ${activeStep === "local" ? "text-[#138FFF]" : "text-[rgba(0,0,0,0.5)]"}
                   `}
                 >
@@ -321,30 +321,30 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
         <Card
           className="
             relative flex flex-col bg-white
-            rounded-[clamp(20px,2.22vw,43px)]
-            p-[clamp(24px,3.33vw,64px)]
-            shadow-[0px_20px_40px_rgba(0,49,50,0.06)]
-            border-none min-h-[clamp(600px,60.69vw,1165px)]
+            rounded-[clamp(1.25rem,2.22vw,2.6875rem)]
+            p-[clamp(1.5rem,3.33vw,4rem)]
+            shadow-[0_1.25rem_2.5rem_rgba(0,49,50,0.06)]
+            border-none min-h-[clamp(37.5rem,60.69vw,72.8125rem)]
           "
         >
           {/* Tabs header */}
-          <div className="flex flex-row items-center gap-[clamp(8px,1.11vw,16px)] mb-[clamp(24px,3.33vw,64px)]">
+          <div className="flex flex-row items-center gap-[clamp(0.5rem,1.11vw,1rem)] mb-[clamp(1.5rem,3.33vw,4rem)]">
             {/* Tab: Owner Details */}
             <button
               onClick={() => onTabChange("owner")}
               className="
                 flex flex-row items-center justify-between
-                px-[clamp(16px,2.15vw,41px)]
-                py-[clamp(8px,0.8vw,15.5px)]
-                h-[clamp(32px,2.86vw,55px)]
+                px-[clamp(1rem,2.15vw,2.5625rem)]
+                py-[clamp(0.5rem,0.8vw,0.96875rem)]
+                h-[clamp(2rem,2.86vw,3.4375rem)]
                 rounded-full transition-all duration-200 cursor-pointer
                 bg-white border border-[#3D93D1] text-[#3D93D1]
               "
             >
-              <span className="text-[clamp(11px,0.97vw,19px)] font-semibold whitespace-nowrap mr-3">
+              <span className="text-[clamp(0.6875rem,0.97vw,1.1875rem)] font-semibold whitespace-nowrap mr-3">
                 Owner Details
               </span>
-              <div className="w-[18px] h-[18px] rounded-full bg-[#3D93D1] border-[4px] border-white shrink-0 shadow-sm" />
+              <div className="w-[1.125rem] h-[1.125rem] rounded-full bg-[#3D93D1] border-[4px] border-white shrink-0 shadow-sm" />
             </button>
 
             {/* Tab: Family Tree */}
@@ -352,17 +352,17 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
               onClick={() => onTabChange("family")}
               className="
                 flex flex-row items-center justify-between
-                px-[clamp(16px,2.7vw,52px)]
-                py-[clamp(8px,0.8vw,15.5px)]
-                h-[clamp(32px,2.86vw,55px)]
+                px-[clamp(1rem,2.7vw,3.25rem)]
+                py-[clamp(0.5rem,0.8vw,0.96875rem)]
+                h-[clamp(2rem,2.86vw,3.4375rem)]
                 rounded-full transition-all duration-200 cursor-pointer
                 bg-[#F9F9F9] text-[#5A5C5E]
               "
             >
-              <span className="text-[clamp(11px,0.97vw,19px)] font-semibold whitespace-nowrap mr-3">
+              <span className="text-[clamp(0.6875rem,0.97vw,1.1875rem)] font-semibold whitespace-nowrap mr-3">
                 Family Tree
               </span>
-              <div className="w-[18px] h-[18px] rounded-full bg-[#3D93D1] border-[4px] border-white shrink-0 shadow-sm" />
+              <div className="w-[1.125rem] h-[1.125rem] rounded-full bg-[#3D93D1] border-[4px] border-white shrink-0 shadow-sm" />
             </button>
 
             {/* Tab: Land Details */}
@@ -370,27 +370,27 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
               onClick={() => onTabChange("land")}
               className="
                 flex flex-row items-center justify-between
-                px-[clamp(16px,2.7vw,52px)]
-                py-[clamp(8px,0.8vw,15.5px)]
-                h-[clamp(32px,2.86vw,55px)]
+                px-[clamp(1rem,2.7vw,3.25rem)]
+                py-[clamp(0.5rem,0.8vw,0.96875rem)]
+                h-[clamp(2rem,2.86vw,3.4375rem)]
                 rounded-full transition-all duration-200 cursor-pointer
                 bg-[#F9F9F9] text-[#5A5C5E]
               "
             >
-              <span className="text-[clamp(11px,0.97vw,19px)] font-semibold whitespace-nowrap mr-3">
+              <span className="text-[clamp(0.6875rem,0.97vw,1.1875rem)] font-semibold whitespace-nowrap mr-3">
                 Land Details
               </span>
-              <div className="w-[18px] h-[18px] rounded-full bg-[#3D93D1] border-[4px] border-white shrink-0 shadow-sm" />
+              <div className="w-[1.125rem] h-[1.125rem] rounded-full bg-[#3D93D1] border-[4px] border-white shrink-0 shadow-sm" />
             </button>
           </div>
 
           {/* Profile Header Block */}
-          <div className="flex flex-row items-center gap-[clamp(12px,1.39vw,20px)] mb-[clamp(24px,3.33vw,64px)]">
+          <div className="flex flex-row items-center gap-[clamp(0.75rem,1.39vw,1.25rem)] mb-[clamp(1.5rem,3.33vw,4rem)]">
             {/* Avatar */}
             <div
               className="
-                w-[clamp(64px,5.69vw,109px)]
-                h-[clamp(64px,5.69vw,109px)]
+                w-[clamp(4rem,5.69vw,6.8125rem)]
+                h-[clamp(4rem,5.69vw,6.8125rem)]
                 rounded-full overflow-hidden shrink-0
                 border-4 border-[#F9F9FB]
                 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]
@@ -407,7 +407,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
               <Typography
                 as="h3"
                 className="
-                  text-[clamp(18px,1.67vw,32px)] font-bold text-[#1A1C1D] leading-tight
+                  text-[clamp(1.125rem,1.67vw,2rem)] font-bold text-[#1A1C1D] leading-tight
                   font-[family-name:var(--font-heading)]
                 "
               >
@@ -420,14 +420,14 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
           <div
             className="
               grid grid-cols-1 md:grid-cols-2
-              gap-x-[clamp(20px,3.33vw,64px)]
-              gap-y-[clamp(16px,1.94vw,38px)]
-              mb-[clamp(24px,3.33vw,64px)]
+              gap-x-[clamp(1.25rem,3.33vw,4rem)]
+              gap-y-[clamp(1rem,1.94vw,2.375rem)]
+              mb-[clamp(1.5rem,3.33vw,4rem)]
             "
           >
             {/* First Name */}
             <div className="flex flex-col gap-2">
-              <span className="text-[clamp(11px,0.97vw,19px)] font-semibold text-[#3D4949] tracking-[0.35px]">
+              <span className="text-[clamp(0.6875rem,0.97vw,1.1875rem)] font-semibold text-[#3D4949] tracking-[0.35px]">
                 First Name
               </span>
               <input
@@ -435,9 +435,9 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 className="
-                  w-full bg-[#F3F3F5] rounded-[clamp(16px,1.67vw,32px)]
-                  h-[clamp(42px,3.47vw,67px)] px-4
-                  text-[clamp(12px,1.11vw,21px)] text-[#1A1C1D]
+                  w-full bg-[#F3F3F5] rounded-[clamp(1rem,1.67vw,2rem)]
+                  h-[clamp(2.625rem,3.47vw,4.1875rem)] px-4
+                  text-[clamp(0.75rem,1.11vw,1.3125rem)] text-[#1A1C1D]
                   border-none outline-none focus:ring-1 focus:ring-[#3D93D1]
                   font-[family-name:var(--font-sans)]
                 "
@@ -446,7 +446,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
 
             {/* Last Name */}
             <div className="flex flex-col gap-2">
-              <span className="text-[clamp(11px,0.97vw,19px)] font-semibold text-[#3D4949] tracking-[0.35px]">
+              <span className="text-[clamp(0.6875rem,0.97vw,1.1875rem)] font-semibold text-[#3D4949] tracking-[0.35px]">
                 Last Name
               </span>
               <input
@@ -454,9 +454,9 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 className="
-                  w-full bg-[#F3F3F5] rounded-[clamp(16px,1.67vw,32px)]
-                  h-[clamp(42px,3.47vw,67px)] px-4
-                  text-[clamp(12px,1.11vw,21px)] text-[#1A1C1D]
+                  w-full bg-[#F3F3F5] rounded-[clamp(1rem,1.67vw,2rem)]
+                  h-[clamp(2.625rem,3.47vw,4.1875rem)] px-4
+                  text-[clamp(0.75rem,1.11vw,1.3125rem)] text-[#1A1C1D]
                   border-none outline-none focus:ring-1 focus:ring-[#3D93D1]
                   font-[family-name:var(--font-sans)]
                 "
@@ -465,13 +465,13 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
 
             {/* Phone Number */}
             <div className="flex flex-col gap-2">
-              <span className="text-[clamp(11px,0.97vw,19px)] font-semibold text-[#3D4949] tracking-[0.35px]">
+              <span className="text-[clamp(0.6875rem,0.97vw,1.1875rem)] font-semibold text-[#3D4949] tracking-[0.35px]">
                 Phone Number
               </span>
               <div
                 className="
-                  flex items-center w-full bg-[#F3F3F5] rounded-[clamp(16px,1.67vw,32px)]
-                  h-[clamp(42px,3.47vw,67px)] px-4 gap-[clamp(8px,0.8vw,12px)]
+                  flex items-center w-full bg-[#F3F3F5] rounded-[clamp(1rem,1.67vw,2rem)]
+                  h-[clamp(2.625rem,3.47vw,4.1875rem)] px-4 gap-[clamp(0.5rem,0.8vw,0.75rem)]
                   focus-within:ring-1 focus-within:ring-[#3D93D1]
                 "
               >
@@ -484,7 +484,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   className="
                     w-full bg-transparent border-none outline-none
-                    text-[clamp(12px,1.11vw,21px)] text-[#1A1C1D]
+                    text-[clamp(0.75rem,1.11vw,1.3125rem)] text-[#1A1C1D]
                     font-[family-name:var(--font-sans)]
                   "
                 />
@@ -493,13 +493,13 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
 
             {/* Email */}
             <div className="flex flex-col gap-2">
-              <span className="text-[clamp(11px,0.97vw,19px)] font-semibold text-[#3D4949] tracking-[0.35px]">
+              <span className="text-[clamp(0.6875rem,0.97vw,1.1875rem)] font-semibold text-[#3D4949] tracking-[0.35px]">
                 Email
               </span>
               <div
                 className="
-                  flex items-center w-full bg-[#F3F3F5] rounded-[clamp(16px,1.67vw,32px)]
-                  h-[clamp(42px,3.47vw,67px)] px-4 gap-[clamp(8px,0.8vw,12px)]
+                  flex items-center w-full bg-[#F3F3F5] rounded-[clamp(1rem,1.67vw,2rem)]
+                  h-[clamp(2.625rem,3.47vw,4.1875rem)] px-4 gap-[clamp(0.5rem,0.8vw,0.75rem)]
                   focus-within:ring-1 focus-within:ring-[#3D93D1]
                 "
               >
@@ -513,7 +513,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                   onChange={(e) => setEmail(e.target.value)}
                   className="
                     w-full bg-transparent border-none outline-none
-                    text-[clamp(12px,1.11vw,21px)] text-[#1A1C1D]
+                    text-[clamp(0.75rem,1.11vw,1.3125rem)] text-[#1A1C1D]
                     font-[family-name:var(--font-sans)]
                   "
                 />
@@ -522,13 +522,13 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
 
             {/* Date of Birth */}
             <div className="flex flex-col gap-2">
-              <span className="text-[clamp(11px,0.97vw,19px)] font-semibold text-[#3D4949] tracking-[0.35px]">
+              <span className="text-[clamp(0.6875rem,0.97vw,1.1875rem)] font-semibold text-[#3D4949] tracking-[0.35px]">
                 Date of Birth
               </span>
               <div
                 className="
-                  flex items-center w-full bg-[#F3F3F5] rounded-[clamp(16px,1.67vw,32px)]
-                  h-[clamp(42px,3.47vw,67px)] px-4 gap-[clamp(8px,0.8vw,12px)]
+                  flex items-center w-full bg-[#F3F3F5] rounded-[clamp(1rem,1.67vw,2rem)]
+                  h-[clamp(2.625rem,3.47vw,4.1875rem)] px-4 gap-[clamp(0.5rem,0.8vw,0.75rem)]
                   focus-within:ring-1 focus-within:ring-[#3D93D1]
                 "
               >
@@ -544,7 +544,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                   onChange={(e) => setDob(e.target.value)}
                   className="
                     w-full bg-transparent border-none outline-none
-                    text-[clamp(12px,1.11vw,21px)] text-[#1A1C1D]
+                    text-[clamp(0.75rem,1.11vw,1.3125rem)] text-[#1A1C1D]
                     font-[family-name:var(--font-sans)]
                   "
                 />
@@ -553,7 +553,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
 
             {/* Religion */}
             <div className="flex flex-col gap-2">
-              <span className="text-[clamp(11px,0.97vw,19px)] font-semibold text-[#3D4949] tracking-[0.35px]">
+              <span className="text-[clamp(0.6875rem,0.97vw,1.1875rem)] font-semibold text-[#3D4949] tracking-[0.35px]">
                 Religion
               </span>
               <input
@@ -561,9 +561,9 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                 value={religion}
                 onChange={(e) => setReligion(e.target.value)}
                 className="
-                  w-full bg-[#F3F3F5] rounded-[clamp(16px,1.67vw,32px)]
-                  h-[clamp(42px,3.47vw,67px)] px-4
-                  text-[clamp(12px,1.11vw,21px)] text-[#1A1C1D]
+                  w-full bg-[#F3F3F5] rounded-[clamp(1rem,1.67vw,2rem)]
+                  h-[clamp(2.625rem,3.47vw,4.1875rem)] px-4
+                  text-[clamp(0.75rem,1.11vw,1.3125rem)] text-[#1A1C1D]
                   border-none outline-none focus:ring-1 focus:ring-[#3D93D1]
                   font-[family-name:var(--font-sans)]
                 "
@@ -572,7 +572,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
 
             {/* Gender */}
             <div className="flex flex-col gap-2">
-              <span className="text-[clamp(11px,0.97vw,19px)] font-semibold text-[#3D4949] tracking-[0.35px]">
+              <span className="text-[clamp(0.6875rem,0.97vw,1.1875rem)] font-semibold text-[#3D4949] tracking-[0.35px]">
                 Gender
               </span>
               <input
@@ -580,9 +580,9 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
                 className="
-                  w-full bg-[#F3F3F5] rounded-[clamp(16px,1.67vw,32px)]
-                  h-[clamp(42px,3.47vw,67px)] px-4
-                  text-[clamp(12px,1.11vw,21px)] text-[#1A1C1D]
+                  w-full bg-[#F3F3F5] rounded-[clamp(1rem,1.67vw,2rem)]
+                  h-[clamp(2.625rem,3.47vw,4.1875rem)] px-4
+                  text-[clamp(0.75rem,1.11vw,1.3125rem)] text-[#1A1C1D]
                   border-none outline-none focus:ring-1 focus:ring-[#3D93D1]
                   font-[family-name:var(--font-sans)]
                 "
@@ -591,15 +591,15 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
           </div>
 
           {/* Location Area */}
-          <div className="flex flex-row items-center gap-4 mb-[clamp(32px,4.17vw,80px)]">
-            <span className="text-[clamp(12px,1.11vw,21px)] font-semibold text-black">
+          <div className="flex flex-row items-center gap-4 mb-[clamp(2rem,4.17vw,5rem)]">
+            <span className="text-[clamp(0.75rem,1.11vw,1.3125rem)] font-semibold text-black">
               Google Location of Land
             </span>
             <a
               href="https://maps.google.com/?q=17.4835850,78.3805050"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[clamp(12px,1.11vw,21px)] font-medium text-[#1D7ABE] underline hover:opacity-85 transition-opacity"
+              className="text-[clamp(0.75rem,1.11vw,1.3125rem)] font-medium text-[#1D7ABE] underline hover:opacity-85 transition-opacity"
             >
               17.4835850, 78.3805050
             </a>
@@ -609,7 +609,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
           <div
             className="
               flex flex-row justify-end items-center gap-3 mt-auto
-              w-full border-t border-[rgba(0,0,0,0.05)] pt-[clamp(16px,1.67vw,24px)]
+              w-full border-t border-[rgba(0,0,0,0.05)] pt-[clamp(1rem,1.67vw,1.5rem)]
             "
           >
             <button
@@ -620,9 +620,9 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                 font-medium text-[rgba(0,0,0,0.8)]
                 bg-transparent
                 transition-opacity hover:opacity-75 cursor-pointer
-                w-[clamp(90px,8.4vw,121px)]
-                h-[clamp(30px,2.64vw,38px)]
-                text-[clamp(11px,0.97vw,14px)]
+                w-[clamp(5.625rem,8.4vw,7.5625rem)]
+                h-[clamp(1.875rem,2.64vw,2.375rem)]
+                text-[clamp(0.6875rem,0.97vw,0.875rem)]
               "
             >
               Back
@@ -635,9 +635,9 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                 rounded-full bg-[#2780C4] hover:bg-[#1f6da9]
                 font-semibold text-white
                 transition-opacity hover:opacity-90 cursor-pointer
-                w-[clamp(90px,8.4vw,121px)]
-                h-[clamp(30px,2.64vw,38px)]
-                text-[clamp(11px,0.97vw,14px)]
+                w-[clamp(5.625rem,8.4vw,7.5625rem)]
+                h-[clamp(1.875rem,2.64vw,2.375rem)]
+                text-[clamp(0.6875rem,0.97vw,0.875rem)]
               "
             >
               Next

@@ -52,9 +52,9 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
       className="
         relative min-h-screen w-full
         bg-[var(--surface-page)]
-        px-[clamp(16px,2.78vw,54px)]
-        py-[clamp(24px,2.5vw,48px)]
-        flex flex-col gap-[clamp(20px,2.22vw,43px)]
+        px-[clamp(1rem,2.78vw,3.375rem)]
+        py-[clamp(1.5rem,2.5vw,3rem)]
+        flex flex-col gap-[clamp(1.25rem,2.22vw,2.6875rem)]
         font-[family-name:var(--font-sans)]
       "
     >
@@ -66,25 +66,25 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
           size="default"
           onClick={onBack}
           className="
-            w-[clamp(244px,16.67vw,320px)]
-            h-[clamp(36px,3.61vw,70px)]
-            text-[clamp(11px,1.11vw,21px)]
-            py-[clamp(10px,1.32vw,25px)]
-            px-[clamp(12px,1.39vw,27px)]
+            w-[clamp(15.25rem,16.67vw,20rem)]
+            h-[clamp(2.25rem,3.61vw,4.375rem)]
+            text-[clamp(0.6875rem,1.11vw,1.3125rem)]
+            py-[clamp(0.625rem,1.32vw,1.5625rem)]
+            px-[clamp(0.75rem,1.39vw,1.6875rem)]
             font-[family-name:var(--font-sans)]
             text-[var(--text-button)]
           "
         />
 
         {/* Right: bell + avatar */}
-        <div className="flex items-center gap-[clamp(8px,0.9vw,13px)]">
+        <div className="flex items-center gap-[clamp(0.5rem,0.9vw,0.8125rem)]">
           {/* Bell */}
           <button
             className="
               relative
               flex items-center justify-center bg-[var(--surface-card)] rounded-full shrink-0
-              w-[clamp(36px,3.61vw,52px)]
-              h-[clamp(36px,3.61vw,52px)]
+              w-[clamp(2.25rem,3.61vw,3.25rem)]
+              h-[clamp(2.25rem,3.61vw,3.25rem)]
               shadow-sm
               border border-[var(--border)]
               hover:opacity-85 transition-opacity
@@ -96,8 +96,8 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
               strokeWidth={1.5}
               color="var(--text-primary)"
               className="
-                w-[clamp(16px,1.67vw,24px)]
-                h-[clamp(16px,1.67vw,24px)]
+                w-[clamp(1rem,1.67vw,1.5rem)]
+                h-[clamp(1rem,1.67vw,1.5rem)]
               "
             />
 
@@ -105,10 +105,10 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
               className="
                 absolute rounded-full
                 bg-[var(--status-danger)]
-                w-[clamp(4px,0.4vw,6px)]
-                h-[clamp(4px,0.4vw,6px)]
-                top-[clamp(6px,0.7vw,10px)]
-                right-[clamp(6px,0.7vw,10px)]
+                w-[clamp(0.25rem,0.4vw,0.375rem)]
+                h-[clamp(0.25rem,0.4vw,0.375rem)]
+                top-[clamp(0.375rem,0.7vw,0.625rem)]
+                right-[clamp(0.375rem,0.7vw,0.625rem)]
               "
             />
           </button>
@@ -124,8 +124,8 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
               bg-[var(--surface-card)]
               transition-opacity
               hover:opacity-90
-              w-[clamp(36px,3.61vw,52px)]
-              h-[clamp(36px,3.61vw,52px)]
+              w-[clamp(2.25rem,3.61vw,3.25rem)]
+              h-[clamp(2.25rem,3.61vw,3.25rem)]
               border border-[rgba(0,0,0,0.05)]
               cursor-pointer
             "
@@ -144,7 +144,7 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
                   font-bold
                   font-[var(--font-sans)]
                   text-[var(--text-primary)]
-                  text-[clamp(11px,1.11vw,16px)]
+                  text-[clamp(0.6875rem,1.11vw,1rem)]
                 "
               >
                 {initials}
@@ -157,8 +157,8 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
       {/* Main Grid Layout */}
       <div
         className="
-          grid grid-cols-1 lg:grid-cols-[clamp(280px,28.47vw,547px)_1fr]
-          gap-[clamp(16px,1.67vw,32px)]
+          grid grid-cols-1 lg:grid-cols-[clamp(17.5rem,28.47vw,34.1875rem)_1fr]
+          gap-[clamp(1rem,1.67vw,2rem)]
           w-full items-start
         "
       >
@@ -166,17 +166,17 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
         <Card
           className="
             relative bg-white border-none
-            rounded-[24px]
-            w-[clamp(280px,28.47vw,547px)]
-            h-[clamp(250px,24.03vw,461px)]
-            shadow-[0px_20px_40px_rgba(0,49,50,0.06)]
+            rounded-[1.5rem]
+            w-[clamp(17.5rem,28.47vw,34.1875rem)]
+            h-[clamp(15.625rem,24.03vw,28.8125rem)]
+            shadow-[0_1.25rem_2.5rem_rgba(0,49,50,0.06)]
           "
         >
           {/* Farmland ID Header */}
           <span
             className="
-              absolute left-[30px] top-[30px]
-              text-[16px] font-medium text-black font-[family-name:var(--font-sans)]
+              absolute left-[1.875rem] top-[1.875rem]
+              text-[1rem] font-medium text-black font-[family-name:var(--font-sans)]
             "
           >
             Farmland ID:
@@ -184,8 +184,8 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
           <Typography
             as="h2"
             className="
-              absolute left-[30px] top-[60px]
-              text-[35px] font-medium text-black leading-[44px]
+              absolute left-[1.875rem] top-[3.75rem]
+              text-[2.1875rem] font-medium text-black leading-[2.75rem]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -196,17 +196,17 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
           <div
             className="
               absolute
-              w-[184px]
-              h-[136px]
-              left-[calc(50%-184px/2)]
-              top-[calc(50%-136px/2+49px)]
+              w-[11.5rem]
+              h-[8.5rem]
+              left-[calc(50%-11.5rem/2)]
+              top-[calc(50%-8.5rem/2+3.0625rem)]
             "
           >
-            <div className="absolute w-[184px] h-[136px] left-0 top-0">
+            <div className="absolute w-[11.5rem] h-[8.5rem] left-0 top-0">
               {/* Line 495 */}
               <div
                 className="
-                  absolute left-0 top-[8px] w-[2px] h-[92px]
+                  absolute left-0 top-[0.5rem] w-[0.125rem] h-[5.75rem]
                   border-l border-[rgba(0,120,250,0.25)]
                 "
               />
@@ -218,24 +218,24 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
                   onStepChange?.("customer");
                 }}
                 className="
-                  absolute left-[11px] top-0 w-[173px] h-[68px]
-                  pl-[24px] pb-[32px] flex flex-col gap-[4px] cursor-pointer
+                  absolute left-[0.6875rem] top-0 w-[10.8125rem] h-[4.25rem]
+                  pl-[1.5rem] pb-[2rem] flex flex-col gap-[0.25rem] cursor-pointer
                 "
               >
                 <div
                   className={`
-                    absolute left-[-17px] top-[2px] w-[12.44px] h-[12.44px] rounded-full
+                    absolute left-[-1.0625rem] top-[0.125rem] w-[0.7775rem] h-[0.7775rem] rounded-full
                     box-sizing-border-box transition-all duration-200
                     ${activeStep === "customer"
-                      ? "bg-[#3D93D1] border-2 border-black shadow-[0_0_0_4.14px_#ffffff,0_0_0_6.22px_rgba(37,99,235,0.1)]"
-                      : "bg-white border-[2.07px] border-[rgba(122,149,28,0.43)]"
+                      ? "bg-[#3D93D1] border-2 border-black shadow-[0_0_0_0.25875rem_#ffffff,0_0_0_0.38875rem_rgba(37,99,235,0.1)]"
+                      : "bg-white border-[0.129375rem] border-[rgba(122,149,28,0.43)]"
                     }
                   `}
                 />
                 <span
                   className={`
-                    w-[149px] h-[36px] flex items-center font-[family-name:var(--font-sans)]
-                    font-semibold text-[14px] leading-[18px] uppercase tracking-normal
+                    w-[9.3125rem] h-[2.25rem] flex items-center font-[family-name:var(--font-sans)]
+                    font-semibold text-[0.875rem] leading-[1.125rem] uppercase tracking-normal
                     ${activeStep === "customer" ? "text-[#138FFF]" : "text-[rgba(0,0,0,0.5)]"}
                   `}
                 >
@@ -250,24 +250,24 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
                   onStepChange?.("local");
                 }}
                 className="
-                  absolute left-[11px] top-[68px] w-[173px] h-[68px]
-                  pl-[24px] pb-[32px] flex flex-col gap-[4px] cursor-pointer
+                  absolute left-[0.6875rem] top-[4.25rem] w-[10.8125rem] h-[4.25rem]
+                  pl-[1.5rem] pb-[2rem] flex flex-col gap-[0.25rem] cursor-pointer
                 "
               >
                 <div
                   className={`
-                    absolute left-[-17px] top-[2px] w-[12.44px] h-[12.44px] rounded-full
+                    absolute left-[-1.0625rem] top-[0.125rem] w-[0.7775rem] h-[0.7775rem] rounded-full
                     box-sizing-border-box transition-all duration-200
                     ${activeStep === "local"
-                      ? "bg-[#3D93D1] border-2 border-black shadow-[0_0_0_4.14px_#ffffff,0_0_0_6.22px_rgba(37,99,235,0.1)]"
-                      : "bg-white border-[2.07px] border-[rgba(122,149,28,0.43)]"
+                      ? "bg-[#3D93D1] border-2 border-black shadow-[0_0_0_0.25875rem_#ffffff,0_0_0_0.38875rem_rgba(37,99,235,0.1)]"
+                      : "bg-white border-[0.129375rem] border-[rgba(122,149,28,0.43)]"
                     }
                   `}
                 />
                 <span
                   className={`
-                    w-[149px] h-[36px] flex items-center font-[family-name:var(--font-sans)]
-                    font-semibold text-[14px] leading-[18px] uppercase tracking-normal
+                    w-[9.3125rem] h-[2.25rem] flex items-center font-[family-name:var(--font-sans)]
+                    font-semibold text-[0.875rem] leading-[1.125rem] uppercase tracking-normal
                     ${activeStep === "local" ? "text-[#138FFF]" : "text-[rgba(0,0,0,0.5)]"}
                   `}
                 >
@@ -282,31 +282,31 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
         <Card
           className="
             flex-1 bg-[var(--surface-card)] border-none
-            rounded-[32px]
-            min-h-[clamp(600px,60.69vw,1165px)]
-            p-[clamp(16px,2.5vw,48px)]
-            shadow-[0px_20px_40px_rgba(0,49,50,0.06)]
+            rounded-[2rem]
+            min-h-[clamp(37.5rem,60.69vw,72.8125rem)]
+            p-[clamp(1rem,2.5vw,3rem)]
+            shadow-[0_1.25rem_2.5rem_rgba(0,49,50,0.06)]
             flex flex-col
           "
         >
           {/* Tabs header */}
-          <div className="flex flex-row items-center gap-[clamp(8px,1.11vw,16px)] mb-[clamp(24px,3.33vw,64px)]">
+          <div className="flex flex-row items-center gap-[clamp(0.5rem,1.11vw,1rem)] mb-[clamp(1.5rem,3.33vw,4rem)]">
             {/* Tab: Owner Details */}
             <button
               onClick={() => onTabChange("owner")}
               className="
                 flex flex-row items-center justify-between
-                px-[clamp(16px,2.15vw,41px)]
-                py-[clamp(8px,0.8vw,15.5px)]
-                h-[clamp(32px,2.86vw,55px)]
+                px-[clamp(1rem,2.15vw,2.5625rem)]
+                py-[clamp(0.5rem,0.8vw,0.96875rem)]
+                h-[clamp(2rem,2.86vw,3.4375rem)]
                 rounded-full transition-all duration-200 cursor-pointer
                 bg-[var(--chart-bg)] text-[var(--text-subtle)]
               "
             >
-              <span className="text-[clamp(11px,0.97vw,19px)] font-semibold whitespace-nowrap mr-3">
+              <span className="text-[clamp(0.6875rem,0.97vw,1.1875rem)] font-semibold whitespace-nowrap mr-3">
                 Owner Details
               </span>
-              <img src={checklistIcon} alt="checklist" className="w-[18px] h-[18px] shrink-0" />
+              <img src={checklistIcon} alt="checklist" className="w-[1.125rem] h-[1.125rem] shrink-0" />
             </button>
 
             {/* Tab: Family Tree */}
@@ -314,17 +314,17 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
               onClick={() => onTabChange("family")}
               className="
                 flex flex-row items-center justify-between
-                px-[clamp(16px,2.7vw,52px)]
-                py-[clamp(8px,0.8vw,15.5px)]
-                h-[clamp(32px,2.86vw,55px)]
+                px-[clamp(1rem,2.7vw,3.25rem)]
+                py-[clamp(0.5rem,0.8vw,0.96875rem)]
+                h-[clamp(2rem,2.86vw,3.4375rem)]
                 rounded-full transition-all duration-200 cursor-pointer
                 bg-[var(--chart-bg)] text-[var(--text-subtle)]
               "
             >
-              <span className="text-[clamp(11px,0.97vw,19px)] font-semibold whitespace-nowrap mr-3">
+              <span className="text-[clamp(0.6875rem,0.97vw,1.1875rem)] font-semibold whitespace-nowrap mr-3">
                 Family Tree
               </span>
-              <img src={checklistIcon} alt="checklist" className="w-[18px] h-[18px] shrink-0" />
+              <img src={checklistIcon} alt="checklist" className="w-[1.125rem] h-[1.125rem] shrink-0" />
             </button>
 
             {/* Tab: Land Details */}
@@ -332,72 +332,72 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
               onClick={() => onTabChange("land")}
               className="
                 flex flex-row items-center justify-between
-                px-[clamp(16px,2.7vw,52px)]
-                py-[clamp(8px,0.8vw,15.5px)]
-                h-[clamp(32px,2.86vw,55px)]
+                px-[clamp(1rem,2.7vw,3.25rem)]
+                py-[clamp(0.5rem,0.8vw,0.96875rem)]
+                h-[clamp(2rem,2.86vw,3.4375rem)]
                 rounded-full transition-all duration-200 cursor-pointer
                 bg-white border border-[var(--brand-400)] text-[var(--brand-400)]
               "
             >
-              <span className="text-[clamp(11px,0.97vw,19px)] font-semibold whitespace-nowrap mr-3">
+              <span className="text-[clamp(0.6875rem,0.97vw,1.1875rem)] font-semibold whitespace-nowrap mr-3">
                 Land Details
               </span>
-              <img src={checklistIcon} alt="checklist" className="w-[18px] h-[18px] shrink-0" />
+              <img src={checklistIcon} alt="checklist" className="w-[1.125rem] h-[1.125rem] shrink-0" />
             </button>
           </div>
 
           {/* Farmland Details Title */}
-          <div className="w-full text-center mt-[clamp(16px,3vw,40px)] mb-6">
-            <span className="font-[family-name:var(--font-sans)] font-bold text-[16px] leading-[20px] tracking-[0.7px] text-[var(--text-secondary)] uppercase">
+          <div className="w-full text-center mt-[clamp(1rem,3vw,2.5rem)] mb-6">
+            <span className="font-[family-name:var(--font-sans)] font-bold text-[1rem] leading-[1.25rem] tracking-[0.7px] text-[var(--text-secondary)] uppercase">
               Farmland Details
             </span>
           </div>
 
           {/* Main 3-Column Info Layout */}
           <div className="w-full flex-1 flex flex-col justify-center py-4">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-[clamp(12px,2vw,48px)] w-full">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-[clamp(0.75rem,2vw,3rem)] w-full">
               {/* Left Column (Specs 1) */}
-              <div className="grid grid-cols-2 gap-4 lg:flex lg:flex-col lg:justify-between lg:gap-[clamp(10px,1.2vw,20px)] lg:h-[clamp(220px,21.25vw,306px)] min-w-[clamp(120px,11vw,180px)] w-full lg:w-auto py-2">
+              <div className="grid grid-cols-2 gap-4 lg:flex lg:flex-col lg:justify-between lg:gap-[clamp(0.625rem,1.2vw,1.25rem)] lg:h-[clamp(13.75rem,21.25vw,19.125rem)] min-w-[clamp(7.5rem,11vw,11.25rem)] w-full lg:w-auto py-2">
                 {/* State */}
                 <div className="flex flex-col">
-                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(9px,0.83vw,12px)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
+                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(0.5625rem,0.83vw,0.75rem)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
                     State
                   </span>
-                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(13px,1.11vw,16px)] leading-tight text-[var(--brand-400)] mt-1">
+                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.8125rem,1.11vw,1rem)] leading-tight text-[var(--brand-400)] mt-1">
                     Andhra Pradesh
                   </span>
                 </div>
                 {/* District */}
                 <div className="flex flex-col">
-                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(9px,0.83vw,12px)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
+                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(0.5625rem,0.83vw,0.75rem)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
                     District
                   </span>
-                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(13px,1.11vw,16px)] leading-tight text-[var(--brand-400)] mt-1">
+                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.8125rem,1.11vw,1rem)] leading-tight text-[var(--brand-400)] mt-1">
                     West Godavari
                   </span>
                 </div>
                 {/* Area/City/Town */}
                 <div className="flex flex-col">
-                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(9px,0.83vw,12px)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
+                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(0.5625rem,0.83vw,0.75rem)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
                     Area/City/Town
                   </span>
-                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(13px,1.11vw,16px)] leading-tight text-[var(--brand-400)] mt-1">
+                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.8125rem,1.11vw,1rem)] leading-tight text-[var(--brand-400)] mt-1">
                     Thanuku
                   </span>
                 </div>
                 {/* Acquisition Category */}
                 <div className="flex flex-col">
-                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(9px,0.83vw,12px)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
+                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(0.5625rem,0.83vw,0.75rem)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
                     Acquisition Category
                   </span>
-                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(13px,1.11vw,16px)] leading-tight text-[var(--brand-400)] mt-1">
+                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.8125rem,1.11vw,1rem)] leading-tight text-[var(--brand-400)] mt-1">
                     Ancestral Property
                   </span>
                 </div>
               </div>
 
               {/* Center Aerial Image Column */}
-              <div className="relative w-[clamp(200px,25vw,417px)] aspect-[417/306] rounded-[clamp(16px,2vw,29px)] overflow-hidden shadow-[0px_0px_39px_rgba(0,0,0,0.05)] border border-white/50 shrink-0">
+              <div className="relative w-[clamp(12.5rem,25vw,26.0625rem)] aspect-[417/306] rounded-[clamp(1rem,2vw,1.8125rem)] overflow-hidden shadow-[0px_0px_39px_rgba(0,0,0,0.05)] border border-white/50 shrink-0">
                 <img
                   src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?w=800&q=80"
                   alt="Farmland Aerial View"
@@ -406,40 +406,40 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
               </div>
 
               {/* Right Column (Specs 2) */}
-              <div className="grid grid-cols-2 gap-4 lg:flex lg:flex-col lg:justify-between lg:gap-[clamp(10px,1.2vw,20px)] lg:h-[clamp(220px,21.25vw,306px)] min-w-[clamp(120px,11vw,180px)] w-full lg:w-auto py-2">
+              <div className="grid grid-cols-2 gap-4 lg:flex lg:flex-col lg:justify-between lg:gap-[clamp(0.625rem,1.2vw,1.25rem)] lg:h-[clamp(13.75rem,21.25vw,19.125rem)] min-w-[clamp(7.5rem,11vw,11.25rem)] w-full lg:w-auto py-2">
                 {/* Agent */}
                 <div className="flex flex-col">
-                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(9px,0.83vw,12px)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
+                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(0.5625rem,0.83vw,0.75rem)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
                     Agent
                   </span>
-                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(13px,1.11vw,16px)] leading-tight text-[var(--brand-400)] mt-1">
+                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.8125rem,1.11vw,1rem)] leading-tight text-[var(--brand-400)] mt-1">
                     Agent Vinod
                   </span>
                 </div>
                 {/* Land Conversion */}
                 <div className="flex flex-col">
-                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(9px,0.83vw,12px)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
+                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(0.5625rem,0.83vw,0.75rem)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
                     Land Conversion
                   </span>
-                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(13px,1.11vw,16px)] leading-tight text-[var(--brand-400)] mt-1">
+                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.8125rem,1.11vw,1rem)] leading-tight text-[var(--brand-400)] mt-1">
                     Acres
                   </span>
                 </div>
                 {/* Value for Area */}
                 <div className="flex flex-col">
-                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(9px,0.83vw,12px)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
+                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(0.5625rem,0.83vw,0.75rem)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
                     Value for Area
                   </span>
-                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(13px,1.11vw,14px)] leading-tight text-[var(--brand-400)] mt-1">
+                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.8125rem,1.11vw,0.875rem)] leading-tight text-[var(--brand-400)] mt-1">
                     1,00,000.00
                   </span>
                 </div>
                 {/* Agent Referral Location */}
                 <div className="flex flex-col">
-                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(9px,0.83vw,12px)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
+                  <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(0.5625rem,0.83vw,0.75rem)] leading-tight text-[var(--text-label-gray)] uppercase tracking-[1.1px]">
                     Agent Referral Location
                   </span>
-                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(13px,1.11vw,16px)] leading-tight text-[var(--brand-400)] mt-1">
+                  <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.8125rem,1.11vw,1rem)] leading-tight text-[var(--brand-400)] mt-1">
                     Another Location
                   </span>
                 </div>
@@ -450,19 +450,19 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
             <div className="flex flex-col md:flex-row items-end justify-between w-full mt-10 gap-6">
               {/* Left: Geo Reference Details */}
               <div className="flex flex-col gap-1 font-[family-name:var(--font-sans)]">
-                <span className="font-[family-name:var(--font-sans)] font-bold text-[12px] leading-[15px] tracking-[0.55px] text-[var(--text-label-gray)] uppercase">
+                <span className="font-[family-name:var(--font-sans)] font-bold text-[0.75rem] leading-[0.9375rem] tracking-[0.55px] text-[var(--text-label-gray)] uppercase">
                   Geo Reference
                 </span>
-                <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(18px,2.2vw,24px)] leading-[30px] tracking-[-0.56px] text-[var(--text-secondary)] mt-1">
+                <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(1.125rem,2.2vw,1.5rem)] leading-[1.875rem] tracking-[-0.56px] text-[var(--text-secondary)] mt-1">
                   N 38.2975°   W 122.2869°
                 </span>
-                <span className="font-[family-name:var(--font-sans)] font-normal text-[14px] leading-[18px] text-[var(--text-muted)] mt-1">
+                <span className="font-[family-name:var(--font-sans)] font-normal text-[0.875rem] leading-[1.125rem] text-[var(--text-muted)] mt-1">
                   GRID: 84T-QK  •  ELEV: 12m
                 </span>
               </div>
 
               {/* Right: Map Reference Small Card */}
-              <div className="w-[clamp(180px,16.67vw,240px)] h-[clamp(90px,8.33vw,120px)] rounded-[clamp(16px,1.6vw,23px)] overflow-hidden border border-black/8 shadow-sm bg-[var(--surface-page)] shrink-0">
+              <div className="w-[clamp(11.25rem,16.67vw,15rem)] h-[clamp(5.625rem,8.33vw,7.5rem)] rounded-[clamp(1rem,1.6vw,1.4375rem)] overflow-hidden border border-black/8 shadow-sm bg-[var(--surface-page)] shrink-0">
                 <img
                   src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?w=400&q=80"
                   alt="Map Reference"
@@ -476,7 +476,7 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
           <div
             className="
               flex flex-row justify-end items-center gap-3 mt-auto
-              w-full border-t border-[rgba(0,0,0,0.05)] pt-[clamp(16px,1.67vw,24px)]
+              w-full border-t border-[rgba(0,0,0,0.05)] pt-[clamp(1rem,1.67vw,1.5rem)]
             "
           >
             <button
@@ -487,9 +487,9 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
                 font-medium text-[var(--text-primary)]
                 bg-transparent
                 transition-opacity hover:opacity-75 cursor-pointer
-                w-[clamp(90px,8.4vw,121px)]
-                h-[clamp(30px,2.64vw,38px)]
-                text-[clamp(11px,0.97vw,14px)]
+                w-[clamp(5.625rem,8.4vw,7.5625rem)]
+                h-[clamp(1.875rem,2.64vw,2.375rem)]
+                text-[clamp(0.6875rem,0.97vw,0.875rem)]
               "
             >
               Back
@@ -502,9 +502,9 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
                 rounded-full bg-[var(--brand-400)] hover:bg-[var(--brand-500)]
                 font-semibold text-white
                 transition-opacity hover:opacity-90 cursor-pointer
-                w-[clamp(90px,8.4vw,121px)]
-                h-[clamp(30px,2.64vw,38px)]
-                text-[clamp(11px,0.97vw,14px)]
+                w-[clamp(5.625rem,8.4vw,7.5625rem)]
+                h-[clamp(1.875rem,2.64vw,2.375rem)]
+                text-[clamp(0.6875rem,0.97vw,0.875rem)]
               "
             >
               Next
