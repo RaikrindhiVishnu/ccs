@@ -275,7 +275,7 @@ const RegionDetailsView: React.FC = () => {
       const matched = regionalOfficersList.find(o => Number(o.id) === Number(rawId));
       if (matched) {
         const fullName = `${matched.first_name || ""} ${matched.last_name || ""}`.trim();
-        const officerCode = matched.code && matched.id ? `${matched.code}-${matched.id}` : `RO-${matched.id}`;
+        const officerCode = matched.user_code || (matched.code && matched.id ? `${matched.code}-${matched.id}` : `RO-${matched.id}`);
         return {
           name: fullName || "Unnamed Officer",
           code: officerCode,
@@ -303,7 +303,7 @@ const RegionDetailsView: React.FC = () => {
       const matched = intelligenceOfficersList.find(o => Number(o.id) === Number(rawId));
       if (matched) {
         const fullName = `${matched.first_name || ""} ${matched.last_name || ""}`.trim();
-        const officerCode = matched.code && matched.id ? `${matched.code}-${matched.id}` : `IO-${matched.id}`;
+        const officerCode = matched.user_code || (matched.code && matched.id ? `${matched.code}-${matched.id}` : `IO-${matched.id}`);
         return {
           name: fullName || "Unnamed Officer",
           code: officerCode,
@@ -552,7 +552,7 @@ const RegionDetailsView: React.FC = () => {
                       {regOfficer?.name || "Unassigned"}
                     </Typography>
                     <Typography variant="span" className="text-[#64748B] font-medium text-[13px]">
-                      Officer Code: {regOfficer?.code || "—"}
+                      ID: {regOfficer?.code || "—"}
                     </Typography>
                   </div>
                 </div>
@@ -583,7 +583,7 @@ const RegionDetailsView: React.FC = () => {
                       {intelOfficer?.name || "Unassigned"}
                     </Typography>
                     <Typography variant="span" className="text-[#64748B] font-medium text-[13px]">
-                      Officer Code: {intelOfficer?.code || "—"}
+                      ID: {intelOfficer?.code || "—"}
                     </Typography>
                   </div>
                 </div>

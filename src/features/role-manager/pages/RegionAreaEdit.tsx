@@ -1895,6 +1895,11 @@ const RegionAreaEdit: React.FC = () => {
             const feature = e.features[0];
             const mProps = feature.properties || {};
             const mId = Number(feature.id);
+            
+            const filter = activeFilterRef.current;
+            const isAssigned = !!mProps.isAssigned || !!mProps.areaId;
+            if (filter === "unassigned" && isAssigned) return;
+            if (filter === "assigned" && !isAssigned) return;
 
             const searchParamsLocal = new URLSearchParams(
               window.location.search,
@@ -2008,6 +2013,15 @@ const RegionAreaEdit: React.FC = () => {
           }
           if (e.features && e.features.length > 0) {
             const feat = e.features[0];
+            const mProps = feat.properties || {};
+
+            const filter = activeFilterRef.current;
+            const isAssigned = !!mProps.isAssigned || !!mProps.areaId;
+            if ((filter === "unassigned" && isAssigned) || (filter === "assigned" && !isAssigned)) {
+              if (map.current) map.current.getCanvas().style.cursor = "";
+              return;
+            }
+
             hoveredMandalIdLocal = feat.id;
             if (hoveredMandalIdLocal !== null) {
               map.current?.setFeatureState(
@@ -2020,7 +2034,6 @@ const RegionAreaEdit: React.FC = () => {
             }
 
             // View Mode Popups for areas
-            const mProps = feat.properties || {};
             const searchParamsLocal = new URLSearchParams(
               window.location.search,
             );
