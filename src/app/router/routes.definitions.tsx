@@ -169,9 +169,6 @@ export const authRoutes: RouteObject[] = [
                 path: '/io/assigned-farmland/list',
                 element: <AssignedFarmlandList />
             }, {
-                path: '/io/farmland-document/:id',
-                element: <Farmlanddocument />
-            }, {
                 path: '/role-manager/agent-create',
                 element: <AgentCreate />
             }, {
@@ -245,6 +242,10 @@ export const authRoutes: RouteObject[] = [
             },
         ]
 
+    },
+    {
+        path: '/io/farmland-document/:id',
+        element: <Farmlanddocument />
     },
     {
         element: <RegionalOfficerLayout />,

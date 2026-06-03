@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import AssignedFarmlandCards from "@/features/io/components/Assignedfarmlandcard";
 import IODashboardHeader from "@/features/io/components/IODashboardHeader";
@@ -7,6 +8,7 @@ import { FARMLAND_CARD_DUMMY } from "@/features/io/data/Farmlandcarddummydata";
 const ITEMS_PER_PAGE = 6;
 
 const AssignedFarmlandList = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
@@ -137,7 +139,10 @@ const AssignedFarmlandList = () => {
           />
 
           {/* GRID */}
-          <AssignedFarmlandCards data={paginatedData} />
+          <AssignedFarmlandCards
+            data={paginatedData}
+            onView={(id) => navigate(`/io/farmland-document/${id}`)}
+          />
         </div>
 
         {/* FOOTER */}
