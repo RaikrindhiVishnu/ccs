@@ -646,6 +646,15 @@ const RegionAreaEdit: React.FC = () => {
     fetchAll();
   }, [stateRegionsGeoJson, isAreaMode, triggerGetAreas, regionAreasData]);
 
+  // Show pending toast messages from previous reloads (like success save message)
+  useEffect(() => {
+    const pendingMessage = sessionStorage.getItem("toast_success_message");
+    if (pendingMessage) {
+      toast.success(pendingMessage);
+      sessionStorage.removeItem("toast_success_message");
+    }
+  }, []);
+
   // Cache loaded areas globally for mock getAreaById fallback compatibility
   useEffect(() => {
     const list = regionAreasData?.data || [];
@@ -2892,9 +2901,10 @@ const RegionAreaEdit: React.FC = () => {
           },
         );
 
-        await updateArea(targetPayload).unwrap();
+        const res = await updateArea(targetPayload).unwrap();
 
-        toast.success("Area updated successfully!");
+        const successMsg = res?.message || res?.data?.message || "Area updated successfully!";
+        sessionStorage.setItem("toast_success_message", successMsg);
 
         // Return to initial map view with the assigned/unassigned filters restored
         if (selectedRegion) {
@@ -3035,9 +3045,10 @@ const RegionAreaEdit: React.FC = () => {
         },
       );
 
-      await updateRegion(targetPayload).unwrap();
+      const res = await updateRegion(targetPayload).unwrap();
 
-      toast.success("Region details and reassignments updated successfully!");
+      const successMsg = res?.message || res?.data?.message || "Region details and reassignments updated successfully!";
+      sessionStorage.setItem("toast_success_message", successMsg);
 
       // 1. Fetch the updated regions again (refetch caches)
       refetchRegionsByCountry();
