@@ -258,8 +258,16 @@ const AssignOfficers: React.FC = () => {
 
   // Submit Assign Officers handler
   const handleAssign = async () => {
+    if(!selectedRegionalOfficerId  && !selectedIntelligenceOfficerId ){
+      toast.error("Please select both Regional Officer and Intelligence Officer");
+      return;
+    }
     if (!selectedRegionalOfficerId) {
-      toast.error("Please select a Regional Officer");
+      toast.error("Please select Regional Officer");
+      return;
+    }
+    if (!selectedIntelligenceOfficerId) {
+      toast.error("Please select Intelligence Officer");
       return;
     }
 
@@ -399,7 +407,7 @@ const AssignOfficers: React.FC = () => {
               {/* Intelligence Officer Selector */}
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">
-                  Enter Intelligence Officer Name <span className="text-[10px] text-slate-400 normal-case capitalize tracking-normal">(Optional)</span>
+                  Enter Intelligence Officer Name
                 </label>
                 <div className="relative flex items-center h-12 bg-slate-50 border border-slate-200 rounded-xl focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
                   <select

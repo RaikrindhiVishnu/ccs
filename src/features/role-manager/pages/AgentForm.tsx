@@ -405,7 +405,7 @@ export default function AgentForm({
 
   const getProfilePic = (srcData: any) => {
     if (!srcData) return "";
-    let val = srcData.profile_url || srcData.avatar_url || srcData.avatar || srcData.profile_image || srcData.profilePicture || srcData.id_proof?.profile_url || srcData.id_proof?.avatar || srcData.id_proof?.profile_image || srcData.id_proof?.profile_url;
+    let val = srcData.profile_url || srcData.area?.profile_url || srcData.avatar_url || srcData.avatar || srcData.profile_image || srcData.profilePicture || srcData.id_proof?.profile_url || srcData.id_proof?.avatar || srcData.id_proof?.profile_image || srcData.id_proof?.profile_url;
     if (!val || val === "null" || val === "undefined") {
       const email = srcData.email || srcData.emailAddress;
       if (email) {
@@ -841,7 +841,7 @@ export default function AgentForm({
     const name = `${watch("firstName") || data?.firstName || data?.first_name || ""} ${watch("lastName") || data?.lastName || data?.last_name || ""}`.trim() || "Agent Name";
     const status = isFromDirectory ? undefined : (data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review");
     const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "AN";
-    const avatarUrl = data?.avatar || data?.profile_image || profileImage || "";
+    const avatarUrl = data?.profile_url || data?.area?.profile_url || data?.avatar || data?.profile_image || getProfilePic(data) || profileImage || "";
 
     const agent = {
       name,
