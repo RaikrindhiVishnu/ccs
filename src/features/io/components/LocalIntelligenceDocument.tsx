@@ -909,30 +909,32 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
       {toastMessage && (
         <div
           className="
-            fixed bottom-10 right-10 z-[100]
+            fixed z-[100]
+            bottom-[1.5rem] md:bottom-[2.5rem]
+            right-[1rem] md:right-[2.5rem] left-auto
+            w-max max-w-[calc(100%-2rem)] md:max-w-[clamp(24rem,34.1vw,31rem)]
+            min-h-[clamp(4.5rem,5.56vw,6rem)] h-auto
             flex flex-col justify-center items-start
-            p-6 gap-[10px]
-            w-[467px] h-[80px]
-            bg-white border border-[rgba(0,0,0,0.2)] rounded-[24px]
+            p-[clamp(1rem,1.67vw,1.8rem)] gap-[clamp(0.4rem,0.69vw,0.8rem)]
+            bg-white border border-[rgba(0,0,0,0.2)] rounded-[clamp(1rem,1.67vw,1.8rem)]
             shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-bottom-5
           "
         >
-          <div className="flex flex-row items-center justify-between w-full h-[32px] gap-[14px]">
-            <div className="flex flex-row items-center gap-[10px] w-[375px]">
+          <div className="flex flex-row items-center justify-between w-full h-auto gap-[clamp(0.5rem,0.97vw,1.2rem)]">
+            <div className="flex flex-row items-center gap-[clamp(0.4rem,0.69vw,0.8rem)] flex-1 min-w-0">
               {/* Logo / Verified Icon */}
-              <div className="relative w-8 h-8 shrink-0">
+              <div className="relative w-[clamp(1.5rem,2.22vw,2.5rem)] h-[clamp(1.5rem,2.22vw,2.5rem)] shrink-0">
                 <svg
                   className="absolute left-0 top-0 w-full h-full"
                   viewBox="0 0 32 32"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <circle cx="16" cy="16" r="16" fill="#2476D2" />
-                  <circle cx="16" cy="16" r="10.665" fill="#FFFFFF" />
+                  <circle cx="16" cy="16" r="16" fill="#2780C4" />
                   <path
-                    d="M11.5 16.5L14.5 19.5L20.5 12.5"
-                    stroke="#2476D2"
-                    strokeWidth="2.5"
+                    d="M10 16L14 20L22 12"
+                    stroke="#FFFFFF"
+                    strokeWidth="3"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
@@ -940,7 +942,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
               </div>
 
               {/* Text */}
-              <span className="font-['Poppins'] font-normal text-[16px] leading-[24px] text-[#000000] truncate">
+              <span className="font-['Poppins'] font-normal text-[clamp(0.85rem,1.11vw,1.25rem)] leading-[clamp(1.2rem,1.67vw,1.875rem)] text-black break-words flex-1 min-w-0">
                 {toastMessage}
               </span>
             </div>
@@ -948,14 +950,16 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
             {/* Close Button: basil:cross-solid */}
             <button
               onClick={() => setToastMessage(null)}
-              className="w-[30px] h-[30px] flex items-center justify-center cursor-pointer hover:bg-slate-100 rounded-full shrink-0"
+              className="
+                w-[clamp(1.25rem,2.08vw,2.25rem)] h-[clamp(1.25rem,2.08vw,2.25rem)]
+                flex items-center justify-center cursor-pointer hover:bg-slate-100 rounded-full shrink-0
+              "
             >
               <svg
-                width="30"
-                height="30"
                 viewBox="0 0 30 30"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                className="w-full h-full"
               >
                 <path
                   d="M21 9L9 21M9 9L21 21"
