@@ -3228,7 +3228,13 @@ const RegionAreaEdit: React.FC = () => {
                   }
                   value={regionCode}
                   onChange={(e) => setRegionCode(e.target.value)}
-                  className="px-3.5 text-sm h-11 border-slate-200 font-mono"
+                  disabled={editModeType === "region"}
+                  className="px-3.5 text-sm h-11 border-none font-mono disabled:text-slate-400 disabled:cursor-not-allowed"
+                  wrapperClassName={
+                    editModeType === "region"
+                      ? "bg-slate-50 border-slate-200/80 opacity-70 cursor-not-allowed"
+                      : ""
+                  }
                 />
               </div>
 
