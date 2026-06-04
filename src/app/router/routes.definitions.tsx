@@ -60,15 +60,6 @@ import {
     VerificationOfficerCompletedFarmlandDetails,
     VerificationOfficerAssignedFarmlandsOwnerDetails,
 
-  // Verification Officer 1 (VO1)
-  VerificationOfficer1Dashboard,
-  VerificationOfficer1AssignedFarmlands,
-  VerificationOfficer1InProgressFarmlands,
-  VerificationOfficer1CompletedFarmlands,
-  VerificationOfficer1CompletedFarmlandDetails,
-  VerificationOfficer1AssignedFarmlandsOwnerDetails,
-  VerificationOfficer1Layout,
-
     // Dev imports
     DraftsPage,
     FieldOfficerLayout,

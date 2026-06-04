@@ -2,7 +2,6 @@ import * as React from "react";
 import { BackButton } from "@/components/ui/BackButton";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
-import checklistIcon from "@/assets/checklist.svg";
 import { Bell } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/core/hooks";
 import { logOut } from "@/features/auth/store/authSlice";
