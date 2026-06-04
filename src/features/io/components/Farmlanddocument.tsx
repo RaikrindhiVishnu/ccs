@@ -1,11 +1,20 @@
 import * as React from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { BackButton } from "@/components/ui/BackButton";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
+import { FARMLAND_CARD_DUMMY } from "@/features/io/data/Farmlandcarddummydata";
+import afimg from "@/assets/afimg.png";
+import { OwnerDetailsDocument } from "./OwnerDetailsDocument";
+import { FamilyTreeDocument } from "./FamilyTreeDocument";
+import { LandDetailsDocument } from "./LandDetailsDocument";
+import { LocalIntelligenceDocument } from "./LocalIntelligenceDocument";
+import { Bell } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/core/hooks";
+import { logOut } from "@/features/auth/store/authSlice";
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* TYPES                                                                        */
+/* TYPES & INTERFACES                                                           */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
 export interface FarmlandDetailData {
@@ -27,67 +36,32 @@ export interface FarmlandDetailData {
   liveStatus: string;
 }
 
-/* ─────────────────────────────────────────────────────────────────────────── */
-/* NOTIFICATION BELL ICON                                                       */
-/* ─────────────────────────────────────────────────────────────────────────── */
-
-const BellIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M3 19C3 19 5 17 12 17C19 17 21 19 21 19"
-      stroke="#2C2C2C"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-    <path
-      d="M12 17V3"
-      stroke="#2C2C2C"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-    <path
-      d="M8 3C8 3 8.5 2 12 2C15.5 2 16 3 16 3"
-      stroke="#2C2C2C"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-    <circle cx="17" cy="5" r="3" fill="#EF4646" />
-    <path
-      d="M10 20C10 20 10.5 22 12 22C13.5 22 14 20 14 20"
-      stroke="#2C2C2C"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-  </svg>
-);
+export interface FarmlandDetailPageProps {
+  data?: FarmlandDetailData;
+  onBack?: () => void;
+  onUpload?: () => void;
+}
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* MAP PIN ICON                                                                 */
+/* ICONS                                                                       */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
 const MapPinIcon = () => (
   <svg
-    width="12"
-    height="15"
+    className="w-[clamp(0.53rem,0.83vw,1rem)] h-[clamp(0.66rem,1.04vw,1.25rem)] shrink-0 text-[var(--text-secondary)]"
     viewBox="0 0 12 15"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
       d="M6 0C3.243 0 1 2.243 1 5C1 8.5 6 14 6 14C6 14 11 8.5 11 5C11 2.243 8.757 0 6 0ZM6 7C4.895 7 4 6.105 4 5C4 3.895 4.895 3 6 3C7.105 3 8 3.895 8 5C8 6.105 7.105 7 6 7Z"
-      fill="#EEEEF0"
+      fill="currentColor"
     />
   </svg>
 );
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* AGENT AVATAR                                                                 */
+/* REUSABLE HELPERS                                                             */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
 const AgentAvatar = ({
@@ -108,9 +82,9 @@ const AgentAvatar = ({
     <div
       className="
         flex items-center justify-center shrink-0 overflow-hidden rounded-full
-        bg-[var(--tag-pill-bg)]
-        w-[clamp(2.25rem,2.778vw,2.75rem)]
-        h-[clamp(2.25rem,2.778vw,2.75rem)]
+        bg-[var(--border-subtle)]
+        w-[clamp(1.775rem,2.78vw,3.325rem)]
+        h-[clamp(1.775rem,2.78vw,3.325rem)]
       "
     >
       {avatarUrl ? (
@@ -119,7 +93,8 @@ const AgentAvatar = ({
         <span
           className="
             font-bold text-[var(--text-primary)]
-            text-[clamp(0.75rem,0.972vw,0.875rem)]
+            text-[clamp(0.625rem,0.97vw,1.1625rem)]
+            font-[family-name:var(--font-sans)]
           "
         >
           {initials}
@@ -129,35 +104,29 @@ const AgentAvatar = ({
   );
 };
 
-/* ─────────────────────────────────────────────────────────────────────────── */
-/* INFO FIELD                                                                   */
-/* ─────────────────────────────────────────────────────────────────────────── */
-
 const InfoField = ({
   label,
+  fontSizeClass = "text-[clamp(0.53rem,0.83vw,1rem)] leading-[clamp(0.71rem,1.11vw,1.33rem)]",
   children,
 }: {
   label: string;
+  fontSizeClass?: string;
   children: React.ReactNode;
 }) => (
-  <div className="flex flex-col gap-[clamp(2px,0.278vw,4px)]">
+  <div className="flex flex-col gap-[clamp(0.177rem,0.28vw,0.33rem)]">
     <span
-      className="
+      className={`
         font-normal uppercase tracking-[0.6px]
         text-[var(--text-secondary)]
-        text-[clamp(0.625rem,0.694vw,0.75rem)]
-        leading-4
-      "
+        font-[family-name:var(--font-sans)]
+        ${fontSizeClass}
+      `}
     >
       {label}
     </span>
     {children}
   </div>
 );
-
-/* ─────────────────────────────────────────────────────────────────────────── */
-/* STATUS BOX                                                                   */
-/* ─────────────────────────────────────────────────────────────────────────── */
 
 const StatusBox = ({
   label,
@@ -171,21 +140,21 @@ const StatusBox = ({
   <div
     className="
       flex flex-row justify-between items-center
-      bg-[#F9F9FB]
-      border border-[#E2E2E4]
-      rounded-[clamp(1.25rem,2.222vw,2rem)]
-      px-[clamp(1rem,1.667vw,1.5rem)]
-      py-[clamp(0.875rem,1.25vw,1.5rem)]
+      bg-[var(--status-pending-bg)]
+      border border-[var(--border-default)]
+      rounded-[clamp(1.42rem,2.22vw,2.66rem)]
+      p-[clamp(1.0625rem,1.67vw,2rem)]
       w-full
     "
   >
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-[clamp(0.177rem,0.28vw,0.33rem)]">
       <span
         className="
           font-normal uppercase tracking-[0.6px]
           text-[var(--text-secondary)]
-          text-[clamp(0.625rem,0.694vw,0.75rem)]
-          leading-4
+          text-[clamp(0.53rem,0.83vw,1rem)]
+          leading-[clamp(0.71rem,1.11vw,1.33rem)]
+          font-[family-name:var(--font-sans)]
         "
       >
         {label}
@@ -193,8 +162,9 @@ const StatusBox = ({
       <span
         className="
           font-medium text-[var(--text-primary)]
-          text-[clamp(1rem,1.25vw,1.125rem)]
-          leading-7
+          text-[clamp(0.8rem,1.25vw,1.5rem)]
+          leading-[clamp(1.25rem,1.94vw,2.33rem)]
+          font-[family-name:var(--font-sans)]
         "
       >
         {value}
@@ -215,13 +185,15 @@ const HeroSection = ({
 }) => (
   <div
     className="
-      relative overflow-hidden flex flex-col justify-center items-start
+      relative overflow-hidden flex flex-col justify-end items-start
       w-full
-      h-[clamp(220px,28.403vw,409px)]
-      min-h-[200px]
-      bg-[#E2E2E4]
-      rounded-[clamp(1.25rem,2.222vw,2rem)]
+      h-[clamp(18.15rem,28.4vw,34rem)]
+      min-h-[300px]
+      bg-[var(--border-default)]
+      rounded-[clamp(1.42rem,2.22vw,2.66rem)]
       shadow-[0px_20px_40px_rgba(0,49,50,0.04)]
+      mt-[clamp(1.25rem,1.94vw,2.33rem)]
+      pb-[clamp(1.775rem,2.81vw,3.325rem)]
     "
   >
     {/* Background image */}
@@ -233,36 +205,37 @@ const HeroSection = ({
       />
     )}
 
-    {/* Overlay gradient for readability */}
-    <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent" />
+    {/* Gradient overlay for readability */}
+    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/10 z-0" />
 
-    {/* Content */}
+    {/* Content Container */}
     <div
       className="
         relative z-10 flex flex-row justify-between items-center w-full
-        px-[clamp(2rem,4.167vw,6rem)]
+        px-[clamp(6.375rem,10vw,12rem)]
       "
     >
       {/* Left: badge + name + location */}
-      <div className="flex flex-col gap-[clamp(0.375rem,0.556vw,0.625rem)]">
+      <div className="flex flex-col gap-[clamp(0.356rem,0.56vw,0.665rem)]">
         {/* Badge pill */}
         <div
           className="
-            inline-flex items-center
-            bg-white/20 border border-white/10
-            backdrop-blur-sm rounded-full
-            px-[clamp(0.5rem,0.833vw,0.75rem)]
-            py-[clamp(2px,0.278vw,4px)]
+            inline-flex items-center self-start
+            bg-[var(--illus-card-white-bg)] border border-[var(--border-soft)]
+            backdrop-filter backdrop-blur-[6px] rounded-full
+            px-[clamp(0.53rem,0.83vw,1rem)]
+            py-[clamp(0.177rem,0.28vw,0.33rem)]
           "
         >
           <span
             className="
               font-bold uppercase tracking-[0.6px] text-white
-              text-[clamp(0.5625rem,0.694vw,0.75rem)]
-              leading-4
+              text-[clamp(0.53rem,0.83vw,1rem)]
+              leading-[clamp(0.71rem,1.11vw,1.33rem)]
+              font-[family-name:var(--font-sans)]
             "
           >
-            {data.badge ?? "Requested Information"}
+            {data.badge ?? "ASSIGNED FARMLAND"}
           </span>
         </div>
 
@@ -270,8 +243,8 @@ const HeroSection = ({
         <h2
           className="
             font-extrabold text-white tracking-[-1.2px]
-            text-[clamp(2rem,3.333vw,3rem)]
-            leading-none
+            text-[clamp(2.125rem,3.33vw,4rem)]
+            leading-[clamp(2.125rem,3.33vw,4rem)]
             drop-shadow-[0px_2px_2px_rgba(0,0,0,0.06)]
             font-[family-name:var(--font-sans)]
           "
@@ -280,13 +253,14 @@ const HeroSection = ({
         </h2>
 
         {/* Location */}
-        <div className="flex items-center gap-[clamp(2px,0.278vw,4px)]">
+        <div className="flex items-center gap-[clamp(0.177rem,0.28vw,0.33rem)]">
           <MapPinIcon />
           <span
             className="
-              font-normal text-[#EEEEF0]
-              text-[clamp(0.75rem,1.111vw,1rem)]
-              leading-6
+              font-normal text-[var(--border-subtle)]
+              text-[clamp(0.71rem,1.11vw,1.33rem)]
+              leading-[clamp(1.0625rem,1.67vw,2rem)]
+              font-[family-name:var(--font-sans)]
             "
           >
             {data.location}
@@ -297,12 +271,14 @@ const HeroSection = ({
       {/* Right: Total Valuation card */}
       <div
         className="
-          flex flex-col items-end
-          bg-white border border-white/20
-          backdrop-blur-[10px]
-          rounded-[clamp(0.75rem,1.111vw,1rem)]
-          p-[clamp(0.875rem,1.667vw,1.5rem)]
-          gap-1
+          flex flex-col items-end justify-center
+          bg-[var(--surface-card)] border border-[var(--border-soft)]
+          backdrop-filter backdrop-blur-[10px]
+          rounded-[clamp(0.71rem,1.11vw,1.33rem)]
+          p-[clamp(1.0625rem,1.67vw,2rem)]
+          gap-[clamp(0.177rem,0.28vw,0.33rem)]
+          w-[clamp(7.4375rem,11.67vw,14rem)]
+          h-[clamp(4.7rem,7.36vw,8.8125rem)]
           shrink-0
         "
       >
@@ -310,17 +286,19 @@ const HeroSection = ({
           className="
             font-semibold uppercase tracking-[0.6px] text-right
             text-[var(--text-secondary)]
-            text-[clamp(0.5625rem,0.694vw,0.75rem)]
-            leading-4
+            text-[clamp(0.53rem,0.83vw,1rem)]
+            leading-[clamp(0.71rem,1.11vw,1.33rem)]
+            font-[family-name:var(--font-sans)]
           "
         >
-          Total Valuation
+          TOTAL VALUATION
         </span>
         <span
           className="
-            font-bold text-black text-right
-            text-[clamp(1.25rem,2.083vw,1.875rem)]
-            leading-9
+            font-bold text-[var(--text-strong)] text-right
+            text-[clamp(1.33rem,2.08vw,2.5rem)]
+            leading-[clamp(1.6rem,2.5vw,3rem)]
+            font-[family-name:var(--font-sans)]
           "
         >
           {data.totalValuation}
@@ -339,19 +317,21 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
     className="
       flex flex-col
       bg-[var(--surface-card)]
-      border border-[rgba(188,201,201,0.15)]
-      shadow-[0px_20px_40px_rgba(0,49,50,0.02)]
-      rounded-[clamp(1.25rem,2.222vw,2rem)]
-      p-[clamp(1.25rem,2.222vw,2rem)]
-      gap-[clamp(1rem,1.667vw,1.5rem)]
+      border border-[var(--border-soft)]
+      shadow-[var(--shadow-card)]
+      rounded-[clamp(1.42rem,2.22vw,2.66rem)]
+      pt-[clamp(1.42rem,2.22vw,2.66rem)]
+      px-[clamp(1.42rem,2.22vw,2.66rem)]
+      pb-[clamp(3.33rem,5.21vw,6.25rem)]
+      gap-[clamp(1.42rem,2.22vw,2.66rem)]
       h-full
     "
   >
     {/* Heading */}
     <div
       className="
-        pb-[clamp(0.75rem,1.111vw,1rem)]
-        border-b border-[#EEEEF0]
+        pb-[clamp(0.71rem,1.11vw,1.33rem)]
+        border-b border-[var(--border-subtle)]
       "
     >
       <Typography
@@ -359,8 +339,8 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
         variant="h4"
         className="
           font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-          text-[clamp(1rem,1.389vw,1.25rem)]
-          leading-7
+          text-[clamp(0.8875rem,1.39vw,1.6625rem)]
+          leading-[clamp(1.25rem,1.94vw,2.33rem)]
         "
       >
         Asset Details
@@ -371,16 +351,17 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
     <div
       className="
         flex flex-col
-        gap-[clamp(0.875rem,1.389vw,1.25rem)]
+        gap-[clamp(0.8875rem,1.39vw,1.6625rem)]
       "
     >
       {/* Farmland ID */}
-      <InfoField label="Farmland ID">
+      <InfoField label="FARMLAND ID">
         <span
           className="
             font-medium text-[var(--text-primary)]
-            text-[clamp(0.875rem,1.111vw,1rem)]
-            leading-6
+            text-[clamp(0.71rem,1.11vw,1.33rem)]
+            leading-[clamp(1.0625rem,1.67vw,2rem)]
+            font-[family-name:var(--font-sans)]
           "
         >
           {data.farmlandId}
@@ -388,8 +369,8 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
       </InfoField>
 
       {/* Assigned Agent */}
-      <InfoField label="Assigned Agent">
-        <div className="flex items-center gap-[clamp(0.5rem,0.833vw,0.75rem)]">
+      <InfoField label="ASSIGNED AGENT">
+        <div className="flex items-center gap-[clamp(0.53rem,0.83vw,1rem)]">
           <AgentAvatar
             name={data.assignedAgent.name}
             avatarUrl={data.assignedAgent.avatarUrl}
@@ -397,8 +378,9 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
           <span
             className="
               font-medium text-[var(--text-primary)]
-              text-[clamp(0.875rem,1.111vw,1rem)]
-              leading-6
+              text-[clamp(0.71rem,1.11vw,1.33rem)]
+              leading-[clamp(1.0625rem,1.67vw,2rem)]
+              font-[family-name:var(--font-sans)]
             "
           >
             {data.assignedAgent.name}
@@ -407,24 +389,32 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
       </InfoField>
 
       {/* Creation Time + Last Updated */}
-      <div className="grid grid-cols-2 gap-x-[clamp(0.75rem,1.389vw,1.5rem)]">
-        <InfoField label="Creation Time">
+      <div className="grid grid-cols-2 gap-x-[clamp(1.275rem,2vw,2.4rem)]">
+        <InfoField
+          label="CREATION TIME"
+          fontSizeClass="text-[clamp(0.44rem,0.69vw,0.83rem)] leading-[clamp(0.66rem,1.04vw,1.25rem)]"
+        >
           <span
             className="
               font-normal text-[var(--text-primary)]
-              text-[clamp(0.75rem,0.972vw,0.875rem)]
-              leading-5
+              text-[clamp(0.625rem,0.97vw,1.1625rem)]
+              leading-[clamp(0.8875rem,1.39vw,1.6625rem)]
+              font-[family-name:var(--font-sans)]
             "
           >
             {data.creationTime}
           </span>
         </InfoField>
-        <InfoField label="Last Updated">
+        <InfoField
+          label="LAST UPDATED"
+          fontSizeClass="text-[clamp(0.44rem,0.69vw,0.83rem)] leading-[clamp(0.66rem,1.04vw,1.25rem)]"
+        >
           <span
             className="
               font-normal text-[var(--text-primary)]
-              text-[clamp(0.75rem,0.972vw,0.875rem)]
-              leading-5
+              text-[clamp(0.625rem,0.97vw,1.1625rem)]
+              leading-[clamp(0.8875rem,1.39vw,1.6625rem)]
+              font-[family-name:var(--font-sans)]
             "
           >
             {data.lastUpdated}
@@ -444,19 +434,19 @@ const CurrentStatusCard = ({ data }: { data: FarmlandDetailData }) => (
     className="
       flex flex-col
       bg-[var(--surface-card)]
-      border border-[rgba(188,201,201,0.15)]
-      shadow-[0px_20px_40px_rgba(0,49,50,0.02)]
-      rounded-[clamp(1.25rem,2.222vw,2rem)]
-      p-[clamp(1.25rem,2.222vw,2rem)]
-      gap-[clamp(1rem,1.667vw,1.5rem)]
+      border border-[var(--border-soft)]
+      shadow-[var(--shadow-card)]
+      rounded-[clamp(1.42rem,2.22vw,2.66rem)]
+      p-[clamp(1.42rem,2.22vw,2.66rem)]
+      gap-[clamp(1.42rem,2.22vw,2.66rem)]
       h-full
     "
   >
     {/* Heading */}
     <div
       className="
-        pb-[clamp(0.75rem,1.111vw,1rem)]
-        border-b border-[#EEEEF0]
+        pb-[clamp(0.71rem,1.11vw,1.33rem)]
+        border-b border-[var(--border-subtle)]
       "
     >
       <Typography
@@ -464,8 +454,8 @@ const CurrentStatusCard = ({ data }: { data: FarmlandDetailData }) => (
         variant="h4"
         className="
           font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-          text-[clamp(1rem,1.389vw,1.25rem)]
-          leading-7
+          text-[clamp(0.8875rem,1.39vw,1.6625rem)]
+          leading-[clamp(1.25rem,1.94vw,2.33rem)]
         "
       >
         Current Status
@@ -476,37 +466,15 @@ const CurrentStatusCard = ({ data }: { data: FarmlandDetailData }) => (
     <div
       className="
         flex flex-col
-        gap-[clamp(1rem,2.222vw,2rem)]
+        gap-[clamp(1.42rem,2.22vw,2.66rem)]
         flex-1 justify-center
       "
     >
       <StatusBox
-        label="System Status"
+        label="SYSTEM STATUS"
         value={data.systemStatus}
-        rightContent={
-          <div
-            className="
-              inline-flex items-center gap-[clamp(4px,0.347vw,5px)]
-              rounded-full
-              bg-[var(--status-success-soft)]
-              px-[clamp(0.5rem,0.694vw,0.75rem)]
-              py-[clamp(2px,0.278vw,4px)]
-            "
-          >
-            <span className="w-[6px] h-[6px] rounded-full bg-[var(--status-success)] shrink-0" />
-            <span
-              className="
-                font-semibold text-[var(--status-success)]
-                text-[clamp(0.625rem,0.694vw,0.75rem)]
-                leading-none
-              "
-            >
-              Online
-            </span>
-          </div>
-        }
       />
-      <StatusBox label="Live Status" value={data.liveStatus} />
+      <StatusBox label="LIVE STATUS" value={data.liveStatus} />
     </div>
   </Card>
 );
@@ -519,50 +487,128 @@ const TopNav = ({
   onBack,
 }: {
   onBack?: () => void;
-}) => (
-  <div className="flex items-center justify-between w-full">
-    {/* Back button */}
-    <BackButton
-      label="Go Back to Dashboard"
-      variant="light"
-      size="default"
-      onClick={onBack}
-      className="
-        w-auto
-        text-[clamp(0.8125rem,1.111vw,1rem)]
-        h-[clamp(2.5rem,3.611vw,3.25rem)]
-        px-[clamp(0.875rem,1.389vw,1.25rem)]
-        gap-[clamp(0.375rem,0.556vw,0.5rem)]
-      "
-    />
+}) => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const user = useAppSelector((state) => state.auth.user);
 
-    {/* Right: bell + avatar */}
-    <div className="flex items-center gap-[clamp(0.5rem,0.903vw,0.8125rem)]">
-      {/* Bell */}
-      <button
-        className="
-          flex items-center justify-center bg-white rounded-full shrink-0
-          w-[clamp(2.5rem,3.611vw,3.25rem)]
-          h-[clamp(2.5rem,3.611vw,3.25rem)]
-          shadow-sm
-        "
-      >
-        <BellIcon />
-      </button>
+  const handleLogout = () => {
+    dispatch(logOut());
+    navigate("/login", { replace: true });
+  };
 
-      {/* Avatar */}
-      <button
+  const fullName = user
+    ? `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
+      "Intelligence Officer"
+    : "Intelligence Officer";
+
+  const initials = fullName
+    ? fullName
+        .split(" ")
+        .map((n: string) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "IO";
+
+  return (
+    <div className="flex items-center justify-between w-full">
+      {/* Back button */}
+      <BackButton
+        label="Go Back to Dashboard"
+        variant="light"
+        size="default"
+        onClick={onBack}
         className="
-          flex items-center justify-center overflow-hidden rounded-full bg-[var(--tag-pill-bg)] shrink-0
-          w-[clamp(2.5rem,3.611vw,3.25rem)]
-          h-[clamp(2.5rem,3.611vw,3.25rem)]
+          w-[clamp(15.5rem,16.94vw,20.3rem)]
+          h-[clamp(2.31rem,3.61vw,4.3rem)]
+          text-[clamp(0.71rem,1.11vw,1.33rem)]
+          py-[clamp(0.84rem,1.32vw,1.56rem)]
+          px-[clamp(0.8875rem,1.39vw,1.66rem)]
+          font-[family-name:var(--font-sans)]
+          text-[var(--text-button)]
         "
-      >
-        <span className="font-bold text-[var(--text-primary)] text-sm">RK</span>
-      </button>
+      />
+
+      {/* Right: bell + avatar */}
+      <div className="flex items-center gap-[clamp(0.5rem,0.9vw,0.8125rem)]">
+        {/* Bell */}
+        <button
+          className="
+            relative
+            flex items-center justify-center bg-[var(--surface-card)] rounded-full shrink-0
+            w-[clamp(2.25rem,3.61vw,3.25rem)]
+            h-[clamp(2.25rem,3.61vw,3.25rem)]
+            shadow-sm
+            border border-[var(--border)]
+            hover:opacity-85 transition-opacity
+            cursor-pointer
+          "
+          aria-label="Notifications"
+        >
+          <Bell
+            strokeWidth={1.5}
+            color="var(--text-primary)"
+            className="
+              w-[clamp(1rem,1.67vw,1.5rem)]
+              h-[clamp(1rem,1.67vw,1.5rem)]
+            "
+          />
+
+          <span
+            className="
+              absolute rounded-full
+              bg-[var(--status-danger)]
+              w-[clamp(0.25rem,0.4vw,0.375rem)]
+              h-[clamp(0.25rem,0.4vw,0.375rem)]
+              top-[clamp(0.375rem,0.7vw,0.625rem)]
+              right-[clamp(0.375rem,0.7vw,0.625rem)]
+            "
+          />
+        </button>
+
+        {/* Avatar */}
+        <button
+          onClick={handleLogout}
+          title="Logout"
+          className="
+            relative overflow-hidden
+            flex items-center justify-center
+            rounded-full
+            bg-[var(--surface-card)]
+            transition-opacity
+            hover:opacity-90
+            w-[clamp(2.25rem,3.61vw,3.25rem)]
+            h-[clamp(2.25rem,3.61vw,3.25rem)]
+            border border-[rgba(0,0,0,0.05)]
+            cursor-pointer
+          "
+        >
+          {(user as any)?.avatarUrl ? (
+            <img
+              src={(user as any).avatarUrl}
+              alt={fullName}
+              className="w-full h-full rounded-full object-cover"
+            />
+          ) : (
+            <Typography
+              as="span"
+              variant="span"
+              className="
+                font-bold
+                font-[var(--font-sans)]
+                text-[var(--text-primary)]
+                text-[clamp(0.71rem,1.11vw,1.33rem)]
+              "
+            >
+              {initials}
+            </Typography>
+          )}
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 /* BOTTOM ACTIONS                                                               */
@@ -578,9 +624,10 @@ const BottomActions = ({
   <div
     className="
       flex flex-row justify-end items-center
-      gap-[clamp(0.5rem,0.833vw,0.75rem)]
-      pt-[clamp(1.25rem,2.222vw,2rem)]
-      pb-[clamp(1.5rem,3.333vw,3rem)]
+      gap-[clamp(0.71rem,1.11vw,1.33rem)]
+      mt-[clamp(1.81rem,2.85vw,3.41rem)]
+      pt-[clamp(1.42rem,2.22vw,2.66rem)]
+      pb-[clamp(2.125rem,3.33vw,4rem)]
     "
   >
     {/* Back */}
@@ -591,29 +638,32 @@ const BottomActions = ({
         border border-[rgba(0,0,0,0.27)] rounded-full
         font-medium text-[rgba(0,0,0,0.8)]
         bg-transparent
-        transition-opacity hover:opacity-70
-        w-[clamp(6rem,8.403vw,7.5625rem)]
-        h-[clamp(2.125rem,2.639vw,2.375rem)]
-        text-[clamp(0.75rem,0.972vw,0.875rem)]
+        transition-opacity hover:opacity-75
+        w-[clamp(5.375rem,8.4vw,10rem)]
+        h-[clamp(1.6875rem,2.64vw,3.16rem)]
+        text-[clamp(0.625rem,0.97vw,1.1625rem)]
+        font-[family-name:var(--font-sans)]
       "
     >
       Back
     </button>
 
     {/* Upload */}
-    <Button
-      variant="primary"
+    <button
       onClick={onUpload}
       className="
-        rounded-full border-none
-        bg-[var(--brand-500)]
-        w-[clamp(6rem,8.403vw,7.5625rem)]
-        h-[clamp(2.125rem,2.639vw,2.375rem)]
-        text-[clamp(0.75rem,0.972vw,0.875rem)]
+        inline-flex items-center justify-center
+        rounded-full bg-[#2780C4] hover:bg-[#1f6da9]
+        font-semibold text-white
+        transition-opacity hover:opacity-90
+        w-[clamp(5.375rem,8.4vw,10rem)]
+        h-[clamp(1.6875rem,2.64vw,3.16rem)]
+        text-[clamp(0.625rem,0.97vw,1.1625rem)]
+        font-[family-name:var(--font-sans)]
       "
     >
       Upload
-    </Button>
+    </button>
   </div>
 );
 
@@ -621,21 +671,16 @@ const BottomActions = ({
 /* MAIN PAGE                                                                    */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
-export interface FarmlandDetailPageProps {
-  data?: FarmlandDetailData;
-  onBack?: () => void;
-  onUpload?: () => void;
-}
-
 const defaultData: FarmlandDetailData = {
-  heroImageUrl: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80",
-  badge: "Requested Information",
+  heroImageUrl: afimg,
+  badge: "ASSIGNED FARMLAND",
   farmlandName: "GLC SOS -001",
   location: "West Godavari, AP",
   totalValuation: "25 lakhs",
   farmlandId: "GLCSOS 01",
   assignedAgent: {
     name: "Ravi Kumar",
+    avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80",
   },
   creationTime: "6th Oct, 12:53 PM",
   lastUpdated: "8th Oct, 09:15 AM",
@@ -644,69 +689,215 @@ const defaultData: FarmlandDetailData = {
 };
 
 const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
-  data = defaultData,
+  data,
   onBack,
   onUpload,
 }) => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+
+  const [activeStep, setActiveStep] = React.useState<"list" | "owner-details" | "family-tree" | "land-details" | "local-intelligence">("list");
+
+  // Lifted form data state
+  const [firstName, setFirstName] = React.useState("Ramudu");
+  const [lastName, setLastName] = React.useState("Kumar");
+  const [phoneNumber, setPhoneNumber] = React.useState("+91-9123456789");
+  const [email, setEmail] = React.useState("ramudu@gmail.com");
+  const [dob, setDob] = React.useState("13/01/1986");
+  const [religion, setReligion] = React.useState("Hindu");
+  const [gender, setGender] = React.useState("Male");
+
+  const matchedItem = FARMLAND_CARD_DUMMY.find((item) => item.id === id);
+
+  const displayData = matchedItem
+    ? {
+      heroImageUrl: afimg,
+      badge: "ASSIGNED FARMLAND",
+      farmlandName:
+        matchedItem.farmlandId === "GLCSOS 01"
+          ? "GLC SOS -001"
+          : matchedItem.farmlandId.replace("GLCSOS ", "GLC SOS -00"),
+      location: matchedItem.location,
+      totalValuation: `${matchedItem.totalAmount.replace("₹", "")} ${matchedItem.totalAmountUnit.toLowerCase()}`,
+      farmlandId: matchedItem.farmlandId,
+      assignedAgent: {
+        name: matchedItem.agentName,
+        avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80",
+      },
+      creationTime: matchedItem.createdTime,
+      lastUpdated: "8th Oct, 09:15 AM",
+      systemStatus: matchedItem.agentStatus,
+      liveStatus: "NA",
+    }
+    : data || defaultData;
+
+  const handleBack = onBack || (() => navigate(-1));
+  const handleUpload = () => {
+    if (onUpload) {
+      onUpload();
+    }
+    setActiveStep("owner-details");
+  };
+
+  if (activeStep === "owner-details") {
+    return (
+      <OwnerDetailsDocument
+        onBack={() => setActiveStep("list")}
+        onNext={() => setActiveStep("family-tree")}
+        onTabChange={(tab) => {
+          if (tab === "owner") setActiveStep("owner-details");
+          if (tab === "family") setActiveStep("family-tree");
+          if (tab === "land") setActiveStep("land-details");
+        }}
+        onStepChange={(step) => {
+          if (step === "local") setActiveStep("local-intelligence");
+          else setActiveStep("owner-details");
+        }}
+        farmlandId={displayData.farmlandId}
+        firstName={firstName}
+        setFirstName={setFirstName}
+        lastName={lastName}
+        setLastName={setLastName}
+        phoneNumber={phoneNumber}
+        setPhoneNumber={setPhoneNumber}
+        email={email}
+        setEmail={setEmail}
+        dob={dob}
+        setDob={setDob}
+        religion={religion}
+        setReligion={setReligion}
+        gender={gender}
+        setGender={setGender}
+      />
+    );
+  }
+
+  if (activeStep === "family-tree") {
+    return (
+      <FamilyTreeDocument
+        onBack={() => setActiveStep("owner-details")}
+        onNext={() => setActiveStep("land-details")}
+        onTabChange={(tab) => {
+          if (tab === "owner") setActiveStep("owner-details");
+          if (tab === "family") setActiveStep("family-tree");
+          if (tab === "land") setActiveStep("land-details");
+        }}
+        onStepChange={(step) => {
+          if (step === "local") setActiveStep("local-intelligence");
+          else setActiveStep("owner-details");
+        }}
+        farmlandId={displayData.farmlandId}
+        firstName={firstName}
+        lastName={lastName}
+        gender={gender}
+      />
+    );
+  }
+
+  if (activeStep === "land-details") {
+    return (
+      <LandDetailsDocument
+        onBack={() => setActiveStep("family-tree")}
+        onNext={() => {
+          setActiveStep("local-intelligence");
+        }}
+        onTabChange={(tab) => {
+          if (tab === "owner") setActiveStep("owner-details");
+          if (tab === "family") setActiveStep("family-tree");
+          if (tab === "land") setActiveStep("land-details");
+        }}
+        onStepChange={(step) => {
+          if (step === "local") setActiveStep("local-intelligence");
+          else setActiveStep("owner-details");
+        }}
+        farmlandId={displayData.farmlandId}
+      />
+    );
+  }
+
+  if (activeStep === "local-intelligence") {
+    return (
+      <LocalIntelligenceDocument
+        onBack={() => setActiveStep("land-details")}
+        onNext={() => {
+          alert("Farmland document updated successfully!");
+          setActiveStep("list");
+        }}
+        onStepChange={(step) => {
+          if (step === "customer") setActiveStep("owner-details");
+        }}
+        farmlandId={displayData.farmlandId}
+      />
+    );
+  }
+
   return (
     <div
       className="
         relative min-h-screen w-full
         bg-[var(--surface-page)]
-        rounded-[clamp(1.25rem,2.222vw,2rem)]
       "
     >
-      {/* Constrained content area */}
+      {/* Constrained outer area */}
       <div
         className="
           mx-auto w-full
-          max-w-[1760px]
-          px-[clamp(3rem,5.556vw,5rem)]
-          py-[clamp(1.5rem,2.361vw,2.125rem)]
+          max-w-full
+          pt-[clamp(1.5rem,2.36vw,2.81rem)]
+          pb-0
           flex flex-col
-          gap-[clamp(1.25rem,2.222vw,2rem)]
         "
       >
-        {/* Top nav */}
-        <TopNav onBack={onBack} />
-
-        {/* Page heading */}
-        <Typography
-          as="h1"
-          variant="h2"
-          className="
-            font-extrabold tracking-[-1.2px] text-[var(--text-primary)]
-            font-[family-name:var(--font-heading)]
-            text-[clamp(1.25rem,1.944vw,1.75rem)]
-            leading-[3rem]
-          "
-        >
-          Assigned Farmlands
-        </Typography>
-
-        {/* Hero */}
-        <HeroSection data={data} />
-
-        {/* Bento grid */}
-        <div
-          className="
-            grid
-            grid-cols-1
-            lg:grid-cols-[1fr_1fr]
-            xl:grid-cols-[1.05fr_0.95fr]
-            gap-[clamp(0.875rem,1.389vw,1.25rem)]
-          "
-        >
-          <AssetDetailsCard data={data} />
-          <CurrentStatusCard data={data} />
+        {/* Top nav wrapped in its own 40px padding */}
+        <div className="px-[clamp(1.775rem,2.78vw,3.3rem)] w-full">
+          <TopNav onBack={handleBack} />
         </div>
 
-        {/* Bottom actions */}
-        <BottomActions onBack={onBack} onUpload={onUpload} />
+        {/* Main page content wrapper in its own 96px padding */}
+        <div
+          className="
+            flex flex-col w-full
+            px-[clamp(4.25rem,6.67vw,8rem)]
+          "
+        >
+          {/* Page heading */}
+          <div className="flex flex-col gap-2 mt-[clamp(1.33rem,2.08vw,2.5rem)]">
+            <Typography
+              as="h1"
+              className="
+                font-extrabold tracking-[-1.2px] text-[var(--text-primary)]
+                font-[family-name:var(--font-heading)]
+                text-[clamp(1.25rem,1.94vw,2.33rem)]
+                leading-[clamp(2.125rem,3.33vw,4rem)]
+              "
+            >
+              Assigned Farmlands
+            </Typography>
+          </div>
+
+          {/* Hero */}
+          <HeroSection data={displayData} />
+
+          {/* Bento grid */}
+          <div
+            className="
+              grid
+              grid-cols-1
+              md:grid-cols-2
+              gap-[clamp(1.7rem,2.7vw,3.22rem)]
+              mt-[clamp(2.125rem,3.33vw,4rem)]
+            "
+          >
+            <AssetDetailsCard data={displayData} />
+            <CurrentStatusCard data={displayData} />
+          </div>
+
+          {/* Bottom actions */}
+          <BottomActions onBack={handleBack} onUpload={handleUpload} />
+        </div>
       </div>
     </div>
   );
 };
 
 export default Farmlanddocument;
-

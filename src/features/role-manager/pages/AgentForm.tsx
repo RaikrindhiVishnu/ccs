@@ -845,7 +845,7 @@ export default function AgentForm({
 
     const agent = {
       name,
-      applicationId: userId?.toString() || data?.id?.toString() || "N/A",
+      applicationId: data?.user_code || data?.userCode || data?.agent_user_code || (initialData as any)?.roleId || (data?.id || userId ? `AG-${data?.id || userId}` : "N/A"),
       status: status as any,
       avatarUrl,
       initials,
