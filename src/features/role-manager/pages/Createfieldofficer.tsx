@@ -564,7 +564,7 @@ const CreateFieldOfficer = () => {
 
     const officer = {
       name,
-      applicationId: userId?.toString() || data?.id?.toString() || "N/A",
+      applicationId: data?.user_code || data?.userCode || data?.field_officer_user_code || data?.feild_officer_user_code || (initialData as any)?.roleId || (data?.id || userId ? `FO-${data?.id || userId}` : "N/A"),
       status: status as any,
       avatarUrl,
       initials,

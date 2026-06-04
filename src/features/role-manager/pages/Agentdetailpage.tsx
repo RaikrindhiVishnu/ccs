@@ -203,7 +203,7 @@ export const AgentDetailPage = ({ onDismiss, onApprove }: AgentDetailPageProps) 
 
         lastName: apiData?.last_name || "",
 
-        applicationId: apiData?.id?.toString() || "N/A",
+        applicationId: apiData?.user_code || apiData?.userCode || apiData?.agent_user_code || (apiData?.id || userId ? `AG-${apiData?.id || userId}` : "N/A"),
 
         status: "Pending Review",
 

@@ -247,7 +247,7 @@ const RegionDetailsView: React.FC = () => {
         if (!isNaN(d.getTime())) {
           return d.toLocaleDateString("en-US", { month: "numeric", day: "numeric", year: "numeric" });
         }
-      } catch {}
+      } catch { }
     }
     // return mockData?.created_date || "—";
   }, [apiProperties?.created_on, mockData?.created_date]);
@@ -259,7 +259,7 @@ const RegionDetailsView: React.FC = () => {
         if (!isNaN(d.getTime())) {
           return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
         }
-      } catch {}
+      } catch { }
     }
     // return mockData?.created_time || "—";
   }, [apiProperties?.created_on, mockData?.created_time]);
@@ -270,7 +270,7 @@ const RegionDetailsView: React.FC = () => {
   const regOfficer = useMemo(() => {
     const rawId = apiProperties?.regional_officer_id;
     const hasId = rawId && Number(rawId) !== 0 && String(rawId) !== "null";
-    
+
     if (hasId) {
       const matched = regionalOfficersList.find(o => Number(o.id) === Number(rawId));
       if (matched) {
@@ -283,7 +283,7 @@ const RegionDetailsView: React.FC = () => {
         };
       }
     }
-    
+
     // if (mockData?.regional_officer) {
     //   return mockData.regional_officer;
     // }
@@ -298,7 +298,7 @@ const RegionDetailsView: React.FC = () => {
   const intelOfficer = useMemo(() => {
     const rawId = apiProperties?.intelligence_officer_id;
     const hasId = rawId && Number(rawId) !== 0 && String(rawId) !== "null";
-    
+
     if (hasId) {
       const matched = intelligenceOfficersList.find(o => Number(o.id) === Number(rawId));
       if (matched) {
@@ -311,7 +311,7 @@ const RegionDetailsView: React.FC = () => {
         };
       }
     }
-    
+
     // if (mockData?.intelligence_officer) {
     //   return mockData.intelligence_officer;
     // }
@@ -435,26 +435,26 @@ const RegionDetailsView: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f1f5f9] flex items-center justify-center p-8 relative font-sans">
-      
+
       {/* Floating Back Button */}
       <div className="absolute top-6 left-6 z-10">
-        <BackButton 
-          label="Back" 
-          size="sm" 
+        <BackButton
+          label="Back"
+          size="sm"
           className="!w-auto !px-5 !h-10 text-[13px]"
-          onClick={() => navigate(-1)} 
+          onClick={() => navigate(-1)}
         />
       </div>
 
       {/* Main Card */}
       <Card className="w-full max-w-[850px] p-6 sm:p-8 md:p-10 flex flex-col gap-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[24px] bg-white border-0 mt-20 md:mt-12 lg:mt-8">
-        
+
         {/* Top Section: Map & Officers Grid */}
         <div className="grid grid-cols-1 md:grid-cols-[1.3fr_1fr] gap-10">
-          
+
           {/* Left Column: Map & Metadata */}
           <div className="flex flex-col gap-6">
-            
+
             {/* Map Container */}
             <div className="w-full h-[240px] sm:h-[280px] bg-[#F8F9FA] rounded-[16px] overflow-hidden relative">
               <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
@@ -476,10 +476,10 @@ const RegionDetailsView: React.FC = () => {
                   {regionName}
                 </Typography>
               </div>
-              
+
               <div>
                 <Typography variant="span" className="text-[#94A3B8] font-bold uppercase tracking-[0.08em] text-[10px] mb-1.5 block">
-                  Assigned ID
+                  Region Code
                 </Typography>
                 <Typography variant="h4" className="text-[#0F172A] font-bold uppercase font-mono tracking-tight text-[16px]">
                   {regionCode}
@@ -519,7 +519,7 @@ const RegionDetailsView: React.FC = () => {
 
           {/* Right Column: Assigned Officers */}
           <div className="flex flex-col pt-0 md:pt-2">
-            
+
             <div className="flex items-center gap-3 bg-[#F8FAFC] px-4 py-3 rounded-[12px] border border-[#F1F5F9] w-max mb-8">
               <div className="bg-[#E0E7FF] p-2 rounded-lg text-[#4338CA]">
                 <Briefcase className="w-5 h-5" />
@@ -537,8 +537,8 @@ const RegionDetailsView: React.FC = () => {
                 </Typography>
                 <div className="flex items-center gap-4">
                   {regOfficer?.avatar_url ? (
-                    <img 
-                      src={regOfficer.avatar_url} 
+                    <img
+                      src={regOfficer.avatar_url}
                       alt="Regional Officer"
                       className="w-12 h-12 rounded-full object-cover border border-[#E2E8F0] shadow-sm"
                     />
@@ -568,8 +568,8 @@ const RegionDetailsView: React.FC = () => {
                 </Typography>
                 <div className="flex items-center gap-4">
                   {intelOfficer?.avatar_url ? (
-                    <img 
-                      src={intelOfficer.avatar_url} 
+                    <img
+                      src={intelOfficer.avatar_url}
                       alt="Intelligence Officer"
                       className="w-12 h-12 rounded-full object-cover border border-[#E2E8F0] shadow-sm"
                     />
@@ -600,7 +600,7 @@ const RegionDetailsView: React.FC = () => {
           <Pencil className="w-4 h-4" />
           Edit Region Details
         </Button>
-        
+
       </Card>
     </div>
   );
