@@ -3,7 +3,6 @@ import { BackButton } from "@/components/ui/BackButton";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { Bell, Mic } from "lucide-react";
-import checklistIcon from "@/assets/checklist.svg";
 import successIcon from "@/assets/sucess.svg";
 import { useAppDispatch, useAppSelector } from "@/core/hooks";
 import { logOut } from "@/features/auth/store/authSlice";

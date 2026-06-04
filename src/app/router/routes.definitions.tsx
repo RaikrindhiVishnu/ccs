@@ -31,6 +31,7 @@ import {
     Assignedfarmland,
     AssignedFarmlandList,
     Farmlanddocument,
+    IORequestedInfo,
     CreateFieldOfficer,
     CreateintellegenceOfficer,
     CreateregionalOfficer,
@@ -168,6 +169,9 @@ export const authRoutes: RouteObject[] = [
             }, {
                 path: '/io/assigned-farmland/list',
                 element: <AssignedFarmlandList />
+            }, {
+                path: '/io/requested-info',
+                element: <IORequestedInfo />
             }, {
                 path: '/role-manager/agent-create',
                 element: <AgentCreate />
