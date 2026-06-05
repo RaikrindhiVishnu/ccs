@@ -44,9 +44,9 @@ export const agentSchema = z.object({
 
   // ── File fields ──────────────────────────────────────────
   profilePicture: fileSchema(ACCEPTED_IMAGE_TYPES, "Profile picture").optional(),
-  aadharFront: fileSchema(ACCEPTED_IMAGE_TYPES, "Aadhaar Front").optional(),
-  aadharBack: fileSchema(ACCEPTED_IMAGE_TYPES, "Aadhaar Back").optional(),
-  panCard: fileSchema(ACCEPTED_IMAGE_TYPES, "PAN Card").optional(),
+  aadharFront: fileSchema(ACCEPTED_IMAGE_TYPES, "Aadhaar Front"),
+  aadharBack: fileSchema(ACCEPTED_IMAGE_TYPES, "Aadhaar Back"),
+  panCard: fileSchema(ACCEPTED_IMAGE_TYPES, "PAN Card"),
 });
 
 export type AgentFormValues = z.infer<typeof agentSchema>;
