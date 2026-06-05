@@ -125,6 +125,10 @@ export const SuperAdminUsersListFull = lazy(
   () => import("../../features/super-admin/pages/SuperAdminUsersListFull"),
 );
 
+export const SuperAdminUsersListAll = lazy(
+  () => import("../../features/super-admin/pages/SuperAdminUsersListAll"),
+);
+
 export const SuperAdminFarmlandsListFull = lazy(
   () => import("../../features/super-admin/pages/SuperAdminFarmlandsListFull"),
 );
@@ -135,4 +139,8 @@ export const SuperAdminAssignedFarmlandDetails = lazy(
 
 export const SuperAdminCustomerInformation = lazy(
   () => import("../../features/super-admin/pages/SuperAdminCustomerInformation"),
+);
+
+export const SuperAdminEditFarmlandTag = lazy(
+  () => import("../../features/super-admin/pages/SuperAdminEditFarmlandTag"),
 );

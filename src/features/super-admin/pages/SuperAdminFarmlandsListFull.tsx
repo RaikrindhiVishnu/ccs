@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Search, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import SuperAdminFarmlandsListCard from "@/features/super-admin/components/SuperAdminFarmlandsListCard";
+import SuperAdminSoldOutTable from "@/features/super-admin/components/SuperAdminSoldOutTable";
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 import { cn } from "@/lib/utils";
 
@@ -82,17 +83,21 @@ const SuperAdminFarmlandsListFull: React.FC = () => {
           </div>
         </div>
 
-        {/* Grid of Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {data.map((farmland) => (
-            <SuperAdminFarmlandsListCard
-              key={farmland.id}
-              data={farmland}
-              onViewDetails={(id) => console.log("View Details:", id)}
-              onEditTag={(id) => console.log("Edit Tag:", id)}
-            />
-          ))}
-        </div>
+        {/* Main Content Area */}
+        {activeTab === "farmland" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {data.map((farmland) => (
+              <SuperAdminFarmlandsListCard
+                key={farmland.id}
+                data={farmland}
+                onViewDetails={(id) => console.log("View Details:", id)}
+                onEditTag={(id) => navigate(`/super-admin/edit-farmland-tag/${id}`)}
+              />
+            ))}
+          </div>
+        ) : (
+          <SuperAdminSoldOutTable />
+        )}
       </div>
     </div>
   );
