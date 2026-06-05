@@ -59,6 +59,9 @@ import {
     VerificationOfficerCompletedFarmlands,
     VerificationOfficerCompletedFarmlandDetails,
     VerificationOfficerAssignedFarmlandsOwnerDetails,
+    VerificationOfficerAssignedFarmlandsLandBoundaries,
+    VerificationOfficerAssignedFarmlandsValuation,
+    VerificationOfficerAssignedFarmlandsAgriculture,
 
   // Verification Officer 1 (VO1)
   VerificationOfficer1Dashboard,
@@ -298,6 +301,18 @@ export const authRoutes: RouteObject[] = [
   {
     path: '/verification-officer-2/assigned-farmlands-owner-details/:id',
     element: <VerificationOfficerAssignedFarmlandsOwnerDetails />,
+  },
+  {
+    path: '/verification-officer-2/assigned-farmlands-land-boundaries/:id',
+    element: <VerificationOfficerAssignedFarmlandsLandBoundaries />,
+  },
+  {
+    path: '/verification-officer-2/assigned-farmlands-valuation/:id',
+    element: <VerificationOfficerAssignedFarmlandsValuation />,
+  },
+  {
+    path: '/verification-officer-2/assigned-farmlands-agriculture/:id',
+    element: <VerificationOfficerAssignedFarmlandsAgriculture />,
   },
   {
     path: "verification-officer-1",
