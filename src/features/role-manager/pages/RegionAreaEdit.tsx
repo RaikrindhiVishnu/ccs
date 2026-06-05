@@ -607,8 +607,8 @@ const RegionAreaEdit: React.FC = () => {
       const currentStateId = selectedState?.properties?.id;
       return currentStateId
         ? features.filter(
-            (f: any) => Number(f.properties?.state_id) === currentStateId,
-          )
+          (f: any) => Number(f.properties?.state_id) === currentStateId,
+        )
         : features;
     } catch {
       return [];
@@ -932,143 +932,147 @@ const RegionAreaEdit: React.FC = () => {
     const dtId = district.i;
     const isAssignedToOther = otherAssignedDistrictIds.has(dtId);
 
-    const isAlreadySelected = selectedDistricts.some(
-      (d) => Number(d.id ?? d.featureId) === dtId
-    );
+    setSelectedDistricts((prev) => {
+      const isAlreadySelected = prev.some(
+        (d) => Number(d.id ?? d.featureId) === dtId
+      );
 
-    if (isAlreadySelected) {
-      if (map.current) {
-        map.current.setFeatureState(
-          { source: "districts-source", id: dtId },
-          { selected: false }
-        );
-      }
-      setSelectedDistricts((prev) => {
+      if (isAlreadySelected) {
+        if (map.current) {
+          map.current.setFeatureState(
+            { source: "districts-source", id: dtId },
+            { selected: false }
+          );
+        }
         setReassignedDistricts((r) =>
           r.filter((item) => item.districtId !== dtId)
         );
         return prev.filter((d) => Number(d.id ?? d.featureId) !== dtId);
-      });
-      return;
-    }
-
-    if (isAssignedToOther) {
-      const ownerRegion = allRegionsData.features.find((f: any) => {
-        const ids = getDistrictIdsFromRegion(f, geoMasterData);
-        return ids.includes(dtId);
-      });
-      if (ownerRegion) {
-        setPendingDistrict({
-          id: dtId,
-          name: district.d || "",
-          code: district.c || "",
-        });
-        setPendingOwnerRegion({
-          id: getRegionId(ownerRegion),
-          name:
-            ownerRegion.properties?.region_name ||
-            ownerRegion.properties?.name ||
-            "another region",
-          rawFeature: ownerRegion,
-        });
-        setReassignModalOpen(true);
       }
-      return;
-    }
 
-    setSelectedDistricts((prev) => [
-      ...prev,
-      {
-        id: dtId,
-        featureId: dtId,
-        name: district.d,
-        code: district.c,
-        d: district.d,
-        properties: {
+      if (isAssignedToOther) {
+        setTimeout(() => {
+          const ownerRegion = allRegionsData.features.find((f: any) => {
+            const ids = getDistrictIdsFromRegion(f, geoMasterData);
+            return ids.includes(dtId);
+          });
+          if (ownerRegion) {
+            setPendingDistrict({
+              id: dtId,
+              name: district.d || "",
+              code: district.c || "",
+            });
+            setPendingOwnerRegion({
+              id: getRegionId(ownerRegion),
+              name:
+                ownerRegion.properties?.region_name ||
+                ownerRegion.properties?.name ||
+                "another region",
+              rawFeature: ownerRegion,
+            });
+            setReassignModalOpen(true);
+          }
+        }, 0);
+        return prev;
+      }
+
+      if (map.current) {
+        map.current.setFeatureState(
+          { source: "districts-source", id: dtId },
+          { selected: true }
+        );
+      }
+
+      return [
+        ...prev,
+        {
           id: dtId,
+          featureId: dtId,
           name: district.d,
           code: district.c,
+          d: district.d,
+          properties: {
+            id: dtId,
+            name: district.d,
+            code: district.c,
+          },
         },
-      },
-    ]);
-    if (map.current) {
-      map.current.setFeatureState(
-        { source: "districts-source", id: dtId },
-        { selected: true }
-      );
-    }
+      ];
+    });
   };
 
   const toggleEditMandalSelection = (mandal: any) => {
     const mId = mandal.i;
     const isAssignedToOther = otherAssignedMandalIds.has(mId);
 
-    const isAlreadySelected = selectedDistricts.some(
-      (m) => Number(m.id ?? m.featureId) === mId
-    );
-
-    if (isAlreadySelected) {
-      setSelectedDistricts((prev) =>
-        prev.filter((d) => Number(d.id ?? d.featureId) !== mId)
+    setSelectedDistricts((prev) => {
+      const isAlreadySelected = prev.some(
+        (m) => Number(m.id ?? m.featureId) === mId
       );
+
+      if (isAlreadySelected) {
+        if (map.current) {
+          map.current.setFeatureState(
+            { source: "mandals-source", id: mId },
+            { selected: false }
+          );
+        }
+        return prev.filter((d) => Number(d.id ?? d.featureId) !== mId);
+      }
+
+      if (isAssignedToOther) {
+        setTimeout(() => {
+          let areaId = 1;
+          let areaName = "Another Area";
+          const list = regionAreasData?.data || [];
+          const rawArea = list.find((area: any) => {
+            const mIds = area.mandal_ids || area.mandalIds || [];
+            return mIds.map(Number).includes(mId);
+          });
+          if (rawArea) {
+            areaId = rawArea.id || rawArea.area_id || 1;
+            areaName = rawArea.area_name || rawArea.areaName || "Another Area";
+          }
+
+          setPendingDistrict({
+            id: mId,
+            name: mandal.d || "This mandal",
+            code: mandal.c || "",
+            district_id: mandal.district_id,
+          });
+          setPendingOwnerRegion({
+            id: areaId,
+            name: areaName,
+          });
+          setReassignModalOpen(true);
+        }, 0);
+        return prev;
+      }
+
       if (map.current) {
         map.current.setFeatureState(
           { source: "mandals-source", id: mId },
-          { selected: false }
+          { selected: true }
         );
       }
-      return;
-    }
 
-    if (isAssignedToOther) {
-      let areaId = 1;
-      let areaName = "Another Area";
-      const list = regionAreasData?.data || [];
-      const rawArea = list.find((area: any) => {
-        const mIds = area.mandal_ids || area.mandalIds || [];
-        return mIds.map(Number).includes(mId);
-      });
-      if (rawArea) {
-        areaId = rawArea.id || rawArea.area_id || 1;
-        areaName = rawArea.area_name || rawArea.areaName || "Another Area";
-      }
-
-      setPendingDistrict({
-        id: mId,
-        name: mandal.d || "This mandal",
-        code: mandal.c || "",
-        district_id: mandal.district_id,
-      });
-      setPendingOwnerRegion({
-        id: areaId,
-        name: areaName,
-      });
-      setReassignModalOpen(true);
-      return;
-    }
-
-    setSelectedDistricts((prev) => [
-      ...prev,
-      {
-        id: mId,
-        featureId: mId,
-        name: mandal.d,
-        code: mandal.c || "",
-        d: mandal.d,
-        properties: {
+      return [
+        ...prev,
+        {
           id: mId,
+          featureId: mId,
           name: mandal.d,
           code: mandal.c || "",
-          district_id: mandal.district_id,
+          d: mandal.d,
+          properties: {
+            id: mId,
+            name: mandal.d,
+            code: mandal.c || "",
+            district_id: mandal.district_id,
+          },
         },
-      },
-    ]);
-    if (map.current) {
-      map.current.setFeatureState(
-        { source: "mandals-source", id: mId },
-        { selected: true }
-      );
-    }
+      ];
+    });
   };
 
   // ── Pre-populate Form state, active state selection, and pre-selected districts/mandals ──
@@ -1600,60 +1604,14 @@ const RegionAreaEdit: React.FC = () => {
             const districtFeature = e.features[0];
             const districtData = districtFeature.properties;
             const dtId = Number(districtData?.id || districtData?.featureId);
-            const isSelectedNow = districtData?.isSelected || false;
 
-            if (isSelectedNow) {
-              setSelectedDistricts((prev) => {
-                // If it was reassigned, clean up reassign tracker
-                setReassignedDistricts((r) =>
-                  r.filter((item) => item.districtId !== dtId),
-                );
-                return prev.filter((d) => Number(d.id ?? d.featureId) !== dtId);
-              });
-              return;
-            }
+            const district = {
+              i: dtId,
+              d: districtData.name || districtData.d || "",
+              c: districtData.code || "",
+            };
 
-            if (districtData?.isAssigned) {
-              const ownerRegion = allRegionsData.features.find((f: any) => {
-                const ids = getDistrictIdsFromRegion(f, geoMasterData);
-                return ids.includes(dtId);
-              });
-              if (ownerRegion) {
-                setPendingDistrict({
-                  id: dtId,
-                  name: districtData.name || districtData.d || "",
-                  code: districtData.code || "",
-                });
-                setPendingOwnerRegion({
-                  id: getRegionId(ownerRegion),
-                  name:
-                    ownerRegion.properties?.region_name ||
-                    ownerRegion.properties?.name ||
-                    "another region",
-                  rawFeature: ownerRegion,
-                });
-                setReassignModalOpen(true);
-              }
-              return;
-            }
-
-            setSelectedDistricts((prev) => {
-              return [
-                ...prev,
-                {
-                  id: dtId,
-                  featureId: dtId,
-                  name: districtData.name,
-                  code: districtData.code,
-                  d: districtData.name,
-                  properties: {
-                    id: dtId,
-                    name: districtData.name,
-                    code: districtData.code,
-                  },
-                },
-              ];
-            });
+            toggleEditDistrictSelection(district);
           }
         });
       } else {
@@ -1684,7 +1642,7 @@ const RegionAreaEdit: React.FC = () => {
         map.current.setLayoutProperty("mandals-line", "visibility", "none");
         map.current.setLayoutProperty("mandals-labels", "visibility", "none");
       }
-      
+
       if (map.current.getLayer("regions-fill")) {
         if (selectedRegion) {
           const regionId = getRegionId(selectedRegion);
@@ -1895,7 +1853,7 @@ const RegionAreaEdit: React.FC = () => {
             const feature = e.features[0];
             const mProps = feature.properties || {};
             const mId = Number(feature.id);
-            
+
             const filter = activeFilterRef.current;
             const isAssigned = !!mProps.isAssigned || !!mProps.areaId;
             if (filter === "unassigned" && isAssigned) return;
@@ -1955,50 +1913,13 @@ const RegionAreaEdit: React.FC = () => {
             }
 
             // AREA EDIT MODE CLICK HANDLER
-            // Read from ref so we always get the latest selection, not the stale closure value
-            const currentSelectedIds = new Set<number>(
-              selectedDistrictsRef.current.map((d) =>
-                Number(d.id ?? d.featureId),
-              ),
-            );
-            const isAlreadySelected = currentSelectedIds.has(mId);
-
-            if (isAlreadySelected) {
-              setSelectedDistricts((prev) =>
-                prev.filter((d) => Number(d.id ?? d.featureId) !== mId),
-              );
-              return;
-            }
-
-            if (mProps.isAssigned) {
-              setPendingDistrict({
-                id: mId,
-                name: mProps.name || mProps.d || "This mandal",
-                code: mProps.code || "",
-              });
-              setPendingOwnerRegion({
-                id: mProps.areaId || 1,
-                name: mProps.areaName || "Another Area",
-              });
-              setReassignModalOpen(true);
-            } else {
-              setSelectedDistricts((prev) => [
-                ...prev,
-                {
-                  id: mId,
-                  featureId: mId,
-                  name: mProps.name || mProps.d,
-                  code: mProps.code || "",
-                  d: mProps.name || mProps.d,
-                  properties: {
-                    id: mId,
-                    name: mProps.name || mProps.d,
-                    code: mProps.code || "",
-                    district_id: mProps.district_id,
-                  },
-                },
-              ]);
-            }
+            const mandalObj = {
+              i: mId,
+              d: mProps.name || mProps.d || "",
+              c: mProps.code || "",
+              district_id: mProps.district_id,
+            };
+            toggleEditMandalSelection(mandalObj);
           }
         });
 
@@ -3629,15 +3550,21 @@ const RegionAreaEdit: React.FC = () => {
                   });
 
                   // Add to reassignment list
-                  setReassignedDistricts((prev) => [
-                    ...prev,
-                    {
-                      districtId: pendingDistrict.id,
-                      fromRegionId: pendingOwnerRegion.id,
-                      fromRegionName: pendingOwnerRegion.name,
-                      fromRegionRawFeature: pendingOwnerRegion.rawFeature,
-                    },
-                  ]);
+                  setReassignedDistricts((prev) => {
+                    const isAlreadyReassigned = prev.some(
+                      (item) => item.districtId === pendingDistrict.id
+                    );
+                    if (isAlreadyReassigned) return prev;
+                    return [
+                      ...prev,
+                      {
+                        districtId: pendingDistrict.id,
+                        fromRegionId: pendingOwnerRegion.id,
+                        fromRegionName: pendingOwnerRegion.name,
+                        fromRegionRawFeature: pendingOwnerRegion.rawFeature,
+                      },
+                    ];
+                  });
 
                   // Close modal
                   setReassignModalOpen(false);

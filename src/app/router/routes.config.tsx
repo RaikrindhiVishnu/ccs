@@ -81,6 +81,8 @@ export const VerificationOfficer1Layout = lazy(
 export const Assignedfarmland = lazy(() => import ("../../features/io/pages/Assignedfarmland"),);
 export const AssignedFarmlandList = lazy(() => import ("../../features/io/components/AssignedFarmlandList"),);
 export const Farmlanddocument = lazy(() => import ("../../features/io/components/Farmlanddocument"),);
+export const IORequestedInfo = lazy(() => import ("../../features/io/pages/RequestedInfo"),);
+export const IORequestedInfoList = lazy(() => import ("../../features/io/pages/RequestedInfoList"),);
 export const CreateFieldOfficer = lazy(() => import ("../../features/role-manager/pages/Createfieldofficer"),);
 export const CreateintellegenceOfficer = lazy(() => import ("../../features/role-manager/pages/Createintelligenceofficer"),);
 export const CreateregionalOfficer = lazy(() => import ("../../features/role-manager/pages/Createregionalofficer"),);

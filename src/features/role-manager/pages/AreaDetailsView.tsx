@@ -147,12 +147,12 @@ const AreaDetailsView: React.FC = () => {
 
 
 
-useEffect(() => {
-  if (fieldOfficersData?.data) {
-    console.log("FIELD OFFICERS SAMPLE:", fieldOfficersData.data[0]);
-    console.log("Current areaId:", areaId);
-  }
-}, [fieldOfficersData, areaId]);
+  useEffect(() => {
+    if (fieldOfficersData?.data) {
+      console.log("FIELD OFFICERS SAMPLE:", fieldOfficersData.data[0]);
+      console.log("Current areaId:", areaId);
+    }
+  }, [fieldOfficersData, areaId]);
 
   fieldOfficersData?.data?.forEach((o: any) => {
     console.log("OFFICER OBJECT", o);
@@ -181,7 +181,7 @@ useEffect(() => {
   const fieldOfficer = useMemo(() => {
     const rawId = geoProps?.field_officer_id;
     const hasId = rawId && Number(rawId) !== 0 && String(rawId) !== "null";
-    
+
     if (hasId) {
       const officersList = Array.isArray(fieldOfficersData?.data) ? fieldOfficersData.data : (Array.isArray(fieldOfficersData) ? fieldOfficersData : []);
       const matched = officersList.find((o: any) => Number(o.id) === Number(rawId));
@@ -201,14 +201,14 @@ useEffect(() => {
       avatar_url: null,
     };
   }, [geoProps?.field_officer_id, geoProps?.field_officer_name, fieldOfficersData]);
-useEffect(() => {
-  if (areaGeoJson) {
-    const features = areaGeoJson?.data?.features || areaGeoJson?.features || [];
-    features.forEach((f: any) => {
-      console.log("GeoJSON props for area", areaId, ":", f.properties);
-    });
-  }
-}, [areaGeoJson]);
+  useEffect(() => {
+    if (areaGeoJson) {
+      const features = areaGeoJson?.data?.features || areaGeoJson?.features || [];
+      features.forEach((f: any) => {
+        console.log("GeoJSON props for area", areaId, ":", f.properties);
+      });
+    }
+  }, [areaGeoJson]);
 
   const handleEditClick = () => {
     // Read the region ID that was stored in sessionStorage when user clicked the region

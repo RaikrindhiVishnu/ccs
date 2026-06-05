@@ -256,10 +256,9 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                   className={`
                     absolute left-[clamp(-1.0625rem,-1.67vw,-0.875rem)] top-[clamp(0.0625rem,0.1vw,0.125rem)] w-[clamp(0.5rem,0.78vw,1.03rem)] h-[clamp(0.5rem,0.78vw,1.03rem)] rounded-full
                     box-sizing-border-box transition-all duration-200
-                    ${
-                      activeStep === "customer"
-                        ? "bg-[var(--brand-400)] border-2 border-[var(--text-primary)] shadow-[0_0_0_clamp(0.18rem,0.29vw,0.35rem)_#ffffff,0_0_0_clamp(0.275rem,0.43vw,0.515rem)_rgba(37,99,235,0.1)]"
-                        : "bg-[var(--surface-card)] border-[0.129375rem] border-[rgba(122,149,28,0.43)]"
+                    ${activeStep === "customer"
+                      ? "bg-[var(--brand-400)] border-2 border-[var(--text-primary)] shadow-[0_0_0_clamp(0.18rem,0.29vw,0.35rem)_#ffffff,0_0_0_clamp(0.275rem,0.43vw,0.515rem)_rgba(37,99,235,0.1)]"
+                      : "bg-[var(--surface-card)] border-[0.129375rem] border-[rgba(122,149,28,0.43)]"
                     }
                   `}
                 />
