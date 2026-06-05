@@ -4,8 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { Bell, Mic } from "lucide-react";
 import successIcon from "@/assets/sucess.svg";
-import { useAppDispatch, useAppSelector } from "@/core/hooks";
-import { logOut } from "@/features/auth/store/authSlice";
+import { useAppSelector } from "@/core/hooks";
 import { useNavigate } from "react-router-dom";
 
 interface LocalIntelligenceDocumentProps {
@@ -66,7 +65,6 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
   onStepChange,
   farmlandId = "GLCSOS 01"
 }) => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
 
@@ -139,10 +137,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
     }
   };
 
-  const handleLogout = () => {
-    dispatch(logOut());
-    navigate("/login", { replace: true });
-  };
+
 
   const fullName = user
     ? `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
@@ -228,8 +223,8 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
 
           {/* Avatar */}
           <button
-            onClick={handleLogout}
-            title="Logout"
+            onClick={() => navigate("/io/profile")}
+            title="Profile"
             className="
               relative overflow-hidden
               flex items-center justify-center

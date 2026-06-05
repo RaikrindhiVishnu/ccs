@@ -33,6 +33,10 @@ import {
     Farmlanddocument,
     IORequestedInfo,
     IORequestedInfoList,
+    IOFarmlandsList,
+    IOFarmlandsListFull,
+    IOFarmlandsListDetailView,
+    IOProfile,
     CreateFieldOfficer,
     CreateintellegenceOfficer,
     CreateregionalOfficer,
@@ -179,6 +183,12 @@ export const authRoutes: RouteObject[] = [
                 path: '/io/requested-info/list',
                 element: <IORequestedInfoList />
             }, {
+                path: '/io/farmlands-list',
+                element: <IOFarmlandsList />
+            }, {
+                path: '/io/farmlands-list/list',
+                element: <IOFarmlandsListFull />
+            }, {
                 path: '/role-manager/agent-create',
                 element: <AgentCreate />
             }, {
@@ -263,8 +273,14 @@ export const authRoutes: RouteObject[] = [
         path: '/io/farmland-document/:id',
         element: <Farmlanddocument />
     }, {
+        path: '/io/farmlands-list/detail/:id',
+        element: <IOFarmlandsListDetailView />
+    }, {
         path: '/io/requested-info-reason/:id',
         element: <RequestedInfoReason />
+    }, {
+        path: '/io/profile',
+        element: <IOProfile />
     },
     {
         element: <RegionalOfficerLayout />,

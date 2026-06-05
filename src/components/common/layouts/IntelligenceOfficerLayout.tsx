@@ -9,8 +9,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { useAppDispatch, useAppSelector } from "@/core/hooks";
-import { logOut } from "@/features/auth/store/authSlice";
+import { useAppSelector } from "@/core/hooks";
 import { useRoleLayout } from "@/core/hooks/useRoleLayout";
 import { Typography } from "@/components/ui/typography";
 
@@ -149,7 +148,6 @@ const NavItem = ({
 
 export const IntelligenceOfficerLayout = () => {
   const { navItems } = useRoleLayout();
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -157,23 +155,18 @@ export const IntelligenceOfficerLayout = () => {
 
   const isDashboard = location.pathname === "/io/dashboard";
 
-  const handleLogout = () => {
-    dispatch(logOut());
-    navigate("/login", { replace: true });
-  };
-
   const fullName = user
     ? `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-      "Intelligence Officer"
+    "Intelligence Officer"
     : "Intelligence Officer";
 
   const initials = fullName
     ? fullName
-        .split(" ")
-        .map((n: string) => n[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
+      .split(" ")
+      .map((n: string) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase()
     : "IO";
 
   return (
@@ -354,8 +347,8 @@ xl:w-[7.5rem] xl:h-[3.625rem]
 
           {/* AVATAR */}
           <button
-            onClick={handleLogout}
-            title="Logout"
+            onClick={() => navigate("/io/profile")}
+            title="Profile"
             className="
       relative overflow-hidden
       flex items-center justify-center

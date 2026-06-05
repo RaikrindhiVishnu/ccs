@@ -10,8 +10,7 @@ import { FamilyTreeDocument } from "./FamilyTreeDocument";
 import { LandDetailsDocument } from "./LandDetailsDocument";
 import { LocalIntelligenceDocument } from "./LocalIntelligenceDocument";
 import { Bell } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/core/hooks";
-import { logOut } from "@/features/auth/store/authSlice";
+import { useAppSelector } from "@/core/hooks";
 import { RequestedInfoReasonModal } from "./RequestedInfoReasonModal";
 
 /* ─────────────────────────────────────────────────────────────────────────── */
@@ -491,27 +490,21 @@ const TopNav = ({
   onBack?: () => void;
   isRequestedInfo?: boolean;
 }) => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
 
-  const handleLogout = () => {
-    dispatch(logOut());
-    navigate("/login", { replace: true });
-  };
-
   const fullName = user
     ? `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-      "Intelligence Officer"
+    "Intelligence Officer"
     : "Intelligence Officer";
 
   const initials = fullName
     ? fullName
-        .split(" ")
-        .map((n: string) => n[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
+      .split(" ")
+      .map((n: string) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase()
     : "IO";
 
   return (
@@ -572,8 +565,8 @@ const TopNav = ({
 
         {/* Avatar */}
         <button
-          onClick={handleLogout}
-          title="Logout"
+          onClick={() => navigate("/io/profile")}
+          title="Profile"
           className="
             relative overflow-hidden
             flex items-center justify-center
@@ -787,9 +780,9 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
       liveStatus: "NA",
     }
     : data || {
-        ...defaultData,
-        badge: isRequestedInfo ? "REQUESTED INFORMATION" : "ASSIGNED FARMLAND",
-      };
+      ...defaultData,
+      badge: isRequestedInfo ? "REQUESTED INFORMATION" : "ASSIGNED FARMLAND",
+    };
 
   const handleBack = onBack || (() => navigate(-1));
   const handleUpload = () => {
@@ -953,9 +946,9 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
           </div>
 
           {/* Bottom actions */}
-          <BottomActions 
-            onBack={handleBack} 
-            onUpload={handleUpload} 
+          <BottomActions
+            onBack={handleBack}
+            onUpload={handleUpload}
             isRequestedInfo={isRequestedInfo}
             onViewReason={() => setShowReasonModal(true)}
           />
@@ -963,7 +956,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
       </div>
 
       {showReasonModal && (
-        <RequestedInfoReasonModal 
+        <RequestedInfoReasonModal
           onClose={() => setShowReasonModal(false)}
           rejectedBy="Verification Officer Sravan"
           reasonParagraph1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
