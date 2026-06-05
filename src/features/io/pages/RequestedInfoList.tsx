@@ -156,7 +156,6 @@ const PAGINATED_REQUESTS_DUMMY: RequestedInfoRow[] = [
 const ITEMS_PER_PAGE = 7;
 
 const RequestedInfoList = () => {
-  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
