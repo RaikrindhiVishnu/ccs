@@ -1,173 +1,296 @@
 import React from "react";
-import { X } from "lucide-react";
+import { Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "@/core/hooks";
 
 interface RequestedInfoReasonModalProps {
   onClose: () => void;
+  onUpload?: () => void;
   rejectedBy?: string;
-  reasonParagraph1?: string;
-  reasonParagraph2?: string;
 }
 
 export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> = ({
   onClose,
+  onUpload,
   rejectedBy = "Verification Officer Sravan",
-  reasonParagraph1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-  reasonParagraph2 = "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 }) => {
+  const navigate = useNavigate();
+  const user = useAppSelector((state) => state.auth.user);
+
+  const fullName = user
+    ? `${user.first_name || ""} ${user.last_name || ""}`.trim() || "User Name"
+    : "User Name";
+  const initials = user
+    ? `${user.first_name?.[0] || ""}${user.last_name?.[0] || ""}`.toUpperCase()
+    : "UN";
+
+  React.useEffect(() => {
+    const scrollableParents: { element: HTMLElement; originalOverflow: string; originalOverflowY: string }[] = [];
+    
+    // Disable body overflow
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalBodyOverflowY = document.body.style.overflowY;
+    document.body.style.setProperty("overflow", "hidden", "important");
+    document.body.style.setProperty("overflow-y", "hidden", "important");
+    scrollableParents.push({
+      element: document.body,
+      originalOverflow: originalBodyOverflow,
+      originalOverflowY: originalBodyOverflowY,
+    });
+
+    // Traverse ancestors from modal root to disable any inner container scrollbars
+    const modalRoot = document.getElementById("requested-info-modal-root");
+    let parent = modalRoot?.parentElement;
+    
+    while (parent) {
+      const style = window.getComputedStyle(parent);
+      const overflow = style.overflow + style.overflowY;
+      if (overflow.includes("auto") || overflow.includes("scroll")) {
+        const origOverflow = parent.style.overflow;
+        const origOverflowY = parent.style.overflowY;
+        
+        parent.style.setProperty("overflow", "hidden", "important");
+        parent.style.setProperty("overflow-y", "hidden", "important");
+        
+        scrollableParents.push({
+          element: parent,
+          originalOverflow: origOverflow,
+          originalOverflowY: origOverflowY,
+        });
+      }
+      parent = parent.parentElement;
+    }
+    
+    // Restore layout scroll state on unmount
+    return () => {
+      scrollableParents.forEach(({ element, originalOverflow, originalOverflowY }) => {
+        if (originalOverflow) {
+          element.style.setProperty("overflow", originalOverflow);
+        } else {
+          element.style.removeProperty("overflow");
+        }
+        if (originalOverflowY) {
+          element.style.setProperty("overflow-y", originalOverflowY);
+        } else {
+          element.style.removeProperty("overflow-y");
+        }
+      });
+    };
+  }, []);
+
   return (
-    <div 
+    <div
+      id="requested-info-modal-root"
       className="
-        fixed inset-0 z-50 
-        flex items-center justify-center 
-        bg-black/45 backdrop-blur-[4px]
+        fixed inset-0 z-50
+        bg-[#F9F9F9]
         animate-in fade-in duration-200
+        w-full h-full
+        overflow-y-auto
+        font-[family-name:var(--font-sans)]
       "
       onClick={onClose}
     >
-      {/* Rejection Reason Card */}
       <div
         className="
-          relative 
-          bg-white 
-          shadow-[0px_20px_40px_rgba(0,49,50,0.06)] 
-          rounded-[clamp(1.5rem,2.22vw,2rem)] 
-          border border-[#BCC9C9]/15
-          w-[clamp(28rem,46.66vw,42rem)] 
-          h-auto
-          md:h-[clamp(28rem,35.4vw,31.875rem)]
-          flex flex-col
-          overflow-hidden
-          animate-in zoom-in-95 duration-200
+          relative w-full min-h-full max-w-[1920px] mx-auto
+          flex flex-col items-center justify-start
+          p-[clamp(1.5rem,4vw,3.5rem)]
         "
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div
+        {/* Top Header Row containing Actions (Bell + Avatar) */}
+        <div 
           className="
-            flex flex-row justify-between items-center 
-            px-[clamp(1.5rem,2.22vw,2rem)] 
-            h-[clamp(4.5rem,5.55vw,5rem)] 
-            border-b border-[#F3F3F5]
-            bg-white
+            w-full flex justify-end items-center 
+            gap-[clamp(10px,0.9vw,18px)]
+            mb-[clamp(1.5rem,4vh,4.5rem)]
+            shrink-0
           "
         >
-          <h2
-            className="
-              font-semibold text-[#1A1C1D] tracking-[-0.6px]
-              font-[family-name:var(--font-heading)]
-              text-[clamp(1.25rem,1.67vw,1.5rem)]
-              leading-[clamp(1.75rem,2.22vw,2rem)]
-            "
-          >
-            Rejection Reason
-          </h2>
+          {/* Bell */}
           <button
-            onClick={onClose}
             className="
-              text-[#3D4949] hover:text-[#1A1C1D] 
-              transition-colors p-1.5 rounded-full hover:bg-[#F3F3F5]
-            "
-          >
-            <X className="w-[clamp(1.1rem,1.5vw,1.35rem)] h-[clamp(1.1rem,1.5vw,1.35rem)]" />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div
-          className="
-            flex flex-col flex-1
-            px-[clamp(1.5rem,2.22vw,2rem)] 
-            pt-[clamp(1rem,1.67vw,1.5rem)]
-            pb-[clamp(1rem,1.67vw,1.5rem)]
-            gap-[clamp(1rem,1.67vw,1.5rem)]
-            overflow-y-auto
-          "
-        >
-          {/* Meta Info */}
-          <div className="flex flex-row items-center gap-2 font-[family-name:var(--font-sans)]">
-            <span
-              className="
-                text-[#3D4949] font-normal
-                text-[clamp(0.75rem,0.97vw,0.875rem)]
-                leading-[clamp(1rem,1.39vw,1.25rem)]
-              "
-            >
-              Rejected by:
-            </span>
-            <span
-              className="
-                text-[#1A1C1D] font-medium
-                text-[clamp(0.75rem,0.97vw,0.875rem)]
-                leading-[clamp(1rem,1.39vw,1.25rem)]
-              "
-            >
-              {rejectedBy}
-            </span>
-          </div>
-
-          {/* Text Area / Reason Content */}
-          <div
-            className="
-              flex flex-col gap-4
-              bg-[#F3F3F5] 
-              border border-[#BCC9C9] 
-              rounded-[clamp(0.75rem,1.11vw,1rem)]
-              p-[clamp(1rem,1.67vw,1.5rem)]
-              flex-1
-              overflow-y-auto
-            "
-          >
-            <p
-              className="
-                text-[#1A1C1D] font-normal
-                font-[family-name:var(--font-heading)]
-                text-[clamp(0.875rem,1.11vw,1rem)]
-                leading-[clamp(1.25rem,1.8vw,1.625rem)]
-              "
-            >
-              {reasonParagraph1}
-            </p>
-            <p
-              className="
-                text-[#1A1C1D] font-normal
-                font-[family-name:var(--font-sans)]
-                text-[clamp(0.875rem,1.11vw,1rem)]
-                leading-[clamp(1.25rem,1.8vw,1.625rem)]
-              "
-            >
-              {reasonParagraph2}
-            </p>
-          </div>
-        </div>
-
-        {/* Footer / Actions */}
-        <div
-          className="
-            flex items-center justify-end
-            px-[clamp(1.5rem,2.22vw,2rem)]
-            h-[clamp(4.5rem,6.38vw,5.75rem)]
-            border-t border-[#F3F3F5]
-            bg-white
-          "
-        >
-          <button
-            onClick={onClose}
-            className="
+              relative
               flex items-center justify-center
-              bg-[#2780C4] hover:bg-[#1f6da9]
-              rounded-[33px]
-              w-[clamp(6.5rem,8.4vw,7.56rem)]
-              h-[clamp(2.1rem,2.63vw,2.375rem)]
-              font-[family-name:var(--font-heading)]
-              font-semibold text-white
-              text-[clamp(0.75rem,0.97vw,0.875rem)]
-              leading-[clamp(1rem,1.25vw,1.125rem)]
-              transition-colors
+              w-[clamp(44px,3.61vw,69px)] h-[clamp(44px,3.61vw,69px)]
+              bg-white rounded-full
+              shadow-[0px_4px_10px_rgba(0,0,0,0.04)]
+              hover:opacity-90 transition-opacity
+              cursor-pointer
+            "
+            aria-label="Notifications"
+          >
+            <Bell className="w-[clamp(20px,1.67vw,32px)] h-[clamp(20px,1.67vw,32px)] text-[#2C2C2C]" strokeWidth={1.5} />
+            <span className="absolute top-[23%] right-[23%] w-[clamp(4px,0.35vw,7px)] h-[clamp(4px,0.35vw,7px)] bg-[#EF4646] rounded-full" />
+          </button>
+
+          {/* Avatar */}
+          <button
+            onClick={() => {
+              onClose();
+              navigate("/io/profile");
+            }}
+            title="Profile"
+            className="
+              relative overflow-hidden
+              flex items-center justify-center
+              w-[clamp(44px,3.61vw,69px)] h-[clamp(44px,3.61vw,69px)]
+              bg-white rounded-full
+              shadow-[0px_4px_10px_rgba(0,0,0,0.04)]
+              hover:opacity-90 transition-opacity
               cursor-pointer
             "
           >
-            Done
+            {(user as any)?.avatarUrl ? (
+              <img
+                src={(user as any).avatarUrl}
+                alt={fullName}
+                className="w-full h-full rounded-full object-cover"
+              />
+            ) : (
+              <span className="font-bold text-[#191B1C] text-[clamp(13px,1.04vw,20px)]">
+                {initials}
+              </span>
+            )}
           </button>
+        </div>
+
+        {/* Main Centered Rejection Reason Card */}
+        <div
+          className="
+            relative
+            bg-white
+            rounded-[clamp(1.5rem,2.78vw,3.5rem)]
+            p-[clamp(1.25rem,2.78vw,3.5rem)]
+            w-full max-w-[clamp(600px,62.5vw,1200px)]
+            shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)]
+            flex flex-col
+            my-auto
+            animate-in zoom-in-95 duration-200
+          "
+        >
+          {/* Header Section */}
+          <div className="flex flex-col gap-2 w-full">
+            <h2 className="font-bold text-[clamp(20px,1.667vw,32px)] leading-[1.3] text-[#111827]">
+              Returning Reason
+            </h2>
+            <div className="text-[clamp(12px,0.972vw,19px)] leading-[1.4] font-medium text-[#6B7280]">
+              Returned by: <span className="font-semibold">{rejectedBy}</span>
+            </div>
+          </div>
+
+          {/* Missing Information Section */}
+          <div className="mt-8 flex flex-col gap-4 flex-1">
+            <span className="text-[clamp(10px,0.833vw,16px)] font-bold tracking-[0.6px] text-[#9CA3AF] uppercase">
+              Missing Information
+            </span>
+
+            {/* Horizontal Cards Container - Wrap on smaller viewports */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(12px,1.14vw,22px)] w-full">
+              {/* Card 1: Local Liabilities */}
+              <div
+                className="
+                  flex flex-col items-start p-[clamp(16px,1.667vw,32px)] gap-4
+                  bg-[#F9FAFB] border border-[#F3F4F6]
+                  rounded-[24px] min-h-[clamp(220px,18.28vw,350px)]
+                "
+              >
+                {/* Badge */}
+                <div className="inline-flex justify-center items-center px-4 py-1.5 bg-[#EFF6FF] border border-[#DBEAFE] rounded-full">
+                  <span className="text-[clamp(9px,0.764vw,15px)] font-bold text-[#2D82C4] whitespace-nowrap">
+                    Local Intelligence &gt; Local Liabilities
+                  </span>
+                </div>
+                {/* Content */}
+                <div className="flex flex-col gap-2 text-[clamp(12px,0.972vw,19px)] leading-[clamp(18px,1.597vw,31px)] text-[#4B5563]">
+                  <p>
+                    The documentation provided does not adequately cover potential local liabilities or outstanding encumbrances.
+                  </p>
+                  <p>
+                    Please upload the missing certificates from the local municipal office.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 2: Pending Loans */}
+              <div
+                className="
+                  flex flex-col items-start p-[clamp(16px,1.667vw,32px)] gap-4
+                  bg-[#F9FAFB] border border-[#F3F4F6]
+                  rounded-[24px] min-h-[clamp(220px,18.28vw,350px)]
+                "
+              >
+                {/* Badge */}
+                <div className="inline-flex justify-center items-center px-4 py-1.5 bg-[#EFF6FF] border border-[#DBEAFE] rounded-full">
+                  <span className="text-[clamp(9px,0.764vw,15px)] font-bold text-[#2D82C4] whitespace-nowrap">
+                    Local Intelligence &gt; Pending Loans
+                  </span>
+                </div>
+                {/* Content */}
+                <div className="text-[clamp(12px,0.972vw,19px)] leading-[clamp(18px,1.597vw,31px)] text-[#4B5563]">
+                  <p>
+                    The verification team requires an updated clearance certificate from the primary lender to rule out any active liens on the property.
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 3: Source Person */}
+              <div
+                className="
+                  flex flex-col items-start p-[clamp(16px,1.667vw,32px)] gap-4
+                  bg-[#F9FAFB] border border-[#F3F4F6]
+                  rounded-[24px] min-h-[clamp(220px,18.28vw,350px)]
+                  md:col-span-2 xl:col-span-1
+                "
+              >
+                {/* Badge */}
+                <div className="inline-flex justify-center items-center px-4 py-1.5 bg-[#EFF6FF] border border-[#DBEAFE] rounded-full">
+                  <span className="text-[clamp(9px,0.764vw,15px)] font-bold text-[#2D82C4] whitespace-nowrap">
+                    Local Intelligence &gt; Source Person
+                  </span>
+                </div>
+                {/* Content */}
+                <div className="text-[clamp(12px,0.972vw,19px)] leading-[clamp(18px,1.597vw,31px)] text-[#4B5563]">
+                  <p>
+                    The identity verification for the source person is incomplete. Please provide a clear, high-resolution scan of their official government-issued ID.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mt-8 flex flex-wrap justify-end items-center gap-4 w-full">
+            <button
+              onClick={onClose}
+              className="
+                flex justify-center items-center
+                w-[clamp(110px,9.23vw,178px)] h-[clamp(38px,2.92vw,56px)]
+                bg-white border border-[#2D82C4] rounded-full
+                font-bold text-[clamp(12px,0.972vw,18px)] text-[#2D82C4]
+                hover:bg-slate-50 transition-all active:scale-[0.98]
+                cursor-pointer
+              "
+            >
+              Back
+            </button>
+            {onUpload && (
+              <button
+                onClick={onUpload}
+                className="
+                  flex justify-center items-center
+                  w-[clamp(120px,10.13vw,195px)] h-[clamp(38px,2.92vw,56px)]
+                  bg-[#2D82C4] rounded-full
+                  font-bold text-[clamp(12px,0.972vw,18px)] text-white
+                  hover:bg-[#1f6da9] transition-all active:scale-[0.98]
+                  cursor-pointer
+                "
+              >
+                Upload
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
