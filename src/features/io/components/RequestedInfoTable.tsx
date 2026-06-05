@@ -60,7 +60,7 @@ export const RequestedInfoTable = ({
               border-b border-[rgba(226,226,228,0.5)]
             "
           >
-            <th className="pl-[clamp(16px,1.67vw,32px)] text-[clamp(10px,0.83vw,14px)] font-semibold tracking-[0.6px] text-[var(--text-secondary)] uppercase font-[var(--font-sans)] w-[22%]">
+             <th className="pl-[clamp(16px,1.67vw,32px)] text-[clamp(10px,0.83vw,14px)] font-semibold tracking-[0.6px] text-[var(--text-secondary)] uppercase font-[var(--font-sans)] w-[22%]">
               Agent Name
             </th>
             <th className="text-[clamp(10px,0.83vw,14px)] font-semibold tracking-[0.6px] text-[var(--text-secondary)] uppercase font-[var(--font-sans)] w-[15%]">
@@ -157,7 +157,7 @@ export const RequestedInfoTable = ({
               {/* Action Button */}
               <td className="pr-[clamp(16px,1.67vw,32px)] text-right">
                 <Button
-                  onClick={() => navigate(`/io/farmland-document/${row.farmlandId}`)}
+                  onClick={() => navigate(`/io/farmland-document/${row.farmlandId}?mode=requested`, { state: { fromRequestedInfo: true } })}
                   className="
                     !bg-[var(--btn-secondary)]
                     hover:opacity-90

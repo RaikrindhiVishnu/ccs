@@ -15,6 +15,29 @@ import {
   useGetAllRegionalOfficersMutation,
   useGetAllIntelligenceOfficersMutation,
 } from "../api/roleManagerApi";
+import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
+
+const OfficerAvatar = ({ url, name }: { url?: string | null; name: string }) => {
+  const isS3Key = Boolean(url && !url.startsWith("http") && !url.startsWith("data:"));
+  const { data: s3Data } = useGeneratePresignedUrlQuery(url || "", { skip: !isS3Key });
+  const finalUrl = isS3Key ? s3Data?.url : url;
+
+  if (finalUrl) {
+    return (
+      <img
+        src={finalUrl}
+        alt={name}
+        className="w-12 h-12 rounded-full object-cover border border-[#E2E8F0] shadow-sm"
+      />
+    );
+  }
+
+  return (
+    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 border border-[#E2E8F0]">
+      <UserCircle className="w-6 h-6" />
+    </div>
+  );
+};
 
 // Mock API Hook for Region Details
 const useGetRegionDetailsMockQuery = (regionId: string | undefined) => {
@@ -279,7 +302,7 @@ const RegionDetailsView: React.FC = () => {
         return {
           name: fullName || "Unnamed Officer",
           code: officerCode,
-          avatar_url: matched.avatar_url || null,
+          avatar_url: matched.profile_url || matched.avatar_url || null,
         };
       }
     }
@@ -307,7 +330,7 @@ const RegionDetailsView: React.FC = () => {
         return {
           name: fullName || "Unnamed Officer",
           code: officerCode,
-          avatar_url: matched.avatar_url || null,
+          avatar_url: matched.profile_url || matched.avatar_url || null,
         };
       }
     }
@@ -536,17 +559,7 @@ const RegionDetailsView: React.FC = () => {
                   Regional Officer
                 </Typography>
                 <div className="flex items-center gap-4">
-                  {regOfficer?.avatar_url ? (
-                    <img
-                      src={regOfficer.avatar_url}
-                      alt="Regional Officer"
-                      className="w-12 h-12 rounded-full object-cover border border-[#E2E8F0] shadow-sm"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 border border-[#E2E8F0]">
-                      <UserCircle className="w-6 h-6" />
-                    </div>
-                  )}
+                  <OfficerAvatar url={regOfficer?.avatar_url} name={regOfficer?.name || "Regional Officer"} />
                   <div>
                     <Typography variant="p" className="text-[#0F172A] font-bold text-[16px] mb-0.5">
                       {regOfficer?.name || "Unassigned"}
@@ -567,17 +580,7 @@ const RegionDetailsView: React.FC = () => {
                   Intelligence Officer
                 </Typography>
                 <div className="flex items-center gap-4">
-                  {intelOfficer?.avatar_url ? (
-                    <img
-                      src={intelOfficer.avatar_url}
-                      alt="Intelligence Officer"
-                      className="w-12 h-12 rounded-full object-cover border border-[#E2E8F0] shadow-sm"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-[#F8FAFC] flex items-center justify-center text-[#94A3B8] border border-[#E2E8F0]">
-                      <UserCircle className="w-6 h-6" />
-                    </div>
-                  )}
+                  <OfficerAvatar url={intelOfficer?.avatar_url} name={intelOfficer?.name || "Intelligence Officer"} />
                   <div>
                     <Typography variant="p" className="text-[#0F172A] font-bold text-[16px] mb-0.5">
                       {intelOfficer?.name || "Unassigned"}

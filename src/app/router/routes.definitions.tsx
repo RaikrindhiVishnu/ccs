@@ -262,6 +262,9 @@ export const authRoutes: RouteObject[] = [
     {
         path: '/io/farmland-document/:id',
         element: <Farmlanddocument />
+    }, {
+        path: '/io/requested-info-reason/:id',
+        element: <RequestedInfoReason />
     },
     {
         element: <RegionalOfficerLayout />,
