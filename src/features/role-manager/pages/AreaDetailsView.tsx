@@ -2,6 +2,29 @@ import React, { useMemo, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Briefcase, Pencil, UserCircle, Layers } from "lucide-react";
 import { useGetAllFieldOfficersMutation } from "../api/roleManagerApi";
+import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
+
+const OfficerAvatar = ({ url, name }: { url?: string | null; name: string }) => {
+  const isS3Key = Boolean(url && !url.startsWith("http") && !url.startsWith("data:"));
+  const { data: s3Data } = useGeneratePresignedUrlQuery(url || "", { skip: !isS3Key });
+  const finalUrl = isS3Key ? s3Data?.url : url;
+
+  if (finalUrl) {
+    return (
+      <img
+        src={finalUrl}
+        alt={name}
+        className="w-12 h-12 rounded-full object-cover border border-[#E2E8F0] shadow-sm"
+      />
+    );
+  }
+
+  return (
+    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 border border-[#E2E8F0]">
+      <UserCircle className="w-6 h-6" />
+    </div>
+  );
+};
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
@@ -191,7 +214,7 @@ const AreaDetailsView: React.FC = () => {
         return {
           name: fullName || geoProps?.field_officer_name || "Unassigned",
           code: officerCode,
-          avatar_url: matched.avatar_url || null,
+          avatar_url: matched.profile_url || matched.avatar_url || null,
         };
       }
     }
@@ -373,17 +396,7 @@ const AreaDetailsView: React.FC = () => {
                   Field Officer
                 </Typography>
                 <div className="flex items-center gap-4">
-                  {fieldOfficer?.avatar_url ? (
-                    <img
-                      src={fieldOfficer.avatar_url}
-                      alt="Field Officer"
-                      className="w-12 h-12 rounded-full object-cover border border-[#E2E8F0] shadow-sm"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 border border-[#E2E8F0]">
-                      <UserCircle className="w-6 h-6" />
-                    </div>
-                  )}
+                  <OfficerAvatar url={fieldOfficer?.avatar_url} name={fieldOfficer?.name || "Field Officer"} />
                   <div>
                     <Typography
                       variant="p"
