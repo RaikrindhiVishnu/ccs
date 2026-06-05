@@ -8,7 +8,7 @@ import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData
 const SuperAdminUsersListAll: React.FC = () => {
   const navigate = useNavigate();
   const data = mockDashboardData;
-  const [filter, setFilter] = useState<string>("All");
+  const [filter] = useState<string>("All");
 
   const filteredUsers = data.usersList.filter((user) => {
     if (filter === "All") return true;
