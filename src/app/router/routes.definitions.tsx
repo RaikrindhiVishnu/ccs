@@ -89,7 +89,12 @@ import {
     SuperAdminUsersListAll,
     SuperAdminAssignedFarmlandDetails,
     SuperAdminCustomerInformation,
-    SuperAdminEditFarmlandTag
+    SuperAdminEditFarmlandTag,
+    SuperAdminUserProfile,
+    SuperAdminTopPerformers,
+    SuperAdminFarmlandDetails,
+    SuperAdminAgentProfile,
+    SuperAdminProfile
 } from './routes.config';
 
 
@@ -250,6 +255,21 @@ export const authRoutes: RouteObject[] = [
             }, {
                 path: '/super-admin/assigned-farmlands/:id/customer-information',
                 element: <SuperAdminCustomerInformation />
+            }, {
+                path: '/super-admin/user-profile/:id',
+                element: <SuperAdminUserProfile />
+            }, {
+                path: '/super-admin/top-performers',
+                element: <SuperAdminTopPerformers />
+            }, {
+                path: '/super-admin/farmlands-list/:id',
+                element: <SuperAdminFarmlandDetails />
+            }, {
+                path: '/super-admin/agent-profile/:id',
+                element: <SuperAdminAgentProfile />
+            }, {
+                path: '/super-admin/profile',
+                element: <SuperAdminProfile />
             },
         ]
 

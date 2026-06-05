@@ -90,7 +90,7 @@ const SuperAdminFarmlandsListFull: React.FC = () => {
               <SuperAdminFarmlandsListCard
                 key={farmland.id}
                 data={farmland}
-                onViewDetails={(id) => console.log("View Details:", id)}
+                onViewDetails={(id) => navigate(`/super-admin/farmlands-list/${id}`)}
                 onEditTag={(id) => navigate(`/super-admin/edit-farmland-tag/${id}`)}
               />
             ))}

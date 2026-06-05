@@ -88,35 +88,18 @@ export const RegionAreaEdit = lazy(() => import ("../../features/role-manager/pa
 
 // Super Admin
 export const SuperAdminDashboard = lazy(() => import ("../../features/super-admin/pages/SuperAdminDashboard"),);
-
 export const SuperAdminLogin = lazy(() => import ("../../features/super-admin/pages/SuperAdminLogin"),);
-
 export const SuperAdminFarmlands = lazy(() => import ("../../features/super-admin/pages/SuperAdminFarmlands"),);
-
-export const SuperAdminAssignedFarmlandsList = lazy(() => import ("../../features/super-admin/pages/SuperAdminAssignedFarmlandsList"),);
-
 export const SuperAdminFarmlandsListPreview = lazy(() => import ("../../features/super-admin/pages/SuperAdminFarmlandsListPreview"),);
-
-export const SuperAdminUsersListFull = lazy(
-  () => import("../../features/super-admin/pages/SuperAdminUsersListFull"),
-);
-
-export const SuperAdminUsersListAll = lazy(
-  () => import("../../features/super-admin/pages/SuperAdminUsersListAll"),
-);
-
-export const SuperAdminFarmlandsListFull = lazy(
-  () => import("../../features/super-admin/pages/SuperAdminFarmlandsListFull"),
-);
-
-export const SuperAdminAssignedFarmlandDetails = lazy(
-  () => import("../../features/super-admin/pages/SuperAdminAssignedFarmlandDetails"),
-);
-
-export const SuperAdminCustomerInformation = lazy(
-  () => import("../../features/super-admin/pages/SuperAdminCustomerInformation"),
-);
-
-export const SuperAdminEditFarmlandTag = lazy(
-  () => import("../../features/super-admin/pages/SuperAdminEditFarmlandTag"),
-);
+export const SuperAdminFarmlandsListFull = lazy(() => import ("../../features/super-admin/pages/SuperAdminFarmlandsListFull"),);
+export const SuperAdminUsersListFull = lazy(() => import ("../../features/super-admin/pages/SuperAdminUsersListFull"),);
+export const SuperAdminUsersListAll = lazy(() => import ("../../features/super-admin/pages/SuperAdminUsersListAll"),);
+export const SuperAdminEditFarmlandTag = lazy(() => import ("../../features/super-admin/pages/SuperAdminEditFarmlandTag"),);
+export const SuperAdminAssignedFarmlandsList = lazy(() => import ("../../features/super-admin/pages/SuperAdminAssignedFarmlandsList"),);
+export const SuperAdminAssignedFarmlandDetails = lazy(() => import ("../../features/super-admin/pages/SuperAdminAssignedFarmlandDetails"),);
+export const SuperAdminCustomerInformation = lazy(() => import ("../../features/super-admin/pages/SuperAdminCustomerInformation"),);
+export const SuperAdminUserProfile = lazy(() => import ("../../features/super-admin/pages/SuperAdminUserProfile"),);
+export const SuperAdminTopPerformers = lazy(() => import ("../../features/super-admin/pages/SuperAdminTopPerformers"),);
+export const SuperAdminFarmlandDetails = lazy(() => import ("../../features/super-admin/pages/SuperAdminFarmlandDetails"),);
+export const SuperAdminAgentProfile = lazy(() => import ("../../features/super-admin/pages/SuperAdminAgentProfile"),);
+export const SuperAdminProfile = lazy(() => import ("../../features/super-admin/pages/SuperAdminProfile"),);

@@ -58,13 +58,6 @@ const SuperAdminUsersListFull: React.FC = () => {
               Managed dossiers from premium agents
             </p>
           </div>
-          <Button
-            onClick={() => navigate("/super-admin/users-list/all")}
-            className="rounded-full px-6 bg-[#2D3032] hover:bg-black text-white font-medium self-start md:self-auto flex items-center gap-2"
-          >
-            View all
-            <ArrowUpRight size={16} />
-          </Button>
         </div>
 
         <div className="flex flex-col xl:flex-row gap-4 justify-between xl:items-center">
@@ -92,7 +85,11 @@ const SuperAdminUsersListFull: React.FC = () => {
                   <button
                     key={option}
                     onClick={() => {
-                      setFilter(option);
+                      if (option === "All") {
+                        navigate("/super-admin/users-list/all");
+                      } else {
+                        setFilter(option);
+                      }
                       setIsOpen(false);
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -110,7 +107,7 @@ const SuperAdminUsersListFull: React.FC = () => {
             <SuperAdminUserListCard
               key={user.id}
               data={user}
-              onViewProfile={(id) => console.log("View Profile:", id)}
+              onViewProfile={(id) => navigate(`/super-admin/user-profile/${id}`)}
             />
           ))}
         </div>
