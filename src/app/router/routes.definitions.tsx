@@ -31,6 +31,8 @@ import {
     Assignedfarmland,
     AssignedFarmlandList,
     Farmlanddocument,
+    IORequestedInfo,
+    IORequestedInfoList,
     CreateFieldOfficer,
     CreateintellegenceOfficer,
     CreateregionalOfficer,
@@ -86,8 +88,10 @@ import {
     SuperAdminFarmlandsListPreview,
     SuperAdminFarmlandsListFull,
     SuperAdminUsersListFull,
+    SuperAdminUsersListAll,
     SuperAdminAssignedFarmlandDetails,
-    SuperAdminCustomerInformation
+    SuperAdminCustomerInformation,
+    SuperAdminEditFarmlandTag
 } from './routes.config';
 
 
@@ -169,6 +173,12 @@ export const authRoutes: RouteObject[] = [
                 path: '/io/assigned-farmland/list',
                 element: <AssignedFarmlandList />
             }, {
+                path: '/io/requested-info',
+                element: <IORequestedInfo />
+            }, {
+                path: '/io/requested-info/list',
+                element: <IORequestedInfoList />
+            }, {
                 path: '/role-manager/agent-create',
                 element: <AgentCreate />
             }, {
@@ -233,6 +243,12 @@ export const authRoutes: RouteObject[] = [
             }, {
                 path: '/super-admin/users-list',
                 element: <SuperAdminUsersListFull />
+            }, {
+                path: '/super-admin/users-list/all',
+                element: <SuperAdminUsersListAll />
+            }, {
+                path: '/super-admin/edit-farmland-tag/:id',
+                element: <SuperAdminEditFarmlandTag />
             }, {
                 path: '/super-admin/assigned-farmlands/:id',
                 element: <SuperAdminAssignedFarmlandDetails />
