@@ -746,6 +746,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
 
   const [activeStep, setActiveStep] = React.useState<"list" | "owner-details" | "family-tree" | "land-details" | "local-intelligence">("list");
   const [showReasonModal, setShowReasonModal] = React.useState(false);
+  const [cameFromModal, setCameFromModal] = React.useState(false);
 
   // Lifted form data state
   const [firstName, setFirstName] = React.useState("Ramudu");
@@ -870,15 +871,32 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
   if (activeStep === "local-intelligence") {
     return (
       <LocalIntelligenceDocument
-        onBack={() => setActiveStep("land-details")}
+        onBack={() => {
+          if (cameFromModal) {
+            setCameFromModal(false);
+            setActiveStep("list");
+            setShowReasonModal(true);
+          } else {
+            setActiveStep("land-details");
+          }
+        }}
         onNext={() => {
           alert("Farmland document updated successfully!");
           setActiveStep("list");
         }}
         onStepChange={(step) => {
-          if (step === "customer") setActiveStep("owner-details");
+          if (step === "customer") {
+            if (cameFromModal) {
+              setCameFromModal(false);
+              setActiveStep("list");
+              setShowReasonModal(true);
+            } else {
+              setActiveStep("owner-details");
+            }
+          }
         }}
         farmlandId={displayData.farmlandId}
+        isFromRejection={cameFromModal || isRequestedInfo}
       />
     );
   }
@@ -957,7 +975,14 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
       {showReasonModal && (
         <RequestedInfoReasonModal
           onClose={() => setShowReasonModal(false)}
-          onUpload={handleUpload}
+          onUpload={() => {
+            if (onUpload) {
+              onUpload();
+            }
+            setCameFromModal(true);
+            setActiveStep("local-intelligence");
+            setShowReasonModal(false);
+          }}
           rejectedBy="Verification Officer Sravan"
         />
       )}
