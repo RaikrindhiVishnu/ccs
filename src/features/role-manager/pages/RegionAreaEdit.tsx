@@ -19,6 +19,7 @@ import {
   useGetRegionGeoJsonQuery,
   useLazyGetRegionGeoJsonQuery,
   useGetAreaGeoJsonQuery,
+  useLazyGetAllAreasByRegionIdQuery,
 } from "../api/regionSelectionApi";
 import {
   useGetAllRegionalOfficersMutation,
@@ -589,12 +590,70 @@ const RegionAreaEdit: React.FC = () => {
     (editAreaId && urlAreaRegionId ? Number(urlAreaRegionId) : null) ||
     selectedRegionId;
   console.log(parentRegionId, selectedRegionId, "parentRegionId")
-  // Query child areas of parent region for area mapping & selection
-  // When urlAreaRegionId is present we can fire this query immediately on mount
   const { data: regionAreasData } = useGetAllAreasByRegionIdQuery(
     { region_id: Number(parentRegionId) },
     { skip: !parentRegionId },
   );
+
+  const isAreaMode = searchParams.get("mode") === "area";
+  const [triggerGetAreas] = useLazyGetAllAreasByRegionIdQuery();
+  const [regionsWithAreas, setRegionsWithAreas] = useState<Set<number> | null>(null);
+
+  const stateRegionsGeoJson = useMemo(() => {
+    if (!regionsByCountryData) return [];
+    try {
+      const decompressed = decompressGeoJSON(regionsByCountryData);
+      const features: any[] = decompressed?.features || [];
+      const currentStateId = selectedState?.properties?.id;
+      return currentStateId
+        ? features.filter(
+          (f: any) => Number(f.properties?.state_id) === currentStateId,
+        )
+        : features;
+    } catch {
+      return [];
+    }
+  }, [regionsByCountryData, selectedState]);
+
+  useEffect(() => {
+    if (!isAreaMode || stateRegionsGeoJson.length === 0) {
+      setRegionsWithAreas(null);
+      return;
+    }
+
+    const fetchAll = async () => {
+      const activeIds = new Set<number>();
+
+      await Promise.all(
+        stateRegionsGeoJson.map(async (f: any) => {
+          const regionId = Number(f.properties?.region_id || f.id);
+          if (!regionId) return;
+          try {
+            const res = await triggerGetAreas({ region_id: regionId }).unwrap();
+            const areas = res?.data || [];
+            if (areas.length > 0) {
+              activeIds.add(regionId);
+            }
+          } catch (e) {
+            console.error("Failed to fetch areas for region:", regionId, e);
+          }
+        })
+      );
+
+      setRegionsWithAreas(activeIds);
+    };
+
+    fetchAll();
+  }, [stateRegionsGeoJson, isAreaMode, triggerGetAreas, regionAreasData]);
+
+  // Show pending toast messages from previous reloads (like success save message)
+  useEffect(() => {
+    const pendingMessage = sessionStorage.getItem("toast_success_message");
+    if (pendingMessage) {
+      toast.success(pendingMessage);
+      sessionStorage.removeItem("toast_success_message");
+    }
+  }, []);
 
   // Cache loaded areas globally for mock getAreaById fallback compatibility
   useEffect(() => {
@@ -873,143 +932,147 @@ const RegionAreaEdit: React.FC = () => {
     const dtId = district.i;
     const isAssignedToOther = otherAssignedDistrictIds.has(dtId);
 
-    const isAlreadySelected = selectedDistricts.some(
-      (d) => Number(d.id ?? d.featureId) === dtId
-    );
+    setSelectedDistricts((prev) => {
+      const isAlreadySelected = prev.some(
+        (d) => Number(d.id ?? d.featureId) === dtId
+      );
 
-    if (isAlreadySelected) {
-      if (map.current) {
-        map.current.setFeatureState(
-          { source: "districts-source", id: dtId },
-          { selected: false }
-        );
-      }
-      setSelectedDistricts((prev) => {
+      if (isAlreadySelected) {
+        if (map.current) {
+          map.current.setFeatureState(
+            { source: "districts-source", id: dtId },
+            { selected: false }
+          );
+        }
         setReassignedDistricts((r) =>
           r.filter((item) => item.districtId !== dtId)
         );
         return prev.filter((d) => Number(d.id ?? d.featureId) !== dtId);
-      });
-      return;
-    }
-
-    if (isAssignedToOther) {
-      const ownerRegion = allRegionsData.features.find((f: any) => {
-        const ids = getDistrictIdsFromRegion(f, geoMasterData);
-        return ids.includes(dtId);
-      });
-      if (ownerRegion) {
-        setPendingDistrict({
-          id: dtId,
-          name: district.d || "",
-          code: district.c || "",
-        });
-        setPendingOwnerRegion({
-          id: getRegionId(ownerRegion),
-          name:
-            ownerRegion.properties?.region_name ||
-            ownerRegion.properties?.name ||
-            "another region",
-          rawFeature: ownerRegion,
-        });
-        setReassignModalOpen(true);
       }
-      return;
-    }
 
-    setSelectedDistricts((prev) => [
-      ...prev,
-      {
-        id: dtId,
-        featureId: dtId,
-        name: district.d,
-        code: district.c,
-        d: district.d,
-        properties: {
+      if (isAssignedToOther) {
+        setTimeout(() => {
+          const ownerRegion = allRegionsData.features.find((f: any) => {
+            const ids = getDistrictIdsFromRegion(f, geoMasterData);
+            return ids.includes(dtId);
+          });
+          if (ownerRegion) {
+            setPendingDistrict({
+              id: dtId,
+              name: district.d || "",
+              code: district.c || "",
+            });
+            setPendingOwnerRegion({
+              id: getRegionId(ownerRegion),
+              name:
+                ownerRegion.properties?.region_name ||
+                ownerRegion.properties?.name ||
+                "another region",
+              rawFeature: ownerRegion,
+            });
+            setReassignModalOpen(true);
+          }
+        }, 0);
+        return prev;
+      }
+
+      if (map.current) {
+        map.current.setFeatureState(
+          { source: "districts-source", id: dtId },
+          { selected: true }
+        );
+      }
+
+      return [
+        ...prev,
+        {
           id: dtId,
+          featureId: dtId,
           name: district.d,
           code: district.c,
+          d: district.d,
+          properties: {
+            id: dtId,
+            name: district.d,
+            code: district.c,
+          },
         },
-      },
-    ]);
-    if (map.current) {
-      map.current.setFeatureState(
-        { source: "districts-source", id: dtId },
-        { selected: true }
-      );
-    }
+      ];
+    });
   };
 
   const toggleEditMandalSelection = (mandal: any) => {
     const mId = mandal.i;
     const isAssignedToOther = otherAssignedMandalIds.has(mId);
 
-    const isAlreadySelected = selectedDistricts.some(
-      (m) => Number(m.id ?? m.featureId) === mId
-    );
-
-    if (isAlreadySelected) {
-      setSelectedDistricts((prev) =>
-        prev.filter((d) => Number(d.id ?? d.featureId) !== mId)
+    setSelectedDistricts((prev) => {
+      const isAlreadySelected = prev.some(
+        (m) => Number(m.id ?? m.featureId) === mId
       );
+
+      if (isAlreadySelected) {
+        if (map.current) {
+          map.current.setFeatureState(
+            { source: "mandals-source", id: mId },
+            { selected: false }
+          );
+        }
+        return prev.filter((d) => Number(d.id ?? d.featureId) !== mId);
+      }
+
+      if (isAssignedToOther) {
+        setTimeout(() => {
+          let areaId = 1;
+          let areaName = "Another Area";
+          const list = regionAreasData?.data || [];
+          const rawArea = list.find((area: any) => {
+            const mIds = area.mandal_ids || area.mandalIds || [];
+            return mIds.map(Number).includes(mId);
+          });
+          if (rawArea) {
+            areaId = rawArea.id || rawArea.area_id || 1;
+            areaName = rawArea.area_name || rawArea.areaName || "Another Area";
+          }
+
+          setPendingDistrict({
+            id: mId,
+            name: mandal.d || "This mandal",
+            code: mandal.c || "",
+            district_id: mandal.district_id,
+          });
+          setPendingOwnerRegion({
+            id: areaId,
+            name: areaName,
+          });
+          setReassignModalOpen(true);
+        }, 0);
+        return prev;
+      }
+
       if (map.current) {
         map.current.setFeatureState(
           { source: "mandals-source", id: mId },
-          { selected: false }
+          { selected: true }
         );
       }
-      return;
-    }
 
-    if (isAssignedToOther) {
-      let areaId = 1;
-      let areaName = "Another Area";
-      const list = regionAreasData?.data || [];
-      const rawArea = list.find((area: any) => {
-        const mIds = area.mandal_ids || area.mandalIds || [];
-        return mIds.map(Number).includes(mId);
-      });
-      if (rawArea) {
-        areaId = rawArea.id || rawArea.area_id || 1;
-        areaName = rawArea.area_name || rawArea.areaName || "Another Area";
-      }
-
-      setPendingDistrict({
-        id: mId,
-        name: mandal.d || "This mandal",
-        code: mandal.c || "",
-        district_id: mandal.district_id,
-      });
-      setPendingOwnerRegion({
-        id: areaId,
-        name: areaName,
-      });
-      setReassignModalOpen(true);
-      return;
-    }
-
-    setSelectedDistricts((prev) => [
-      ...prev,
-      {
-        id: mId,
-        featureId: mId,
-        name: mandal.d,
-        code: mandal.c || "",
-        d: mandal.d,
-        properties: {
+      return [
+        ...prev,
+        {
           id: mId,
+          featureId: mId,
           name: mandal.d,
           code: mandal.c || "",
-          district_id: mandal.district_id,
+          d: mandal.d,
+          properties: {
+            id: mId,
+            name: mandal.d,
+            code: mandal.c || "",
+            district_id: mandal.district_id,
+          },
         },
-      },
-    ]);
-    if (map.current) {
-      map.current.setFeatureState(
-        { source: "mandals-source", id: mId },
-        { selected: true }
-      );
-    }
+      ];
+    });
   };
 
   // ── Pre-populate Form state, active state selection, and pre-selected districts/mandals ──
@@ -1541,60 +1604,14 @@ const RegionAreaEdit: React.FC = () => {
             const districtFeature = e.features[0];
             const districtData = districtFeature.properties;
             const dtId = Number(districtData?.id || districtData?.featureId);
-            const isSelectedNow = districtData?.isSelected || false;
 
-            if (isSelectedNow) {
-              setSelectedDistricts((prev) => {
-                // If it was reassigned, clean up reassign tracker
-                setReassignedDistricts((r) =>
-                  r.filter((item) => item.districtId !== dtId),
-                );
-                return prev.filter((d) => Number(d.id ?? d.featureId) !== dtId);
-              });
-              return;
-            }
+            const district = {
+              i: dtId,
+              d: districtData.name || districtData.d || "",
+              c: districtData.code || "",
+            };
 
-            if (districtData?.isAssigned) {
-              const ownerRegion = allRegionsData.features.find((f: any) => {
-                const ids = getDistrictIdsFromRegion(f, geoMasterData);
-                return ids.includes(dtId);
-              });
-              if (ownerRegion) {
-                setPendingDistrict({
-                  id: dtId,
-                  name: districtData.name || districtData.d || "",
-                  code: districtData.code || "",
-                });
-                setPendingOwnerRegion({
-                  id: getRegionId(ownerRegion),
-                  name:
-                    ownerRegion.properties?.region_name ||
-                    ownerRegion.properties?.name ||
-                    "another region",
-                  rawFeature: ownerRegion,
-                });
-                setReassignModalOpen(true);
-              }
-              return;
-            }
-
-            setSelectedDistricts((prev) => {
-              return [
-                ...prev,
-                {
-                  id: dtId,
-                  featureId: dtId,
-                  name: districtData.name,
-                  code: districtData.code,
-                  d: districtData.name,
-                  properties: {
-                    id: dtId,
-                    name: districtData.name,
-                    code: districtData.code,
-                  },
-                },
-              ];
-            });
+            toggleEditDistrictSelection(district);
           }
         });
       } else {
@@ -1618,12 +1635,37 @@ const RegionAreaEdit: React.FC = () => {
   useEffect(() => {
     if (!map.current || !geoMasterData || mapLoaded === 0) return;
 
-    const showMandals = editModeType === "area" || !!selectedRegion;
+    const showMandals = editModeType === "area";
     if (!showMandals) {
       if (map.current.getLayer("mandals-fill")) {
         map.current.setLayoutProperty("mandals-fill", "visibility", "none");
         map.current.setLayoutProperty("mandals-line", "visibility", "none");
         map.current.setLayoutProperty("mandals-labels", "visibility", "none");
+      }
+
+      if (map.current.getLayer("regions-fill")) {
+        if (selectedRegion) {
+          const regionId = getRegionId(selectedRegion);
+          map.current.setFilter("regions-fill", [
+            "==",
+            ["coalesce", ["get", "region_id"], ["get", "id"]],
+            regionId,
+          ]);
+        } else {
+          map.current.setFilter("regions-fill", null);
+        }
+      }
+      if (map.current.getLayer("regions-line")) {
+        if (selectedRegion) {
+          const regionId = getRegionId(selectedRegion);
+          map.current.setFilter("regions-line", [
+            "==",
+            ["coalesce", ["get", "region_id"], ["get", "id"]],
+            regionId,
+          ]);
+        } else {
+          map.current.setFilter("regions-line", null);
+        }
       }
       return;
     }
@@ -1652,10 +1694,6 @@ const RegionAreaEdit: React.FC = () => {
           }
           areasList = regionAreasData?.data || [];
         }
-      } else if (selectedRegion) {
-        parentRegionId = getRegionId(selectedRegion);
-        districtIds = getDistrictIdsFromRegion(selectedRegion, geoMasterData);
-        areasList = regionAreasData?.data || [];
       }
 
       // Filter out current area
@@ -1816,6 +1854,11 @@ const RegionAreaEdit: React.FC = () => {
             const mProps = feature.properties || {};
             const mId = Number(feature.id);
 
+            const filter = activeFilterRef.current;
+            const isAssigned = !!mProps.isAssigned || !!mProps.areaId;
+            if (filter === "unassigned" && isAssigned) return;
+            if (filter === "assigned" && !isAssigned) return;
+
             const searchParamsLocal = new URLSearchParams(
               window.location.search,
             );
@@ -1848,6 +1891,12 @@ const RegionAreaEdit: React.FC = () => {
                     "region_map_is_zoomed",
                     isZoomed ? "true" : "false",
                   );
+                  if (selectedRegion) {
+                    sessionStorage.setItem(
+                      "selected_region_id",
+                      String(getRegionId(selectedRegion)),
+                    );
+                  }
                 }
                 navigate(`/role-manager/area-details/${mProps.areaId}`, {
                   state: {
@@ -1864,50 +1913,13 @@ const RegionAreaEdit: React.FC = () => {
             }
 
             // AREA EDIT MODE CLICK HANDLER
-            // Read from ref so we always get the latest selection, not the stale closure value
-            const currentSelectedIds = new Set<number>(
-              selectedDistrictsRef.current.map((d) =>
-                Number(d.id ?? d.featureId),
-              ),
-            );
-            const isAlreadySelected = currentSelectedIds.has(mId);
-
-            if (isAlreadySelected) {
-              setSelectedDistricts((prev) =>
-                prev.filter((d) => Number(d.id ?? d.featureId) !== mId),
-              );
-              return;
-            }
-
-            if (mProps.isAssigned) {
-              setPendingDistrict({
-                id: mId,
-                name: mProps.name || mProps.d || "This mandal",
-                code: mProps.code || "",
-              });
-              setPendingOwnerRegion({
-                id: mProps.areaId || 1,
-                name: mProps.areaName || "Another Area",
-              });
-              setReassignModalOpen(true);
-            } else {
-              setSelectedDistricts((prev) => [
-                ...prev,
-                {
-                  id: mId,
-                  featureId: mId,
-                  name: mProps.name || mProps.d,
-                  code: mProps.code || "",
-                  d: mProps.name || mProps.d,
-                  properties: {
-                    id: mId,
-                    name: mProps.name || mProps.d,
-                    code: mProps.code || "",
-                    district_id: mProps.district_id,
-                  },
-                },
-              ]);
-            }
+            const mandalObj = {
+              i: mId,
+              d: mProps.name || mProps.d || "",
+              c: mProps.code || "",
+              district_id: mProps.district_id,
+            };
+            toggleEditMandalSelection(mandalObj);
           }
         });
 
@@ -1922,6 +1934,15 @@ const RegionAreaEdit: React.FC = () => {
           }
           if (e.features && e.features.length > 0) {
             const feat = e.features[0];
+            const mProps = feat.properties || {};
+
+            const filter = activeFilterRef.current;
+            const isAssigned = !!mProps.isAssigned || !!mProps.areaId;
+            if ((filter === "unassigned" && isAssigned) || (filter === "assigned" && !isAssigned)) {
+              if (map.current) map.current.getCanvas().style.cursor = "";
+              return;
+            }
+
             hoveredMandalIdLocal = feat.id;
             if (hoveredMandalIdLocal !== null) {
               map.current?.setFeatureState(
@@ -1934,7 +1955,6 @@ const RegionAreaEdit: React.FC = () => {
             }
 
             // View Mode Popups for areas
-            const mProps = feat.properties || {};
             const searchParamsLocal = new URLSearchParams(
               window.location.search,
             );
@@ -2437,6 +2457,7 @@ const RegionAreaEdit: React.FC = () => {
 
             if (savedSelectedState) {
               setSelectedState(JSON.parse(savedSelectedState));
+              setAssignPanelOpen(true);
             }
             if (savedIsZoomed === "true") {
               setIsZoomed(true);
@@ -2515,7 +2536,16 @@ const RegionAreaEdit: React.FC = () => {
       });
 
       const assigned = mappedFeatures
-        .filter((f: any) => f.isAssignedFromApi)
+        .filter((f: any) => {
+          if (isAreaMode) return true;
+          return f.isAssignedFromApi;
+        })
+        .filter((f: any) => {
+          if (!isAreaMode) return true;
+          if (!regionsWithAreas) return true; // loading fallback
+          const regionId = f.properties?.region_id || f.id;
+          return regionsWithAreas.has(Number(regionId));
+        })
         .map((f: any) => ({
           id: f.properties?.region_id || f.id,
           name: f.properties?.region_name || f.properties?.name || "Region",
@@ -2524,7 +2554,16 @@ const RegionAreaEdit: React.FC = () => {
         }));
 
       const unassigned = mappedFeatures
-        .filter((f: any) => !f.isAssignedFromApi)
+        .filter((f: any) => {
+          if (isAreaMode) return true;
+          return !f.isAssignedFromApi;
+        })
+        .filter((f: any) => {
+          if (!isAreaMode) return true;
+          if (!regionsWithAreas) return true; // loading fallback
+          const regionId = f.properties?.region_id || f.id;
+          return regionsWithAreas.has(Number(regionId));
+        })
         .map((f: any) => ({
           id: f.properties?.region_id || f.id,
           name: f.properties?.region_name || f.properties?.name || "Region",
@@ -2536,12 +2575,48 @@ const RegionAreaEdit: React.FC = () => {
     } catch {
       return { assignedRegions: [], unassignedRegions: [] };
     }
-  }, [regionsByCountryData, geoMasterData, selectedState, regionsByStateData]);
+  }, [regionsByCountryData, geoMasterData, selectedState, regionsByStateData, isAreaMode, regionsWithAreas]);
 
   const assignedRegionsRef = useRef(assignedRegions);
   useEffect(() => {
     assignedRegionsRef.current = assignedRegions;
   }, [assignedRegions]);
+
+  // Restore selectedState or selectedRegion when returning to View Mode
+  useEffect(() => {
+    if (isEditMode) return;
+
+    const mode = searchParams.get("mode") || "region";
+
+    if (mode === "region") {
+      const savedSelectedState = sessionStorage.getItem("region_map_selected_state");
+      if (savedSelectedState) {
+        try {
+          const stateObj = JSON.parse(savedSelectedState);
+          setSelectedState(stateObj);
+          setAssignPanelOpen(true);
+          setIsZoomed(true);
+        } catch (e) {
+          console.error("Failed to restore selected state:", e);
+        }
+        sessionStorage.removeItem("region_map_selected_state");
+      }
+    } else if (mode === "area") {
+      const savedRegionId = sessionStorage.getItem("selected_region_id");
+      if (savedRegionId && allRegionsData?.features?.length > 0) {
+        const regionIdNum = Number(savedRegionId);
+        const matchedRegion = allRegionsData.features.find(
+          (f: any) => getRegionId(f) === regionIdNum
+        );
+        if (matchedRegion && !selectedRegion) {
+          setSelectedRegion(matchedRegion);
+          setAssignPanelOpen(true);
+          setIsZoomed(true);
+          sessionStorage.removeItem("selected_region_id");
+        }
+      }
+    }
+  }, [allRegionsData, selectedRegion, isEditMode, searchParams]);
 
   const resetView = () => {
     map.current?.flyTo({
@@ -2577,11 +2652,38 @@ const RegionAreaEdit: React.FC = () => {
     setEditSearchQuery("");
 
     if (editModeType === "area") {
-      navigate("/role-manager/create-regions-and-areas?mode=view");
+      if (selectedRegion) {
+        sessionStorage.setItem(
+          "selected_region_id",
+          String(getRegionId(selectedRegion)),
+        );
+      }
+      navigate("/role-manager/region-area-edit?mode=area");
       return;
     }
 
-    // Zoom back out to the state view instead of starting overview!
+    if (editModeType === "region") {
+      if (selectedState) {
+        sessionStorage.setItem(
+          "region_map_selected_state",
+          JSON.stringify(selectedState),
+        );
+        if (map.current) {
+          const center = map.current.getCenter();
+          sessionStorage.setItem(
+            "region_map_center",
+            JSON.stringify([center.lng, center.lat]),
+          );
+          sessionStorage.setItem(
+            "region_map_zoom",
+            map.current.getZoom().toString(),
+          );
+          sessionStorage.setItem("region_map_is_zoomed", "true");
+        }
+      }
+      navigate("/role-manager/region-area-edit?mode=region");
+      return;
+    }
     if (selectedState && map.current) {
       map.current.fitBounds(getFeatureBounds(selectedState), {
         padding: 100,
@@ -2733,13 +2835,19 @@ const RegionAreaEdit: React.FC = () => {
           },
         );
 
-        await updateArea(targetPayload).unwrap();
+        const res = await updateArea(targetPayload).unwrap();
 
-        toast.success("Area updated successfully!");
+        const successMsg = res?.message || res?.data?.message || "Area updated successfully!";
+        sessionStorage.setItem("toast_success_message", successMsg);
 
-        // Return to country view by clearing params and resetting the map state
-        // Force a full refresh to completely clear map layers and state
-        window.location.href = "/role-manager/region-area-dashboard";
+        // Return to initial map view with the assigned/unassigned filters restored
+        if (selectedRegion) {
+          sessionStorage.setItem(
+            "selected_region_id",
+            String(getRegionId(selectedRegion)),
+          );
+        }
+        window.location.href = "/role-manager/region-area-edit?mode=area";
       } catch (err: any) {
         console.error("RegionAreaEdit: Area update failed:", err);
         toast.error(
@@ -2871,9 +2979,10 @@ const RegionAreaEdit: React.FC = () => {
         },
       );
 
-      await updateRegion(targetPayload).unwrap();
+      const res = await updateRegion(targetPayload).unwrap();
 
-      toast.success("Region details and reassignments updated successfully!");
+      const successMsg = res?.message || res?.data?.message || "Region details and reassignments updated successfully!";
+      sessionStorage.setItem("toast_success_message", successMsg);
 
       // 1. Fetch the updated regions again (refetch caches)
       refetchRegionsByCountry();
@@ -2893,8 +3002,26 @@ const RegionAreaEdit: React.FC = () => {
       setSelectedIntelligenceOfficerId(null);
       setSearchParams({});
 
-      // 4. Navigate back to dashboard view
-      navigate("/role-manager/region-area-dashboard");
+      // 4. Navigate back to initial map view with the assigned/unassigned filters restored
+      if (selectedState) {
+        sessionStorage.setItem(
+          "region_map_selected_state",
+          JSON.stringify(selectedState),
+        );
+        if (map.current) {
+          const center = map.current.getCenter();
+          sessionStorage.setItem(
+            "region_map_center",
+            JSON.stringify([center.lng, center.lat]),
+          );
+          sessionStorage.setItem(
+            "region_map_zoom",
+            map.current.getZoom().toString(),
+          );
+          sessionStorage.setItem("region_map_is_zoomed", "true");
+        }
+      }
+      window.location.href = "/role-manager/region-area-edit?mode=region";
     } catch (err: any) {
       console.error("RegionAreaEdit: Update failed:", err);
       const errMsg =
@@ -3022,7 +3149,13 @@ const RegionAreaEdit: React.FC = () => {
                   }
                   value={regionCode}
                   onChange={(e) => setRegionCode(e.target.value)}
-                  className="px-3.5 text-sm h-11 border-slate-200 font-mono"
+                  disabled={editModeType === "region"}
+                  className="px-3.5 text-sm h-11 border-none font-mono disabled:text-slate-400 disabled:cursor-not-allowed"
+                  wrapperClassName={
+                    editModeType === "region"
+                      ? "bg-slate-50 border-slate-200/80 opacity-70 cursor-not-allowed"
+                      : ""
+                  }
                 />
               </div>
 
@@ -3230,8 +3363,8 @@ const RegionAreaEdit: React.FC = () => {
                                   key={district.i}
                                   onClick={() => toggleEditDistrictSelection(district)}
                                   className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-semibold transition-all ${isSelected
-                                      ? "bg-blue-50 text-blue-600 hover:bg-blue-100/80"
-                                      : "hover:bg-slate-50 text-slate-700"
+                                    ? "bg-blue-50 text-blue-600 hover:bg-blue-100/80"
+                                    : "hover:bg-slate-50 text-slate-700"
                                     }`}
                                 >
                                   <div className="flex items-center gap-2">
@@ -3269,8 +3402,8 @@ const RegionAreaEdit: React.FC = () => {
                                 key={mandal.i}
                                 onClick={() => toggleEditMandalSelection(mandal)}
                                 className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-semibold transition-all ${isSelected
-                                    ? "bg-blue-50 text-blue-600 hover:bg-blue-100/80"
-                                    : "hover:bg-slate-50 text-slate-700"
+                                  ? "bg-blue-50 text-blue-600 hover:bg-blue-100/80"
+                                  : "hover:bg-slate-50 text-slate-700"
                                   }`}
                               >
                                 <div className="flex items-center gap-2">
@@ -3417,15 +3550,21 @@ const RegionAreaEdit: React.FC = () => {
                   });
 
                   // Add to reassignment list
-                  setReassignedDistricts((prev) => [
-                    ...prev,
-                    {
-                      districtId: pendingDistrict.id,
-                      fromRegionId: pendingOwnerRegion.id,
-                      fromRegionName: pendingOwnerRegion.name,
-                      fromRegionRawFeature: pendingOwnerRegion.rawFeature,
-                    },
-                  ]);
+                  setReassignedDistricts((prev) => {
+                    const isAlreadyReassigned = prev.some(
+                      (item) => item.districtId === pendingDistrict.id
+                    );
+                    if (isAlreadyReassigned) return prev;
+                    return [
+                      ...prev,
+                      {
+                        districtId: pendingDistrict.id,
+                        fromRegionId: pendingOwnerRegion.id,
+                        fromRegionName: pendingOwnerRegion.name,
+                        fromRegionRawFeature: pendingOwnerRegion.rawFeature,
+                      },
+                    ];
+                  });
 
                   // Close modal
                   setReassignModalOpen(false);
@@ -3446,283 +3585,523 @@ const RegionAreaEdit: React.FC = () => {
         </div>
       )}
       {/* Assign / Unassign Panel */}
+      {/* Assign / Unassign Panel */}
       {assignPanelOpen &&
         (selectedState || (editModeType === "area" && selectedRegion)) &&
         !isEditMode && (
-          <div className="fixed top-4 right-4 z-[100] flex flex-row gap-3 items-start select-none">
-            {/* Dropdown 1: Assigned/Un Assigned/All Filter */}
-            <div className="relative" ref={filterDropdownRef}>
-              <button
-                onClick={() => {
-                  setFilterDropdownOpen(!filterDropdownOpen);
-                  setShowRegionsList(false);
-                  setAreasDropdownOpen(false);
-                }}
-                className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
-              >
-                <span>
-                  {activeFilter === "assigned"
-                    ? "Assigned"
-                    : activeFilter === "unassigned"
-                      ? "Un Assigned"
-                      : "All"}
-                </span>
-                <svg
-                  className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${filterDropdownOpen ? "rotate-180" : ""}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-
-              {filterDropdownOpen && (
-                <div className="absolute right-0 top-11 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden w-36 py-1">
-                  {(["assigned", "unassigned", "all"] as const).map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => {
-                        setActiveFilter(option);
-                        setFilterDropdownOpen(false);
-                        setRegionSearch("");
-                        setShowRegionsList(false);
-                      }}
-                      className={`w-full text-left px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-0 ${activeFilter === option
-                          ? "bg-blue-50 text-blue-600"
-                          : "bg-white text-slate-700 hover:bg-slate-50"
+          <div className="fixed top-4 right-12 z-[100] flex flex-row gap-3 items-start select-none">
+            {editModeType === "area" ? (
+              <>
+                {/* Dropdown 1: Regions Select */}
+                <div className="relative" ref={regionsDropdownRef}>
+                  <button
+                    onClick={() => {
+                      setShowRegionsList(!showRegionsList);
+                      setFilterDropdownOpen(false);
+                      setAreasDropdownOpen(false);
+                    }}
+                    className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                  >
+                    <span>
+                      {selectedRegionName
+                        ? `Regions: ${selectedRegionName}`
+                        : `Regions: ${activeFilter === "assigned"
+                          ? assignedRegions.length
+                          : activeFilter === "unassigned"
+                            ? unassignedRegions.length
+                            : assignedRegions.length + unassignedRegions.length
                         }`}
+                    </span>
+                    <svg
+                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${showRegionsList ? "rotate-180" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
                     >
-                      {option === "assigned"
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {showRegionsList && (
+                    <div className="absolute right-0 top-11 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden w-64 flex flex-col">
+                      {/* Search bar inside Regions dropdown */}
+                      <div className="p-3 border-b border-slate-100 relative flex items-center">
+                        <input
+                          type="text"
+                          placeholder="Search"
+                          value={regionSearch}
+                          onChange={(e) => setRegionSearch(e.target.value)}
+                          className="w-full h-10 pl-3 pr-9 text-xs rounded-xl border border-slate-200 bg-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-sm transition-all font-semibold"
+                        />
+                        <Search className="absolute right-6 w-4 h-4 text-slate-400 pointer-events-none" />
+                      </div>
+
+                      <div className="max-h-60 overflow-y-auto py-1">
+                        {(() => {
+                          if (isAreaMode && !regionsWithAreas) {
+                            return (
+                              <div className="flex flex-col items-center justify-center py-6 gap-2">
+                                <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">
+                                  Checking Areas...
+                                </span>
+                              </div>
+                            );
+                          }
+
+                          const listToShow =
+                            activeFilter === "assigned"
+                              ? assignedRegions
+                              : activeFilter === "unassigned"
+                                ? unassignedRegions
+                                : [...assignedRegions, ...unassignedRegions];
+
+                          const filtered = listToShow.filter((r) =>
+                            r.name.toLowerCase().includes(regionSearch.toLowerCase()),
+                          );
+
+                          if (filtered.length === 0) {
+                            return (
+                              <p className="text-[11px] text-slate-400 italic text-center py-4">
+                                No {activeFilter === "all" ? "" : activeFilter === "assigned" ? "assigned" : "unassigned"}{" "}
+                                regions found.
+                              </p>
+                            );
+                          }
+
+                          return filtered.map((region, idx) => {
+                            const isSelected = selectedRegion && getRegionId(selectedRegion) === region.id;
+                            const isAssignedRegion = assignedRegions.some(
+                              (r) => r.id === region.id,
+                            );
+
+                            return (
+                              <button
+                                key={region.id ?? idx}
+                                onClick={() => {
+                                  if (isSelected) {
+                                    setSelectedRegion(null);
+                                  } else {
+                                    setSelectedRegion(region.rawFeature);
+                                    if (
+                                      region.rawFeature &&
+                                      map.current &&
+                                      geoMasterData
+                                    ) {
+                                      try {
+                                        const builtFeature =
+                                          buildRegionFeatureFromDistricts(
+                                            region.rawFeature,
+                                            geoMasterData,
+                                          );
+                                        const target =
+                                          builtFeature ||
+                                          region.rawFeature;
+                                        if (target?.geometry) {
+                                          map.current.fitBounds(
+                                            getFeatureBounds(target),
+                                            {
+                                              padding: 80,
+                                              duration: 1500,
+                                            },
+                                          );
+                                        }
+                                      } catch (err) {
+                                        console.error(
+                                          "Failed to zoom to region:",
+                                          err,
+                                        );
+                                      }
+                                    }
+                                  }
+                                  setShowRegionsList(false);
+                                }}
+                                className={`w-full text-left px-4 py-2.5 cursor-pointer transition-all duration-200 flex items-center justify-between gap-3 border-b border-slate-100 last:border-b-0 ${isSelected
+                                  ? "bg-blue-50 text-blue-600"
+                                  : "bg-white hover:bg-slate-50 text-slate-700"
+                                  }`}
+                              >
+                                <span className="truncate text-xs font-bold">
+                                  {region.name}
+                                </span>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  {region.code && (
+                                    <span className="text-[10px] font-mono text-slate-400">
+                                      {region.code}
+                                    </span>
+                                  )}
+                                  {activeFilter === "all" && (
+                                    <span
+                                      className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${isAssignedRegion
+                                        ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                                        : "bg-slate-100 text-slate-500"
+                                        }`}
+                                    >
+                                      {isAssignedRegion ? "A" : "U"}
+                                    </span>
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          });
+                        })()}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Dropdown 2: Assigned/Un Assigned/All Filter */}
+                <div className="relative" ref={filterDropdownRef}>
+                  <button
+                    onClick={() => {
+                      setFilterDropdownOpen(!filterDropdownOpen);
+                      setShowRegionsList(false);
+                      setAreasDropdownOpen(false);
+                    }}
+                    className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                  >
+                    <span>
+                      {activeFilter === "assigned"
                         ? "Assigned"
-                        : option === "unassigned"
+                        : activeFilter === "unassigned"
                           ? "Un Assigned"
                           : "All"}
-                    </button>
-                  ))}
+                    </span>
+                    <svg
+                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${filterDropdownOpen ? "rotate-180" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {filterDropdownOpen && (
+                    <div className="absolute right-0 top-11 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden w-36 py-1">
+                      {(["assigned", "unassigned", "all"] as const).map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => {
+                            setActiveFilter(option);
+                            setFilterDropdownOpen(false);
+                            setRegionSearch("");
+                            setShowRegionsList(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-0 ${activeFilter === option
+                            ? "bg-blue-50 text-blue-600"
+                            : "bg-white text-slate-700 hover:bg-slate-50"
+                            }`}
+                        >
+                          {option === "assigned"
+                            ? "Assigned"
+                            : option === "unassigned"
+                              ? "Un Assigned"
+                              : "All"}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Dropdown 2: Regions Select */}
-            <div className="relative" ref={regionsDropdownRef}>
-              <button
-                onClick={() => {
-                  setShowRegionsList(!showRegionsList);
-                  setFilterDropdownOpen(false);
-                  setAreasDropdownOpen(false);
-                }}
-                className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
-              >
-                <span>
-                  {selectedRegionName
-                    ? `Regions: ${selectedRegionName}`
-                    : `Regions: ${activeFilter === "assigned"
-                      ? assignedRegions.length
-                      : activeFilter === "unassigned"
-                        ? unassignedRegions.length
-                        : assignedRegions.length + unassignedRegions.length
-                    }`}
-                </span>
-                <svg
-                  className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${showRegionsList ? "rotate-180" : ""}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-
-              {showRegionsList && (
-                <div className="absolute right-0 top-11 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden w-64 flex flex-col">
-                  {/* Search bar inside Regions dropdown */}
-                  <div className="p-3 border-b border-slate-100 relative flex items-center">
-                    <input
-                      type="text"
-                      placeholder="Search"
-                      value={regionSearch}
-                      onChange={(e) => setRegionSearch(e.target.value)}
-                      className="w-full h-10 pl-3 pr-9 text-xs rounded-xl border border-slate-200 bg-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-sm transition-all font-semibold"
-                    />
-                    <Search className="absolute right-6 w-4 h-4 text-slate-400 pointer-events-none" />
-                  </div>
-
-                  <div className="max-h-60 overflow-y-auto py-1">
-                    {(() => {
-                      const listToShow =
-                        activeFilter === "assigned"
-                          ? assignedRegions
-                          : activeFilter === "unassigned"
-                            ? unassignedRegions
-                            : [...assignedRegions, ...unassignedRegions];
-
-                      const filtered = listToShow.filter((r) =>
-                        r.name.toLowerCase().includes(regionSearch.toLowerCase()),
-                      );
-
-                      if (filtered.length === 0) {
-                        return (
-                          <p className="text-[11px] text-slate-400 italic text-center py-4">
-                            No {activeFilter === "all" ? "" : activeFilter === "assigned" ? "assigned" : "unassigned"}{" "}
-                            regions found.
-                          </p>
-                        );
+                {/* Dropdown 3: Areas Select */}
+                {selectedRegion ? (
+                  <AreaEditSelector
+                    regionId={getRegionId(selectedRegion)}
+                    regionName={
+                      selectedRegion.properties?.region_name ||
+                      selectedRegion.properties?.regionName ||
+                      selectedRegion.properties?.name ||
+                      "—"
+                    }
+                    stateName={
+                      selectedState?.properties?.name ||
+                      selectedRegion?.properties?.state_name ||
+                      selectedRegion?.properties?.stateName ||
+                      "State"
+                    }
+                    selectedAreaId={activeAreaId}
+                    onAreaSelect={(areaId) => {
+                      setActiveAreaId(areaId);
+                    }}
+                    onClose={() => {
+                      setSelectedRegion(null);
+                      setActiveAreaId(null);
+                      if (editModeType === "area") {
+                        setAssignPanelOpen(false);
                       }
-
-                      return filtered.map((region, idx) => {
-                        const isSelected = selectedRegion && getRegionId(selectedRegion) === region.id;
-                        const isAssignedRegion = assignedRegions.some(
-                          (r) => r.id === region.id,
-                        );
-
-                        return (
-                          <button
-                            key={region.id ?? idx}
-                            onClick={() => {
-                              if (isSelected) {
-                                setSelectedRegion(null);
-                              } else {
-                                setSelectedRegion(region.rawFeature);
-                                if (
-                                  region.rawFeature &&
-                                  map.current &&
-                                  geoMasterData
-                                ) {
-                                  try {
-                                    const builtFeature =
-                                      buildRegionFeatureFromDistricts(
-                                        region.rawFeature,
-                                        geoMasterData,
-                                      );
-                                    const target =
-                                      builtFeature ||
-                                      region.rawFeature;
-                                    if (target?.geometry) {
-                                      map.current.fitBounds(
-                                        getFeatureBounds(target),
-                                        {
-                                          padding: 80,
-                                          duration: 1500,
-                                        },
-                                      );
-                                    }
-                                  } catch (err) {
-                                    console.error(
-                                      "Failed to zoom to region:",
-                                      err,
-                                    );
-                                  }
-                                }
-                              }
-                              setShowRegionsList(false);
-                            }}
-                            className={`w-full text-left px-4 py-2.5 cursor-pointer transition-all duration-200 flex items-center justify-between gap-3 border-b border-slate-100 last:border-b-0 ${isSelected
-                                ? "bg-blue-50 text-blue-600"
-                                : "bg-white hover:bg-slate-50 text-slate-700"
-                              }`}
-                          >
-                            <span className="truncate text-xs font-bold">
-                              {region.name}
-                            </span>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              {region.code && (
-                                <span className="text-[10px] font-mono text-slate-400">
-                                  {region.code}
-                                </span>
-                              )}
-                              {activeFilter === "all" && (
-                                <span
-                                  className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${isAssignedRegion
-                                      ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                                      : "bg-slate-100 text-slate-500"
-                                    }`}
-                                >
-                                  {isAssignedRegion ? "A" : "U"}
-                                </span>
-                              )}
-                            </div>
-                          </button>
-                        );
-                      });
-                    })()}
+                    }}
+                    mapRef={map}
+                    geoMasterData={geoMasterData}
+                    filter={activeFilter}
+                    isOpen={areasDropdownOpen}
+                    setIsOpen={(open) => {
+                      setAreasDropdownOpen(open);
+                      if (open) {
+                        setFilterDropdownOpen(false);
+                        setShowRegionsList(false);
+                      }
+                    }}
+                    areasDropdownRef={areasDropdownRef}
+                  />
+                ) : (
+                  <div className="relative">
+                    <button
+                      disabled
+                      className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-400 cursor-not-allowed opacity-60"
+                    >
+                      <span>Areas: 0</span>
+                      <svg
+                        className="w-3.5 h-3.5 text-slate-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
                   </div>
-                </div>
-              )}
-            </div>
-
-            {/* Dropdown 3: Areas Select */}
-            {editModeType === "area" && selectedRegion ? (
-              <AreaEditSelector
-                regionId={getRegionId(selectedRegion)}
-                regionName={
-                  selectedRegion.properties?.region_name ||
-                  selectedRegion.properties?.regionName ||
-                  selectedRegion.properties?.name ||
-                  "—"
-                }
-                stateName={
-                  selectedState?.properties?.name ||
-                  selectedRegion?.properties?.state_name ||
-                  selectedRegion?.properties?.stateName ||
-                  "State"
-                }
-                selectedAreaId={activeAreaId}
-                onAreaSelect={(areaId) => {
-                  setActiveAreaId(areaId);
-                }}
-                onClose={() => {
-                  setSelectedRegion(null);
-                  setActiveAreaId(null);
-                  if (editModeType === "area") {
-                    setAssignPanelOpen(false);
-                  }
-                }}
-                mapRef={map}
-                geoMasterData={geoMasterData}
-                filter={activeFilter}
-                isOpen={areasDropdownOpen}
-                setIsOpen={(open) => {
-                  setAreasDropdownOpen(open);
-                  if (open) {
-                    setFilterDropdownOpen(false);
-                    setShowRegionsList(false);
-                  }
-                }}
-                areasDropdownRef={areasDropdownRef}
-              />
+                )}
+              </>
             ) : (
-              <div className="relative">
-                <button
-                  disabled
-                  className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-400 cursor-not-allowed opacity-60"
-                >
-                  <span>Areas: 0</span>
-                  <svg
-                    className="w-3.5 h-3.5 text-slate-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
+              <>
+                {/* Dropdown 1: Assigned/Un Assigned/All Filter */}
+                <div className="relative" ref={filterDropdownRef}>
+                  <button
+                    onClick={() => {
+                      setFilterDropdownOpen(!filterDropdownOpen);
+                      setShowRegionsList(false);
+                      setAreasDropdownOpen(false);
+                    }}
+                    className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-              </div>
+                    <span>
+                      {activeFilter === "assigned"
+                        ? "Assigned"
+                        : activeFilter === "unassigned"
+                          ? "Un Assigned"
+                          : "All"}
+                    </span>
+                    <svg
+                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${filterDropdownOpen ? "rotate-180" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {filterDropdownOpen && (
+                    <div className="absolute right-0 top-11 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden w-36 py-1">
+                      {(["assigned", "unassigned", "all"] as const).map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => {
+                            setActiveFilter(option);
+                            setFilterDropdownOpen(false);
+                            setRegionSearch("");
+                            setShowRegionsList(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm font-semibold transition-colors cursor-pointer border-0 ${activeFilter === option
+                            ? "bg-blue-50 text-blue-600"
+                            : "bg-white text-slate-700 hover:bg-slate-50"
+                            }`}
+                        >
+                          {option === "assigned"
+                            ? "Assigned"
+                            : option === "unassigned"
+                              ? "Un Assigned"
+                              : "All"}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Dropdown 2: Regions Select */}
+                <div className="relative" ref={regionsDropdownRef}>
+                  <button
+                    onClick={() => {
+                      setShowRegionsList(!showRegionsList);
+                      setFilterDropdownOpen(false);
+                      setAreasDropdownOpen(false);
+                    }}
+                    className="h-10 px-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-white shadow-sm text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                  >
+                    <span>
+                      {selectedRegionName
+                        ? `Regions: ${selectedRegionName}`
+                        : `Regions: ${activeFilter === "assigned"
+                          ? assignedRegions.length
+                          : activeFilter === "unassigned"
+                            ? unassignedRegions.length
+                            : assignedRegions.length + unassignedRegions.length
+                        }`}
+                    </span>
+                    <svg
+                      className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${showRegionsList ? "rotate-180" : ""}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {showRegionsList && (
+                    <div className="absolute right-0 top-11 bg-white rounded-xl border border-slate-200 shadow-lg z-50 overflow-hidden w-64 flex flex-col">
+                      {/* Search bar inside Regions dropdown */}
+                      <div className="p-3 border-b border-slate-100 relative flex items-center">
+                        <input
+                          type="text"
+                          placeholder="Search"
+                          value={regionSearch}
+                          onChange={(e) => setRegionSearch(e.target.value)}
+                          className="w-full h-10 pl-3 pr-9 text-xs rounded-xl border border-slate-200 bg-white placeholder:text-slate-400 focus:outline-none focus:border-blue-500 shadow-sm transition-all font-semibold"
+                        />
+                        <Search className="absolute right-6 w-4 h-4 text-slate-400 pointer-events-none" />
+                      </div>
+
+                      <div className="max-h-60 overflow-y-auto py-1">
+                        {(() => {
+                          if (isAreaMode && !regionsWithAreas) {
+                            return (
+                              <div className="flex flex-col items-center justify-center py-6 gap-2">
+                                <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">
+                                  Checking Areas...
+                                </span>
+                              </div>
+                            );
+                          }
+
+                          const listToShow =
+                            activeFilter === "assigned"
+                              ? assignedRegions
+                              : activeFilter === "unassigned"
+                                ? unassignedRegions
+                                : [...assignedRegions, ...unassignedRegions];
+
+                          const filtered = listToShow.filter((r) =>
+                            r.name.toLowerCase().includes(regionSearch.toLowerCase()),
+                          );
+
+                          if (filtered.length === 0) {
+                            return (
+                              <p className="text-[11px] text-slate-400 italic text-center py-4">
+                                No {activeFilter === "all" ? "" : activeFilter === "assigned" ? "assigned" : "unassigned"}{" "}
+                                regions found.
+                              </p>
+                            );
+                          }
+
+                          return filtered.map((region, idx) => {
+                            const isSelected = selectedRegion && getRegionId(selectedRegion) === region.id;
+                            const isAssignedRegion = assignedRegions.some(
+                              (r) => r.id === region.id,
+                            );
+
+                            return (
+                              <button
+                                key={region.id ?? idx}
+                                onClick={() => {
+                                  if (isSelected) {
+                                    setSelectedRegion(null);
+                                  } else {
+                                    setSelectedRegion(region.rawFeature);
+                                    if (
+                                      region.rawFeature &&
+                                      map.current &&
+                                      geoMasterData
+                                    ) {
+                                      try {
+                                        const builtFeature =
+                                          buildRegionFeatureFromDistricts(
+                                            region.rawFeature,
+                                            geoMasterData,
+                                          );
+                                        const target =
+                                          builtFeature ||
+                                          region.rawFeature;
+                                        if (target?.geometry) {
+                                          map.current.fitBounds(
+                                            getFeatureBounds(target),
+                                            {
+                                              padding: 80,
+                                              duration: 1500,
+                                            },
+                                          );
+                                        }
+                                      } catch (err) {
+                                        console.error(
+                                          "Failed to zoom to region:",
+                                          err,
+                                        );
+                                      }
+                                    }
+                                  }
+                                  setShowRegionsList(false);
+                                }}
+                                className={`w-full text-left px-4 py-2.5 cursor-pointer transition-all duration-200 flex items-center justify-between gap-3 border-b border-slate-100 last:border-b-0 ${isSelected
+                                  ? "bg-blue-50 text-blue-600"
+                                  : "bg-white hover:bg-slate-50 text-slate-700"
+                                  }`}
+                              >
+                                <span className="truncate text-xs font-bold">
+                                  {region.name}
+                                </span>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  {region.code && (
+                                    <span className="text-[10px] font-mono text-slate-400">
+                                      {region.code}
+                                    </span>
+                                  )}
+                                  {activeFilter === "all" && (
+                                    <span
+                                      className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${isAssignedRegion
+                                        ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                                        : "bg-slate-100 text-slate-500"
+                                        }`}
+                                    >
+                                      {isAssignedRegion ? "A" : "U"}
+                                    </span>
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          });
+                        })()}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </div>
         )}

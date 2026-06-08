@@ -147,12 +147,12 @@ const AreaDetailsView: React.FC = () => {
 
 
 
-useEffect(() => {
-  if (fieldOfficersData?.data) {
-    console.log("FIELD OFFICERS SAMPLE:", fieldOfficersData.data[0]);
-    console.log("Current areaId:", areaId);
-  }
-}, [fieldOfficersData, areaId]);
+  useEffect(() => {
+    if (fieldOfficersData?.data) {
+      console.log("FIELD OFFICERS SAMPLE:", fieldOfficersData.data[0]);
+      console.log("Current areaId:", areaId);
+    }
+  }, [fieldOfficersData, areaId]);
 
   fieldOfficersData?.data?.forEach((o: any) => {
     console.log("OFFICER OBJECT", o);
@@ -178,21 +178,37 @@ useEffect(() => {
     ? new Date(createdOn).toLocaleTimeString()
     : "—";
 
- const fieldOfficer = {
-  name: geoProps?.field_officer_name || "Unassigned",
-  code: geoProps?.field_officer_id 
-    ? `FO-${geoProps.field_officer_id}` 
-    : "—",
-  avatar_url: null,
-};
-useEffect(() => {
-  if (areaGeoJson) {
-    const features = areaGeoJson?.data?.features || areaGeoJson?.features || [];
-    features.forEach((f: any) => {
-      console.log("GeoJSON props for area", areaId, ":", f.properties);
-    });
-  }
-}, [areaGeoJson]);
+  const fieldOfficer = useMemo(() => {
+    const rawId = geoProps?.field_officer_id;
+    const hasId = rawId && Number(rawId) !== 0 && String(rawId) !== "null";
+
+    if (hasId) {
+      const officersList = Array.isArray(fieldOfficersData?.data) ? fieldOfficersData.data : (Array.isArray(fieldOfficersData) ? fieldOfficersData : []);
+      const matched = officersList.find((o: any) => Number(o.id) === Number(rawId));
+      if (matched) {
+        const fullName = `${matched.first_name || ""} ${matched.last_name || ""}`.trim();
+        const officerCode = matched.user_code || (matched.code && matched.id ? `${matched.code}-${matched.id}` : `FO-${matched.id}`);
+        return {
+          name: fullName || geoProps?.field_officer_name || "Unassigned",
+          code: officerCode,
+          avatar_url: matched.avatar_url || null,
+        };
+      }
+    }
+    return {
+      name: geoProps?.field_officer_name || "Unassigned",
+      code: hasId ? `FO-${rawId}` : "—",
+      avatar_url: null,
+    };
+  }, [geoProps?.field_officer_id, geoProps?.field_officer_name, fieldOfficersData]);
+  useEffect(() => {
+    if (areaGeoJson) {
+      const features = areaGeoJson?.data?.features || areaGeoJson?.features || [];
+      features.forEach((f: any) => {
+        console.log("GeoJSON props for area", areaId, ":", f.properties);
+      });
+    }
+  }, [areaGeoJson]);
 
   const handleEditClick = () => {
     // Read the region ID that was stored in sessionStorage when user clicked the region
@@ -379,7 +395,7 @@ useEffect(() => {
                       variant="span"
                       className="text-[#64748B] font-medium text-[13px]"
                     >
-                      Officer Code: {fieldOfficer.code || "—"}
+                      ID: {fieldOfficer.code || "—"}
                     </Typography>
                   </div>
                 </div>

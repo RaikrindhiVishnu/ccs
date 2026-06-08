@@ -33,7 +33,7 @@ export const agentSchema = z.object({
   addressState: z.string().min(1, "State is required"),
   city: z.string().min(1, "City is required"),
   pincode: z.string().min(6, "Pincode must be 6 digits"),
-  panNumber: z.string().min(1, "PAN Number is required"),
+  panNumber: z.string().optional(),
   state: z.string().min(1, "State is required"),
   region: z.string().min(1, "Region is required"),
   area: z.string().min(1, "Area is required"),

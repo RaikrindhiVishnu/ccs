@@ -5,8 +5,8 @@ import { FARMLAND_DETAILS } from "@/features/ccs/data/FarmlandDetailData";
 import { farmlandListDummyData } from "@/features/ccs/data/Farmlandlistdata"; // ← ADD
 import FarmlandListCard from "@/features/ccs/components/Farmlandlistcard";
 import FarmlandDetailPanel from "@/features/ccs/components/FarmlandDetailPanel";
-import DummyMap from "@/features/ccs/components/DummyMap";
-import HistoricalAgronomyAnalysis from "@/features/ccs/components/Historicalagronomyanalysis";
+import DummyMap from "@/features/ccs/components/satellite-map/DummyMap";
+import HistoricalAgronomyAnalysis from "@/features/ccs/components/satellite-map/Historicalagronomyanalysis";
 
 /* ── page ── */
 export default function FarmlandList() {
@@ -20,8 +20,11 @@ export default function FarmlandList() {
     <div className="relative h-full overflow-hidden">
       {/* ── HISTORICAL AGRONOMY ANALYSIS ── */}
       {showAnalysis && (
-        <div className="absolute inset-0 z-50 w-full h-full">
-          <HistoricalAgronomyAnalysis onBack={() => setShowAnalysis(false)} />
+        <div className="fixed inset-0 z-[100] w-screen h-screen bg-white">
+          <HistoricalAgronomyAnalysis onBack={() => {
+            setShowAnalysis(false);
+            setPanelOpen(true);
+          }} />
         </div>
       )}
 

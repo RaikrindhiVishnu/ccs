@@ -122,9 +122,9 @@ export const IODashboardHeader = ({
 
             !h-[clamp(2.75rem,3.611vw,3.25rem)]
 
-            !px-[clamp(14px,1.389vw,20px)]
+            !px-[clamp(0.875rem,1.389vw,1.25rem)]
 
-            !gap-[8px]
+            !gap-[0.5rem]
 
             ${searchWrapperClassName ?? ""}
           `}

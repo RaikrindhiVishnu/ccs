@@ -22,13 +22,10 @@ const ActiveDot = () => (
   <div
     className="
       rounded-full
-      border
-      border-[var(--performance-pill-border)]
-      bg-[var(--surface-card)]
-      w-[0.75rem]
-      h-[0.75rem]
-      xl:w-[1rem]
-      xl:h-[1rem]
+      border-[0.0375rem] border-[rgba(0,0,0,0.4)]
+      bg-white
+      w-[clamp(0.625rem,1.11vw,1rem)]
+      h-[clamp(0.625rem,1.11vw,1rem)]
     "
   />
 );
@@ -41,22 +38,19 @@ const ChartLegend = () => (
   <div
     className="
       flex items-center justify-end
-      gap-[1rem]
-      xl:gap-[1.75rem]
-      pt-[0.4rem]
-      pr-[0.5rem]
+      gap-[clamp(1.25rem,3.47vw,3.125rem)]
+      pt-[clamp(0.5rem,1vw,1rem)]
+      pr-[clamp(0.5rem,1vw,1rem)]
     "
   >
     {/* APPROVED */}
-    <div className="flex items-center gap-[0.35rem] xl:gap-[0.45rem]">
+    <div className="flex items-center gap-[clamp(0.375rem,0.5vw,0.625rem)]">
       <span
         className="
           rounded-full
           bg-[var(--performance-approved)]
-          w-[0.75rem]
-          h-[0.75rem]
-          xl:w-[1.05rem]
-          xl:h-[1.05rem]
+          w-[clamp(0.75rem,1.32vw,1.1875rem)]
+          h-[clamp(0.75rem,1.32vw,1.1875rem)]
         "
       />
       <Typography
@@ -64,11 +58,10 @@ const ChartLegend = () => (
         className="
           font-bold
           font-[var(--font-sans)]
-          tracking-[0.01rem]
+          tracking-[0.0169rem]
           text-[var(--text-primary)]
-          text-[0.65rem]
-          sm:text-[0.7rem]
-          xl:text-[0.78rem]
+          text-[clamp(0.5625rem,0.81vw,0.733rem)]
+          leading-[clamp(0.6875rem,1.04vw,0.9375rem)]
         "
       >
         Approved
@@ -76,25 +69,22 @@ const ChartLegend = () => (
     </div>
 
     {/* REJECTION */}
-    <div className="flex items-center gap-[0.35rem] xl:gap-[0.45rem]">
+    <div className="flex items-center gap-[clamp(0.375rem,0.5vw,0.625rem)]">
       <span
         className="
           flex items-center justify-center
           rounded-full
-          bg-[var(--surface-card)]
-          border border-[var(--performance-pill-border)]
-          w-[0.75rem]
-          h-[0.75rem]
-          xl:w-[1.05rem]
-          xl:h-[1.05rem]
+          bg-white
+          border-[0.0825rem] border-[var(--performance-pill-border)]
+          w-[clamp(0.75rem,1.32vw,1.1875rem)]
+          h-[clamp(0.75rem,1.32vw,1.1875rem)]
         "
       >
         <span
           className="
             border-t border-dashed
             border-[var(--text-primary)]
-            w-[0.4rem]
-            xl:w-[0.52rem]
+            w-[clamp(0.375rem,0.76vw,0.6875rem)]
           "
         />
       </span>
@@ -103,11 +93,10 @@ const ChartLegend = () => (
         className="
           font-bold
           font-[var(--font-sans)]
-          tracking-[0.01rem]
+          tracking-[0.0169rem]
           text-[var(--text-primary)]
-          text-[0.65rem]
-          sm:text-[0.7rem]
-          xl:text-[0.78rem]
+          text-[clamp(0.5625rem,0.81vw,0.733rem)]
+          leading-[clamp(0.6875rem,1.04vw,0.9375rem)]
         "
       >
         Rejection
@@ -133,18 +122,17 @@ const CustomTooltip = ({
   const rejection = payload.find((p) => p.dataKey === "rejection")?.value;
 
   return (
-    <div className="flex items-center gap-[0.35rem]">
+    <div className="flex items-center gap-[clamp(0.1875rem,0.35vw,0.3125rem)]">
+      {/* REJECTION (Dashed) */}
       <div
         className="
-          rounded-full
-          border border-[var(--performance-pill-border)]
-          bg-[var(--surface-card)]
-          px-[0.5rem]
-          py-[0.18rem]
-          xl:px-[0.7rem]
-          xl:py-[0.22rem]
-          text-[0.72rem]
-          xl:text-[0.82rem]
+          flex items-center justify-center
+          rounded-[clamp(0.75rem,1.18vw,1.0625rem)]
+          border-[0.0375rem] border-dashed border-[var(--text-primary)]
+          bg-white
+          w-[clamp(2rem,3.19vw,2.875rem)]
+          h-[clamp(1.125rem,1.81vw,1.625rem)]
+          text-[clamp(0.75rem,1.11vw,1rem)]
           font-semibold
           font-[var(--font-sans)]
           text-[var(--text-primary)]
@@ -152,19 +140,18 @@ const CustomTooltip = ({
       >
         {rejection}
       </div>
+      {/* APPROVED (Solid Black) */}
       <div
         className="
-          rounded-full
+          flex items-center justify-center
+          rounded-[clamp(0.75rem,1.18vw,1.0625rem)]
           bg-[var(--text-primary)]
-          px-[0.5rem]
-          py-[0.18rem]
-          xl:px-[0.72rem]
-          xl:py-[0.22rem]
-          text-[0.72rem]
-          xl:text-[0.82rem]
+          w-[clamp(2rem,3.19vw,2.875rem)]
+          h-[clamp(1.125rem,1.81vw,1.625rem)]
+          text-[clamp(0.75rem,1.11vw,1rem)]
           font-semibold
           font-[var(--font-sans)]
-          text-[var(--surface-card)]
+          text-[var(--surface-sidebar-text)]
         "
       >
         {approved}
@@ -183,28 +170,26 @@ export const PerformanceMetricsCard = () => {
       className="
         flex flex-col
         h-full
-        rounded-[1.25rem]
-        xl:rounded-[1.75rem]
+        rounded-[clamp(1.25rem,1.94vw,1.75rem)]
         border-0
         bg-[var(--performance-card-bg)]
         shadow-none
         w-full
-        p-[1rem]
-        sm:p-[1.1rem]
-        xl:p-[1.45rem]
-        2xl:p-[1.65rem]
+        pt-[clamp(1rem,1.74vw,1.5625rem)]
+        pb-[clamp(0.75rem,1.18vw,1.0625rem)]
+        pl-[clamp(1rem,1.67vw,1.5rem)]
+        pr-[clamp(1.5rem,4.5vw,4rem)]
       "
     >
       {/* HEADER */}
       <div
         className="
           flex items-start justify-between
-          gap-[0.75rem]
-          xl:gap-[1rem]
+          gap-[clamp(0.5rem,1vw,1rem)]
           shrink-0
         "
       >
-        <div className="flex flex-col gap-[0.25rem] xl:gap-[0.35rem]">
+        <div className="flex flex-col gap-[clamp(0.5rem,1.53vw,1.375rem)]">
           <Typography
             variant="span"
             className="
@@ -212,12 +197,8 @@ export const PerformanceMetricsCard = () => {
               font-[var(--font-sans)]
               leading-[110%]
               text-[var(--text-primary)]
-              text-[1.1rem]
-            sm:text-[1.25rem]
-            lg:text-[1.35rem]
-            xl:text-[1.6625rem]
-            2xl:text-[1.8rem]
-                        "
+              text-[clamp(1rem,1.85vw,1.6625rem)]
+            "
           >
             Performance metrics
           </Typography>
@@ -228,10 +209,8 @@ export const PerformanceMetricsCard = () => {
               font-semibold
               font-[var(--font-sans)]
               text-[var(--text-secondary)]
-              text-[0.75rem]
-             sm:text-[0.82rem]
-              lg:text-[0.88rem]
-              xl:text-[1.1625rem]
+              text-[clamp(0.6875rem,1.29vw,1.1625rem)]
+              leading-[clamp(0.875rem,1.67vw,1.5rem)]
             "
           >
             Approval vs Rejection
@@ -244,12 +223,9 @@ export const PerformanceMetricsCard = () => {
       {/* CHART */}
       <div
         className="
-          mt-[1rem]
-          xl:mt-[1.35rem]
+          mt-[clamp(1rem,4.72vw,4.25rem)]
           flex-1
-          min-h-[12rem]
-          sm:min-h-[14rem]
-          xl:min-h-[16rem]
+          min-h-[clamp(7.5rem,11.8vw,11.625rem)]
           w-full
         "
       >
@@ -272,12 +248,12 @@ export const PerformanceMetricsCard = () => {
                 y2="1"
               >
                 <stop
-                  offset="0%"
+                  offset="3.99%"
                   stopColor="var(--performance-area-start)"
-                  stopOpacity={0.95}
+                  stopOpacity={1}
                 />
                 <stop
-                  offset="100%"
+                  offset="113.27%"
                   stopColor="var(--performance-area-end)"
                   stopOpacity={0}
                 />
@@ -287,7 +263,7 @@ export const PerformanceMetricsCard = () => {
             <CartesianGrid
               vertical={false}
               stroke="var(--performance-grid)"
-              strokeWidth={1}
+              strokeWidth={1.33}
             />
 
             <XAxis
@@ -296,7 +272,7 @@ export const PerformanceMetricsCard = () => {
               axisLine={false}
               tick={{
                 fill: "var(--performance-axis)",
-                fontSize: 11,
+                fontSize: "clamp(0.6875rem, 1.05vw, 0.944rem)",
                 fontFamily: "var(--font-sans)",
               }}
             />
@@ -307,7 +283,7 @@ export const PerformanceMetricsCard = () => {
               ticks={[0, 100, 200, 300, 400, 500]}
               tick={{
                 fill: "var(--performance-axis)",
-                fontSize: 11,
+                fontSize: "clamp(0.6875rem, 1.05vw, 0.944rem)",
                 fontFamily: "var(--font-sans)",
               }}
             />
@@ -325,7 +301,7 @@ export const PerformanceMetricsCard = () => {
               type="monotone"
               dataKey="rejection"
               stroke="var(--performance-line)"
-              strokeWidth={1.1}
+              strokeWidth={0.6}
               strokeDasharray="3 3"
               dot={false}
               activeDot={<ActiveDot />}
@@ -341,5 +317,4 @@ export const PerformanceMetricsCard = () => {
     </Card>
   );
 };
-
 export default PerformanceMetricsCard;

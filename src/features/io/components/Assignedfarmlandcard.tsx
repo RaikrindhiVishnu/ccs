@@ -228,16 +228,16 @@ const FarmlandCard = ({
           className="
             inline-flex items-center shrink-0 rounded-full
             bg-[var(--status-pending-bg)]
-            gap-[clamp(4px,0.417vw,6px)]
-            px-[clamp(8px,0.833vw,14px)]
-            py-[clamp(3px,0.278vw,5px)]
+            gap-[clamp(0.25rem,0.417vw,0.375rem)]
+            px-[clamp(0.5rem,0.833vw,0.875rem)]
+            py-[clamp(0.1875rem,0.278vw,0.3125rem)]
           "
         >
           <span
             className={`
               rounded-full shrink-0
-              w-[clamp(5px,0.417vw,7px)]
-              h-[clamp(5px,0.417vw,7px)]
+              w-[clamp(0.3125rem,0.417vw,0.4375rem)]
+              h-[clamp(0.3125rem,0.417vw,0.4375rem)]
               ${
                 data.agentStatus === "Active"
                   ? "bg-[var(--status-success)]"
@@ -275,7 +275,7 @@ const FarmlandCard = ({
           {data.farmlandId}
         </span>
 
-        <div className="flex items-center gap-[clamp(4px,0.417vw,6px)]">
+        <div className="flex items-center gap-[clamp(0.25rem,0.417vw,0.375rem)]">
           <MapPin
             className="
               shrink-0

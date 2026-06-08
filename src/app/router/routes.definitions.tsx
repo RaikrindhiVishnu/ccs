@@ -31,6 +31,8 @@ import {
     Assignedfarmland,
     AssignedFarmlandList,
     Farmlanddocument,
+    IORequestedInfo,
+    IORequestedInfoList,
     CreateFieldOfficer,
     CreateintellegenceOfficer,
     CreateregionalOfficer,
@@ -63,14 +65,14 @@ import {
     VerificationOfficerAssignedFarmlandsValuation,
     VerificationOfficerAssignedFarmlandsAgriculture,
 
-  // Verification Officer 1 (VO1)
-  VerificationOfficer1Dashboard,
-  VerificationOfficer1AssignedFarmlands,
-  VerificationOfficer1InProgressFarmlands,
-  VerificationOfficer1CompletedFarmlands,
-  VerificationOfficer1CompletedFarmlandDetails,
-  VerificationOfficer1AssignedFarmlandsOwnerDetails,
-  VerificationOfficer1Layout,
+    // Verification Officer 1 imports
+    VerificationOfficer1Dashboard,
+    VerificationOfficer1AssignedFarmlands,
+    VerificationOfficer1InProgressFarmlands,
+    VerificationOfficer1CompletedFarmlands,
+    VerificationOfficer1CompletedFarmlandDetails,
+    VerificationOfficer1AssignedFarmlandsOwnerDetails,
+    VerificationOfficer1Layout,
 
     // Dev imports
     DraftsPage,
@@ -98,8 +100,10 @@ import {
     SuperAdminFarmlandsListPreview,
     SuperAdminFarmlandsListFull,
     SuperAdminUsersListFull,
+    SuperAdminUsersListAll,
     SuperAdminAssignedFarmlandDetails,
-    SuperAdminCustomerInformation
+    SuperAdminCustomerInformation,
+    SuperAdminEditFarmlandTag
 } from './routes.config';
 
 
@@ -181,8 +185,11 @@ export const authRoutes: RouteObject[] = [
                 path: '/io/assigned-farmland/list',
                 element: <AssignedFarmlandList />
             }, {
-                path: '/io/farmland-document/:id',
-                element: <Farmlanddocument />
+                path: '/io/requested-info',
+                element: <IORequestedInfo />
+            }, {
+                path: '/io/requested-info/list',
+                element: <IORequestedInfoList />
             }, {
                 path: '/role-manager/agent-create',
                 element: <AgentCreate />
@@ -249,6 +256,12 @@ export const authRoutes: RouteObject[] = [
                 path: '/super-admin/users-list',
                 element: <SuperAdminUsersListFull />
             }, {
+                path: '/super-admin/users-list/all',
+                element: <SuperAdminUsersListAll />
+            }, {
+                path: '/super-admin/edit-farmland-tag/:id',
+                element: <SuperAdminEditFarmlandTag />
+            }, {
                 path: '/super-admin/assigned-farmlands/:id',
                 element: <SuperAdminAssignedFarmlandDetails />
             }, {
@@ -257,6 +270,10 @@ export const authRoutes: RouteObject[] = [
             },
         ]
 
+  },
+  {
+    path: '/io/farmland-document/:id',
+    element: <Farmlanddocument />
   },
   {
     element: <RegionalOfficerLayout />,

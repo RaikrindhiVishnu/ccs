@@ -3,7 +3,6 @@ import { useRouteError, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { AlertTriangle, RefreshCw, Home, ChevronDown, ChevronUp } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export const RouteErrorBoundary: React.FC = () => {
   const error: any = useRouteError();

@@ -1,6 +1,5 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { ArrowRight, Monitor, Smartphone, Crown } from "lucide-react";
 

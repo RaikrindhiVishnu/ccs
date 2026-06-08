@@ -72,9 +72,6 @@ const UserDirectory: React.FC = () => {
 
   const fieldOfficersList = fieldOfficerData?.data || [];
   const firstFieldOfficer = fieldOfficersList[0];
-  const firstFieldOfficerId = firstFieldOfficer 
-    ? (firstFieldOfficer.id) 
-    : 0;
 
   // 3. Fetch Agents under the first Field Officer automatically
   const { data: agentData, isFetching: isAgentFetching } = useGetAgentDetailsQuery(
