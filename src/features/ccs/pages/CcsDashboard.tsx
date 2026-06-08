@@ -72,16 +72,16 @@ export default function CcsDashboard() {
             <ScreeningChart />
           </div>
 
-          <div className="shrink-0 mt-[44px]">
+          <div className="shrink-0 mt-[30px]">
             <Typography
               variant="h3"
-              className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[17px] tracking-[1px] uppercase text-[#000000] mb-[30px]"
+              className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[17px] tracking-[1px] uppercase text-[#000000] mb-[24px]"
             >
               Recent Activity
             </Typography>
-            <div className="flex flex-col gap-[28px]">
+            <div className="flex flex-col gap-[18px]">
               {activities.map((item, index) => (
-                <div key={index} className="flex flex-col gap-[28px]">
+                <div key={index} className="flex flex-col gap-[18px]">
                   <ActivityCard
                     id={item.id}
                     description={item.description}

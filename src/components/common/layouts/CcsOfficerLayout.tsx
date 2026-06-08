@@ -25,18 +25,14 @@ export const CcsOfficerLayout = () => {
   const location = useLocation();
   const user = useAppSelector((state) => state.auth.user);
 
-  const fullName = user
-    ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Ram Varma'
-    : 'Ram Varma';
+  const fullName = 'Ram Varma';
 
   const initials = fullName
-    ? fullName
-        .split(' ')
-        .map((n: string) => n[0])
-        .join('')
-        .slice(0, 2)
-        .toUpperCase()
-    : 'U';
+    .split(' ')
+    .map((n: string) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 
   if (location.pathname === '/ccs/profile') {
     return <Outlet />;
