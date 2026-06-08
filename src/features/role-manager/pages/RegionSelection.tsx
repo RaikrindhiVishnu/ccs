@@ -1331,6 +1331,26 @@ const RegionSelection: React.FC = () => {
           ) as maplibregl.GeoJSONSource;
           source.setData(stateRegionsData);
         }
+
+        // Dynamic visibility depending on the mode to avoid duplicate rendering/overlaps
+        const fillLayer = map.current.getLayer("regions-fill");
+        const lineLayer = map.current.getLayer("regions-line");
+        const visibility = mode === "region" ? "visible" : "none";
+
+        if (fillLayer) {
+          map.current.setLayoutProperty(
+            "regions-fill",
+            "visibility",
+            visibility,
+          );
+        }
+        if (lineLayer) {
+          map.current.setLayoutProperty(
+            "regions-line",
+            "visibility",
+            visibility,
+          );
+        }
       } catch (err) {
         console.error(
           "Failed to render regions from filtered state data:",
@@ -1343,7 +1363,7 @@ const RegionSelection: React.FC = () => {
       ) as maplibregl.GeoJSONSource;
       source.setData({ type: "FeatureCollection", features: [] });
     }
-  }, [selectedState, stateRegionsData, mapLoaded]);
+  }, [selectedState, stateRegionsData, mapLoaded, mode]);
 
   // Effect to manage 3D visual elevation and dimming of regions in Region Mode
   useEffect(() => {
@@ -1833,13 +1853,10 @@ const RegionSelection: React.FC = () => {
         const fillLayer = map.current.getLayer("country-regions-fill");
         const lineLayer = map.current.getLayer("country-regions-line");
 
-        // Only show country regions layer in Area Mode when:
-        // 1. A state is selected (selectedState is not null)
-        // 2. No region is selected yet (selectedRegion is null)
+        // Keep country regions layer visible once a state is selected in Area Mode
+        // so that they remain interactive and allow switching regions directly.
         const visibility =
-          mode === "area" && selectedState && !selectedRegion
-            ? "visible"
-            : "none";
+          mode === "area" && selectedState ? "visible" : "none";
 
         if (fillLayer) {
           map.current.setLayoutProperty(
@@ -1854,6 +1871,77 @@ const RegionSelection: React.FC = () => {
             "visibility",
             visibility,
           );
+        }
+
+        // Apply dynamic paint property styling when a region is selected vs when cleared
+        const selectedRegionId =
+          selectedRegion?.properties?.region_id ??
+          selectedRegion?.properties?.id ??
+          selectedRegion?.id;
+
+        if (selectedRegionId !== undefined && selectedRegionId !== null) {
+          const regIdNum = Number(selectedRegionId);
+          // Region is selected: Dim other regions and keep borders subtle except for the selected one
+          if (fillLayer) {
+            map.current.setPaintProperty(
+              "country-regions-fill",
+              "fill-opacity",
+              [
+                "case",
+                ["==", ["coalesce", ["get", "region_id"], ["get", "id"], -1], regIdNum],
+                0.02, // very low opacity for selected region's background to make mandals visible
+                0.08, // dimmed opacity for other regions
+              ],
+            );
+          }
+          if (lineLayer) {
+            map.current.setPaintProperty(
+              "country-regions-line",
+              "line-opacity",
+              [
+                "case",
+                ["==", ["coalesce", ["get", "region_id"], ["get", "id"], -1], regIdNum],
+                1.0,  // high contrast line for selected region
+                0.15, // dimmed lines for other regions
+              ],
+            );
+            map.current.setPaintProperty(
+              "country-regions-line",
+              "line-width",
+              [
+                "case",
+                ["==", ["coalesce", ["get", "region_id"], ["get", "id"], -1], regIdNum],
+                1.8, // normal/prominent width for selected region
+                0.8, // thin width for other regions
+              ],
+            );
+          }
+        } else {
+          // No region is selected: Restore default styling
+          if (fillLayer) {
+            map.current.setPaintProperty(
+              "country-regions-fill",
+              "fill-opacity",
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                0.45,
+                0.2,
+              ],
+            );
+          }
+          if (lineLayer) {
+            map.current.setPaintProperty(
+              "country-regions-line",
+              "line-opacity",
+              1.0,
+            );
+            map.current.setPaintProperty(
+              "country-regions-line",
+              "line-width",
+              1.8,
+            );
+          }
         }
 
         // Apply filter to show only regions in the selected state
@@ -2487,10 +2575,10 @@ const RegionSelection: React.FC = () => {
                                   key={district.i}
                                   onClick={() => toggleDistrictSelection(district)}
                                   className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${isAssigned
-                                      ? "bg-slate-50 text-slate-400 cursor-not-allowed"
-                                      : isSelected
-                                        ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
-                                        : "hover:bg-slate-50 text-slate-700"
+                                    ? "bg-slate-50 text-slate-400 cursor-not-allowed"
+                                    : isSelected
+                                      ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
+                                      : "hover:bg-slate-50 text-slate-700"
                                     }`}
                                 >
                                   <div className="flex items-center gap-2">
@@ -2727,10 +2815,10 @@ const RegionSelection: React.FC = () => {
                                   key={mandal.i}
                                   onClick={() => toggleMandalSelection(mandal)}
                                   className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${isAssigned
-                                      ? "bg-slate-50 text-slate-400 cursor-not-allowed"
-                                      : isSelected
-                                        ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
-                                        : "hover:bg-slate-50 text-slate-700"
+                                    ? "bg-slate-50 text-slate-400 cursor-not-allowed"
+                                    : isSelected
+                                      ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
+                                      : "hover:bg-slate-50 text-slate-700"
                                     }`}
                                 >
                                   <div className="flex items-center gap-2">
