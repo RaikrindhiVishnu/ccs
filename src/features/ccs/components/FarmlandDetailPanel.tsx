@@ -69,7 +69,7 @@ export default function FarmlandDetailPanel({
   return (
     <>
       {open && (
-        <div className="absolute inset-0 z-40 bg-black/20" onClick={onClose} />
+        <div className="absolute inset-0 z-40 bg-black/20 pointer-events-none" />
       )}
 
       <div
