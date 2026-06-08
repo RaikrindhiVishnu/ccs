@@ -10,8 +10,7 @@ import { FamilyTreeDocument } from "./FamilyTreeDocument";
 import { LandDetailsDocument } from "./LandDetailsDocument";
 import { LocalIntelligenceDocument } from "./LocalIntelligenceDocument";
 import { Bell } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/core/hooks";
-import { logOut } from "@/features/auth/store/authSlice";
+import { useAppSelector } from "@/core/hooks";
 import { RequestedInfoReasonModal } from "./RequestedInfoReasonModal";
 
 /* ─────────────────────────────────────────────────────────────────────────── */
@@ -491,27 +490,21 @@ const TopNav = ({
   onBack?: () => void;
   isRequestedInfo?: boolean;
 }) => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
 
-  const handleLogout = () => {
-    dispatch(logOut());
-    navigate("/login", { replace: true });
-  };
-
   const fullName = user
     ? `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-      "Intelligence Officer"
+    "Intelligence Officer"
     : "Intelligence Officer";
 
   const initials = fullName
     ? fullName
-        .split(" ")
-        .map((n: string) => n[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
+      .split(" ")
+      .map((n: string) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase()
     : "IO";
 
   return (
@@ -572,8 +565,8 @@ const TopNav = ({
 
         {/* Avatar */}
         <button
-          onClick={handleLogout}
-          title="Logout"
+          onClick={() => navigate("/io/profile")}
+          title="Profile"
           className="
             relative overflow-hidden
             flex items-center justify-center
@@ -643,12 +636,11 @@ const BottomActions = ({
         <button
           onClick={onViewReason}
           className="
-            inline-flex items-center justify-center
-            border border-[rgba(0,0,0,0.27)] rounded-full
-            font-medium text-[rgba(0,0,0,0.8)]
-            bg-transparent
-            transition-opacity hover:opacity-75
-            w-[clamp(7rem,10.5vw,12rem)]
+         inline-flex items-center justify-center
+            rounded-full bg-[#96C9ED] hover:bg-[#1f6da9]
+            font-semibold text-[#000000]
+            transition-opacity hover:opacity-90
+            w-[clamp(5.375rem,8.4vw,10rem)]
             h-[clamp(1.6875rem,2.64vw,3.16rem)]
             text-[clamp(0.625rem,0.97vw,1.1625rem)]
             font-[family-name:var(--font-sans)]
@@ -658,7 +650,7 @@ const BottomActions = ({
         </button>
 
         {/* Edit */}
-        <button
+        {/* <button
           onClick={onUpload}
           className="
             inline-flex items-center justify-center
@@ -672,7 +664,7 @@ const BottomActions = ({
           "
         >
           Edit
-        </button>
+        </button> */}
       </>
     ) : (
       <>
@@ -754,6 +746,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
 
   const [activeStep, setActiveStep] = React.useState<"list" | "owner-details" | "family-tree" | "land-details" | "local-intelligence">("list");
   const [showReasonModal, setShowReasonModal] = React.useState(false);
+  const [cameFromModal, setCameFromModal] = React.useState(false);
 
   // Lifted form data state
   const [firstName, setFirstName] = React.useState("Ramudu");
@@ -787,9 +780,9 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
       liveStatus: "NA",
     }
     : data || {
-        ...defaultData,
-        badge: isRequestedInfo ? "REQUESTED INFORMATION" : "ASSIGNED FARMLAND",
-      };
+      ...defaultData,
+      badge: isRequestedInfo ? "REQUESTED INFORMATION" : "ASSIGNED FARMLAND",
+    };
 
   const handleBack = onBack || (() => navigate(-1));
   const handleUpload = () => {
@@ -878,15 +871,32 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
   if (activeStep === "local-intelligence") {
     return (
       <LocalIntelligenceDocument
-        onBack={() => setActiveStep("land-details")}
+        onBack={() => {
+          if (cameFromModal) {
+            setCameFromModal(false);
+            setActiveStep("list");
+            setShowReasonModal(true);
+          } else {
+            setActiveStep("land-details");
+          }
+        }}
         onNext={() => {
           alert("Farmland document updated successfully!");
           setActiveStep("list");
         }}
         onStepChange={(step) => {
-          if (step === "customer") setActiveStep("owner-details");
+          if (step === "customer") {
+            if (cameFromModal) {
+              setCameFromModal(false);
+              setActiveStep("list");
+              setShowReasonModal(true);
+            } else {
+              setActiveStep("owner-details");
+            }
+          }
         }}
         farmlandId={displayData.farmlandId}
+        isFromRejection={cameFromModal || isRequestedInfo}
       />
     );
   }
@@ -953,9 +963,9 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
           </div>
 
           {/* Bottom actions */}
-          <BottomActions 
-            onBack={handleBack} 
-            onUpload={handleUpload} 
+          <BottomActions
+            onBack={handleBack}
+            onUpload={handleUpload}
             isRequestedInfo={isRequestedInfo}
             onViewReason={() => setShowReasonModal(true)}
           />
@@ -963,11 +973,17 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
       </div>
 
       {showReasonModal && (
-        <RequestedInfoReasonModal 
+        <RequestedInfoReasonModal
           onClose={() => setShowReasonModal(false)}
+          onUpload={() => {
+            if (onUpload) {
+              onUpload();
+            }
+            setCameFromModal(true);
+            setActiveStep("local-intelligence");
+            setShowReasonModal(false);
+          }}
           rejectedBy="Verification Officer Sravan"
-          reasonParagraph1="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-          reasonParagraph2="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
         />
       )}
     </div>

@@ -83,6 +83,10 @@ export const AssignedFarmlandList = lazy(() => import ("../../features/io/compon
 export const Farmlanddocument = lazy(() => import ("../../features/io/components/Farmlanddocument"),);
 export const IORequestedInfo = lazy(() => import ("../../features/io/pages/RequestedInfo"),);
 export const IORequestedInfoList = lazy(() => import ("../../features/io/pages/RequestedInfoList"),);
+export const IOFarmlandsList = lazy(() => import ("../../features/io/pages/FarmlandsList"),);
+export const IOFarmlandsListFull = lazy(() => import ("../../features/io/pages/FarmlandsListFull"),);
+export const IOFarmlandsListDetailView = lazy(() => import ("../../features/io/pages/FarmlandsListDetailView"),);
+export const IOProfile = lazy(() => import ("../../features/io/pages/Profile"),);
 export const CreateFieldOfficer = lazy(() => import ("../../features/role-manager/pages/Createfieldofficer"),);
 export const CreateintellegenceOfficer = lazy(() => import ("../../features/role-manager/pages/Createintelligenceofficer"),);
 export const CreateregionalOfficer = lazy(() => import ("../../features/role-manager/pages/Createregionalofficer"),);

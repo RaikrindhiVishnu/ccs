@@ -3,8 +3,7 @@ import { BackButton } from "@/components/ui/BackButton";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { Bell } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/core/hooks";
-import { logOut } from "@/features/auth/store/authSlice";
+import { useAppSelector } from "@/core/hooks";
 import { useNavigate } from "react-router-dom";
 
 interface OwnerDetailsDocumentProps {
@@ -51,14 +50,8 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
   setGender,
 }) => {
   const [activeStep, setActiveStep] = React.useState<"customer" | "local">("customer");
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
-
-  const handleLogout = () => {
-    dispatch(logOut());
-    navigate("/login", { replace: true });
-  };
 
   const fullName = user
     ? `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
@@ -142,8 +135,8 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
 
           {/* Avatar */}
           <button
-            onClick={handleLogout}
-            title="Logout"
+            onClick={() => navigate("/io/profile")}
+            title="Profile"
             className="
               relative overflow-hidden
               flex items-center justify-center
