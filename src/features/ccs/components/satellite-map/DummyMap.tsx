@@ -62,6 +62,12 @@ export default function DummyMap() {
           <span className="text-[0.65rem] font-medium text-white">3D</span>
         </div>
       </div>
+
+      <style>{`
+        .maplibregl-ctrl-bottom-right, .maplibregl-ctrl-bottom-left {
+          display: none !important;
+        }
+      `}</style>
     </div>
   );
 }
