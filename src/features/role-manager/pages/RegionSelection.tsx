@@ -880,7 +880,6 @@ const RegionSelection: React.FC = () => {
 
           // Updated Click Handler: Only trigger on actual states
           map.current?.on("click", "states-fill", (e) => {
-            if (mode === "area") return; // Disable state zoom in Area Mode
             if (e.features && e.features.length > 0 && !selectedState) {
               const feature = e.features[0];
               setSelectedState({
@@ -943,13 +942,11 @@ const RegionSelection: React.FC = () => {
           });
 
           map.current?.on("mouseenter", "states-fill", () => {
-            if (mode === "area") return; // Disable cursor change in Area Mode
             if (map.current && !selectedState)
               map.current.getCanvas().style.cursor = "pointer";
           });
 
           map.current?.on("mouseleave", "states-fill", () => {
-            if (mode === "area") return; // Disable cursor change in Area Mode
             if (map.current && !selectedState)
               map.current.getCanvas().style.cursor = "";
           });
@@ -1085,18 +1082,18 @@ const RegionSelection: React.FC = () => {
               "fill-color": [
                 "case",
                 ["boolean", ["get", "isAssigned"], false],
-                "#94a3b8",
-                "#3b82f6",
+                "#cbd5e1",
+                "#0d9488",
               ],
               "fill-opacity": [
                 "case",
                 ["boolean", ["get", "isAssigned"], false],
-                0.2,
+                0.12,
                 ["boolean", ["feature-state", "selected"], false],
-                0.35,
+                0.55,
                 ["boolean", ["feature-state", "hover"], false],
-                0.15,
-                0,
+                0.3,
+                0.12,
               ],
             },
           },
@@ -1112,12 +1109,11 @@ const RegionSelection: React.FC = () => {
               "line-color": [
                 "case",
                 ["boolean", ["get", "isAssigned"], false],
-                "#64748b",
-                "#3b82f6",
+                "#cbd5e1",
+                "#0d9488",
               ],
-              "line-width": 0.8,
-              "line-dasharray": [2, 1],
-              "line-opacity": 0.6,
+              "line-width": 0.25,
+              "line-opacity": 0.08,
             },
           },
           "states-border-line",
@@ -1201,18 +1197,18 @@ const RegionSelection: React.FC = () => {
             generateId: true,
           });
 
-          // Fill Layer for Regions (emerald/teal transparent overlay, matching theme color)
+          // Fill Layer for Regions (matching the Teal theme color of Create Area)
           map.current?.addLayer(
             {
               id: "regions-fill",
               type: "fill",
               source: "regions-source",
               paint: {
-                "fill-color": "#CBD5E1",
+                "fill-color": "#0d9488",
                 "fill-opacity": [
                   "case",
                   ["boolean", ["feature-state", "hover"], false],
-                  0.35,
+                  0.45,
                   0.2,
                 ],
               },
@@ -1230,9 +1226,10 @@ const RegionSelection: React.FC = () => {
                 "line-color": [
                   "coalesce",
                   ["get", "regionBorderColor"],
-                  "#059669",
+                  "#4f46e5",
                 ],
                 "line-width": 1.8,
+                "line-opacity": 1.0,
               },
             },
             "states-border-line",
@@ -1390,8 +1387,8 @@ const RegionSelection: React.FC = () => {
         if (map.current.getLayer("districts-fill")) {
           map.current.setLayoutProperty("districts-fill", "visibility", "none");
         }
-        if (map.current.getLayer("districts-border-line")) {
-          map.current.setLayoutProperty("districts-border-line", "visibility", "none");
+        if (map.current.getLayer("districts-line")) {
+          map.current.setLayoutProperty("districts-line", "visibility", "none");
         }
       } else {
         // Restore map pitch and bearing to flat view
@@ -1428,8 +1425,8 @@ const RegionSelection: React.FC = () => {
         if (map.current.getLayer("districts-fill")) {
           map.current.setLayoutProperty("districts-fill", "visibility", "visible");
         }
-        if (map.current.getLayer("districts-border-line")) {
-          map.current.setLayoutProperty("districts-border-line", "visibility", "visible");
+        if (map.current.getLayer("districts-line")) {
+          map.current.setLayoutProperty("districts-line", "visibility", "visible");
         }
       }
     } catch (err) {
@@ -1670,14 +1667,14 @@ const RegionSelection: React.FC = () => {
                 type: "fill",
                 source: "country-regions-source",
                 layout: {
-                  visibility: mode === "area" ? "visible" : "none",
+                  visibility: "none",
                 },
                 paint: {
-                  "fill-color": "#CBD5E1",
+                  "fill-color": "#0d9488",
                   "fill-opacity": [
                     "case",
                     ["boolean", ["feature-state", "hover"], false],
-                    0.4,
+                    0.45,
                     0.2,
                   ],
                 },
@@ -1692,15 +1689,16 @@ const RegionSelection: React.FC = () => {
                 type: "line",
                 source: "country-regions-source",
                 layout: {
-                  visibility: mode === "area" ? "visible" : "none",
+                  visibility: "none",
                 },
                 paint: {
                   "line-color": [
                     "coalesce",
                     ["get", "regionBorderColor"],
-                    "#6d28d9",
+                    "#4f46e5",
                   ],
-                  "line-width": 1.5,
+                  "line-width": 1.8,
+                  "line-opacity": 1.0,
                 },
               },
               "states-border-line",
@@ -1828,16 +1826,20 @@ const RegionSelection: React.FC = () => {
     }
   }, [regionsByCountryData, mapLoaded, geoMasterData, mode, selectedRegion]);
 
-  // Effect to manage country regions visibility depending on mode and selection
+  // Effect to manage country regions visibility and filtering depending on mode and selection
   useEffect(() => {
     if (map.current) {
       try {
         const fillLayer = map.current.getLayer("country-regions-fill");
         const lineLayer = map.current.getLayer("country-regions-line");
 
-        // Only show country regions layer in Area Mode (to allow selection)
-        // In Region Mode, it is hidden so that initially only states are visible on the India map
-        const visibility = mode === "area" ? "visible" : "none";
+        // Only show country regions layer in Area Mode when:
+        // 1. A state is selected (selectedState is not null)
+        // 2. No region is selected yet (selectedRegion is null)
+        const visibility =
+          mode === "area" && selectedState && !selectedRegion
+            ? "visible"
+            : "none";
 
         if (fillLayer) {
           map.current.setLayoutProperty(
@@ -1853,11 +1855,30 @@ const RegionSelection: React.FC = () => {
             visibility,
           );
         }
+
+        // Apply filter to show only regions in the selected state
+        const selectedStateId = selectedState?.properties?.id;
+        if (selectedStateId !== undefined && selectedStateId !== null) {
+          const filter: any = ["==", ["get", "state_id"], Number(selectedStateId)];
+          if (fillLayer) {
+            map.current.setFilter("country-regions-fill", filter);
+          }
+          if (lineLayer) {
+            map.current.setFilter("country-regions-line", filter);
+          }
+        } else {
+          if (fillLayer) {
+            map.current.setFilter("country-regions-fill", null);
+          }
+          if (lineLayer) {
+            map.current.setFilter("country-regions-line", null);
+          }
+        }
       } catch (err) {
         // Safe check for early renders
       }
     }
-  }, [selectedState, regionsByCountryData, mode]);
+  }, [selectedState, selectedRegion, mode]);
 
   const handleRemoveDistrict = (district: any) => {
     const dtId = district.id ?? district.featureId;
@@ -2108,8 +2129,9 @@ const RegionSelection: React.FC = () => {
         <div className="flex items-center gap-4 pointer-events-auto">
           <button
             onClick={() => {
-              if (mode === "region" && selectedRegion) {
+              if ((mode === "region" || mode === "area") && selectedRegion) {
                 setSelectedRegion(null);
+                setSelectedMandals([]);
                 if (selectedState) {
                   const bounds = getFeatureBounds(selectedState);
                   map.current?.fitBounds(bounds, {
@@ -2117,7 +2139,7 @@ const RegionSelection: React.FC = () => {
                     duration: 1200,
                   });
                 }
-              } else if (selectedState || selectedRegion) {
+              } else if (selectedState) {
                 resetView();
               } else {
                 navigate("/role-manager/create-regions-and-areas");
@@ -2327,7 +2349,7 @@ const RegionSelection: React.FC = () => {
               <div className="flex items-start justify-between mb-[26px]">
                 <div className="flex gap-3">
                   <div className="mt-1 flex-shrink-0 w-[20px] h-[20px] rounded-[4px] bg-[#353535] flex items-center justify-center">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>
                   </div>
                   <div className="flex flex-col gap-[6px]">
                     <h3 className="text-[24px] font-bold text-[#353535] font-['Plus_Jakarta_Sans'] leading-[30px]">
@@ -2416,9 +2438,8 @@ const RegionSelection: React.FC = () => {
                           : "Select Districts"}
                       </span>
                       <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
-                          districtDropdownOpen ? "rotate-180" : ""
-                        }`}
+                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${districtDropdownOpen ? "rotate-180" : ""
+                          }`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -2465,13 +2486,12 @@ const RegionSelection: React.FC = () => {
                                 <div
                                   key={district.i}
                                   onClick={() => toggleDistrictSelection(district)}
-                                  className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${
-                                    isAssigned
+                                  className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${isAssigned
                                       ? "bg-slate-50 text-slate-400 cursor-not-allowed"
                                       : isSelected
-                                      ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
-                                      : "hover:bg-slate-50 text-slate-700"
-                                  }`}
+                                        ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
+                                        : "hover:bg-slate-50 text-slate-700"
+                                    }`}
                                 >
                                   <div className="flex items-center gap-2">
                                     {!isAssigned && (
@@ -2487,7 +2507,7 @@ const RegionSelection: React.FC = () => {
 
                                   {isAssigned && (
                                     <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
-                                     
+
                                       <svg
                                         className="w-4 h-4 text-emerald-600"
                                         fill="none"
@@ -2516,7 +2536,7 @@ const RegionSelection: React.FC = () => {
                     )}
                   </div>
                   {formErrors.districts && <span className="text-red-500 text-xs mt-[-4px]">{formErrors.districts}</span>}
-                  
+
                   <div className="flex flex-wrap gap-[10px] mt-1 max-h-24 overflow-y-auto custom-scrollbar">
                     {selectedDistricts
                       .map((d, i) => (
@@ -2524,7 +2544,7 @@ const RegionSelection: React.FC = () => {
                           key={i}
                           onClick={() => {
                             handleRemoveDistrict(d);
-                            if (selectedDistricts.length <= 1) setFormErrors({...formErrors, districts: "Please select at least one district.", general: "Please fill in all fields and select districts"});
+                            if (selectedDistricts.length <= 1) setFormErrors({ ...formErrors, districts: "Please select at least one district.", general: "Please fill in all fields and select districts" });
                           }}
                           className="h-[40px] px-[25px] rounded-[9px] bg-white border border-[rgba(90,92,94,0.4)] flex items-center justify-center gap-[10px] cursor-pointer hover:bg-slate-50 transition-colors group"
                         >
@@ -2569,7 +2589,7 @@ const RegionSelection: React.FC = () => {
               <div className="flex items-start justify-between mb-[26px]">
                 <div className="flex gap-3">
                   <div className="mt-1 flex-shrink-0 w-[20px] h-[20px] rounded-[4px] bg-[#353535] flex items-center justify-center">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>
                   </div>
                   <div className="flex flex-col gap-[6px]">
                     <h3 className="text-[24px] font-bold text-[#353535] font-['Plus_Jakarta_Sans'] leading-[30px]">
@@ -2658,9 +2678,8 @@ const RegionSelection: React.FC = () => {
                           : "Select Mandals"}
                       </span>
                       <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
-                          mandalDropdownOpen ? "rotate-180" : ""
-                        }`}
+                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${mandalDropdownOpen ? "rotate-180" : ""
+                          }`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -2707,13 +2726,12 @@ const RegionSelection: React.FC = () => {
                                 <div
                                   key={mandal.i}
                                   onClick={() => toggleMandalSelection(mandal)}
-                                  className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${
-                                    isAssigned
+                                  className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${isAssigned
                                       ? "bg-slate-50 text-slate-400 cursor-not-allowed"
                                       : isSelected
-                                      ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
-                                      : "hover:bg-slate-50 text-slate-700"
-                                  }`}
+                                        ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
+                                        : "hover:bg-slate-50 text-slate-700"
+                                    }`}
                                 >
                                   <div className="flex items-center gap-2">
                                     {!isAssigned && (
@@ -2757,7 +2775,7 @@ const RegionSelection: React.FC = () => {
                     )}
                   </div>
                   {formAreaErrors.mandals && <span className="text-red-500 text-xs mt-[-4px]">{formAreaErrors.mandals}</span>}
-                  
+
                   <div className="flex flex-wrap gap-[10px] mt-1 max-h-24 overflow-y-auto custom-scrollbar">
                     {selectedMandals
                       .map((m, i) => (
@@ -2765,7 +2783,7 @@ const RegionSelection: React.FC = () => {
                           key={i}
                           onClick={() => {
                             handleRemoveMandal(m);
-                            if (selectedMandals.length <= 1) setFormAreaErrors({...formAreaErrors, mandals: "Please select at least one mandal.", general: "Please fill in all area fields and select mandals"});
+                            if (selectedMandals.length <= 1) setFormAreaErrors({ ...formAreaErrors, mandals: "Please select at least one mandal.", general: "Please fill in all area fields and select mandals" });
                           }}
                           className="h-[40px] px-[25px] rounded-[9px] bg-white border border-[rgba(90,92,94,0.4)] flex items-center justify-center gap-[10px] cursor-pointer hover:bg-slate-50 transition-colors group"
                         >
