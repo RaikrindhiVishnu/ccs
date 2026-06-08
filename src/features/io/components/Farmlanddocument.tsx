@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { BackButton } from "@/components/ui/BackButton";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
@@ -10,8 +10,8 @@ import { FamilyTreeDocument } from "./FamilyTreeDocument";
 import { LandDetailsDocument } from "./LandDetailsDocument";
 import { LocalIntelligenceDocument } from "./LocalIntelligenceDocument";
 import { Bell } from "lucide-react";
-import { useAppDispatch, useAppSelector } from "@/core/hooks";
-import { logOut } from "@/features/auth/store/authSlice";
+import { useAppSelector } from "@/core/hooks";
+import { RequestedInfoReasonModal } from "./RequestedInfoReasonModal";
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 /* TYPES & INTERFACES                                                           */
@@ -485,37 +485,33 @@ const CurrentStatusCard = ({ data }: { data: FarmlandDetailData }) => (
 
 const TopNav = ({
   onBack,
+  isRequestedInfo,
 }: {
   onBack?: () => void;
+  isRequestedInfo?: boolean;
 }) => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
 
-  const handleLogout = () => {
-    dispatch(logOut());
-    navigate("/login", { replace: true });
-  };
-
   const fullName = user
     ? `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-      "Intelligence Officer"
+    "Intelligence Officer"
     : "Intelligence Officer";
 
   const initials = fullName
     ? fullName
-        .split(" ")
-        .map((n: string) => n[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
+      .split(" ")
+      .map((n: string) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase()
     : "IO";
 
   return (
     <div className="flex items-center justify-between w-full">
       {/* Back button */}
       <BackButton
-        label="Go Back to Dashboard"
+        label={isRequestedInfo ? "Go Back to Requested Info" : "Go Back to Dashboard"}
         variant="light"
         size="default"
         onClick={onBack}
@@ -569,8 +565,8 @@ const TopNav = ({
 
         {/* Avatar */}
         <button
-          onClick={handleLogout}
-          title="Logout"
+          onClick={() => navigate("/io/profile")}
+          title="Profile"
           className="
             relative overflow-hidden
             flex items-center justify-center
@@ -617,9 +613,13 @@ const TopNav = ({
 const BottomActions = ({
   onBack,
   onUpload,
+  isRequestedInfo,
+  onViewReason,
 }: {
   onBack?: () => void;
   onUpload?: () => void;
+  isRequestedInfo?: boolean;
+  onViewReason?: () => void;
 }) => (
   <div
     className="
@@ -630,40 +630,80 @@ const BottomActions = ({
       pb-[clamp(2.125rem,3.33vw,4rem)]
     "
   >
-    {/* Back */}
-    <button
-      onClick={onBack}
-      className="
-        inline-flex items-center justify-center
-        border border-[rgba(0,0,0,0.27)] rounded-full
-        font-medium text-[rgba(0,0,0,0.8)]
-        bg-transparent
-        transition-opacity hover:opacity-75
-        w-[clamp(5.375rem,8.4vw,10rem)]
-        h-[clamp(1.6875rem,2.64vw,3.16rem)]
-        text-[clamp(0.625rem,0.97vw,1.1625rem)]
-        font-[family-name:var(--font-sans)]
-      "
-    >
-      Back
-    </button>
+    {isRequestedInfo ? (
+      <>
+        {/* View Reason */}
+        <button
+          onClick={onViewReason}
+          className="
+         inline-flex items-center justify-center
+            rounded-full bg-[#96C9ED] hover:bg-[#1f6da9]
+            font-semibold text-[#000000]
+            transition-opacity hover:opacity-90
+            w-[clamp(5.375rem,8.4vw,10rem)]
+            h-[clamp(1.6875rem,2.64vw,3.16rem)]
+            text-[clamp(0.625rem,0.97vw,1.1625rem)]
+            font-[family-name:var(--font-sans)]
+          "
+        >
+          View Reason
+        </button>
 
-    {/* Upload */}
-    <button
-      onClick={onUpload}
-      className="
-        inline-flex items-center justify-center
-        rounded-full bg-[#2780C4] hover:bg-[#1f6da9]
-        font-semibold text-white
-        transition-opacity hover:opacity-90
-        w-[clamp(5.375rem,8.4vw,10rem)]
-        h-[clamp(1.6875rem,2.64vw,3.16rem)]
-        text-[clamp(0.625rem,0.97vw,1.1625rem)]
-        font-[family-name:var(--font-sans)]
-      "
-    >
-      Upload
-    </button>
+        {/* Edit */}
+        {/* <button
+          onClick={onUpload}
+          className="
+            inline-flex items-center justify-center
+            rounded-full bg-[#2780C4] hover:bg-[#1f6da9]
+            font-semibold text-white
+            transition-opacity hover:opacity-90
+            w-[clamp(5.375rem,8.4vw,10rem)]
+            h-[clamp(1.6875rem,2.64vw,3.16rem)]
+            text-[clamp(0.625rem,0.97vw,1.1625rem)]
+            font-[family-name:var(--font-sans)]
+          "
+        >
+          Edit
+        </button> */}
+      </>
+    ) : (
+      <>
+        {/* Back */}
+        <button
+          onClick={onBack}
+          className="
+            inline-flex items-center justify-center
+            border border-[rgba(0,0,0,0.27)] rounded-full
+            font-medium text-[rgba(0,0,0,0.8)]
+            bg-transparent
+            transition-opacity hover:opacity-75
+            w-[clamp(5.375rem,8.4vw,10rem)]
+            h-[clamp(1.6875rem,2.64vw,3.16rem)]
+            text-[clamp(0.625rem,0.97vw,1.1625rem)]
+            font-[family-name:var(--font-sans)]
+          "
+        >
+          Back
+        </button>
+
+        {/* Upload */}
+        <button
+          onClick={onUpload}
+          className="
+            inline-flex items-center justify-center
+            rounded-full bg-[#2780C4] hover:bg-[#1f6da9]
+            font-semibold text-white
+            transition-opacity hover:opacity-90
+            w-[clamp(5.375rem,8.4vw,10rem)]
+            h-[clamp(1.6875rem,2.64vw,3.16rem)]
+            text-[clamp(0.625rem,0.97vw,1.1625rem)]
+            font-[family-name:var(--font-sans)]
+          "
+        >
+          Upload
+        </button>
+      </>
+    )}
   </div>
 );
 
@@ -695,8 +735,18 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
 }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isRequestedInfo = React.useMemo(() => {
+    return !!(
+      location.state?.fromRequestedInfo ||
+      location.search.includes("mode=requested")
+    );
+  }, [location]);
 
   const [activeStep, setActiveStep] = React.useState<"list" | "owner-details" | "family-tree" | "land-details" | "local-intelligence">("list");
+  const [showReasonModal, setShowReasonModal] = React.useState(false);
+  const [cameFromModal, setCameFromModal] = React.useState(false);
 
   // Lifted form data state
   const [firstName, setFirstName] = React.useState("Ramudu");
@@ -712,7 +762,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
   const displayData = matchedItem
     ? {
       heroImageUrl: afimg,
-      badge: "ASSIGNED FARMLAND",
+      badge: isRequestedInfo ? "REQUESTED INFORMATION" : "ASSIGNED FARMLAND",
       farmlandName:
         matchedItem.farmlandId === "GLCSOS 01"
           ? "GLC SOS -001"
@@ -729,7 +779,10 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
       systemStatus: matchedItem.agentStatus,
       liveStatus: "NA",
     }
-    : data || defaultData;
+    : data || {
+      ...defaultData,
+      badge: isRequestedInfo ? "REQUESTED INFORMATION" : "ASSIGNED FARMLAND",
+    };
 
   const handleBack = onBack || (() => navigate(-1));
   const handleUpload = () => {
@@ -818,15 +871,32 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
   if (activeStep === "local-intelligence") {
     return (
       <LocalIntelligenceDocument
-        onBack={() => setActiveStep("land-details")}
+        onBack={() => {
+          if (cameFromModal) {
+            setCameFromModal(false);
+            setActiveStep("list");
+            setShowReasonModal(true);
+          } else {
+            setActiveStep("land-details");
+          }
+        }}
         onNext={() => {
           alert("Farmland document updated successfully!");
           setActiveStep("list");
         }}
         onStepChange={(step) => {
-          if (step === "customer") setActiveStep("owner-details");
+          if (step === "customer") {
+            if (cameFromModal) {
+              setCameFromModal(false);
+              setActiveStep("list");
+              setShowReasonModal(true);
+            } else {
+              setActiveStep("owner-details");
+            }
+          }
         }}
         farmlandId={displayData.farmlandId}
+        isFromRejection={cameFromModal || isRequestedInfo}
       />
     );
   }
@@ -850,7 +920,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
       >
         {/* Top nav wrapped in its own 40px padding */}
         <div className="px-[clamp(1.775rem,2.78vw,3.3rem)] w-full">
-          <TopNav onBack={handleBack} />
+          <TopNav onBack={handleBack} isRequestedInfo={isRequestedInfo} />
         </div>
 
         {/* Main page content wrapper in its own 96px padding */}
@@ -871,7 +941,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
                 leading-[clamp(2.125rem,3.33vw,4rem)]
               "
             >
-              Assigned Farmlands
+              {isRequestedInfo ? "Requested Information" : "Assigned Farmlands"}
             </Typography>
           </div>
 
@@ -893,9 +963,29 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
           </div>
 
           {/* Bottom actions */}
-          <BottomActions onBack={handleBack} onUpload={handleUpload} />
+          <BottomActions
+            onBack={handleBack}
+            onUpload={handleUpload}
+            isRequestedInfo={isRequestedInfo}
+            onViewReason={() => setShowReasonModal(true)}
+          />
         </div>
       </div>
+
+      {showReasonModal && (
+        <RequestedInfoReasonModal
+          onClose={() => setShowReasonModal(false)}
+          onUpload={() => {
+            if (onUpload) {
+              onUpload();
+            }
+            setCameFromModal(true);
+            setActiveStep("local-intelligence");
+            setShowReasonModal(false);
+          }}
+          rejectedBy="Verification Officer Sravan"
+        />
+      )}
     </div>
   );
 };

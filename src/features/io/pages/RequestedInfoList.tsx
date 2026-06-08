@@ -176,35 +176,13 @@ const RequestedInfoList = () => {
   }, [filteredRequests, page]);
 
   return (
-    <main
+    <div
       className="
         w-full
-        min-h-screen
         bg-[var(--chart-bg)]
-        px-[0.875rem]
-        pt-[0.875rem]
-        pb-[1rem]
-
-        sm:px-[1rem]
-        sm:pt-[1rem]
-
-        md:px-[1.25rem]
-        md:pt-[1.25rem]
-
-        lg:px-[1.5rem]
-        lg:pt-[1.5rem]
-        lg:pb-[1.5rem]
-
-        xl:px-[1.75rem]
-        xl:pt-[1.75rem]
-
-        2xl:px-[2rem]
-        2xl:pt-[2rem]
-
-        min-[1800px]:px-[2.5rem]
-        min-[1800px]:pt-[2.5rem]
-
-        min-[2200px]:px-[3rem]
+        px-[clamp(12px,2vw,24px)]
+        pt-[clamp(12px,2vw,24px)]
+        pb-[12px]
       "
     >
       {/* Container */}
@@ -214,10 +192,7 @@ const RequestedInfoList = () => {
           flex
           w-full
           flex-col
-          max-w-full
-          min-[1400px]:max-w-[95%]
-          min-[1800px]:max-w-[96%]
-          min-[2200px]:max-w-[97%]
+          max-w-[1360px]
           gap-[1.25rem]
           md:gap-[1.5rem]
           lg:gap-[1.75rem]
@@ -259,9 +234,6 @@ const RequestedInfoList = () => {
 
           {/* Content layer */}
           <div className="relative z-10 flex flex-col gap-[24px]">
-            {/* Back option row */}
-       
-
             {/* Dashboard Header - Styled Exactly like RequestedInfo.tsx */}
             <section className="w-full">
               <IODashboardHeader
@@ -293,23 +265,192 @@ const RequestedInfoList = () => {
               />
             </section>
 
-            {/* Table Content List - Reusing same Figma card CSS wrapper internally */}
+            {/* Table Content List */}
             <section className="w-full">
               <RequestedInfoTable
                 data={paginatedData}
                 hideCardWrapper={false}
-                showPagination={true}
-                currentPage={page}
-                totalPages={totalPages}
-                onPageChange={setPage}
-                totalItems={filteredRequests.length}
-                itemsPerPage={ITEMS_PER_PAGE}
+                showPagination={false}
               />
             </section>
           </div>
         </div>
+
+        {/* FOOTER */}
+        <div
+          className="
+            flex
+            flex-col
+            gap-[1rem]
+            rounded-[32px]
+            border
+            border-[#F1F5F9]
+            bg-white
+            px-[24px]
+            py-[26px]
+            h-auto
+            lg:h-[76px]
+            lg:flex-row
+            lg:items-center
+            lg:justify-between
+          "
+        >
+          {/* LEFT TEXT */}
+          <span
+            className="
+              font-[var(--font-sans)]
+              font-medium
+              text-[#64748B]
+              text-[clamp(14px,1.11vw,16px)]
+              leading-[16px]
+              flex
+              items-center
+            "
+          >
+            Showing {(page - 1) * ITEMS_PER_PAGE + 1}–
+            {Math.min(page * ITEMS_PER_PAGE, filteredRequests.length)} of{" "}
+            {filteredRequests.length.toLocaleString()}
+          </span>
+
+          {/* PAGINATION */}
+          <div
+            className="
+              flex
+              flex-wrap
+              items-center
+              gap-[8px]
+              sm:justify-end
+            "
+          >
+            {/* PREVIOUS */}
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((prev) => prev - 1)}
+              className="
+                flex
+                items-center
+                justify-center
+                gap-[14px]
+                rounded-[8px]
+                border
+                border-[rgba(195,198,213,0.2)]
+                bg-white
+                w-[103px]
+                h-[30px]
+                text-[12px]
+                font-semibold
+                font-[var(--font-sans)]
+                text-black
+                transition-all
+                duration-200
+                hover:bg-[var(--chart-bg)]
+                disabled:cursor-not-allowed
+                disabled:opacity-50
+              "
+            >
+              <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 9L1 5L5 1" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>Previous</span>
+            </button>
+
+            {/* Dynamic Page Buttons */}
+            {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((num) => (
+              <button
+                key={num}
+                onClick={() => setPage(num)}
+                className={`
+                  flex
+                  h-[32px]
+                  w-[32px]
+                  items-center
+                  justify-center
+                  rounded-[8px]
+                  text-[12px]
+                  font-semibold
+                  font-[var(--font-sans)]
+                  transition-all
+                  duration-200
+                  ${
+                    page === num
+                      ? "bg-[#96C9ED] text-black"
+                      : "text-[#475569] hover:bg-[var(--chart-bg)]"
+                  }
+                `}
+              >
+                {num}
+              </button>
+            ))}
+
+            {totalPages > 3 && (
+              <>
+                <div
+                  className="
+                    px-[8px]
+                    text-[12px]
+                    font-[var(--font-sans)]
+                    text-[#94A3B8]
+                  "
+                >
+                  ...
+                </div>
+
+                <button
+                  onClick={() => setPage(1284)}
+                  className="
+                    flex
+                    h-[32px]
+                    w-[32px]
+                    items-center
+                    justify-center
+                    rounded-[8px]
+                    text-[12px]
+                    font-semibold
+                    font-[var(--font-sans)]
+                    text-[#475569]
+                    hover:bg-[var(--chart-bg)]
+                  "
+                >
+                  1284
+                </button>
+              </>
+            )}
+
+            {/* NEXT */}
+            <button
+              disabled={page === totalPages || totalPages === 0}
+              onClick={() => setPage((prev) => prev + 1)}
+              className="
+                flex
+                items-center
+                justify-center
+                gap-[14px]
+                rounded-[8px]
+                border
+                border-[rgba(195,198,213,0.2)]
+                bg-white
+                w-[103px]
+                h-[30px]
+                text-[12px]
+                font-semibold
+                font-[var(--font-sans)]
+                text-black
+                transition-all
+                duration-200
+                hover:bg-[var(--chart-bg)]
+                disabled:cursor-not-allowed
+                disabled:opacity-50
+              "
+            >
+              <span>Next</span>
+              <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 9L5 5L1 1" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
-    </main>
+    </div>
   );
 };
 
