@@ -1,10 +1,11 @@
-import { NavLink, useNavigate, Outlet } from 'react-router-dom';
-import { LayoutGrid, CircleDashed, MapPin, LogOut, type LucideIcon } from 'lucide-react';
+import { NavLink, useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
+import { LayoutGrid, CircleDashed, MapPin, type LucideIcon } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { logOut } from '@/features/auth/store/authSlice';
 import { useRoleLayout } from '@/core/hooks/useRoleLayout';
 
 import logo from '@/assets/glc-logo.svg';
+import profImg from '@/assets/prof.jpg';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard: LayoutGrid,
@@ -21,25 +22,21 @@ export const CcsOfficerLayout = () => {
   const { navItems } = useRoleLayout();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const user = useAppSelector((state) => state.auth.user);
 
-  const handleLogout = () => {
-    dispatch(logOut());
-    navigate('/login', { replace: true });
-  };
-
-  const fullName = user
-    ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'CCS Officer'
-    : 'CCS Officer';
+  const fullName = 'Ram Varma';
 
   const initials = fullName
-    ? fullName
-        .split(' ')
-        .map((n: string) => n[0])
-        .join('')
-        .slice(0, 2)
-        .toUpperCase()
-    : 'U';
+    .split(' ')
+    .map((n: string) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+  if (location.pathname === '/ccs/profile') {
+    return <Outlet />;
+  }
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[var(--surface-card)] rounded-3xl xl:rounded-[2.5rem]">
@@ -65,14 +62,14 @@ export const CcsOfficerLayout = () => {
               end={item.path === '/'}
               className={({ isActive }) =>
                 [
-                  'flex items-center gap-2 xl:gap-3',
-                  'rounded-xl xl:rounded-2xl',
-                  'px-3 py-2.5 xl:px-4 xl:py-3',
-                  'text-xs xl:text-sm',
+                  'flex items-center gap-[14px]',
+                  'rounded-[13px]',
+                  'px-[26px] py-[10px]',
+                  'text-[15px]',
                   'transition-all duration-200',
                   isActive
-                    ? 'bg-[var(--brand-tint)] text-[var(--brand-500)] font-semibold shadow-sm'
-                    : 'text-[var(--text-muted-strong)] font-medium hover:bg-[var(--brand-tint)] hover:text-[var(--text-heading)]',
+                    ? 'bg-[#F9F9F9] text-[#2780C4] font-semibold'
+                    : 'text-[#8A92A6] font-medium hover:bg-[#F9F9F9]/50 hover:text-[#2780C4]',
                 ].join(' ')
               }
             >
@@ -93,20 +90,16 @@ export const CcsOfficerLayout = () => {
         </nav>
 
         {/* User Section */}
-        <div className="shrink-0 px-3 py-4 xl:px-4 xl:py-5 flex flex-col items-center gap-2">
-          <div className="flex items-center justify-center h-12 w-12 xl:h-14 xl:w-14 rounded-full bg-[var(--brand-500)] text-white text-sm xl:text-base font-bold">
-            {initials}
-          </div>
-          <p className="text-center leading-tight text-xs xl:text-sm font-semibold text-[var(--text-heading)]">
-            {fullName}
-          </p>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 text-xs text-[var(--text-muted-strong)] transition-colors hover:text-[var(--status-danger)]"
-          >
-            <LogOut className="h-3 w-3 xl:h-3.5 xl:w-3.5" strokeWidth={1.8} />
-            <span>Sign out</span>
-          </button>
+        <div className="shrink-0 px-3 py-4 xl:px-4 xl:py-5 flex flex-col items-center gap-2 mt-auto">
+          <Link to="/ccs/profile" className="flex flex-col items-center gap-2 hover:opacity-80 transition-opacity">
+            <img src={profImg} alt="Profile" className="h-[50px] w-[50px] rounded-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+            <div className="hidden items-center justify-center h-[50px] w-[50px] rounded-full bg-[var(--brand-500)] text-white text-base font-bold">
+              {initials}
+            </div>
+            <p className="text-center leading-tight text-[15px] font-semibold text-[#000000]">
+              {fullName}
+            </p>
+          </Link>
         </div>
       </aside>
 

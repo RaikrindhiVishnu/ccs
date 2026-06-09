@@ -149,13 +149,13 @@ function ClockIcon({ className }: { className?: string }) {
 
 function ForwardIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 22 14" fill="none" className={cn("shrink-0", className)}>
+    <svg viewBox="0 0 24 24" fill="none" className={cn("shrink-0", className)}>
       <path
-        d="M1 7h20M15 2l5 5-5 5"
+        d="M6 7 L12 12 L6 17 Z M13 7 L19 12 L13 17 Z"
         stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        strokeWidth="2"
         strokeLinejoin="round"
+        strokeLinecap="round"
       />
     </svg>
   );
@@ -235,71 +235,49 @@ function TemporalRibbon({
 }) {
   return (
     <div
-      className="
-    absolute
-    bottom-[2rem] lg:bottom-[2.5rem] xl:bottom-[3rem] 2xl:bottom-[3.5rem]
-    left-0 right-0
-    flex justify-center
-    z-30
-    px-4
-  "
+      className="absolute bottom-[20px] md:bottom-[67px] left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[625px] h-[80px] md:h-[114px] flex items-center justify-between px-[20px] md:px-[47px] z-30 overflow-x-auto custom-scrollbar"
     >
-      <div
-        className="
-      flex items-center
-      px-[0.75rem] lg:px-[1rem] xl:px-[1.25rem] 2xl:px-[1.5rem]
-      h-[3.5rem] lg:h-[4rem] xl:h-[4.5rem] 2xl:h-[7.125rem]
-      bg-white
-      rounded-[36.88px]
-      shadow-[0px_28.81px_57.62px_-13.83px_rgba(0,0,0,0.25)]
-      gap-[0.0625rem] lg:gap-[0.125rem] xl:gap-[0.25rem]
-    "
-      >
-        {YEARS.map(({ year, icon }) => {
-          const isActive = year === activeYear;
+      {/* Shadow layer */}
+      <div className="absolute top-[0px] bottom-[0.44px] left-[0px] right-[-0.32px] bg-[#FFFFFF] rounded-[36.88px] shadow-[0px_28.81px_57.62px_-13.83px_rgba(0,0,0,0.25)] z-[-2]"></div>
+      
+      {/* Shell layer */}
+      <div className="absolute inset-0 bg-[rgba(255,255,255,0.2)] border-[1.15px] border-[rgba(255,255,255,0.4)] backdrop-blur-[36.88px] rounded-[36.88px] z-[-1]"></div>
 
+      {YEARS.map(({ year, icon }) => {
+        const isActive = year === activeYear;
+
+        if (isActive) {
           return (
             <button
               key={year}
               onClick={() => onYearChange(year)}
-              className={cn(
-                "relative flex flex-col items-center justify-center",
-                "gap-[0.2rem] lg:gap-[0.25rem]",
-                "transition-all duration-300 ease-in-out",
-
-                isActive
-                  ? cn(
-                      "bg-[#2780C4] text-white z-10",
-                      "px-[1.1rem] lg:px-[1.35rem] xl:px-[1.6rem] 2xl:px-[1.73rem]",
-                      "py-[0.35rem] lg:py-[0.4rem] xl:py-[0.5rem] 2xl:py-[0.44rem]",
-                      "rounded-[11523.2px]",
-                      "shadow-[0px_0px_0px_9.22px_rgba(255,255,255,0.4),0px_11.52px_17.29px_-3.46px_rgba(0,0,0,0.1),0px_4.61px_6.91px_-4.61px_rgba(0,0,0,0.1)]",
-                    )
-                  : cn(
-                      "text-[#A1A1AA] hover:text-[#71717a]",
-                      "px-[0.6rem] lg:px-[0.75rem] xl:px-[0.875rem] 2xl:px-[1rem]",
-                      "py-[0.6rem] lg:py-[0.75rem] 2xl:py-[0.86rem]",
-                      "rounded-[2.5rem]",
-                    ),
-              )}
+              className="flex flex-col items-center justify-center shrink-0 w-[110px] md:w-[135px] h-[70px] md:h-[79px] bg-[#2780C4] rounded-[11523px] shadow-[0px_0px_0px_9.2px_rgba(255,255,255,0.4),0px_11.5px_17.3px_-3.5px_rgba(0,0,0,0.1),0px_4.6px_6.9px_-4.6px_rgba(0,0,0,0.1)] transition-transform hover:scale-105 z-10"
             >
-              <span>{icon}</span>
-
-              <span
-                className={cn(
-                  "font-[family-name:var(--font-sans)] tracking-[1.15px] uppercase",
-                  "text-[0.55rem] lg:text-[0.6rem] xl:text-[0.65rem] 2xl:text-[11.52px]",
-                  isActive
-                    ? "font-bold text-white 2xl:text-[13.83px]"
-                    : "font-normal text-[#A1A1AA]",
-                )}
-              >
+              <div className="w-[20px] h-[20px] md:w-[23.34px] md:h-[25.93px] text-[#FFFFFF] flex items-center justify-center mb-[4.6px]">
+                {icon}
+              </div>
+              <span className="font-['Plus_Jakarta_Sans'] font-bold text-[12px] md:text-[13.83px] leading-[21px] tracking-[1.15px] uppercase text-[#FFFFFF]">
                 {year}
               </span>
             </button>
           );
-        })}
-      </div>
+        }
+
+        return (
+          <button
+            key={year}
+            onClick={() => onYearChange(year)}
+            className="flex flex-col items-center justify-center gap-[4.61px] shrink-0 p-[10px] md:p-[13.8px] hover:bg-white/10 rounded-xl transition-colors z-10"
+          >
+            <div className="w-[18px] h-[18px] md:w-[20.74px] md:h-[20.74px] text-[#A1A1AA] flex items-center justify-center">
+              {icon}
+            </div>
+            <span className="font-['Plus_Jakarta_Sans'] font-normal text-[10px] md:text-[11.52px] leading-[17px] tracking-[1.15px] uppercase text-[#A1A1AA]">
+              {year}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -505,14 +483,89 @@ function GeospatialControlsPanel({
   );
 }
 
+// ─── Verification Verdict Panel ───────────────────────────────────────────────
+
+function VerificationVerdictPanel({ onAuthorize }: { onAuthorize?: () => void }) {
+  return (
+    <div
+      className="absolute z-30 bg-[rgba(255,255,255,0.95)] backdrop-blur-md rounded-[42px] p-[28px] flex flex-col justify-between shadow-[0px_27.93px_55.86px_-13.41px_rgba(0,0,0,0.05)]"
+      style={{
+        width: '285px',
+        top: '238px',
+        right: '32px',
+        bottom: '57px'
+      }}
+    >
+      <div className="flex flex-col h-full">
+        {/* Header */}
+        <div className="flex gap-[10.5px] items-center shrink-0 mb-[28px]">
+          <div className="w-[34px] h-[35px] bg-[#EDEEEF] rounded-full flex items-center justify-center shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#091426]">
+              <path d="M18 20V10M12 20V4M6 20v-6" />
+            </svg>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-['Plus_Jakarta_Sans'] font-extrabold text-[15.78px] leading-[20px] text-[#091426]">Verification Verdict</span>
+            <span className="font-['Plus_Jakarta_Sans'] font-bold text-[8.77px] leading-[13px] tracking-[0.88px] uppercase text-[rgba(69,71,76,0.6)]">AUDIT REF: #9022-X</span>
+          </div>
+        </div>
+
+        {/* List */}
+        <div className="flex flex-col gap-[21px] flex-1">
+          {/* Item 1 */}
+          <div className="flex items-center gap-[14px]">
+            <div className="w-[28px] h-[28px] bg-[rgba(105,182,254,0.2)] rounded-full flex items-center justify-center shrink-0">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#00629E]">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-['Plus_Jakarta_Sans'] font-bold text-[10.52px] leading-[14px] text-[#091426]">Revenue Check</span>
+              <span className="font-['Plus_Jakarta_Sans'] font-normal text-[8.77px] leading-[13px] text-[#45474C]">Documents validated via Land Bank</span>
+            </div>
+          </div>
+
+          {/* Item 2 */}
+          <div className="flex items-center gap-[14px]">
+            <div className="w-[28px] h-[28px] bg-[rgba(105,182,254,0.2)] rounded-full flex items-center justify-center shrink-0">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#00629E]">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-['Plus_Jakarta_Sans'] font-bold text-[10.52px] leading-[14px] text-[#091426]">Boundary Walk</span>
+              <span className="font-['Plus_Jakarta_Sans'] font-normal text-[8.77px] leading-[13px] text-[#45474C]">Geo-tagged perimeter confirmed</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Action */}
+        <div className="shrink-0 mt-[10px]">
+          <button 
+            onClick={onAuthorize}
+            className="w-full h-[47px] bg-[#2780C4] rounded-[28px] flex items-center justify-between px-[21px] hover:bg-[#1f669d] transition-colors"
+          >
+            <span className="font-['Plus_Jakarta_Sans'] font-extrabold text-[14px] leading-[21px] tracking-[-0.7px] text-[#FFFFFF]">Authorize Live Listing</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-[#FFFFFF]">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Export ──────────────────────────────────────────────────────────────
 
 export type HistoricalAgronomyAnalysisProps = {
   onBack?: () => void;
+  onAuthorize?: () => void;
 };
 
 export default function HistoricalAgronomyAnalysis({
   onBack,
+  onAuthorize,
 }: HistoricalAgronomyAnalysisProps) {
   const [activeYear, setActiveYear] = useState<Year>("2020");
   const [activeNav, setActiveNav] = useState("soil");
@@ -529,7 +582,7 @@ export default function HistoricalAgronomyAnalysis({
           maxzoom={sourceConfig?.maxzoom ?? 18}
           coords={{ lat: 17.014366, lon: 78.423866 }} // Defaulting to Hyderabad area as in the dummy map text
         />
-        
+
         {/* Bottom stats overlay from dummy map */}
         <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-black/40 px-4 py-1 z-10">
           <span className="text-[0.6rem] text-white/70">Camera: 991 m</span>
@@ -548,23 +601,19 @@ export default function HistoricalAgronomyAnalysis({
       <div
         className="
           absolute z-30
-          top-[1.25rem] lg:top-[1.5rem] xl:top-[1.75rem] 2xl:top-[2rem]
-          left-[1.25rem] lg:left-[1.5rem] xl:left-[1.75rem] 2xl:left-[2rem]
-          right-[13.5rem] lg:right-[14.5rem] xl:right-[16rem] 2xl:right-[17.5rem]
-          flex items-center gap-[0.5rem] lg:gap-[0.625rem] xl:gap-[0.75rem]
+          top-[37px]
+          left-[36px]
         "
       >
         {onBack && (
           <button
             onClick={onBack}
-            className="
-              flex items-center justify-center shrink-0
-              w-[1.75rem] h-[1.75rem] lg:w-[2rem] lg:h-[2rem] xl:w-[2.125rem] xl:h-[2.125rem] 2xl:w-[2.25rem] 2xl:h-[2.25rem]
-              rounded-full bg-black/25 hover:bg-black/40
-              text-[var(--surface-card)] transition-colors
-            "
+            className="flex items-center justify-center gap-[8px] w-[135px] h-[52px] bg-[#FFFFFF] rounded-[60px] shadow-[0px_0px_4px_rgba(0,0,0,0.12)] hover:bg-gray-50 transition-colors"
           >
-            <ArrowLeft className="w-[0.75rem] h-[0.75rem] lg:w-[0.875rem] lg:h-[0.875rem] xl:w-[1rem] xl:h-[1rem]" />
+            <ArrowLeft className="w-[20px] h-[20px] text-[#353535]" strokeWidth={1.4} />
+            <span className="font-['Inter'] font-normal text-[16px] leading-[18px] text-[#353535]">
+              Go back
+            </span>
           </button>
         )}
       </div>
@@ -574,6 +623,9 @@ export default function HistoricalAgronomyAnalysis({
         activeItem={activeNav}
         onItemChange={setActiveNav}
       />
+
+      {/* ── Verification Verdict Panel — middle right ── */}
+      <VerificationVerdictPanel onAuthorize={onAuthorize} />
 
       {/* ── Temporal Ribbon — bottom center ── */}
       <TemporalRibbon activeYear={activeYear} onYearChange={setActiveYear} />

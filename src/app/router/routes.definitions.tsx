@@ -5,6 +5,7 @@ import {DashboardRedirect} from './DashboardRedirect';
 import {VerificationOfficer2Layout} from '@/components/common/layouts/VerificationOfficer2Layout';
 import CreateRegionsAndAreas from '@/features/role-manager/pages/Createregionsandareas';
 import CreateRoles from '@/features/role-manager/pages/Createroles';
+import CcsProfile from '@/features/ccs/pages/CcsProfile';
 import {
     CcsDashboard,
     RoleManagerDetails,
@@ -132,6 +133,10 @@ export const authRoutes: RouteObject[] = [
             {
                 path: '/ccs/dashboard',
                 element: <CcsDashboard />
+            },
+            {
+                path: '/ccs/profile',
+                element: <CcsProfile />
             },
             {
                 path: '/home',
