@@ -10,7 +10,18 @@ interface RoleManagerState extends GeoMasterData {
   selectedStateId: string;
   selectedRegionId: string;
   selectedAreaId: string;
+  agentApprovalsFilterType: "today" | "month" | "custom";
+  agentApprovalsDateRange: { from: string | null; to: string | null } | null;
 }
+
+const loadPersistedState = (key: string, defaultValue: any) => {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch {
+    return defaultValue;
+  }
+};
 
 const initialState: RoleManagerState = {
   countries: [],
@@ -25,6 +36,8 @@ const initialState: RoleManagerState = {
   selectedStateId: "",
   selectedRegionId: "",
   selectedAreaId: "",
+  agentApprovalsFilterType: loadPersistedState("agentApprovalsFilterType", "today"),
+  agentApprovalsDateRange: loadPersistedState("agentApprovalsDateRange", null),
 };
 
 const roleManagerSlice = createSlice({
@@ -61,6 +74,14 @@ const roleManagerSlice = createSlice({
     setSelectedAreaId: (state, action: PayloadAction<string>) => {
       state.selectedAreaId = action.payload;
     },
+    setAgentApprovalsFilterType: (state, action: PayloadAction<"today" | "month" | "custom">) => {
+      state.agentApprovalsFilterType = action.payload;
+      localStorage.setItem("agentApprovalsFilterType", JSON.stringify(action.payload));
+    },
+    setAgentApprovalsDateRange: (state, action: PayloadAction<{ from: string | null; to: string | null } | null>) => {
+      state.agentApprovalsDateRange = action.payload;
+      localStorage.setItem("agentApprovalsDateRange", JSON.stringify(action.payload));
+    },
   },
 });
 
@@ -74,5 +95,7 @@ export const {
   setSelectedStateId,
   setSelectedRegionId,
   setSelectedAreaId,
+  setAgentApprovalsFilterType,
+  setAgentApprovalsDateRange,
 } = roleManagerSlice.actions;
 export default roleManagerSlice.reducer;

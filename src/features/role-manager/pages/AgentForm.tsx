@@ -38,14 +38,7 @@ import ProfileBackButton from "../components/ui/BackButton";
 import { uploadUserDocument } from "@/core/utils/fileUpload";
 // ─── Dropdown option lists ────────────────────────────────────────────────────
 
-const BANK_OPTIONS = [
-  "HDFC Bank",
-  "SBI",
-  "ICICI Bank",
-  "Axis Bank",
-  "Bank of Baroda",
-  "Canara Bank",
-];
+/* BANK_OPTIONS removed */
 
 // ─── Image Preview Helper ───────────────────────────────────────────────────
 
@@ -412,7 +405,7 @@ export default function AgentForm({
 
   const getProfilePic = (srcData: any) => {
     if (!srcData) return "";
-    let val = srcData.profile_url || srcData.avatar_url || srcData.avatar || srcData.profile_image || srcData.profilePicture || srcData.id_proof?.profile_url || srcData.id_proof?.avatar || srcData.id_proof?.profile_image || srcData.id_proof?.profile_url;
+    let val = srcData.profile_url || srcData.area?.profile_url || srcData.avatar_url || srcData.avatar || srcData.profile_image || srcData.profilePicture || srcData.id_proof?.profile_url || srcData.id_proof?.avatar || srcData.id_proof?.profile_image || srcData.id_proof?.profile_url;
     if (!val || val === "null" || val === "undefined") {
       const email = srcData.email || srcData.emailAddress;
       if (email) {
@@ -659,7 +652,7 @@ export default function AgentForm({
               bank_name: values.bankName,
               id_proof_frontUrl: aadharFrontKey,
               id_proof_backUrl: aadharBackKey,
-              pan_card_number: values.panNumber,
+              pan_card_number: values.panNumber || "",
               pan_card_url: panKey,
             },
           };
@@ -707,7 +700,7 @@ export default function AgentForm({
             bank_name: values.bankName,
             id_proof_frontUrl: aadharFrontKey,
             id_proof_backUrl: aadharBackKey,
-            pan_card_number: values.panNumber,
+            pan_card_number: values.panNumber || "",
             pan_card_url: panKey,
           },
         };
@@ -756,19 +749,18 @@ export default function AgentForm({
       );
     }
   };
-  if (successCardProps) {
-    return <Successcard {...successCardProps} />;
-  }
 
   const isVerified = isEdit && !!initialData?.firstName;
 
   // ── Territory validation for view mode ──
   const [viewTerritoryStatus, setViewTerritoryStatus] = useState<"loading" | "assigned" | "not_assigned">("loading");
   const [viewHierarchyData, setViewHierarchyData] = useState<any>(null);
-  const [viewTerritoryError, setViewTerritoryError] = useState<{ district: boolean; area: boolean; hierarchy: boolean }>({
+  const [viewTerritoryError, setViewTerritoryError] = useState<{ district: boolean; area: boolean; hierarchy: boolean; missingRegion?: boolean; missingArea?: boolean }>({
     district: false,
     area: false,
     hierarchy: false,
+    missingRegion: false,
+    missingArea: false,
   });
 
   useEffect(() => {
@@ -799,9 +791,24 @@ export default function AgentForm({
         .unwrap()
         .then((res) => {
           if (res?.success) {
-            setViewHierarchyData(res.data);
-            setViewTerritoryStatus("assigned");
-            setViewTerritoryError({ district: false, area: false, hierarchy: false });
+            const hasRegion = !!res.data?.region;
+            const hasArea = !!res.data?.area;
+
+            if (hasRegion && hasArea) {
+              setViewHierarchyData(res.data);
+              setViewTerritoryStatus("assigned");
+              setViewTerritoryError({ district: false, area: false, hierarchy: false, missingRegion: false, missingArea: false });
+            } else {
+              setViewHierarchyData(res.data);
+              setViewTerritoryStatus("not_assigned");
+              setViewTerritoryError({ 
+                district: false, 
+                area: false, 
+                hierarchy: !hasRegion && !hasArea, 
+                missingRegion: !hasRegion && hasArea, 
+                missingArea: hasRegion && !hasArea 
+              });
+            }
           } else {
             setViewHierarchyData(null);
             setViewTerritoryStatus("not_assigned");
@@ -824,17 +831,21 @@ export default function AgentForm({
     }
   }, [isViewMode, agentData, initialData, getLocationHierarchyDetails]);
 
+  if (successCardProps) {
+    return <Successcard {...successCardProps} />;
+  }
+
   if (isViewMode) {
     const data = agentData?.data || initialData;
     const isFromDirectory = location.state?.from === "/role-manager/user-directory";
     const name = `${watch("firstName") || data?.firstName || data?.first_name || ""} ${watch("lastName") || data?.lastName || data?.last_name || ""}`.trim() || "Agent Name";
     const status = isFromDirectory ? undefined : (data?.isVerified === 1 ? "Approved" : data?.isVerified === 2 ? "Rejected" : "Pending Review");
     const initials = name.split(" ").map((w: string) => w[0]).join("").toUpperCase() || "AN";
-    const avatarUrl = data?.avatar || data?.profile_image || profileImage || "";
+    const avatarUrl = data?.profile_url || data?.area?.profile_url || data?.avatar || data?.profile_image || getProfilePic(data) || profileImage || "";
 
     const agent = {
       name,
-      applicationId: userId?.toString() || data?.id?.toString() || "N/A",
+      applicationId: data?.user_code || data?.userCode || data?.agent_user_code || (initialData as any)?.roleId || (data?.id || userId ? `AG-${data?.id || userId}` : "N/A"),
       status: status as any,
       avatarUrl,
       initials,
@@ -908,7 +919,6 @@ export default function AgentForm({
                 <InfoField label="Email" value={email} />
                 <InfoField label="Phone number" value={phone} />
                 <InfoField label="Date Of Birth" value={dateOfBirth} />
-                <InfoField label="PAN Number" value={watch("panNumber") || data?.panCardNumber || data?.id_proof?.pan_card_number || "N/A"} />
                 <InfoField label="Address" value={watch("address") || data?.address || data?.address?.address || "N/A"} />
                 <InfoField label="State" value={watch("addressState") || data?.state || data?.address?.state || "N/A"} />
                 <InfoField label="City / Village" value={watch("city") || data?.city || data?.address?.city || "N/A"} />
@@ -933,6 +943,11 @@ export default function AgentForm({
                     {viewHierarchyData.regional_officer && (
                       <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)]">
                         RO: {viewHierarchyData.regional_officer.first_name} {viewHierarchyData.regional_officer.last_name}
+                      </span>
+                    )}
+                    {viewHierarchyData.intelligence_officer && (
+                      <span className="text-[0.75rem] lg:text-[0.8125rem] text-[color:var(--text-secondary)]">
+                        IO: {viewHierarchyData.intelligence_officer.first_name} {viewHierarchyData.intelligence_officer.last_name}
                       </span>
                     )}
                     {viewHierarchyData.field_officer && (
@@ -962,6 +977,16 @@ export default function AgentForm({
                     {viewTerritoryError.hierarchy && (
                       <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
                         • Region / Area Mapping — Not created or mapped for this District & Mandal.
+                      </span>
+                    )}
+                    {viewTerritoryError.missingArea && (
+                      <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
+                        • Region is created but Area is not created.
+                      </span>
+                    )}
+                    {viewTerritoryError.missingRegion && (
+                      <span className="text-[0.75rem] lg:text-[0.8125rem] text-[#dc2626]/80">
+                        • Area is created but Region is not created.
                       </span>
                     )}
                     {/* <span className="text-[0.6875rem] lg:text-[0.75rem] text-[color:var(--text-secondary)] mt-0.5">
@@ -1266,14 +1291,6 @@ export default function AgentForm({
               maxLength={6}
               disabled={isViewMode}
             />
-            <RHFTextField
-              name="panNumber"
-              control={control}
-              label="PAN Card Number"
-              placeholder="Enter PAN Number"
-              maxLength={30}
-              disabled={isViewMode}
-            />
           </div>
         </FormSection>
 
@@ -1347,12 +1364,12 @@ export default function AgentForm({
         {/* ── BANK DETAILS ── */}
         <FormSection title="Enter Bank Details">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(14px,1.5vw,20px)]">
-            <RHFDropdown
+            <RHFTextField
               name="bankName"
               control={control}
               label="Bank Name"
-              options={BANK_OPTIONS}
-              placeholder="Select Bank"
+              placeholder="Enter Bank Name"
+              maxLength={50}
               disabled={isViewMode}
             />
             <RHFTextField
@@ -1441,8 +1458,13 @@ export default function AgentForm({
               </button>
               <Button
                 variant="primary"
-                onClick={handleSubmit(handleSave, () => {
-                  toast.error("Please fix validation errors before saving.");
+                onClick={handleSubmit(handleSave, (errors) => {
+                  const firstError = Object.values(errors)[0] as any;
+                  if (firstError?.message) {
+                    toast.error(firstError.message);
+                  } else {
+                    toast.error("Please fix validation errors before saving.");
+                  }
                 })}
                 loading={isLoading || isSubmitting}
                 className="

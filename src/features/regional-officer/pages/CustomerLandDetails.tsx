@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bell } from 'lucide-react';
 import { farmlandsData } from '../data/farmlandsListData';
 import { useViewportScale } from '@/hooks/useViewportScale';
+import { getFarmlandDetails } from '@/data/farmlandDetailsDb';
 import {
   CustomerStepper,
   CustomerLandDetailsForm
@@ -35,17 +36,22 @@ const CustomerLandDetails: React.FC = () => {
     navigate(`/regional-officer/assigned-farmlands-land-boundaries/${targetId}`);
   };
 
-  // State fields matching Image 1
-  const [stateName] = useState("Andhra Pradesh");
-  const [district] = useState("West Godavari");
-  const [areaCityTown] = useState("Tanuku");
-  const [acquisitionCategory] = useState("Ancestral Property");
-  const [agentName] = useState("Agent Vinod");
-  const [landConversion] = useState("Acres");
-  const [valueForArea] = useState("1,00,000.00");
-  const [agentReferralLocation] = useState("Another Location");
-  const [geoCoords] = useState("N 38.2975° W122.2869°");
-  const [geoSubText] = useState("GRID: 84T-QK • ELEV: 12m");
+  // State fields loaded dynamically from the data layer
+  const details = getFarmlandDetails(selectedFarmland.title);
+  const {
+    stateName,
+    district,
+    areaCityTown,
+    acquisitionCategory,
+    agentName,
+    landConversion,
+    valueForArea,
+    agentReferralLocation,
+    geoCoords,
+    geoSubText,
+    aerialImageUrl,
+    satelliteMapUrl
+  } = details.landDetails;
 
   const [showSubmittedModal, setShowSubmittedModal] = useState(false);
 
@@ -180,6 +186,8 @@ const CustomerLandDetails: React.FC = () => {
           agentReferralLocation={agentReferralLocation}
           geoCoords={geoCoords}
           geoSubText={geoSubText}
+          aerialImageUrl={aerialImageUrl}
+          satelliteMapUrl={satelliteMapUrl}
           targetId={targetId}
           onBack={handleBack}
           onDoneClick={handleDoneClick}

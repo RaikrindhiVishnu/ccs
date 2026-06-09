@@ -4,13 +4,11 @@ import {
   useGetFieldOfficerDetailsQuery,
   useGetAgentDetailsQuery,
 } from "../api/userDirectoryApi";
-import { useGetAllAreasByRegionIdQuery } from "../api/regionSelectionApi";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setRegions,
   setSelectedStateId as setSelectedStateIdAction,
   setSelectedRegionId as setSelectedRegionIdAction,
-  setSelectedAreaId as setSelectedAreaIdAction,
 } from "../store/roleManagerSlice";
 import { useGetAllRegionsByStateIdMutation } from "../api/masterDataApi";
 import { useNavigate } from "react-router-dom";
@@ -32,11 +30,9 @@ const UserDirectory: React.FC = () => {
   
   const selectedStateId = useSelector((state: any) => state.roleManager.selectedStateId);
   const selectedRegionId = useSelector((state: any) => state.roleManager.selectedRegionId);
-  const selectedAreaId = useSelector((state: any) => state.roleManager.selectedAreaId);
 
   const setSelectedStateId = (id: string) => dispatch(setSelectedStateIdAction(id));
   const setSelectedRegionId = (id: string) => dispatch(setSelectedRegionIdAction(id));
-  const setSelectedAreaId = (id: string) => dispatch(setSelectedAreaIdAction(id));
 
   const [
     getRegionsByStateId,
@@ -44,7 +40,7 @@ const UserDirectory: React.FC = () => {
   ] = useGetAllRegionsByStateIdMutation();
 
   // 1. Fetch Regional Officer & Intelligence Officer details
-  const { data: regionOfficerData, isLoading: isRegionLoading } = useGetRegionOfficerDetailsQuery(
+  const { data: regionOfficerData, isFetching: isRegionFetching } = useGetRegionOfficerDetailsQuery(
     {
       state_id: selectedStateId,
       region_id: selectedRegionId,
@@ -58,62 +54,32 @@ const UserDirectory: React.FC = () => {
   const regionalOfficerId = regionOfficerData?.data?.regional_officer_id;
   const intelligenceOfficerId = regionOfficerData?.data?.intelligence_officer_id;
 
-  // Fetch Areas of selected Region
-  const { data: areasData, isLoading: isAreasLoading } = useGetAllAreasByRegionIdQuery(
-    { region_id: Number(selectedRegionId) },
-    { skip: !selectedRegionId }
-  );
 
-  const areasList = areasData?.data || [];
-
-  useEffect(() => {
-    if (areasList.length > 0) {
-      const isStillValid = areasList.some((a: any) => {
-        const aId = (a.area_id ?? a.id)?.toString();
-        return aId === selectedAreaId;
-      });
-      if (!isStillValid) {
-        const firstAreaId = areasList[0]?.area_id ?? areasList[0]?.id;
-        if (firstAreaId !== undefined && firstAreaId !== null) {
-          setSelectedAreaId(firstAreaId.toString());
-        }
-      }
-    } else if (!isAreasLoading && selectedAreaId !== "") {
-      setSelectedAreaId("");
-    }
-  }, [areasList, isAreasLoading, selectedAreaId]);
 
   // 2. Fetch Field Officers under these regional/intelligence officers (pass 0 if null/undefined)
-  const { data: fieldOfficerData, isLoading: isFieldLoading } = useGetFieldOfficerDetailsQuery(
+  const { data: fieldOfficerData, isFetching: isFieldFetching } = useGetFieldOfficerDetailsQuery(
     {
       state_id: selectedStateId,
       region_id: selectedRegionId,
-      regional_officer_id: regionalOfficerId || 0,
-      intelligence_officer_id: intelligenceOfficerId || 0,
-      area_id: selectedAreaId || 0,
+      regional_officer_id: regionalOfficerId ?? null,
+      intelligence_officer_id: intelligenceOfficerId ?? null,
     },
     { 
-      skip: !regionOfficerData || !selectedAreaId,
+      skip: !regionOfficerData,
       refetchOnMountOrArgChange: true,
     }
   );
 
   const fieldOfficersList = fieldOfficerData?.data || [];
   const firstFieldOfficer = fieldOfficersList[0];
-  const firstFieldOfficerId = firstFieldOfficer 
-    ? (firstFieldOfficer.role_id || firstFieldOfficer.id) 
-    : 0;
 
   // 3. Fetch Agents under the first Field Officer automatically
-  const { data: agentData, isLoading: isAgentLoading } = useGetAgentDetailsQuery(
+  const { data: agentData, isFetching: isAgentFetching } = useGetAgentDetailsQuery(
     {
-      state_id: selectedStateId,
-      region_id: selectedRegionId,
-      area_id: selectedAreaId || 0,
-      field_officer_id: firstFieldOfficerId,
+      area_id: firstFieldOfficer?.area_id || 0,
     },
     { 
-      skip: !fieldOfficerData || fieldOfficersList.length === 0 || !selectedAreaId,
+      skip: !fieldOfficerData || fieldOfficersList.length === 0,
       refetchOnMountOrArgChange: true,
     }
   );
@@ -167,7 +133,7 @@ const UserDirectory: React.FC = () => {
     };
   }, []);
 
-  const isUpdating = isRegionsLoading || isRegionLoading || isAreasLoading || isFieldLoading || isAgentLoading;
+  const isUpdating = isRegionsLoading || isRegionFetching || isFieldFetching || isAgentFetching;
 
   return (
     <div className="flex flex-col py-16 px-4 gap-6 box-border min-h-full bg-( --surface-page)">
@@ -203,14 +169,7 @@ const UserDirectory: React.FC = () => {
         </div>
 
         {/* Filters/Navigation Row */}
-        <div className="flex flex-row items-center justify-between w-full p-3 ">
-          {/* Left Side: Role List Pill */}
-          <div className="w-[90px] h-[44px] rounded-[64.67px] bg-white flex items-center justify-center shadow-sm">
-            <span className="text-[12px] font-normal leading-[140%] tracking-[-0.02em] text-black">
-              Role List
-            </span>
-          </div>
-
+        <div className="flex flex-row items-center justify-end w-full p-3 ">
           {/* Right Side: Dropdowns */}
           <div className="flex gap-2 items-center">
             <PillDropdown
@@ -226,15 +185,6 @@ const UserDirectory: React.FC = () => {
               disabled={!regions || regions.length === 0}
               title={(!regions || regions.length === 0) ? "No region data available for this state" : undefined}
               placeholder="No Regions"
-              buttonClassName="h-[43px]"
-            />
-            <PillDropdown
-              options={areasList?.length > 0 ? areasList.map((a: any) => ({ label: a.area_name || a.desc, value: (a.area_id ?? a.id)?.toString() || "" })) : []}
-              value={selectedAreaId}
-              onChange={(areaId) => setSelectedAreaId(areaId)}
-              disabled={!areasList || areasList.length === 0}
-              title={(!areasList || areasList.length === 0) ? "No area data available for this region" : undefined}
-              placeholder="No Areas"
               buttonClassName="h-[43px]"
             />
           </div>
@@ -256,7 +206,6 @@ const UserDirectory: React.FC = () => {
             agentData={agentData}
             stateId={selectedStateId}
             regionId={selectedRegionId}
-            areaId={selectedAreaId}
           />
         </div>
       </div>

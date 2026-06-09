@@ -5,10 +5,10 @@ import { Input } from "@/components/ui/input";
 import SuperAdminUserListCard from "@/features/super-admin/components/SuperAdminUserListCard";
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 
-const SuperAdminUsersListAll: React.FC=() => {
-  const navigate=useNavigate();
-  const data=mockDashboardData;
-  const [filter, setFilter] = useState<string>("All");
+const SuperAdminUsersListAll: React.FC = () => {
+  const navigate = useNavigate();
+  const data = mockDashboardData;
+  const [filter] = useState<string>("All");
 
   const filteredUsers=data.usersList.filter((user) => {
     if (filter === "All") return true;

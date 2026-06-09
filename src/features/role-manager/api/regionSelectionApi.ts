@@ -260,6 +260,7 @@ export const {
   useAssignFieldOfficerMutation,
   useGetAllGeoJsonDataQuery,
   useGetAllAreasByRegionIdQuery,
+  useLazyGetAllAreasByRegionIdQuery,
   useGetAllRegionsByStateIdMutation,
   useGetRegionsByStateIdQuery,
   useGetRegionGeoJsonQuery,

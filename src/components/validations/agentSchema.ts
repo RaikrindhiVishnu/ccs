@@ -33,7 +33,7 @@ export const agentSchema = z.object({
   addressState: z.string().min(1, "State is required"),
   city: z.string().min(1, "City is required"),
   pincode: z.string().min(6, "Pincode must be 6 digits"),
-  panNumber: z.string().min(1, "PAN Number is required"),
+  panNumber: z.string().optional(),
   state: z.string().min(1, "State is required"),
   region: z.string().min(1, "Region is required"),
   area: z.string().min(1, "Area is required"),
@@ -44,9 +44,9 @@ export const agentSchema = z.object({
 
   // ── File fields ──────────────────────────────────────────
   profilePicture: fileSchema(ACCEPTED_IMAGE_TYPES, "Profile picture").optional(),
-  aadharFront: fileSchema(ACCEPTED_IMAGE_TYPES, "Aadhaar Front").optional(),
-  aadharBack: fileSchema(ACCEPTED_IMAGE_TYPES, "Aadhaar Back").optional(),
-  panCard: fileSchema(ACCEPTED_IMAGE_TYPES, "PAN Card").optional(),
+  aadharFront: fileSchema(ACCEPTED_IMAGE_TYPES, "Aadhaar Front"),
+  aadharBack: fileSchema(ACCEPTED_IMAGE_TYPES, "Aadhaar Back"),
+  panCard: fileSchema(ACCEPTED_IMAGE_TYPES, "PAN Card"),
 });
 
 export type AgentFormValues = z.infer<typeof agentSchema>;
