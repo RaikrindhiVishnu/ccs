@@ -304,17 +304,21 @@ const RegionAreaEdit: React.FC = () => {
   const { regionId: urlRegionId } = useParams<{ regionId?: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const getSearchParamFallback = (key: string) => {
+    return searchParams.get(key) || new URLSearchParams(window.location.search).get(key);
+  };
+
   // Unified Mode Trigger: search params or path param
-  const editRegionId = searchParams.get("editRegionId") || urlRegionId;
-  const editAreaId = searchParams.get("editAreaId");
+  const editRegionId = getSearchParamFallback("editRegionId") || urlRegionId;
+  const editAreaId = getSearchParamFallback("editAreaId");
   // region_id from URL (set by AreaDetailsView from sessionStorage on edit click)
   // Also fall back to sessionStorage directly in case navigation didn't carry it
   const urlAreaRegionId =
-    searchParams.get("region_id") ||
+    getSearchParamFallback("region_id") ||
     (editAreaId ? sessionStorage.getItem("selected_region_id") : null);
   const isEditMode = !!editRegionId || !!editAreaId;
   const editModeType =
-    searchParams.get("mode") === "area" || !!editAreaId ? "area" : "region";
+    getSearchParamFallback("mode") === "area" || !!editAreaId ? "area" : "region";
 
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -595,7 +599,7 @@ const RegionAreaEdit: React.FC = () => {
     { skip: !parentRegionId },
   );
 
-  const isAreaMode = searchParams.get("mode") === "area";
+  const isAreaMode = getSearchParamFallback("mode") === "area";
   const [triggerGetAreas] = useLazyGetAllAreasByRegionIdQuery();
   const [regionsWithAreas, setRegionsWithAreas] = useState<Set<number> | null>(null);
 
@@ -894,7 +898,14 @@ const RegionAreaEdit: React.FC = () => {
     list.forEach((area: any) => {
       const areaIdNum = Number(area.id || area.area_id);
       if (areaIdNum !== currentAreaIdNum) {
-        const mIds = area.mandal_ids || area.mandalIds || [];
+        let mIds: number[] = [];
+        if (Array.isArray(area.mandal_ids)) {
+          mIds = area.mandal_ids.map(Number);
+        } else if (Array.isArray(area.mandalIds)) {
+          mIds = area.mandalIds.map(Number);
+        } else if (Array.isArray(area.assignments)) {
+          mIds = area.assignments.map((asg: any) => Number(asg.mandal_id || asg.mandalId));
+        }
         mIds.forEach((mId: any) => {
           const idNum = Number(mId);
           if (!isNaN(idNum)) {
@@ -929,7 +940,7 @@ const RegionAreaEdit: React.FC = () => {
   }, [availableMandals, editSearchQuery, editModeType]);
 
   const toggleEditDistrictSelection = (district: any) => {
-    const dtId = district.i;
+    const dtId = district.i !== undefined ? district.i : district.id;
     const isAssignedToOther = otherAssignedDistrictIds.has(dtId);
 
     setSelectedDistricts((prev) => {
@@ -959,8 +970,8 @@ const RegionAreaEdit: React.FC = () => {
           if (ownerRegion) {
             setPendingDistrict({
               id: dtId,
-              name: district.d || "",
-              code: district.c || "",
+              name: district.d || district.name || "",
+              code: district.c || district.code || "",
             });
             setPendingOwnerRegion({
               id: getRegionId(ownerRegion),
@@ -988,13 +999,13 @@ const RegionAreaEdit: React.FC = () => {
         {
           id: dtId,
           featureId: dtId,
-          name: district.d,
-          code: district.c,
-          d: district.d,
+          name: district.d || district.name || "",
+          code: district.c || district.code || "",
+          d: district.d || district.name || "",
           properties: {
             id: dtId,
-            name: district.d,
-            code: district.c,
+            name: district.d || district.name || "",
+            code: district.c || district.code || "",
           },
         },
       ];
@@ -1002,7 +1013,7 @@ const RegionAreaEdit: React.FC = () => {
   };
 
   const toggleEditMandalSelection = (mandal: any) => {
-    const mId = mandal.i;
+    const mId = mandal.i !== undefined ? mandal.i : mandal.id;
     const isAssignedToOther = otherAssignedMandalIds.has(mId);
 
     setSelectedDistricts((prev) => {
@@ -1026,8 +1037,15 @@ const RegionAreaEdit: React.FC = () => {
           let areaName = "Another Area";
           const list = regionAreasData?.data || [];
           const rawArea = list.find((area: any) => {
-            const mIds = area.mandal_ids || area.mandalIds || [];
-            return mIds.map(Number).includes(mId);
+            let mIds: number[] = [];
+            if (Array.isArray(area.mandal_ids)) {
+              mIds = area.mandal_ids.map(Number);
+            } else if (Array.isArray(area.mandalIds)) {
+              mIds = area.mandalIds.map(Number);
+            } else if (Array.isArray(area.assignments)) {
+              mIds = area.assignments.map((asg: any) => Number(asg.mandal_id || asg.mandalId));
+            }
+            return mIds.includes(mId);
           });
           if (rawArea) {
             areaId = rawArea.id || rawArea.area_id || 1;
@@ -1079,9 +1097,11 @@ const RegionAreaEdit: React.FC = () => {
   const [hasInitialized, setHasInitialized] = useState(false);
   // Ref guards the area-edit map init so it only fires once even if deps re-trigger
   const areaEditMapInitRef = useRef(false);
+  const hasInitializedRef = useRef(false);
 
   // ── Area Edit Mode: once regionAreasData loads, match editAreaId, set region/state/mandals ──
   useEffect(() => {
+
     if (
       !editAreaId ||
       !urlAreaRegionId ||
@@ -1094,13 +1114,25 @@ const RegionAreaEdit: React.FC = () => {
 
     const areaIdNum = Number(editAreaId);
     const matchedArea = regionAreasData.data.find(
-      (a: any) => Number(a.id || a.area_id) === areaIdNum,
+      (a: any) => Number(a.areaId || a.id || a.area_id) === areaIdNum,
     );
+
 
     if (!matchedArea) return;
 
     // Mark done so this only runs once
     areaEditMapInitRef.current = true;
+
+    // Pre-populate input fields
+    if (matchedArea.area_name || matchedArea.areaName) {
+      setRegionName(matchedArea.area_name || matchedArea.areaName);
+    }
+    if (matchedArea.area_code || matchedArea.areaCode) {
+      setRegionCode(matchedArea.area_code || matchedArea.areaCode);
+    }
+    if (matchedArea.field_officer_id) {
+      setSelectedFieldOfficerId(Number(matchedArea.field_officer_id));
+    }
 
     // ── Step 1: Resolve the parent region feature from allRegionsData ────────
     const regionIdNum = Number(urlAreaRegionId);
@@ -1127,9 +1159,19 @@ const RegionAreaEdit: React.FC = () => {
         setIsZoomed(true);
 
         // ── Step 3: Build pre-selected mandals from matched area's mandal_ids ─
-        const assignedMandalIds = new Set<number>(
-          (matchedArea.mandal_ids || matchedArea.mandalIds || []).map(Number),
-        );
+        const assignedMandalIds = new Set<number>();
+        if (Array.isArray(matchedArea.mandal_ids)) {
+          matchedArea.mandal_ids.forEach((id: any) => assignedMandalIds.add(Number(id)));
+        } else if (Array.isArray(matchedArea.mandalIds)) {
+          matchedArea.mandalIds.forEach((id: any) => assignedMandalIds.add(Number(id)));
+        } else if (Array.isArray(matchedArea.assignments)) {
+          matchedArea.assignments.forEach((asg: any) => {
+            const mId = asg.mandal_id || asg.mandalId;
+            if (mId !== undefined && mId !== null) assignedMandalIds.add(Number(mId));
+          });
+        }
+
+
 
         const initialSelected: any[] = [];
         stateObj.districts?.forEach((d: any) => {
@@ -1151,6 +1193,7 @@ const RegionAreaEdit: React.FC = () => {
             }
           });
         });
+
         setSelectedDistricts(initialSelected);
 
         // ── Step 4: Zoom map to the parent region once map is ready ──────────
@@ -1168,6 +1211,8 @@ const RegionAreaEdit: React.FC = () => {
 
         // ── Step 5: Clear sessionStorage now that we've consumed the region ID ─
         sessionStorage.removeItem("selected_region_id");
+        hasInitializedRef.current = true;
+        setHasInitialized(true);
       }
     }
   }, [
@@ -1180,9 +1225,11 @@ const RegionAreaEdit: React.FC = () => {
   ]);
 
   useEffect(() => {
-    if (!geoMasterData || hasInitialized) return;
+
+    if (!geoMasterData || hasInitialized || hasInitializedRef.current) return;
 
     if (editAreaId && areaGeoJsonData) {
+
       try {
         const firstFeature =
           areaGeoJsonData?.features?.[0] ||
@@ -1200,13 +1247,18 @@ const RegionAreaEdit: React.FC = () => {
           setSelectedFieldOfficerId(Number(fieldOfficerId));
         }
 
-        const parentRegionId = Number(
-          geoProps.region_id || geoProps.regionId || selectedRegionId,
+        const parentRegionIdValue = Number(
+          geoProps.region_id ||
+          geoProps.regionId ||
+          getSearchParamFallback("region_id") ||
+          sessionStorage.getItem("selected_region_id") ||
+          selectedRegionId,
         );
         const rawRegion = allRegionsData.features.find(
-          (f: any) => getRegionId(f) === parentRegionId,
+          (f: any) => getRegionId(f) === parentRegionIdValue,
         );
         if (rawRegion) {
+          setSelectedRegion(rawRegion);
           const stateId = Number(rawRegion.properties?.state_id || 1);
           const stateObj = geoMasterData.countries
             .flatMap((c: any) => c.states ?? [])
@@ -1227,16 +1279,22 @@ const RegionAreaEdit: React.FC = () => {
 
             // Extract mandal IDs from geojson features dynamically
             const assignedMandalIds = new Set<number>();
-            if (areaGeoJsonData?.features) {
-              areaGeoJsonData.features.forEach((f: any) => {
-                if (f.id !== undefined && f.id !== null)
-                  assignedMandalIds.add(Number(f.id));
-                if (f.properties?.mandal_id !== undefined)
-                  assignedMandalIds.add(Number(f.properties.mandal_id));
-                if (f.properties?.id !== undefined)
-                  assignedMandalIds.add(Number(f.properties.id));
-              });
-            }
+            const geojsonFeatures =
+              areaGeoJsonData?.features ||
+              areaGeoJsonData?.data?.features ||
+              [];
+            geojsonFeatures.forEach((f: any) => {
+              if (f.id !== undefined && f.id !== null)
+                assignedMandalIds.add(Number(f.id));
+              if (f.properties?.mandal_id !== undefined)
+                assignedMandalIds.add(Number(f.properties.mandal_id));
+              if (f.properties?.mandalId !== undefined)
+                assignedMandalIds.add(Number(f.properties.mandalId));
+              if (f.properties?.id !== undefined)
+                assignedMandalIds.add(Number(f.properties.id));
+            });
+
+
 
             const initialSelected: any[] = [];
             stateObj.districts?.forEach((d: any) => {
@@ -1258,18 +1316,24 @@ const RegionAreaEdit: React.FC = () => {
                 }
               });
             });
+
             setSelectedDistricts(initialSelected);
 
-            if (map.current) {
-              map.current.fitBounds(getFeatureBounds(rawRegion), {
-                padding: 150,
+            if (map.current && stateObj.g) {
+              const stateFeature = {
+                type: "Feature" as const,
+                geometry: stateObj.g,
+                properties: { id: stateObj.i, name: stateObj.d },
+              };
+              map.current.fitBounds(getFeatureBounds(stateFeature), {
+                padding: 100,
                 duration: 1500,
-                maxZoom: 6.5,
               });
             }
           }
         }
         if (rawRegion) {
+          hasInitializedRef.current = true;
           setHasInitialized(true);
         }
       } catch (err) {
@@ -1345,14 +1409,19 @@ const RegionAreaEdit: React.FC = () => {
             });
             setSelectedDistricts(initialSelected);
 
-            if (map.current) {
-              map.current.fitBounds(getFeatureBounds(rawRegion), {
-                padding: 150,
+            if (map.current && stateObj.g) {
+              const stateFeature = {
+                type: "Feature" as const,
+                geometry: stateObj.g,
+                properties: { id: stateObj.i, name: stateObj.d },
+              };
+              map.current.fitBounds(getFeatureBounds(stateFeature), {
+                padding: 100,
                 duration: 1500,
-                maxZoom: 6.5,
               });
             }
           }
+          hasInitializedRef.current = true;
           setHasInitialized(true);
         }
       } catch (err) {
@@ -1369,6 +1438,7 @@ const RegionAreaEdit: React.FC = () => {
     editAreaId,
     areaGeoJsonData,
     hasInitialized,
+    searchParams,
   ]);
 
   const stateRegionsData = useMemo(() => {
@@ -1383,7 +1453,7 @@ const RegionAreaEdit: React.FC = () => {
     }
 
     if (!selectedState)
-      return { type: "FeatureCollection" as const, features: filtered };
+      return { type: "FeatureCollection" as const, features: [] };
     try {
       const selectedStateId = selectedState?.properties?.id;
       const stateDistrictIds = new Set<number>();
@@ -1483,6 +1553,8 @@ const RegionAreaEdit: React.FC = () => {
       return;
 
     try {
+      const visibility = editModeType === "region" ? "visible" : "none";
+
       if (!map.current.getSource("districts-source")) {
         // Add source + layers for the first time
         map.current.addSource("districts-source", {
@@ -1496,6 +1568,9 @@ const RegionAreaEdit: React.FC = () => {
             id: "districts-fill",
             type: "fill",
             source: "districts-source",
+            layout: {
+              visibility,
+            },
             paint: {
               "fill-color": [
                 "case",
@@ -1525,6 +1600,9 @@ const RegionAreaEdit: React.FC = () => {
             id: "districts-line",
             type: "line",
             source: "districts-source",
+            layout: {
+              visibility,
+            },
             paint: {
               "line-color": [
                 "case",
@@ -1558,6 +1636,7 @@ const RegionAreaEdit: React.FC = () => {
           type: "symbol",
           source: "districts-source",
           layout: {
+            visibility,
             "text-field": ["coalesce", ["get", "name"], ["get", "d"], ""],
             "text-size": 10,
             "text-anchor": "center",
@@ -1607,7 +1686,11 @@ const RegionAreaEdit: React.FC = () => {
 
             const district = {
               i: dtId,
+              id: dtId,
+              featureId: districtFeature.id,
+              name: districtData.name || districtData.d || "",
               d: districtData.name || districtData.d || "",
+              code: districtData.code || "",
               c: districtData.code || "",
             };
 
@@ -1619,6 +1702,12 @@ const RegionAreaEdit: React.FC = () => {
         (
           map.current.getSource("districts-source") as maplibregl.GeoJSONSource
         )?.setData(districtsGeoJSON);
+
+        if (map.current.getLayer("districts-fill")) {
+          map.current.setLayoutProperty("districts-fill", "visibility", visibility);
+          map.current.setLayoutProperty("districts-line", "visibility", visibility);
+          map.current.setLayoutProperty("districts-labels", "visibility", visibility);
+        }
       }
     } catch (err) {
       console.error("RegionAreaEdit: Failed to render districts:", err);
@@ -1629,6 +1718,7 @@ const RegionAreaEdit: React.FC = () => {
     mapLoaded,
     geoMasterData,
     allRegionsData,
+    editModeType,
   ]);
 
   // ── Render mandal boundaries for Area Edit Mode or Zoomed View Mode ─────────
@@ -1675,22 +1765,83 @@ const RegionAreaEdit: React.FC = () => {
       let parentRegionId = 0; // 0 = no region selected; truthy check below uses this correctly
       let areasList: any[] = [];
 
+
+
       if (editModeType === "area") {
         if (selectedRegion) {
           parentRegionId = getRegionId(selectedRegion);
           districtIds = getDistrictIdsFromRegion(selectedRegion, geoMasterData);
           areasList = regionAreasData?.data || [];
         } else if (areaGeoJsonData) {
-          // parentRegionId = Number(
-          //   areaGeoJsonData?.features?.[0]?.properties?.region_id ||
-          //     areaGeoJsonData?.features?.[0]?.properties?.regionId ||
-          //     selectedRegionId,
-          // );
-          const rawRegion = allRegionsData.features.find(
-            (f: any) => getRegionId(f) === parentRegionId,
+          const firstFeature =
+            areaGeoJsonData?.features?.[0] ||
+            areaGeoJsonData?.data?.features?.[0];
+          const geoProps = firstFeature?.properties || {};
+          let parentRegionIdValue = Number(
+            geoProps.region_id ||
+            geoProps.regionId ||
+            areaGeoJsonData?.region_id ||
+            areaGeoJsonData?.data?.region_id ||
+            areaGeoJsonData?.regionId ||
+            areaGeoJsonData?.data?.regionId ||
+            getSearchParamFallback("region_id") ||
+            sessionStorage.getItem("selected_region_id") ||
+            selectedRegionId ||
+            0
           );
-          if (rawRegion) {
-            districtIds = getDistrictIdsFromRegion(rawRegion, geoMasterData);
+
+          if (!parentRegionIdValue) {
+            const assignedMandalIds = new Set<number>();
+            const geojsonFeatures =
+              areaGeoJsonData?.features ||
+              areaGeoJsonData?.data?.features ||
+              [];
+            geojsonFeatures.forEach((f: any) => {
+              if (f.id !== undefined && f.id !== null)
+                assignedMandalIds.add(Number(f.id));
+              if (f.properties?.mandal_id !== undefined)
+                assignedMandalIds.add(Number(f.properties.mandal_id));
+              if (f.properties?.mandalId !== undefined)
+                assignedMandalIds.add(Number(f.properties.mandalId));
+              if (f.properties?.id !== undefined)
+                assignedMandalIds.add(Number(f.properties.id));
+            });
+
+            if (assignedMandalIds.size > 0) {
+              const firstMandalId = Array.from(assignedMandalIds)[0];
+              let foundDistrictId: number | null = null;
+              geoMasterData.countries.forEach((country: any) => {
+                country.states?.forEach((state: any) => {
+                  state.districts?.forEach((district: any) => {
+                    district.mandals?.forEach((mandal: any) => {
+                      if (Number(mandal.i) === firstMandalId) {
+                        foundDistrictId = Number(district.i);
+                      }
+                    });
+                  });
+                });
+              });
+
+              if (foundDistrictId !== null) {
+                const containingRegion = allRegionsData.features.find((regFeature: any) => {
+                  const regDistrictIds = getDistrictIdsFromRegion(regFeature, geoMasterData);
+                  return regDistrictIds.includes(foundDistrictId!);
+                });
+                if (containingRegion) {
+                  parentRegionIdValue = getRegionId(containingRegion);
+                }
+              }
+            }
+          }
+
+          if (parentRegionIdValue) {
+            parentRegionId = parentRegionIdValue;
+            const rawRegion = allRegionsData.features.find(
+              (f: any) => getRegionId(f) === parentRegionIdValue
+            );
+            if (rawRegion) {
+              districtIds = getDistrictIdsFromRegion(rawRegion, geoMasterData);
+            }
           }
           areasList = regionAreasData?.data || [];
         }
@@ -1700,7 +1851,7 @@ const RegionAreaEdit: React.FC = () => {
       if (editModeType === "area" && editAreaId) {
         const areaIdNum = Number(editAreaId);
         areasList = areasList.filter(
-          (a: any) => Number(a.id || a.area_id) !== areaIdNum,
+          (a: any) => Number(a.areaId || a.id || a.area_id) !== areaIdNum,
         );
       }
 
@@ -1724,15 +1875,28 @@ const RegionAreaEdit: React.FC = () => {
 
       if (map.current.getLayer("regions-fill")) {
         if (parentRegionId) {
-          // A region is selected — hide it from the fill layer (mandals take over rendering)
+          // A region is selected — show only that region as grey background
           map.current.setFilter("regions-fill", [
-            "!=",
+            "==",
             ["coalesce", ["get", "region_id"], ["get", "id"]],
             parentRegionId,
           ]);
+          map.current.setPaintProperty("regions-fill", "fill-color", "#F0EEF0");
+          map.current.setPaintProperty("regions-fill", "fill-opacity", 1.0);
         } else {
           // No region selected yet — show all regions normally
           map.current.setFilter("regions-fill", null);
+          map.current.setPaintProperty("regions-fill", "fill-color", [
+            "coalesce",
+            ["get", "regionColor"],
+            "#10b981",
+          ]);
+          map.current.setPaintProperty("regions-fill", "fill-opacity", [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            0.45,
+            0.25,
+          ]);
         }
       }
       if (map.current.getLayer("regions-line")) {
@@ -2380,7 +2544,6 @@ const RegionAreaEdit: React.FC = () => {
           if (isEditModeLocal) return;
 
           const modeLocal = searchParamsLocal.get("mode");
-          if (modeLocal === "area") return;
 
           if (e.features && e.features.length > 0) {
             const feature = e.features[0];
@@ -2427,7 +2590,6 @@ const RegionAreaEdit: React.FC = () => {
 
           // Disable hover interactions in Area Mode
           const modeLocal = searchParamsLocal.get("mode");
-          if (modeLocal === "area") return;
 
           if (map.current && !selectedState)
             map.current.getCanvas().style.cursor = "pointer";
@@ -2582,11 +2744,39 @@ const RegionAreaEdit: React.FC = () => {
     assignedRegionsRef.current = assignedRegions;
   }, [assignedRegions]);
 
+  // Automatically sync selectedState when selectedRegion changes to ensure regions are shown & isolated
+  useEffect(() => {
+    if (selectedRegion && geoMasterData) {
+      const stateId = Number(
+        selectedRegion.properties?.state_id ||
+        selectedRegion.properties?.stateId
+      );
+      if (stateId && (!selectedState || Number(selectedState.properties?.id) !== stateId)) {
+        const stateObj = geoMasterData.countries
+          .flatMap((c: any) => c.states ?? [])
+          .find((s: any) => s.i === stateId);
+        if (stateObj) {
+          setSelectedState({
+            type: "Feature",
+            id: stateObj.i,
+            geometry: stateObj.g,
+            properties: {
+              id: stateObj.i,
+              name: stateObj.d,
+              code: stateObj.c,
+            },
+          });
+          setIsZoomed(true);
+        }
+      }
+    }
+  }, [selectedRegion, geoMasterData, selectedState]);
+
   // Restore selectedState or selectedRegion when returning to View Mode
   useEffect(() => {
     if (isEditMode) return;
 
-    const mode = searchParams.get("mode") || "region";
+    const mode = getSearchParamFallback("mode") || "region";
 
     if (mode === "region") {
       const savedSelectedState = sessionStorage.getItem("region_map_selected_state");
@@ -2627,6 +2817,7 @@ const RegionAreaEdit: React.FC = () => {
     });
     setIsZoomed(false);
     setSelectedState(null); // triggers stateRegionsData → allRegionsData → regions re-render
+    setSelectedRegion(null); // Clear selected region when resetting to India overview
     // Clear district boundaries (only visible inside a selected state)
     setAssignPanelOpen(false);
 
@@ -2711,6 +2902,77 @@ const RegionAreaEdit: React.FC = () => {
     );
   };
 
+  // Handle Zoom Out transition when returning to India view, and update filters for state isolation
+  useEffect(() => {
+    if (!map.current || mapLoaded === 0) return;
+
+    try {
+      if (selectedState) {
+        const stateId = selectedState.properties?.id;
+        if (stateId !== undefined) {
+          // Hide outer country outline and country fill, and world land
+          if (map.current.getLayer("india-fill")) {
+            map.current.setLayoutProperty("india-fill", "visibility", "none");
+          }
+          if (map.current.getLayer("india-border-line")) {
+            map.current.setLayoutProperty("india-border-line", "visibility", "none");
+          }
+          if (map.current.getLayer("world-land-fill")) {
+            map.current.setLayoutProperty("world-land-fill", "visibility", "none");
+          }
+
+          // Make states-fill solid grey to render the selected state
+          if (map.current.getLayer("states-fill")) {
+            map.current.setPaintProperty("states-fill", "fill-color", "#F0EEF0");
+            map.current.setFilter("states-fill", ["==", ["get", "id"], stateId]);
+            // If a region is selected in Area Mode, hide the state-fill completely so only the region is visible
+            if (editModeType === "area" && selectedRegion) {
+              map.current.setLayoutProperty("states-fill", "visibility", "none");
+            } else {
+              map.current.setLayoutProperty("states-fill", "visibility", "visible");
+            }
+          }
+          if (map.current.getLayer("states-border-line")) {
+            map.current.setFilter("states-border-line", ["==", ["get", "id"], stateId]);
+            if (editModeType === "area" && selectedRegion) {
+              map.current.setLayoutProperty("states-border-line", "visibility", "none");
+            } else {
+              map.current.setLayoutProperty("states-border-line", "visibility", "visible");
+            }
+          }
+        }
+      } else {
+        // Restore country borders and fill, and world land
+        if (map.current.getLayer("india-fill")) {
+          map.current.setLayoutProperty("india-fill", "visibility", "visible");
+        }
+        if (map.current.getLayer("india-border-line")) {
+          map.current.setLayoutProperty("india-border-line", "visibility", "visible");
+        }
+        if (map.current.getLayer("world-land-fill")) {
+          map.current.setLayoutProperty("world-land-fill", "visibility", "visible");
+        }
+
+        // Reset states-fill to transparent
+        if (map.current.getLayer("states-fill")) {
+          map.current.setPaintProperty("states-fill", "fill-color", "transparent");
+          map.current.setFilter("states-fill", null);
+          map.current.setLayoutProperty("states-fill", "visibility", "visible");
+        }
+        if (map.current.getLayer("states-border-line")) {
+          map.current.setFilter("states-border-line", null);
+          map.current.setLayoutProperty("states-border-line", "visibility", "visible");
+        }
+
+        if (isZoomed) {
+          resetView();
+        }
+      }
+    } catch (err) {
+      console.error("Error updating map filters for selected state:", err);
+    }
+  }, [selectedState, mapLoaded, isZoomed, selectedRegion, editModeType]);
+
   // Submit edit form handler
   const handleSave = async () => {
     if (!regionName || !regionCode || selectedDistricts.length === 0) {
@@ -2760,11 +3022,14 @@ const RegionAreaEdit: React.FC = () => {
             const rawArea = (regionAreasData?.data || []).find(
               (a: any) => Number(a.id || a.area_id) === fromAreaId,
             );
-            const mIds = Array.isArray(rawArea?.mandal_ids)
-              ? rawArea.mandal_ids.map(Number)
-              : Array.isArray(rawArea?.mandalIds)
-                ? rawArea.mandalIds.map(Number)
-                : [];
+            let mIds: number[] = [];
+            if (Array.isArray(rawArea?.mandal_ids)) {
+              mIds = rawArea.mandal_ids.map(Number);
+            } else if (Array.isArray(rawArea?.mandalIds)) {
+              mIds = rawArea.mandalIds.map(Number);
+            } else if (Array.isArray(rawArea?.assignments)) {
+              mIds = rawArea.assignments.map((asg: any) => Number(asg.mandal_id || asg.mandalId));
+            }
             reassignmentsBySourceArea[fromAreaId] = {
               areaName: rawArea?.area_name || rawArea?.areaName || "Old Area",
               fieldOfficerId: rawArea?.field_officer_id
@@ -3051,6 +3316,17 @@ const RegionAreaEdit: React.FC = () => {
           onClick={() => {
             if (isEditMode) {
               clearEditMode();
+            } else if (editModeType === "area" && selectedRegion) {
+              setSelectedRegion(null);
+              setActiveAreaId(null);
+              if (selectedState && map.current) {
+                map.current.fitBounds(getFeatureBounds(selectedState), {
+                  padding: 100,
+                  duration: 1500,
+                });
+              }
+            } else if (selectedState) {
+              resetView();
             } else {
               navigate("/role-manager/create-regions-and-areas?mode=view");
             }
@@ -3083,7 +3359,7 @@ const RegionAreaEdit: React.FC = () => {
       {/* Hint banner */}
       {!isZoomed && !isEditMode && (
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 bg-white/90 backdrop-blur-sm rounded-full px-5 py-2.5 shadow-md text-sm text-slate-600 whitespace-nowrap">
-          {searchParams.get("mode") === "area"
+          {getSearchParamFallback("mode") === "area"
             ? "Click on a state to view its regions and mandal (area) boundaries"
             : "Click on a state to view its regions and district boundaries"}
         </div>
