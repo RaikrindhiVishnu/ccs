@@ -1,26 +1,25 @@
 import { useState, useMemo } from "react";
 import { Search, Bell, ListFilter, X as CloseIcon } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
-import { FARMLAND_DETAILS } from "@/features/ccs/data/FarmlandDetailData";
+import { useNavigate } from "react-router-dom";
 import { farmlandListDummyData } from "@/features/ccs/data/Farmlandlistdata";
 import FarmlandListCard from "@/features/ccs/components/Farmlandlistcard";
-import FarmlandDetailPanel from "@/features/ccs/components/FarmlandDetailPanel";
-import DummyMap from "@/features/ccs/components/satellite-map/DummyMap";
 import FiltersModal, { type FilterState } from "@/features/ccs/components/FiltersModal";
+import NotificationsPopover from "@/features/ccs/components/NotificationsPopover";
 
 /* ── page ── */
 export default function FarmlandList() {
-  const [panelOpen, setPanelOpen]     = useState(false);
-  const [selectedId, setSelectedId]   = useState<string | null>(null);
+  const navigate = useNavigate();
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [activeFilters, setActiveFilters] = useState<FilterState>({
     state: "",
     region: "",
     area: "",
     priority: "",
+    fromDate: "",
+    toDate: "",
   });
-
-  const detail = selectedId ? FARMLAND_DETAILS[selectedId] ?? null : null;
 
   /* active filter chips */
   const activeFilterEntries = [
@@ -28,6 +27,8 @@ export default function FarmlandList() {
     { key: "region",   value: activeFilters.region   },
     { key: "area",     value: activeFilters.area     },
     { key: "priority", value: activeFilters.priority },
+    { key: "fromDate", value: activeFilters.fromDate },
+    { key: "toDate",   value: activeFilters.toDate   },
   ].filter((f) => f.value);
 
   /* filtered list */
@@ -43,28 +44,6 @@ export default function FarmlandList() {
 
   return (
     <>
-      {/* ════════════════════════════════════════════════
-          FULL-SCREEN MAP + DETAIL PANEL OVERLAY
-          Rendered as fixed so it covers the sidebar too
-          ════════════════════════════════════════════════ */}
-      {panelOpen && (
-        <div className="fixed inset-0 z-[100] bg-black">
-          {/* Satellite map fills the whole screen */}
-          <DummyMap />
-
-          {/* Detail panel + Go back button on top of map */}
-          <FarmlandDetailPanel
-            detail={detail}
-            open={true}
-            onClose={() => {
-              setPanelOpen(false);
-              setSelectedId(null);
-            }}
-            hideAnalysisButton={true}
-          />
-        </div>
-      )}
-
       {/* ════════════════════════════════════════════════
           FILTERS MODAL
           ════════════════════════════════════════════════ */}
@@ -124,11 +103,19 @@ export default function FarmlandList() {
             </button>
 
             {/* BELL */}
-            <button className="relative shrink-0 flex h-[52px] w-[52px] items-center justify-center rounded-[40px] bg-[#FFFFFF] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] hover:bg-gray-50 transition-colors">
-              <span className="absolute right-[16px] top-[14px] h-[5px] w-[5px] rounded-full bg-[#EF4646]" />
-              <Bell className="h-[24px] w-[24px] text-[#2C2C2C]" strokeWidth={1.5} />
-              <span className="sr-only">Notifications</span>
-            </button>
+            <div className="relative">
+              <button 
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative shrink-0 flex h-[52px] w-[52px] items-center justify-center rounded-[40px] bg-[#FFFFFF] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] hover:bg-gray-50 transition-colors"
+              >
+                <span className="absolute right-[16px] top-[14px] h-[5px] w-[5px] rounded-full bg-[#EF4646]" />
+                <Bell className="h-[24px] w-[24px] text-[#2C2C2C]" strokeWidth={1.5} />
+                <span className="sr-only">Notifications</span>
+              </button>
+              {showNotifications && (
+                <NotificationsPopover onClose={() => setShowNotifications(false)} />
+              )}
+            </div>
           </div>
         </div>
 
@@ -157,10 +144,7 @@ export default function FarmlandList() {
               <FarmlandListCard
                 key={item.id}
                 item={item}
-                onViewDetails={(id) => {
-                  setSelectedId(id);
-                  setPanelOpen(true);
-                }}
+                onViewDetails={(id) => navigate(`/farmland-list/map/${id}`)}
               />
             ))
           ) : (

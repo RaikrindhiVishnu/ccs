@@ -17,9 +17,10 @@ export default function CcsDashboard() {
         px-[1.375rem] py-[1.375rem]
         xl:px-[1.875rem] xl:py-[1.875rem]
         2xl:px-[2.5rem] 2xl:py-[2.5rem]
+        overflow-visible
       "
     >
-      <div className="shrink-0">
+      <div className="shrink-0 relative z-50">
         <DashboardHeader />
       </div>
 

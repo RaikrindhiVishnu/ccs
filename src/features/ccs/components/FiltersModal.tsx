@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { X, ChevronDown, ChevronUp, Calendar, X as CloseIcon } from "lucide-react";
+import { format, parse, isValid } from "date-fns";
+import CalendarPopover from "./CalendarPopover";
 
 function CustomSelect({
   label,
@@ -73,6 +75,8 @@ export type FilterState = {
   region: string;
   area: string;
   priority: string;
+  fromDate?: string;
+  toDate?: string;
 };
 
 type FiltersModalProps = {
@@ -80,6 +84,13 @@ type FiltersModalProps = {
   onClose: () => void;
   initialFilters: FilterState;
   onApply: (filters: FilterState) => void;
+};
+
+const parseDateString = (value: string) => {
+  if (!value) return null;
+  const formatPattern = value.split("/")[2]?.length === 2 ? "dd/MM/yy" : "dd/MM/yyyy";
+  const parsedDate = parse(value, formatPattern, new Date());
+  return isValid(parsedDate) ? parsedDate : null;
 };
 
 export default function FiltersModal({
@@ -92,6 +103,14 @@ export default function FiltersModal({
   const [region, setRegion]     = useState("");
   const [area, setArea]         = useState("");
   const [priority, setPriority] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate]     = useState("");
+  const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
+  const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
+  const [showFromCalendar, setShowFromCalendar] = useState(false);
+  const [showToCalendar, setShowToCalendar] = useState(false);
+  const fromDateRef = useRef<HTMLDivElement>(null);
+  const toDateRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -99,6 +118,12 @@ export default function FiltersModal({
       setRegion(initialFilters.region);
       setArea(initialFilters.area);
       setPriority(initialFilters.priority);
+      setFromDate(initialFilters.fromDate ?? "");
+      setToDate(initialFilters.toDate ?? "");
+      setSelectedStartDate(parseDateString(initialFilters.fromDate ?? ""));
+      setSelectedEndDate(parseDateString(initialFilters.toDate ?? ""));
+      setShowFromCalendar(false);
+      setShowToCalendar(false);
     }
   }, [isOpen, initialFilters]);
 
@@ -109,6 +134,8 @@ export default function FiltersModal({
     { key: "region",   value: region,   setter: setRegion   },
     { key: "area",     value: area,     setter: setArea     },
     { key: "priority", value: priority, setter: setPriority },
+    { key: "fromDate", value: fromDate, setter: setFromDate },
+    { key: "toDate",   value: toDate,   setter: setToDate   },
   ].filter((f) => f.value);
 
   const handleReset = () => {
@@ -116,11 +143,27 @@ export default function FiltersModal({
     setRegion("");
     setArea("");
     setPriority("");
+    setFromDate("");
+    setToDate("");
+    setSelectedStartDate(null);
+    setSelectedEndDate(null);
   };
 
   const handleApply = () => {
-    onApply({ state, region, area, priority });
+    onApply({ state, region, area, priority, fromDate, toDate });
     onClose();
+  };
+
+  const handleFromDateChange = (date: Date) => {
+    setSelectedStartDate(date);
+    setFromDate(format(date, "dd/MM/yyyy"));
+    setShowFromCalendar(false);
+  };
+
+  const handleToDateChange = (date: Date) => {
+    setSelectedEndDate(date);
+    setToDate(format(date, "dd/MM/yyyy"));
+    setShowToCalendar(false);
   };
 
   return (
@@ -138,12 +181,12 @@ export default function FiltersModal({
           shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)]
           rounded-[24px]
           flex flex-col
-          overflow-hidden
+          overflow-visible
         "
       >
         {/* Scrollable inner content */}
         <div
-          className="flex flex-col gap-[24px] px-[31px] py-[31px] overflow-y-auto flex-1 min-h-0"
+          className="flex flex-col gap-[24px] px-[31px] py-[31px] overflow-y-auto flex-1 min-h-0 overflow-x-visible"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
         >
 
@@ -195,30 +238,68 @@ export default function FiltersModal({
             />
 
             {/* Date row */}
-            <div className="grid grid-cols-2 gap-[20px]">
-              {/* From Date */}
-              <div className="flex flex-col gap-[8px]">
-                <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[21px] text-[#0F172A]">
-                  Form Date
-                </label>
-                <div className="h-[58px] border border-[#E2E8F0] rounded-[14px] flex items-center justify-between px-[16px] bg-[#FFFFFF] cursor-text hover:border-gray-300 transition-colors">
-                  <span className="font-['Plus_Jakarta_Sans'] font-normal text-[16px] leading-[24px] text-[#94A3B8]">
-                    DD/MM/YYYY
-                  </span>
-                  <Calendar className="w-[22px] h-[22px] text-[#2880C4]" strokeWidth={2} />
-                </div>
-              </div>
+            <div className="relative z-[50]">
+              <div className="grid grid-cols-2 gap-[20px]">
+                {/* From Date */}
+                <div className="flex flex-col gap-[8px]" ref={fromDateRef}>
+                  <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[21px] text-[#0F172A]">
+                    From Date
+                  </label>
+                  <div
+                    onClick={() => {
+                      setShowFromCalendar(!showFromCalendar);
+                      setShowToCalendar(false);
+                    }}
+                    className={`h-[58px] border rounded-[14px] flex items-center justify-between px-[16px] bg-[#FFFFFF] cursor-pointer transition-colors ${fromDate ? "border-[#2880C4]" : "border-[#E2E8F0] hover:border-gray-300"}`}
+                  >
+                    <span className={`font-['Plus_Jakarta_Sans'] font-normal text-[16px] leading-[24px] ${fromDate ? "text-[#0F172A] font-medium" : "text-[#94A3B8]"}`}>
+                      {fromDate || "DD/MM/YYYY"}
+                    </span>
+                    <Calendar className="w-[22px] h-[22px] text-[#2880C4]" strokeWidth={2} />
+                  </div>
 
-              {/* To Date */}
-              <div className="flex flex-col gap-[8px]">
-                <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[21px] text-[#0F172A]">
-                  Too Date
-                </label>
-                <div className="h-[58px] border border-[#E2E8F0] rounded-[14px] flex items-center justify-between px-[16px] bg-[#FFFFFF] cursor-text hover:border-gray-300 transition-colors">
-                  <span className="font-['Plus_Jakarta_Sans'] font-normal text-[16px] leading-[24px] text-[#94A3B8]">
-                    DD/MM/YYYY
-                  </span>
-                  <Calendar className="w-[22px] h-[22px] text-[#2880C4]" strokeWidth={2} />
+                  {/* From Date Calendar */}
+                  {showFromCalendar && (
+                    <div className="absolute left-0 top-[calc(100%+8px)] z-[70]">
+                      <CalendarPopover
+                        selectedDate={selectedStartDate}
+                        onChange={handleFromDateChange}
+                        onClose={() => setShowFromCalendar(false)}
+                        mode="start"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* To Date */}
+                <div className="flex flex-col gap-[8px]" ref={toDateRef}>
+                  <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[21px] text-[#0F172A]">
+                    To Date
+                  </label>
+                  <div
+                    onClick={() => {
+                      setShowToCalendar(!showToCalendar);
+                      setShowFromCalendar(false);
+                    }}
+                    className={`h-[58px] border rounded-[14px] flex items-center justify-between px-[16px] bg-[#FFFFFF] cursor-pointer transition-colors ${toDate ? "border-[#2880C4]" : "border-[#E2E8F0] hover:border-gray-300"}`}
+                  >
+                    <span className={`font-['Plus_Jakarta_Sans'] font-normal text-[16px] leading-[24px] ${toDate ? "text-[#0F172A] font-medium" : "text-[#94A3B8]"}`}>
+                      {toDate || "DD/MM/YYYY"}
+                    </span>
+                    <Calendar className="w-[22px] h-[22px] text-[#2880C4]" strokeWidth={2} />
+                  </div>
+
+                  {/* To Date Calendar */}
+                  {showToCalendar && (
+                    <div className="absolute left-0 top-[calc(100%+8px)] z-[70]">
+                      <CalendarPopover
+                        selectedDate={selectedEndDate}
+                        onChange={handleToDateChange}
+                        onClose={() => setShowToCalendar(false)}
+                        mode="end"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
