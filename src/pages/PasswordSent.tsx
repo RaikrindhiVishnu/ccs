@@ -53,7 +53,7 @@ export default function PasswordSent() {
                 We Have Sent a Temporary Password to XXXXXXX@gmail.com
               </p>
 
-              <button type="button" onClick={() => navigate('/ccs-login')} className="w-[204px] h-[64px] bg-[#2780C4] hover:bg-[#206aa3] rounded-full text-white font-['Plus_Jakarta_Sans'] font-semibold text-[24px] leading-[30px] flex items-center justify-center border-none cursor-pointer mt-[20px] transition-colors shadow-sm">
+              <button type="button" onClick={() => navigate('/ccs/login')} className="w-[204px] h-[64px] bg-[#2780C4] hover:bg-[#206aa3] rounded-full text-white font-['Plus_Jakarta_Sans'] font-semibold text-[24px] leading-[30px] flex items-center justify-center border-none cursor-pointer mt-[20px] transition-colors shadow-sm">
                 Done
               </button>
 

@@ -131,19 +131,19 @@ export const guestRoutes: RouteObject[] = [
         path: '/super-admin/login',
         element: <SuperAdminLogin />
     }, {
-        path: '/ccs-login',
+        path: '/ccs/login',
         element: <CcsLogin />
     }, {
-        path: '/update-default-password',
+        path: '/ccs/update-default-password',
         element: <UpdateDefaultPassword />
     }, {
-        path: '/change-password',
+        path: '/ccs/change-password',
         element: <ChangePassword />
     }, {
-        path: '/forgot-password',
+        path: '/ccs/forgot-password',
         element: <ForgotPassword />
     }, {
-        path: '/password-sent',
+        path: '/ccs/password-sent',
         element: <PasswordSent />
     },
 ];

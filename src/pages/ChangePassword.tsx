@@ -54,7 +54,7 @@ export default function ChangePassword() {
                 </p>
               </div>
 
-              <form className="flex flex-col gap-[24px] w-full" onSubmit={(e) => { e.preventDefault(); navigate('/ccs-login'); }}>
+              <form className="flex flex-col gap-[24px] w-full" onSubmit={(e) => { e.preventDefault(); navigate('/ccs/login'); }}>
                 <div className="flex flex-col gap-[12px] w-full">
                   <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[16px] leading-[24px] text-[#424751]">
                     New Password

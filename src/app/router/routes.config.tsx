@@ -17,7 +17,7 @@ export const RoleManagerDashboard = lazy(() => import ("../../features/role-mana
 export const UserDirectory = lazy(() => import ("../../features/role-manager/pages/UserDirectory"),);
 export const DesignSystem = lazy(() => import ("../../features/design-system/pages/DesignSystem"),);
 export const Login = lazy(() => import ("../../pages/Login"));
-export const CcsLogin = lazy(() => import ("../../pages/CCSLogin"));
+export const CcsLogin = lazy(() => import ("../../features/ccs/pages/CCSLogin"));
 export const UpdateDefaultPassword = lazy(() => import ("../../pages/UpdateDefaultPassword"));
 export const ChangePassword = lazy(() => import ("../../pages/ChangePassword"));
 export const ForgotPassword = lazy(() => import ("../../pages/ForgotPassword"));

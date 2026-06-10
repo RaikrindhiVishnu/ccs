@@ -28,13 +28,6 @@ export default function CCSLogin() {
              <h1 className="font-['Plus_Jakarta_Sans'] font-semibold text-[28px] lg:text-[48px] leading-[1.2] lg:leading-[60px] text-white drop-shadow-lg">
                Welcome To<br/>Green Land Capital
              </h1>
-             
-             {/* Pagination Dots */}
-             <div className="hidden lg:flex items-center justify-center gap-[8px] mt-[40px]">
-               <div className="w-[36px] h-0 border-[4px] border-[#BDBDBD] rounded-full"></div>
-               <div className="w-[36px] h-0 border-[4px] border-[#BDBDBD] rounded-full"></div>
-               <div className="w-[54px] h-0 border-[4px] border-[#FFFFFF] rounded-full"></div>
-             </div>
            </div>
         </div>
 
@@ -88,7 +81,7 @@ export default function CCSLogin() {
                     </button>
                   </div>
                   <div className="w-full text-right mt-[4px]">
-                     <button type="button" onClick={() => navigate('/forgot-password')} className="bg-transparent border-none p-0 cursor-pointer font-['Plus_Jakarta_Sans'] font-medium text-[14px] leading-[20px] text-[#3D4949] hover:underline">
+                     <button type="button" onClick={() => navigate('/ccs/forgot-password')} className="bg-transparent border-none p-0 cursor-pointer font-['Plus_Jakarta_Sans'] font-medium text-[14px] leading-[20px] text-[#3D4949] hover:underline">
                        Forgot Password?
                      </button>
                   </div>

@@ -50,10 +50,10 @@ export default function UpdateDefaultPassword() {
               </div>
 
               <div className="flex flex-col gap-[22px] w-full">
-                <button type="button" onClick={() => navigate('/change-password')} className="w-full h-[52px] bg-[#3B75C3] hover:bg-[#2b5a99] shadow-[0px_12px_48px_rgba(0,0,0,0.06)] rounded-full text-white font-['Plus_Jakarta_Sans'] font-bold text-[16px] leading-[16px] flex items-center justify-center border-none cursor-pointer transition-all">
+                <button type="button" onClick={() => navigate('/ccs/change-password')} className="w-full h-[52px] bg-[#3B75C3] hover:bg-[#2b5a99] shadow-[0px_12px_48px_rgba(0,0,0,0.06)] rounded-full text-white font-['Plus_Jakarta_Sans'] font-bold text-[16px] leading-[16px] flex items-center justify-center border-none cursor-pointer transition-all">
                   Set new password
                 </button>
-                <button type="button" onClick={() => navigate('/ccs-login')} className="w-full py-2 bg-transparent text-[#424751] hover:text-[#2b3038] font-['Plus_Jakarta_Sans'] font-bold text-[15px] leading-[22px] flex items-center justify-center border-none cursor-pointer transition-colors">
+                <button type="button" onClick={() => navigate('/ccs/login')} className="w-full py-2 bg-transparent text-[#424751] hover:text-[#2b3038] font-['Plus_Jakarta_Sans'] font-bold text-[15px] leading-[22px] flex items-center justify-center border-none cursor-pointer transition-colors">
                   Continue to login
                 </button>
               </div>

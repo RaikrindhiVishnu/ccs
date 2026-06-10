@@ -356,7 +356,7 @@ function LoginScreen({
         <div className="mt-4 flex justify-center">
           <button 
             type="button" 
-            onClick={() => navigate('/ccs-login')}
+            onClick={() => navigate('/ccs/login')}
             className="border-none bg-transparent cursor-pointer font-sans text-[var(--brand-500)] hover:underline font-semibold text-sm"
           >
             Go to CCS Login
