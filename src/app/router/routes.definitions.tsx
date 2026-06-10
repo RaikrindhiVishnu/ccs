@@ -23,6 +23,11 @@ import {
     UserDirectory,
     DesignSystem,
     Login,
+    CcsLogin,
+    UpdateDefaultPassword,
+    ChangePassword,
+    ForgotPassword,
+    PasswordSent,
     Home,
     AgentCreate,
     AgentEdit,
@@ -125,6 +130,21 @@ export const guestRoutes: RouteObject[] = [
     }, {
         path: '/super-admin/login',
         element: <SuperAdminLogin />
+    }, {
+        path: '/ccs-login',
+        element: <CcsLogin />
+    }, {
+        path: '/update-default-password',
+        element: <UpdateDefaultPassword />
+    }, {
+        path: '/change-password',
+        element: <ChangePassword />
+    }, {
+        path: '/forgot-password',
+        element: <ForgotPassword />
+    }, {
+        path: '/password-sent',
+        element: <PasswordSent />
     },
 ];
 

@@ -188,6 +188,7 @@ function LoginScreen({
   onForgotPassword: () => void;
 }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [login] = useLoginMutation();
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
@@ -350,6 +351,16 @@ function LoginScreen({
           <PrimaryButton type="submit" disabled={loading} className=" lg:rounded-full lg:text-[1.11vw]">
             {loading ? "Signing In..." : "Sign In"}
           </PrimaryButton>
+        </div>
+        
+        <div className="mt-4 flex justify-center">
+          <button 
+            type="button" 
+            onClick={() => navigate('/ccs-login')}
+            className="border-none bg-transparent cursor-pointer font-sans text-[var(--brand-500)] hover:underline font-semibold text-sm"
+          >
+            Go to CCS Login
+          </button>
         </div>
       </form>
 
