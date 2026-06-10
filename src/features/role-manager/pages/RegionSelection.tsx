@@ -541,10 +541,7 @@ const RegionSelection: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedRegion && mode === "area") {
-      setIsAreaModalOpen(true);
-    } else {
-      setIsAreaModalOpen(false);
+    if (!selectedRegion || mode !== "area") {
       setSelectedMandals([]);
       setAreaName("");
       setAreaCode("");
@@ -552,6 +549,7 @@ const RegionSelection: React.FC = () => {
   }, [selectedRegion, mode]);
 
   useEffect(() => {
+    setIsAreaModalOpen(selectedMandals.length > 0);
     if (selectedMandals.length === 0) {
       setFormAreaErrors({});
       setMandalSearchQuery("");
@@ -1453,7 +1451,7 @@ const RegionSelection: React.FC = () => {
               filter: ["==", ["coalesce", ["get", "region_id"], ["get", "id"]], -1],
               paint: {
                 "fill-extrusion-color": "#9BC2F3",
-                "fill-extrusion-height": 15000, // 15 km tall block
+                "fill-extrusion-height": 35000, // 15 km tall block
                 "fill-extrusion-base": 0,
                 "fill-extrusion-opacity": 0.85,
               },
@@ -1605,13 +1603,20 @@ const RegionSelection: React.FC = () => {
           ]);
         }
 
-        // Dim all other flat regions on the map
+        // Keep other flat regions visible on the map
         if (map.current.getLayer("regions-fill")) {
-          map.current.setPaintProperty("regions-fill", "fill-opacity", 0.08);
+          map.current.setLayoutProperty("regions-fill", "visibility", "visible");
+          map.current.setPaintProperty("regions-fill", "fill-opacity", [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            0.35,
+            0.2,
+          ]);
         }
         if (map.current.getLayer("regions-line")) {
-          map.current.setPaintProperty("regions-line", "line-opacity", 0.15);
-          map.current.setPaintProperty("regions-line", "line-width", 0.8);
+          map.current.setLayoutProperty("regions-line", "visibility", "visible");
+          map.current.setPaintProperty("regions-line", "line-opacity", 1.0);
+          map.current.setPaintProperty("regions-line", "line-width", 1.8);
         }
       } else {
         // Restore map pitch and bearing to flat view
@@ -1630,8 +1635,9 @@ const RegionSelection: React.FC = () => {
           ]);
         }
 
-        // Restore flat regions to default opacity
+        // Restore flat regions visibility and default opacity
         if (map.current.getLayer("regions-fill")) {
+          map.current.setLayoutProperty("regions-fill", "visibility", "visible");
           map.current.setPaintProperty("regions-fill", "fill-opacity", [
             "case",
             ["boolean", ["feature-state", "hover"], false],
@@ -1640,6 +1646,7 @@ const RegionSelection: React.FC = () => {
           ]);
         }
         if (map.current.getLayer("regions-line")) {
+          map.current.setLayoutProperty("regions-line", "visibility", "visible");
           map.current.setPaintProperty("regions-line", "line-opacity", 1.0);
           map.current.setPaintProperty("regions-line", "line-width", 1.8);
         }
@@ -1658,7 +1665,7 @@ const RegionSelection: React.FC = () => {
       const lineLayer = map.current.getLayer("districts-line");
 
       if (fillLayer && lineLayer) {
-        if (mode === "area" || selectedRegion) {
+        if (mode === "area") {
           map.current.setLayoutProperty("districts-fill", "visibility", "none");
           map.current.setLayoutProperty("districts-line", "visibility", "none");
         } else {
@@ -1669,7 +1676,7 @@ const RegionSelection: React.FC = () => {
     } catch (err) {
       console.error("Error updating district layers visibility:", err);
     }
-  }, [mode, selectedRegion, mapLoaded]);
+  }, [mode, mapLoaded]);
 
   // Effect to manage 3D visual elevation and dimming of areas in Area Mode
   useEffect(() => {
@@ -1693,9 +1700,12 @@ const RegionSelection: React.FC = () => {
           ]);
         }
 
-        // Dim other flat mandals on the map
+        // Hide other flat mandals on the map
         if (map.current.getLayer("mandals-fill")) {
-          map.current.setPaintProperty("mandals-fill", "fill-opacity", 0.08);
+          map.current.setLayoutProperty("mandals-fill", "visibility", "none");
+        }
+        if (map.current.getLayer("mandals-line")) {
+          map.current.setLayoutProperty("mandals-line", "visibility", "none");
         }
       } else {
         // Restore map pitch and bearing to flat view
@@ -1712,16 +1722,11 @@ const RegionSelection: React.FC = () => {
 
         // Restore flat mandals to default opacity case
         if (map.current.getLayer("mandals-fill")) {
-          map.current.setPaintProperty("mandals-fill", "fill-opacity", [
-            "case",
-            ["boolean", ["get", "isAssigned"], false],
-            0.4,
-            ["boolean", ["feature-state", "selected"], false],
-            0.55,
-            ["boolean", ["feature-state", "hover"], false],
-            0.45,
-            0.25,
-          ]);
+          map.current.setLayoutProperty("mandals-fill", "visibility", "visible");
+          map.current.setPaintProperty("mandals-fill", "fill-opacity", 1.0);
+        }
+        if (map.current.getLayer("mandals-line")) {
+          map.current.setLayoutProperty("mandals-line", "visibility", "visible");
         }
       }
     } catch (err) {
