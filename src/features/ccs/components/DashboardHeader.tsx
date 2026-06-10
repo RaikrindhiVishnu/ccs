@@ -21,7 +21,7 @@ export default function DashboardHeader() {
   };
 
   return (
-    <div className="flex items-center justify-between relative z-40">
+    <div className="flex items-center justify-between relative z-20">
       <div className="flex items-center gap-[10px]">
         <img
           src={dashboardIcon}
@@ -56,7 +56,7 @@ export default function DashboardHeader() {
           </div>
         )}
 
-        <div className="relative">
+        <div className="relative z-50">
           <button 
             onClick={() => {
               setShowCalendar(!showCalendar);
@@ -70,6 +70,7 @@ export default function DashboardHeader() {
             <CalendarPopover 
               startDate={startDate}
               endDate={endDate}
+              mode="range"
               onChange={(start, end) => {
                 setStartDate(start);
                 setEndDate(end);

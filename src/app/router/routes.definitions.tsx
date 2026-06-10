@@ -12,7 +12,13 @@ import {
     AgentApprovals,
     Agentdetailpage,
     FarmlandRequest,
+    FarmlandRequestMap,
+    FarmlandRequestAnalysis,
+    FarmlandRequestGateway,
+    FarmlandRequestGatewayApproved,
+    FarmlandRequestPayment,
     FarmlandList,
+    FarmlandListMap,
     RoleManagerDashboard,
     UserDirectory,
     DesignSystem,
@@ -152,8 +158,26 @@ export const authRoutes: RouteObject[] = [
                 path: '/farmland-request',
                 element: <FarmlandRequest />
             }, {
+                path: '/farmland-request/map/:id',
+                element: <FarmlandRequestMap />
+            }, {
+                path: '/farmland-request/analysis/:id',
+                element: <FarmlandRequestAnalysis />
+            }, {
+                path: '/farmland-request/gateway/:id',
+                element: <FarmlandRequestGateway />
+            }, {
+                path: '/farmland-request/gateway-approved/:id',
+                element: <FarmlandRequestGatewayApproved />
+            }, {
+                path: '/farmland-request/payment/:id',
+                element: <FarmlandRequestPayment />
+            }, {
                 path: '/farmland-list',
                 element: <FarmlandList />
+            }, {
+                path: '/farmland-list/map/:id',
+                element: <FarmlandListMap />
             }, {
                 path: '/send-payment-link',
                 element: <SendPaymentLink />

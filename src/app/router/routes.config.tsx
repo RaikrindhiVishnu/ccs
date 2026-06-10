@@ -6,7 +6,13 @@ export const UpdatePassword = lazy(() => import ("../../features/role-manager/pa
 export const AgentApprovals = lazy(() => import ("../../features/role-manager/pages/Agentapprovals"),);
 export const Agentdetailpage = lazy(() => import ("../../features/role-manager/pages/Agentdetailpage"),);
 export const FarmlandRequest = lazy(() => import ("../../features/ccs/pages/Farmlandrequest"),);
+export const FarmlandRequestMap = lazy(() => import ("../../features/ccs/pages/FarmlandRequestMap"),);
+export const FarmlandRequestAnalysis = lazy(() => import ("../../features/ccs/pages/FarmlandRequestAnalysis"),);
+export const FarmlandRequestGateway = lazy(() => import ("../../features/ccs/pages/FarmlandRequestGateway"),);
+export const FarmlandRequestGatewayApproved = lazy(() => import ("../../features/ccs/pages/FarmlandRequestGatewayApproved"),);
+export const FarmlandRequestPayment = lazy(() => import ("../../features/ccs/pages/FarmlandRequestPayment"),);
 export const FarmlandList = lazy(() => import ("../../features/ccs/pages/Farmlandlist"),);
+export const FarmlandListMap = lazy(() => import ("../../features/ccs/pages/FarmlandListMap"),);
 export const RoleManagerDashboard = lazy(() => import ("../../features/role-manager/pages/RoleManagerDashboard"),);
 export const UserDirectory = lazy(() => import ("../../features/role-manager/pages/UserDirectory"),);
 export const DesignSystem = lazy(() => import ("../../features/design-system/pages/DesignSystem"),);
