@@ -541,7 +541,17 @@ const RegionSelection: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setIsAreaModalOpen(selectedMandals.length > 0);
+    if (selectedRegion && mode === "area") {
+      setIsAreaModalOpen(true);
+    } else {
+      setIsAreaModalOpen(false);
+      setSelectedMandals([]);
+      setAreaName("");
+      setAreaCode("");
+    }
+  }, [selectedRegion, mode]);
+
+  useEffect(() => {
     if (selectedMandals.length === 0) {
       setFormAreaErrors({});
       setMandalSearchQuery("");
@@ -1128,7 +1138,9 @@ const RegionSelection: React.FC = () => {
           // District Click Handler (Multi-select)
           map.current?.on("click", "districts-fill", (e) => {
             if (e.defaultPrevented) return;
-            if (mode === "area") return; // Block selection in Area Mode
+            const currentSearchParams = new URLSearchParams(window.location.search);
+            const currentMode = currentSearchParams.get("mode") || "region";
+            if (currentMode === "area") return; // Block selection in Area Mode
             if (e.features && e.features.length > 0) {
               const districtFeature = e.features[0];
               const districtData = districtFeature.properties;
@@ -1451,7 +1463,9 @@ const RegionSelection: React.FC = () => {
 
           // Click handler to select and isolate/elevate region in Region Mode
           map.current?.on("click", "regions-fill", (e) => {
-            if (mode !== "region") return;
+            const currentSearchParams = new URLSearchParams(window.location.search);
+            const currentMode = currentSearchParams.get("mode") || "region";
+            if (currentMode !== "region") return;
             if (e.features && e.features.length > 0) {
               const feature = e.features[0];
               setSelectedRegion(feature);
@@ -1599,14 +1613,6 @@ const RegionSelection: React.FC = () => {
           map.current.setPaintProperty("regions-line", "line-opacity", 0.15);
           map.current.setPaintProperty("regions-line", "line-width", 0.8);
         }
-
-        // Hide underlying districts layer so it doesn't clutter the view
-        if (map.current.getLayer("districts-fill")) {
-          map.current.setLayoutProperty("districts-fill", "visibility", "none");
-        }
-        if (map.current.getLayer("districts-line")) {
-          map.current.setLayoutProperty("districts-line", "visibility", "none");
-        }
       } else {
         // Restore map pitch and bearing to flat view
         map.current?.easeTo({
@@ -1637,19 +1643,33 @@ const RegionSelection: React.FC = () => {
           map.current.setPaintProperty("regions-line", "line-opacity", 1.0);
           map.current.setPaintProperty("regions-line", "line-width", 1.8);
         }
-
-        // Restore underlying districts layer visibility
-        if (map.current.getLayer("districts-fill")) {
-          map.current.setLayoutProperty("districts-fill", "visibility", "visible");
-        }
-        if (map.current.getLayer("districts-line")) {
-          map.current.setLayoutProperty("districts-line", "visibility", "visible");
-        }
       }
     } catch (err) {
       console.error("Error updating map styling for selected region:", err);
     }
   }, [selectedRegion, mapLoaded, mode]);
+
+  // Effect to manage district layers visibility based on mode and region selection
+  useEffect(() => {
+    if (!map.current || mapLoaded === 0) return;
+
+    try {
+      const fillLayer = map.current.getLayer("districts-fill");
+      const lineLayer = map.current.getLayer("districts-line");
+
+      if (fillLayer && lineLayer) {
+        if (mode === "area" || selectedRegion) {
+          map.current.setLayoutProperty("districts-fill", "visibility", "none");
+          map.current.setLayoutProperty("districts-line", "visibility", "none");
+        } else {
+          map.current.setLayoutProperty("districts-fill", "visibility", "visible");
+          map.current.setLayoutProperty("districts-line", "visibility", "visible");
+        }
+      }
+    } catch (err) {
+      console.error("Error updating district layers visibility:", err);
+    }
+  }, [mode, selectedRegion, mapLoaded]);
 
   // Effect to manage 3D visual elevation and dimming of areas in Area Mode
   useEffect(() => {
@@ -2010,7 +2030,9 @@ const RegionSelection: React.FC = () => {
 
             // Click Handler for dynamic zoom & mandals rendering in Area Mode
             map.current?.on("click", "country-regions-fill", (e) => {
-              if (mode !== "area") return;
+              const currentSearchParams = new URLSearchParams(window.location.search);
+              const currentMode = currentSearchParams.get("mode") || "region";
+              if (currentMode !== "area") return;
               if (e.features && e.features.length > 0) {
                 const feature = e.features[0];
                 const clickedId =
@@ -2199,7 +2221,7 @@ const RegionSelection: React.FC = () => {
           // Apply filter to show ONLY the selected region
           const filter: any = [
             "==",
-            ["coalesce", ["get", "region_id"], ["get", "id"], -1],
+            ["coalesce", ["get", "region_id"], ["id"], ["get", "id"], -1],
             regIdNum
           ];
           if (fillLayer) {
