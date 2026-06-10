@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, TrendingUp, Search, Clock, Award, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const tagsList = [
+const tagsList=[
   { id: "trending", label: "Trending Farmland", icon: TrendingUp, pos: "top", selected: true },
   { id: "most_searched", label: "Most Searched", icon: Search, pos: "top-right", selected: false },
   { id: "newly_listed", label: "Newly Listed", icon: Clock, pos: "right", selected: false },
@@ -12,18 +12,18 @@ const tagsList = [
   { id: "glc_certified", label: "GLC Certified", icon: CheckCircle2, pos: "left", selected: true },
 ];
 
-const SuperAdminEditFarmlandTag: React.FC = () => {
-  const navigate = useNavigate();
+const SuperAdminEditFarmlandTag: React.FC=() => {
+  const navigate=useNavigate();
   const [selectedTags, setSelectedTags] = useState<Record<string, boolean>>({
     trending: true,
     glc_certified: true,
   });
 
-  const toggleTag = (id: string) => {
+  const toggleTag=(id: string) => {
     setSelectedTags((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const getPosClasses = (pos: string) => {
+  const getPosClasses=(pos: string) => {
     switch (pos) {
       case "top": return "top-[5%] left-1/2 -translate-x-1/2";
       case "top-right": return "top-[20%] right-[15%]";
@@ -72,8 +72,8 @@ const SuperAdminEditFarmlandTag: React.FC = () => {
             
             {/* Tags */}
             {tagsList.map((tag) => {
-              const isSelected = selectedTags[tag.id];
-              const Icon = tag.icon;
+              const isSelected=selectedTags[tag.id];
+              const Icon=tag.icon;
               return (
                 <button
                   key={tag.id}

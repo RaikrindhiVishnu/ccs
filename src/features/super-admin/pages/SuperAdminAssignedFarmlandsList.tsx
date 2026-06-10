@@ -5,10 +5,10 @@ import { Input } from "@/components/ui/input";
 import SuperAdminFarmlandCard from "@/features/super-admin/components/SuperAdminFarmlandCard";
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 
-const SuperAdminAssignedFarmlandsList: React.FC = () => {
-  const navigate = useNavigate();
+const SuperAdminAssignedFarmlandsList: React.FC=() => {
+  const navigate=useNavigate();
   // Using mock data but duplicating it slightly to show a grid of many cards like image2.png
-  const data = [
+  const data=[
     ...mockDashboardData.assignedFarmlands,
     ...mockDashboardData.assignedFarmlands.map(f => ({ ...f, id: f.id + "-copy-1", title: f.title.replace("0", "04") })),
     ...mockDashboardData.assignedFarmlands.map(f => ({ ...f, id: f.id + "-copy-2", title: f.title.replace("0", "07") })),

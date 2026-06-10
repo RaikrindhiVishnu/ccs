@@ -10,7 +10,7 @@ const SuperAdminUsersListAll: React.FC = () => {
   const data = mockDashboardData;
   const [filter] = useState<string>("All");
 
-  const filteredUsers = data.usersList.filter((user) => {
+  const filteredUsers=data.usersList.filter((user) => {
     if (filter === "All") return true;
     if (filter === "NRI") return user.type === "NRI";
     if (filter === "Local") return user.type === "Local";
@@ -64,7 +64,7 @@ const SuperAdminUsersListAll: React.FC = () => {
             <SuperAdminUserListCard
               key={user.id}
               data={user}
-              onViewProfile={(id) => console.log("View Profile:", id)}
+              onViewProfile={(id) => navigate(`/super-admin/user-profile/${id}`)}
             />
           ))}
         </div>

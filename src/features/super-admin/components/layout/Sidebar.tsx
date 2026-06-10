@@ -52,6 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems = [] }) => {
         {/* Logout */}
         <div
           data-logout="true"
+          onClick={() => navigate('/super-admin/login')}
           className="w-12 h-12 rounded-xl flex justify-center items-center cursor-pointer shrink-0 transition-all duration-200 text-[#8E9093] hover:bg-[#252729] hover:text-white"
           title="Logout"
         >

@@ -37,6 +37,45 @@ export interface TopPerformer {
   amount: string;
   avatar: string;
   isTopPerformer?: boolean;
+  rank?: number;
+  farms?: number;
+  sales?: string;
+  saleReports?: number;
+}
+
+export interface MomentumTimelinePoint {
+  dayLabel: string;
+  visits: number;
+  enquiries: number;
+  unlocks: number;
+  total: number;
+}
+
+export interface ConversionCommandUser {
+  id: string;
+  name: string;
+  avatar: string;
+  stage: string;
+  stageColor: string;
+  phone: string;
+  query: string;
+  actions: string;
+  comments: string;
+  commentsHighlight?: string;
+  subscriptions: string;
+}
+
+export interface FarmlandSpecificDetails {
+  id: string;
+  status: string;
+  location: string;
+  area: string;
+  totalVisitors: number;
+  visitorsGrowth: string;
+  documentationUnlocked: number;
+  purchaseRequests: number;
+  momentumTimeline: MomentumTimelinePoint[];
+  conversionCommandUsers: ConversionCommandUser[];
 }
 
 export interface SubscriberSegment {
@@ -113,6 +152,58 @@ export interface CustomerInformationData {
   };
 }
 
+export interface UserProfileActivity {
+  id: string;
+  title: string;
+  subtitle: string;
+  badge?: string;
+  statusText: string;
+  date: string;
+  borderColor: string;
+}
+
+export interface AgentTransaction {
+  id: string;
+  farmlandId: string;
+  date: string;
+  position: string;
+  landValue: string;
+  commission: string;
+  status: "Cleared" | "Processing";
+}
+
+export interface AgentProfileData {
+  id: string;
+  name: string;
+  avatar: string;
+  role: string;
+  pendingReview: number;
+  rejectedDeals: number;
+  completedDeals: number;
+  growth: string;
+  performanceIndex: string;
+  closeRatio: number;
+  avgResponse: string;
+  quarterPerf: string;
+  transactions: AgentTransaction[];
+}
+
+export interface UserProfileData {
+  id: string;
+  name: string;
+  avatar: string;
+  tier: string;
+  isActive: boolean;
+  email: string;
+  phone: string;
+  stats: {
+    farmlandPurchases: number;
+    timesSubscribed: number;
+    viewsLeft: number;
+  };
+  recentActivity: UserProfileActivity[];
+}
+
 export interface DashboardData {
   visitors: VisitorStats;
   totalSales: TotalSales;
@@ -120,10 +211,14 @@ export interface DashboardData {
   statusCards: StatusCardItem[];
   salesReport: SalesReportDataPoint[];
   topPerformers: TopPerformer[];
+  topPerformersDetailed: TopPerformer[];
   subscriberGrowth: SubscriberGrowthData;
   assignedFarmlands: SuperAdminFarmlandData[];
   farmlandsList: FarmlandListCardData[];
   usersList: SuperAdminUserCardData[];
   assignedFarmlandDetails: AssignedFarmlandDetailsData;
   customerInformation: CustomerInformationData;
+  userProfile: UserProfileData;
+  farmlandSpecificDetails: FarmlandSpecificDetails;
+  agentProfile: AgentProfileData;
 }

@@ -9,12 +9,12 @@ import VisitorSalesCard from "@/features/super-admin/components/VisitorSalesCard
 import FarmlandStatsCard from "@/features/super-admin/components/FarmlandStatsCard";
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 
-const SuperAdminFarmlands: React.FC = () => {
-  const navigate = useNavigate();
-  const data = mockDashboardData;
+const SuperAdminFarmlands: React.FC=() => {
+  const navigate=useNavigate();
+  const data=mockDashboardData;
   
   // Ensure we have exactly 4 items for the preview grid
-  const previewCards = [
+  const previewCards=[
     ...data.assignedFarmlands,
     { ...data.assignedFarmlands[0], id: "GLC-SOS-04", title: "GLC SOS 04" }
   ].slice(0, 4);

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MoreVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -109,6 +110,7 @@ const soldOutData = [
 ];
 
 const SuperAdminSoldOutTable: React.FC = () => {
+  const navigate = useNavigate();
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   const toggleDropdown = (id: string) => {
@@ -178,7 +180,15 @@ const SuperAdminSoldOutTable: React.FC = () => {
                   
                   {openDropdownId === row.id && (
                     <div className="absolute right-0 top-10 w-32 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-50">
-                      <button className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-gray-50">View</button>
+                      <button 
+                        onClick={() => {
+                          toggleDropdown(row.id);
+                          navigate(`/super-admin/farmlands-list/${row.id}`);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-gray-50"
+                      >
+                        View
+                      </button>
                       <button className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-gray-50">Stats</button>
                     </div>
                   )}
