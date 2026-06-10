@@ -71,6 +71,166 @@ function toFeatureCollection(
   };
 }
 
+/**
+ * Helper to extract unique coordinate vertices from a GeoJSON geometry.
+ * Rounds coordinates to 5 decimal places (~1.1 meter precision) for robust snapping.
+ */
+function getGeometryVertices(geometry: any): Set<string> {
+  const vertices = new Set<string>();
+
+  const extract = (coords: any) => {
+    if (!coords) return;
+    if (typeof coords[0] === "number") {
+      const lng = coords[0].toFixed(5);
+      const lat = coords[1].toFixed(5);
+      vertices.add(`${lng},${lat}`);
+    } else if (Array.isArray(coords)) {
+      coords.forEach(extract);
+    }
+  };
+
+  if (geometry && geometry.coordinates) {
+    extract(geometry.coordinates);
+  }
+  return vertices;
+}
+
+/**
+ * Checks if two mandal geometries share at least one boundary vertex (i.e. they are adjacent)
+ */
+function areGeometriesAdjacent(geom1: any, geom2: any): boolean {
+  if (!geom1 || !geom2) return false;
+  const vertices1 = getGeometryVertices(geom1);
+  const vertices2 = getGeometryVertices(geom2);
+
+  for (const coord of vertices1) {
+    if (vertices2.has(coord)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Traverses geoMasterData to find a mandal's geometry by its ID.
+ */
+function findMandalGeometry(mandalId: number, geoData: any): any {
+  if (!geoData || !geoData.countries) return null;
+  let foundGeom: any = null;
+
+  for (const country of geoData.countries) {
+    if (!country.states) continue;
+    for (const state of country.states) {
+      if (!state.districts) continue;
+      for (const district of state.districts) {
+        if (!district.mandals) continue;
+        for (const mandal of district.mandals) {
+          if (Number(mandal.i) === mandalId) {
+            foundGeom = mandal.g;
+            return foundGeom;
+          }
+        }
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Performs a Breadth-First Search (BFS) over selected mandals to verify they are connected.
+ */
+function isSelectionContiguous(selectedIds: number[], geoData: any): boolean {
+  if (selectedIds.length <= 1) return true;
+
+  const geometries = new Map<number, any>();
+  selectedIds.forEach((id) => {
+    const geom = findMandalGeometry(id, geoData);
+    if (geom) {
+      geometries.set(id, geom);
+    }
+  });
+
+  const visited = new Set<number>();
+  const queue: number[] = [selectedIds[0]];
+  visited.add(selectedIds[0]);
+
+  let head = 0;
+  while (head < queue.length) {
+    const currentId = queue[head++];
+    const currentGeom = geometries.get(currentId);
+    if (!currentGeom) continue;
+
+    selectedIds.forEach((otherId) => {
+      if (!visited.has(otherId)) {
+        const otherGeom = geometries.get(otherId);
+        if (otherGeom && areGeometriesAdjacent(currentGeom, otherGeom)) {
+          visited.add(otherId);
+          queue.push(otherId);
+        }
+      }
+    });
+  }
+
+  return visited.size === selectedIds.length;
+}
+
+/**
+ * Traverses geoMasterData to find a district's geometry by its ID.
+ */
+function findDistrictGeometry(districtId: number, geoData: any): any {
+  if (!geoData || !geoData.countries) return null;
+  for (const country of geoData.countries) {
+    if (!country.states) continue;
+    for (const state of country.states) {
+      if (!state.districts) continue;
+      for (const district of state.districts) {
+        if (Number(district.i) === districtId) {
+          return district.g;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Performs a Breadth-First Search (BFS) over selected districts to verify they are connected.
+ */
+function isDistrictSelectionContiguous(selectedIds: number[], geoData: any): boolean {
+  if (selectedIds.length <= 1) return true;
+
+  const geometries = new Map<number, any>();
+  selectedIds.forEach((id) => {
+    const geom = findDistrictGeometry(id, geoData);
+    if (geom) {
+      geometries.set(id, geom);
+    }
+  });
+
+  const visited = new Set<number>();
+  const queue: number[] = [selectedIds[0]];
+  visited.add(selectedIds[0]);
+
+  let head = 0;
+  while (head < queue.length) {
+    const currentId = queue[head++];
+    const currentGeom = geometries.get(currentId);
+    if (!currentGeom) continue;
+
+    selectedIds.forEach((otherId) => {
+      if (!visited.has(otherId)) {
+        const otherGeom = geometries.get(otherId);
+        if (otherGeom && areGeometriesAdjacent(currentGeom, otherGeom)) {
+          visited.add(otherId);
+          queue.push(otherId);
+        }
+      }
+    });
+  }
+
+  return visited.size === selectedIds.length;
+}
+
 function extractCountriesGeoJSON(
   data: GeoMasterData,
 ): GeoJSON.FeatureCollection {
@@ -961,6 +1121,28 @@ const RegionAreaEdit: React.FC = () => {
         return prev.filter((d) => Number(d.id ?? d.featureId) !== dtId);
       }
 
+      // If we are adding a district, check if it's adjacent to currently selected districts (if selection is not empty)
+      if (editModeType === "region" && prev.length > 0 && geoMasterData) {
+        const clickedGeom = findDistrictGeometry(dtId, geoMasterData);
+        if (clickedGeom) {
+          let hasAdjacent = false;
+          for (const selectedDistrict of prev) {
+            const selectedDistrictId = Number(selectedDistrict.id ?? selectedDistrict.featureId);
+            const selectedGeom = findDistrictGeometry(selectedDistrictId, geoMasterData);
+            if (selectedGeom && areGeometriesAdjacent(clickedGeom, selectedGeom)) {
+              hasAdjacent = true;
+              break;
+            }
+          }
+          if (!hasAdjacent) {
+            setTimeout(() => {
+              toast.warning("To keep the Region contiguous, please select a district adjacent to your currently selected districts.");
+            }, 0);
+            return prev;
+          }
+        }
+      }
+
       if (isAssignedToOther) {
         setTimeout(() => {
           const ownerRegion = allRegionsData.features.find((f: any) => {
@@ -1031,6 +1213,28 @@ const RegionAreaEdit: React.FC = () => {
         return prev.filter((d) => Number(d.id ?? d.featureId) !== mId);
       }
 
+      // If we are adding a mandal, check if it's adjacent to currently selected mandals (if selection is not empty)
+      if (editModeType === "area" && prev.length > 0 && geoMasterData) {
+        const clickedGeom = findMandalGeometry(mId, geoMasterData);
+        if (clickedGeom) {
+          let hasAdjacent = false;
+          for (const selectedMandal of prev) {
+            const selectedMandalId = Number(selectedMandal.id ?? selectedMandal.featureId);
+            const selectedGeom = findMandalGeometry(selectedMandalId, geoMasterData);
+            if (selectedGeom && areGeometriesAdjacent(clickedGeom, selectedGeom)) {
+              hasAdjacent = true;
+              break;
+            }
+          }
+          if (!hasAdjacent) {
+            setTimeout(() => {
+              toast.warning("To keep the Area contiguous, please select a mandal adjacent to your currently selected mandals.");
+            }, 0);
+            return prev;
+          }
+        }
+      }
+
       if (isAssignedToOther) {
         setTimeout(() => {
           let areaId = 1;
@@ -1092,6 +1296,17 @@ const RegionAreaEdit: React.FC = () => {
       ];
     });
   };
+
+  const toggleEditDistrictSelectionRef = useRef(toggleEditDistrictSelection);
+  const toggleEditMandalSelectionRef = useRef(toggleEditMandalSelection);
+
+  useEffect(() => {
+    toggleEditDistrictSelectionRef.current = toggleEditDistrictSelection;
+  });
+
+  useEffect(() => {
+    toggleEditMandalSelectionRef.current = toggleEditMandalSelection;
+  });
 
   // ── Pre-populate Form state, active state selection, and pre-selected districts/mandals ──
   const [hasInitialized, setHasInitialized] = useState(false);
@@ -1694,7 +1909,7 @@ const RegionAreaEdit: React.FC = () => {
               c: districtData.code || "",
             };
 
-            toggleEditDistrictSelection(district);
+            toggleEditDistrictSelectionRef.current(district);
           }
         });
       } else {
@@ -2083,7 +2298,7 @@ const RegionAreaEdit: React.FC = () => {
               c: mProps.code || "",
               district_id: mProps.district_id,
             };
-            toggleEditMandalSelection(mandalObj);
+            toggleEditMandalSelectionRef.current(mandalObj);
           }
         });
 
@@ -2985,10 +3200,17 @@ const RegionAreaEdit: React.FC = () => {
     }
 
     if (editModeType === "area") {
+      const mandalIds = selectedDistricts.map((m) =>
+        Number(m.id ?? m.featureId),
+      );
+
+      // Verify that the selection forms a contiguous area
+      if (geoMasterData && !isSelectionContiguous(mandalIds, geoMasterData)) {
+        toast.error("Your selected mandals must form a contiguous (fully connected) area. Please adjust your selection.");
+        return;
+      }
+
       try {
-        const mandalIds = selectedDistricts.map((m) =>
-          Number(m.id ?? m.featureId),
-        );
 
         // Helper: look up the real district_id for a mandal from geoMasterData
         const getDistrictIdForMandal = (mandalId: number): number => {
@@ -3122,10 +3344,17 @@ const RegionAreaEdit: React.FC = () => {
       return;
     }
 
+    const districtIds = selectedDistricts.map((d) =>
+      Number(d.id ?? d.featureId),
+    );
+
+    // Verify that the selection forms a contiguous region
+    if (geoMasterData && !isDistrictSelectionContiguous(districtIds, geoMasterData)) {
+      toast.error("Your selected districts must form a contiguous (fully connected) region. Please adjust your selection.");
+      return;
+    }
+
     try {
-      const districtIds = selectedDistricts.map((d) =>
-        Number(d.id ?? d.featureId),
-      );
 
       // 1. Group and silently update any source regions that lost districts
       const reassignmentsBySourceRegion: Record<
