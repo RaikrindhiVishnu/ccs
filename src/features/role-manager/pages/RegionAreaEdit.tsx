@@ -1789,22 +1789,15 @@ const RegionAreaEdit: React.FC = () => {
             paint: {
               "fill-color": [
                 "case",
+                ["boolean", ["feature-state", "selected"], false],
+                "#9BC2F3",
                 ["boolean", ["get", "isSelected"], false],
-                "#3b82f6", // Vibrant brand blue for selected
+                "#9BC2F3",
                 ["boolean", ["get", "isAssigned"], false],
-                "#94a3b8", // slate-400 for already assigned districts
-                "#3b82f6", // unassigned blue default
+                "#9BC2F3",
+                "#FFFFFF",
               ],
-              "fill-opacity": [
-                "case",
-                ["boolean", ["get", "isSelected"], false],
-                0.35, // highlight selection opacity
-                ["boolean", ["get", "isAssigned"], false],
-                0.12, // light gray overlay for other assigned districts
-                ["boolean", ["feature-state", "hover"], false],
-                0.15,
-                0, // transparent until hover/select
-              ],
+              "fill-opacity": 1.0,
             },
           },
           "states-border-line",
@@ -1819,27 +1812,9 @@ const RegionAreaEdit: React.FC = () => {
               visibility,
             },
             paint: {
-              "line-color": [
-                "case",
-                ["boolean", ["get", "isSelected"], false],
-                "#2563eb", // Royal blue outline for selected
-                ["boolean", ["get", "isAssigned"], false],
-                "#cbd5e1", // slate-300 for other assigned
-                "#3b82f6", // brand blue for unassigned
-              ],
-              "line-width": [
-                "case",
-                ["boolean", ["get", "isSelected"], false],
-                2,
-                1,
-              ],
-              "line-dasharray": [
-                "case",
-                ["boolean", ["get", "isSelected"], false],
-                ["literal", [1, 0]], // Solid line for selected
-                ["literal", [3, 2]], // Dashed outline for other districts
-              ],
-              "line-opacity": 0.85,
+              "line-color": "#CBD5E1",
+              "line-width": 1.0,
+              "line-opacity": 1.0,
             },
           },
           "states-border-line",
@@ -2096,22 +2071,13 @@ const RegionAreaEdit: React.FC = () => {
             ["coalesce", ["get", "region_id"], ["get", "id"]],
             parentRegionId,
           ]);
-          map.current.setPaintProperty("regions-fill", "fill-color", "#F0EEF0");
-          map.current.setPaintProperty("regions-fill", "fill-opacity", 1.0);
+          map.current.setPaintProperty("regions-fill", "fill-color", "#9BC2F3");
+          map.current.setPaintProperty("regions-fill", "fill-opacity", 0.5);
         } else {
           // No region selected yet — show all regions normally
           map.current.setFilter("regions-fill", null);
-          map.current.setPaintProperty("regions-fill", "fill-color", [
-            "coalesce",
-            ["get", "regionColor"],
-            "#10b981",
-          ]);
-          map.current.setPaintProperty("regions-fill", "fill-opacity", [
-            "case",
-            ["boolean", ["feature-state", "hover"], false],
-            0.45,
-            0.25,
-          ]);
+          map.current.setPaintProperty("regions-fill", "fill-color", "#9BC2F3");
+          map.current.setPaintProperty("regions-fill", "fill-opacity", 0.5);
         }
       }
       if (map.current.getLayer("regions-line")) {
@@ -2154,22 +2120,15 @@ const RegionAreaEdit: React.FC = () => {
             paint: {
               "fill-color": [
                 "case",
+                ["boolean", ["feature-state", "selected"], false],
+                "#9BC2F3",
                 ["boolean", ["get", "isSelected"], false],
-                "#3b82f6",
+                "#9BC2F3",
                 ["boolean", ["get", "isAssigned"], false],
-                ["coalesce", ["get", "areaColor"], "#94a3b8"],
-                "#3b82f6",
+                "#9BC2F3",
+                "#FFFFFF",
               ],
-              "fill-opacity": [
-                "case",
-                ["boolean", ["get", "isSelected"], false],
-                0.35,
-                ["boolean", ["get", "isAssigned"], false],
-                0.25,
-                ["boolean", ["feature-state", "hover"], false],
-                0.15,
-                0,
-              ],
+              "fill-opacity": 1.0,
             },
           },
           "states-border-line",
@@ -2181,27 +2140,9 @@ const RegionAreaEdit: React.FC = () => {
             type: "line",
             source: "mandals-source",
             paint: {
-              "line-color": [
-                "case",
-                ["boolean", ["get", "isSelected"], false],
-                "#2563eb",
-                ["boolean", ["get", "isAssigned"], false],
-                "#cbd5e1",
-                "#3b82f6",
-              ],
-              "line-width": [
-                "case",
-                ["boolean", ["get", "isSelected"], false],
-                2,
-                1,
-              ],
-              "line-dasharray": [
-                "case",
-                ["boolean", ["get", "isSelected"], false],
-                ["literal", [1, 0]],
-                ["literal", [3, 2]],
-              ],
-              "line-opacity": 0.85,
+              "line-color": "#CBD5E1",
+              "line-width": 1.0,
+              "line-opacity": 1.0,
             },
           },
           "states-border-line",
@@ -2484,13 +2425,8 @@ const RegionAreaEdit: React.FC = () => {
             type: "fill",
             source: "regions-source",
             paint: {
-              "fill-color": ["coalesce", ["get", "regionColor"], "#10b981"],
-              "fill-opacity": [
-                "case",
-                ["boolean", ["feature-state", "hover"], false],
-                0.45,
-                0.25,
-              ],
+              "fill-color": "#9BC2F3",
+              "fill-opacity": 0.5,
             },
           },
           "states-border-line",
@@ -2501,20 +2437,9 @@ const RegionAreaEdit: React.FC = () => {
             type: "line",
             source: "regions-source",
             paint: {
-              "line-color": [
-                "coalesce",
-                ["get", "regionBorderColor"],
-                "#059669",
-              ],
-              "line-width": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                3, 2,
-                5, 3,
-                7, 4,
-              ],
-              "line-opacity": 0.9,
+              "line-color": "#9BC2F3",
+              "line-width": 1.8,
+              "line-opacity": 1.0,
             },
           },
           "states-border-line",
@@ -3868,8 +3793,8 @@ const RegionAreaEdit: React.FC = () => {
                                   key={district.i}
                                   onClick={() => toggleEditDistrictSelection(district)}
                                   className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-semibold transition-all ${isSelected
-                                    ? "bg-blue-50 text-blue-600 hover:bg-blue-100/80"
-                                    : "hover:bg-slate-50 text-slate-700"
+                                    ? "bg-[#9BC2F3] text-blue-950 hover:bg-[#85b0e5]"
+                                    : "bg-white hover:bg-slate-50 text-slate-700"
                                     }`}
                                 >
                                   <div className="flex items-center gap-2">
@@ -3907,8 +3832,8 @@ const RegionAreaEdit: React.FC = () => {
                                 key={mandal.i}
                                 onClick={() => toggleEditMandalSelection(mandal)}
                                 className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-semibold transition-all ${isSelected
-                                  ? "bg-blue-50 text-blue-600 hover:bg-blue-100/80"
-                                  : "hover:bg-slate-50 text-slate-700"
+                                  ? "bg-[#9BC2F3] text-blue-950 hover:bg-[#85b0e5]"
+                                  : "bg-white hover:bg-slate-50 text-slate-700"
                                   }`}
                               >
                                 <div className="flex items-center gap-2">

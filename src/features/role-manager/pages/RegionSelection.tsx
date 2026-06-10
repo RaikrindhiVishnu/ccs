@@ -1299,20 +1299,13 @@ const RegionSelection: React.FC = () => {
             paint: {
               "fill-color": [
                 "case",
-                ["boolean", ["get", "isAssigned"], false],
-                "#cbd5e1",
-                "#0d9488",
-              ],
-              "fill-opacity": [
-                "case",
-                ["boolean", ["get", "isAssigned"], false],
-                0.12,
                 ["boolean", ["feature-state", "selected"], false],
-                0.55,
-                ["boolean", ["feature-state", "hover"], false],
-                0.3,
-                0.12,
+                "#9BC2F3",
+                ["boolean", ["get", "isAssigned"], false],
+                "#9BC2F3",
+                "#FFFFFF",
               ],
+              "fill-opacity": 1.0,
             },
           },
           "states-border-line",
@@ -1324,14 +1317,9 @@ const RegionSelection: React.FC = () => {
             type: "line",
             source: "districts-source",
             paint: {
-              "line-color": [
-                "case",
-                ["boolean", ["get", "isAssigned"], false],
-                "#cbd5e1",
-                "#0d9488",
-              ],
-              "line-width": 0.25,
-              "line-opacity": 0.08,
+              "line-color": "#CBD5E1",
+              "line-width": 1.0,
+              "line-opacity": 1.0,
             },
           },
           "states-border-line",
@@ -1415,20 +1403,15 @@ const RegionSelection: React.FC = () => {
             generateId: true,
           });
 
-          // Fill Layer for Regions (matching the Teal theme color of Create Area)
+          // Fill Layer for Regions
           map.current?.addLayer(
             {
               id: "regions-fill",
               type: "fill",
               source: "regions-source",
               paint: {
-                "fill-color": "#0d9488",
-                "fill-opacity": [
-                  "case",
-                  ["boolean", ["feature-state", "hover"], false],
-                  0.45,
-                  0.2,
-                ],
+                "fill-color": "#9BC2F3",
+                "fill-opacity": 0.5,
               },
             },
             "states-border-line",
@@ -1441,11 +1424,7 @@ const RegionSelection: React.FC = () => {
               type: "line",
               source: "regions-source",
               paint: {
-                "line-color": [
-                  "coalesce",
-                  ["get", "regionBorderColor"],
-                  "#4f46e5",
-                ],
+                "line-color": "#9BC2F3",
                 "line-width": 1.8,
                 "line-opacity": 1.0,
               },
@@ -1461,7 +1440,7 @@ const RegionSelection: React.FC = () => {
               source: "regions-source",
               filter: ["==", ["coalesce", ["get", "region_id"], ["get", "id"]], -1],
               paint: {
-                "fill-extrusion-color": "#2780C4",
+                "fill-extrusion-color": "#9BC2F3",
                 "fill-extrusion-height": 15000, // 15 km tall block
                 "fill-extrusion-base": 0,
                 "fill-extrusion-opacity": 0.85,
@@ -1804,36 +1783,27 @@ const RegionSelection: React.FC = () => {
             paint: {
               "fill-color": [
                 "case",
-                ["boolean", ["get", "isAssigned"], false],
-                ["coalesce", ["get", "areaColor"], "#94a3b8"],
                 ["boolean", ["feature-state", "selected"], false],
-                "#0284c7",
-                "#38bdf8",
-              ],
-              "fill-opacity": [
-                "case",
+                "#9BC2F3",
                 ["boolean", ["get", "isAssigned"], false],
-                0.4,
-                ["boolean", ["feature-state", "selected"], false],
-                0.55,
-                ["boolean", ["feature-state", "hover"], false],
-                0.45,
-                0.25,
+                "#9BC2F3",
+                "#FFFFFF",
               ],
+              "fill-opacity": 1.0,
             },
           },
           "states-border-line",
         );
 
-        // Teal outline
+        // Neutral outline
         map.current.addLayer(
           {
             id: "mandals-line",
             type: "line",
             source: "mandals-source",
             paint: {
-              "line-color": "#0d9488",
-              "line-width": 1.2,
+              "line-color": "#CBD5E1",
+              "line-width": 1.0,
             },
           },
           "states-border-line",
@@ -1847,7 +1817,7 @@ const RegionSelection: React.FC = () => {
             source: "mandals-source",
             filter: ["==", ["get", "id"], -1],
             paint: {
-              "fill-extrusion-color": ["coalesce", ["get", "areaColor"], "#0d9488"],
+              "fill-extrusion-color": "#9BC2F3",
               "fill-extrusion-height": 5000,
               "fill-extrusion-base": 0,
               "fill-extrusion-opacity": 0.85,
@@ -1925,11 +1895,11 @@ const RegionSelection: React.FC = () => {
                   ? `<div style="
                     display:inline-flex;align-items:center;gap:5px;
                     margin-top:5px;padding:2px 8px;border-radius:999px;
-                    background:${areaColor}22;border:1.5px solid ${areaColor};
-                    font-size:10px;font-weight:700;color:${areaColor};letter-spacing:0.05em;
+                    background:#9BC2F322;border:1.5px solid #9BC2F3;
+                    font-size:10px;font-weight:700;color:#2563eb;letter-spacing:0.05em;
                     white-space:nowrap;
                   ">
-                    <span style="width:7px;height:7px;border-radius:50%;background:${areaColor};display:inline-block;flex-shrink:0;"></span>
+                    <span style="width:7px;height:7px;border-radius:50%;background:#9BC2F3;display:inline-block;flex-shrink:0;"></span>
                     ${areaName}
                   </div>`
                   : "";
@@ -2003,7 +1973,7 @@ const RegionSelection: React.FC = () => {
               generateId: true,
             });
 
-            // Fill Layer for Country Regions (Beautiful Violet transparent overlay, matching theme color)
+            // Fill Layer for Country Regions
             map.current?.addLayer(
               {
                 id: "country-regions-fill",
@@ -2013,13 +1983,8 @@ const RegionSelection: React.FC = () => {
                   visibility: "none",
                 },
                 paint: {
-                  "fill-color": "#0d9488",
-                  "fill-opacity": [
-                    "case",
-                    ["boolean", ["feature-state", "hover"], false],
-                    0.45,
-                    0.2,
-                  ],
+                  "fill-color": "#9BC2F3",
+                  "fill-opacity": 0.5,
                 },
               },
               "states-border-line",
@@ -2035,11 +2000,7 @@ const RegionSelection: React.FC = () => {
                   visibility: "none",
                 },
                 paint: {
-                  "line-color": [
-                    "coalesce",
-                    ["get", "regionBorderColor"],
-                    "#4f46e5",
-                  ],
+                  "line-color": "#9BC2F3",
                   "line-width": 1.8,
                   "line-opacity": 1.0,
                 },
@@ -2204,24 +2165,24 @@ const RegionSelection: React.FC = () => {
 
         if (selectedRegionId !== undefined && selectedRegionId !== null) {
           const regIdNum = Number(selectedRegionId);
-          // Region is selected: Style it as the base container (solid grey background)
+          // Region is selected
           if (fillLayer) {
             map.current.setPaintProperty(
               "country-regions-fill",
               "fill-color",
-              "#F0EEF0"
+              "#9BC2F3"
             );
             map.current.setPaintProperty(
               "country-regions-fill",
               "fill-opacity",
-              1.0
+              0.5
             );
           }
           if (lineLayer) {
             map.current.setPaintProperty(
               "country-regions-line",
               "line-color",
-              "#475569" // Match the state line color for boundary look
+              "#9BC2F3"
             );
             map.current.setPaintProperty(
               "country-regions-line",
@@ -2248,33 +2209,24 @@ const RegionSelection: React.FC = () => {
             map.current.setFilter("country-regions-line", filter);
           }
         } else {
-          // No region is selected: Restore default styling
+          // No region is selected
           if (fillLayer) {
             map.current.setPaintProperty(
               "country-regions-fill",
               "fill-color",
-              "#0d9488"
+              "#9BC2F3"
             );
             map.current.setPaintProperty(
               "country-regions-fill",
               "fill-opacity",
-              [
-                "case",
-                ["boolean", ["feature-state", "hover"], false],
-                0.45,
-                0.2,
-              ],
+              0.5
             );
           }
           if (lineLayer) {
             map.current.setPaintProperty(
               "country-regions-line",
               "line-color",
-              [
-                "coalesce",
-                ["get", "regionBorderColor"],
-                "#4f46e5",
-              ]
+              "#9BC2F3"
             );
             map.current.setPaintProperty(
               "country-regions-line",
@@ -3011,10 +2963,10 @@ const RegionSelection: React.FC = () => {
                                   key={district.i}
                                   onClick={() => toggleDistrictSelection(district)}
                                   className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${isAssigned
-                                    ? "bg-slate-50 text-slate-400 cursor-not-allowed"
+                                    ? "bg-[#9BC2F3] text-slate-700 cursor-not-allowed opacity-60"
                                     : isSelected
-                                      ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
-                                      : "hover:bg-slate-50 text-slate-700"
+                                      ? "bg-[#9BC2F3] text-blue-950 hover:bg-[#85b0e5]"
+                                      : "bg-white hover:bg-slate-50 text-slate-700"
                                     }`}
                                 >
                                   <div className="flex items-center gap-2">
@@ -3251,10 +3203,10 @@ const RegionSelection: React.FC = () => {
                                   key={mandal.i}
                                   onClick={() => toggleMandalSelection(mandal)}
                                   className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${isAssigned
-                                    ? "bg-slate-50 text-slate-400 cursor-not-allowed"
+                                    ? "bg-[#9BC2F3] text-slate-700 cursor-not-allowed opacity-60"
                                     : isSelected
-                                      ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
-                                      : "hover:bg-slate-50 text-slate-700"
+                                      ? "bg-[#9BC2F3] text-blue-950 hover:bg-[#85b0e5]"
+                                      : "bg-white hover:bg-slate-50 text-slate-700"
                                     }`}
                                 >
                                   <div className="flex items-center gap-2">
