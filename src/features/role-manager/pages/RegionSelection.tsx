@@ -1038,7 +1038,7 @@ const RegionSelection: React.FC = () => {
       popup.current = new maplibregl.Popup({
         closeButton: false,
         closeOnClick: false,
-        className: "custom-district-popup",
+        className: "custom-district-popup mapcn-tooltip",
       });
 
       map.current.addControl(new maplibregl.NavigationControl(), "top-right");
@@ -1418,7 +1418,10 @@ const RegionSelection: React.FC = () => {
               popup.current
                 .setLngLat(e.lngLat)
                 .setHTML(
-                  `<div style="font-weight: 700; color: #1e293b;">${dName}</div>`,
+                  `<div class="mapcn-tooltip-inner">
+                    <span class="mapcn-tooltip-label">District</span>
+                    <div class="mapcn-tooltip-title">${dName}</div>
+                  </div>`,
                 )
                 .addTo(map.current);
             }
@@ -1602,9 +1605,10 @@ const RegionSelection: React.FC = () => {
                 districtLabel = props.district_ids.join(", ");
               }
               const html = `
-                <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.3;">
-                  <div style="font-weight:700;font-size:13px;color:#0f172a;">${regionName}</div>
-                  ${districtLabel ? `<div style="font-size:11px;color:#475569;margin-top:4px;">${districtLabel}</div>` : ""}
+                <div class="mapcn-tooltip-inner">
+                  <span class="mapcn-tooltip-label">Region</span>
+                  <div class="mapcn-tooltip-title">${regionName}</div>
+                  ${districtLabel ? `<div style="font-size:10px;color:#cbd5e1;margin-top:2px;line-height:1.2;">${districtLabel}</div>` : ""}
                 </div>
               `;
               if (map.current && popup.current) {
@@ -2149,26 +2153,16 @@ const RegionSelection: React.FC = () => {
             if (map.current && popup.current) {
               const areaTag =
                 isAssigned && areaName
-                  ? `<div style="
-                    display:inline-flex;align-items:center;gap:5px;
-                    margin-top:5px;padding:2px 8px;border-radius:999px;
-                    background:#9BC2F322;border:1.5px solid #9BC2F3;
-                    font-size:10px;font-weight:700;color:#2563eb;letter-spacing:0.05em;
-                    white-space:nowrap;
-                  ">
-                    <span style="width:7px;height:7px;border-radius:50%;background:#9BC2F3;display:inline-block;flex-shrink:0;"></span>
-                    ${areaName}
-                  </div>`
+                  ? `<div class="mapcn-tooltip-badge">
+                      <span class="mapcn-tooltip-badge-dot"></span>
+                      ${areaName}
+                    </div>`
                   : "";
 
               const html = `
-                <div style="
-                  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-                  background:white;border-radius:10px;padding:9px 12px;
-                  box-shadow:0 4px 20px rgba(0,0,0,0.15);min-width:120px;
-                  border:1px solid #e2e8f0;
-                ">
-                  <div style="font-weight:700;font-size:13px;color:#0f172a;line-height:1.3;">${mName}</div>
+                <div class="mapcn-tooltip-inner">
+                  <span class="mapcn-tooltip-label">Mandal</span>
+                  <div class="mapcn-tooltip-title">${mName}</div>
                   ${areaTag}
                 </div>`;
 
@@ -2365,9 +2359,10 @@ const RegionSelection: React.FC = () => {
                   districtLabel = props.district_ids.join(", ");
                 }
                 const html = `
-                  <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.3;">
-                    <div style="font-weight:700;font-size:13px;color:#0f172a;">${regionName}</div>
-                    ${districtLabel ? `<div style="font-size:11px;color:#475569;margin-top:4px;">${districtLabel}</div>` : ""}
+                  <div class="mapcn-tooltip-inner">
+                    <span class="mapcn-tooltip-label">Region</span>
+                    <div class="mapcn-tooltip-title">${regionName}</div>
+                    ${districtLabel ? `<div style="font-size:10px;color:#cbd5e1;margin-top:2px;line-height:1.2;">${districtLabel}</div>` : ""}
                   </div>
                 `;
                 if (map.current && popup.current) {
@@ -2807,6 +2802,110 @@ const RegionSelection: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-50/50 relative">
+      <style>{`
+        /* MapCN-inspired modern tooltip style */
+        .mapcn-tooltip {
+          pointer-events: none;
+          z-index: 9999;
+        }
+
+        @keyframes mapcn-content-fade-in {
+          from {
+            opacity: 0;
+            transform: scale(0.96) translateY(4px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
+        .mapcn-tooltip .maplibregl-popup-content {
+          background: rgba(9, 20, 38, 0.95) !important;
+          backdrop-filter: blur(8px) !important;
+          -webkit-backdrop-filter: blur(8px) !important;
+          border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+          border-radius: 12px !important;
+          padding: 10px 14px !important;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3) !important;
+          color: #ffffff !important;
+          animation: mapcn-content-fade-in 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          transform-origin: center bottom;
+        }
+
+        .mapcn-tooltip-inner {
+          font-family: 'Plus Jakarta Sans', sans-serif !important;
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          line-height: 1.3;
+        }
+
+        .mapcn-tooltip-label {
+          font-size: 9px !important;
+          font-weight: 700 !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.06em !important;
+          color: #94a3b8 !important;
+        }
+
+        .mapcn-tooltip-title {
+          font-size: 13px !important;
+          font-weight: 700 !important;
+          color: #ffffff !important;
+        }
+
+        .mapcn-tooltip-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          margin-top: 6px;
+          padding: 3px 8px;
+          border-radius: 9999px;
+          background: rgba(39, 128, 196, 0.2) !important;
+          border: 1px solid rgba(39, 128, 196, 0.4) !important;
+          font-size: 9px !important;
+          font-weight: 700 !important;
+          color: #38bdf8 !important;
+          white-space: nowrap;
+          width: fit-content;
+        }
+
+        .mapcn-tooltip-badge-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: #38bdf8 !important;
+          display: inline-block;
+          flex-shrink: 0;
+        }
+
+        /* Styled tip/arrow for all anchor positions */
+        .mapcn-tooltip.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+          border-bottom-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+          border-top-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+          border-right-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+          border-left-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-top-left .maplibregl-popup-tip {
+          border-bottom-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+          border-bottom-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip {
+          border-top-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+          border-top-color: rgba(9, 20, 38, 0.95) !important;
+        }
+      `}</style>
       {/* Dynamic Header */}
       <div className="absolute top-8 left-8 right-8 z-20 flex items-center justify-between pointer-events-none">
         <div className="flex items-center gap-4 pointer-events-auto">

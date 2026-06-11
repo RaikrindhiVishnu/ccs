@@ -2395,10 +2395,10 @@ const RegionAreaEdit: React.FC = () => {
               map.current
             ) {
               const html = `
-                <div class="px-3 py-2 flex flex-col gap-0.5 bg-slate-900/90 text-white rounded-lg shadow-md max-w-xs font-sans border-0">
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Area Details</span>
-                  <span class="text-xs font-semibold">${mProps.areaName}</span>
-                  <span class="text-[9px] text-slate-300 font-medium">Mandal: ${mProps.name || mProps.d}</span>
+                <div class="mapcn-tooltip-inner">
+                  <span class="mapcn-tooltip-label">Area Details</span>
+                  <div class="mapcn-tooltip-title">${mProps.areaName}</div>
+                  <div style="font-size:10px;color:#cbd5e1;margin-top:2px;">Mandal: ${mProps.name || mProps.d}</div>
                 </div>
               `;
               popup.current
@@ -2462,7 +2462,7 @@ const RegionAreaEdit: React.FC = () => {
       popup.current = new maplibregl.Popup({
         closeButton: false,
         closeOnClick: false,
-        className: "region-hover-popup",
+        className: "region-hover-popup mapcn-tooltip",
         maxWidth: "none",
         offset: 12,
       });
@@ -2603,59 +2603,38 @@ const RegionAreaEdit: React.FC = () => {
               props.region_code || props.regionCode || props.code || "—";
 
             const html = `
-              <div style="
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                background: #ffffff;
-                border-radius: 16px;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
-                padding: 20px 22px 18px;
-                min-width: 220px;
-                border: 1px solid rgba(0,0,0,0.06);
-              ">
+              <div class="mapcn-tooltip-inner" style="min-width: 220px; padding: 4px 6px;">
                 <div style="
-                  font-size: 20px;
+                  font-size: 16px;
                   font-weight: 800;
-                  color: #0f172a;
+                  color: #ffffff;
                   letter-spacing: 0.02em;
                   text-transform: uppercase;
-                  margin-bottom: 16px;
-                  line-height: 1.15;
+                  margin-bottom: 8px;
+                  line-height: 1.2;
                 ">${rName}</div>
-                <div style="height: 1px; background: #f1f5f9; margin-bottom: 14px;"></div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div style="height: 1px; background: rgba(255, 255, 255, 0.1); margin-bottom: 10px;"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                   <div>
-                    <div style="
-                      font-size: 10px;
-                      font-weight: 700;
-                      color: #94a3b8;
-                      letter-spacing: 0.08em;
-                      text-transform: uppercase;
-                      margin-bottom: 5px;
-                    ">Region</div>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                      <span style="color: #64748b; font-size: 12px;">📍</span>
+                    <div class="mapcn-tooltip-label">Region</div>
+                    <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                      <span style="font-size: 11px;">📍</span>
                       <span style="
-                        font-size: 13px;
+                        font-size: 12px;
                         font-weight: 600;
-                        color: #1e293b;
+                        color: #e2e8f0;
                       ">${rName}</span>
                     </div>
                   </div>
                   <div>
+                    <div class="mapcn-tooltip-label">Region Code</div>
                     <div style="
-                      font-size: 10px;
+                      font-size: 12px;
                       font-weight: 700;
-                      color: #94a3b8;
-                      letter-spacing: 0.08em;
-                      text-transform: uppercase;
-                      margin-bottom: 5px;
-                    ">Region Code</div>
-                    <div style="
-                      font-size: 13px;
-                      font-weight: 700;
-                      color: #1e293b;
+                      color: #38bdf8;
                       font-family: monospace;
                       letter-spacing: 0.03em;
+                      margin-top: 2px;
                     ">${rCode}</div>
                   </div>
                 </div>
@@ -3607,6 +3586,110 @@ const RegionAreaEdit: React.FC = () => {
 
   return (
     <div className="relative w-full h-screen bg-white overflow-hidden flex flex-col md:flex-row font-sans">
+      <style>{`
+        /* MapCN-inspired modern tooltip style */
+        .mapcn-tooltip {
+          pointer-events: none;
+          z-index: 9999;
+        }
+
+        @keyframes mapcn-content-fade-in {
+          from {
+            opacity: 0;
+            transform: scale(0.96) translateY(4px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
+        .mapcn-tooltip .maplibregl-popup-content {
+          background: rgba(9, 20, 38, 0.95) !important;
+          backdrop-filter: blur(8px) !important;
+          -webkit-backdrop-filter: blur(8px) !important;
+          border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+          border-radius: 12px !important;
+          padding: 10px 14px !important;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3) !important;
+          color: #ffffff !important;
+          animation: mapcn-content-fade-in 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          transform-origin: center bottom;
+        }
+
+        .mapcn-tooltip-inner {
+          font-family: 'Plus Jakarta Sans', sans-serif !important;
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          line-height: 1.3;
+        }
+
+        .mapcn-tooltip-label {
+          font-size: 9px !important;
+          font-weight: 700 !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.06em !important;
+          color: #94a3b8 !important;
+        }
+
+        .mapcn-tooltip-title {
+          font-size: 13px !important;
+          font-weight: 700 !important;
+          color: #ffffff !important;
+        }
+
+        .mapcn-tooltip-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          margin-top: 6px;
+          padding: 3px 8px;
+          border-radius: 9999px;
+          background: rgba(39, 128, 196, 0.2) !important;
+          border: 1px solid rgba(39, 128, 196, 0.4) !important;
+          font-size: 9px !important;
+          font-weight: 700 !important;
+          color: #38bdf8 !important;
+          white-space: nowrap;
+          width: fit-content;
+        }
+
+        .mapcn-tooltip-badge-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: #38bdf8 !important;
+          display: inline-block;
+          flex-shrink: 0;
+        }
+
+        /* Styled tip/arrow for all anchor positions */
+        .mapcn-tooltip.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+          border-bottom-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+          border-top-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+          border-right-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+          border-left-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-top-left .maplibregl-popup-tip {
+          border-bottom-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+          border-bottom-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip {
+          border-top-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+          border-top-color: rgba(9, 20, 38, 0.95) !important;
+        }
+      `}</style>
       {/* MAP VIEWPORT LAYER */}
       <div className="w-full md:absolute md:inset-0 h-full z-0">
         <div ref={mapContainer} className="w-full h-full" />
