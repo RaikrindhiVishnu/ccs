@@ -94,7 +94,13 @@ import {
     SuperAdminTopPerformers,
     SuperAdminFarmlandDetails,
     SuperAdminAgentProfile,
-    SuperAdminProfile
+    SuperAdminProfile,
+    SuperAdminPoolBuying,
+    SuperAdminPoolBuyingAll,
+    SuperAdminPoolCreate,
+    SuperAdminPoolCreated,
+    SuperAdminPoolDetails,
+    SuperAdminPoolInvestorDetails
 } from './routes.config';
 
 
@@ -270,6 +276,24 @@ export const authRoutes: RouteObject[] = [
             }, {
                 path: '/super-admin/profile',
                 element: <SuperAdminProfile />
+            }, {
+                path: '/super-admin/pool-buying',
+                element: <SuperAdminPoolBuying />
+            }, {
+                path: '/super-admin/pool-buying/create',
+                element: <SuperAdminPoolCreate />
+            }, {
+                path: '/super-admin/pool-buying/created',
+                element: <SuperAdminPoolCreated />
+            }, {
+                path: '/super-admin/pool-buying/all',
+                element: <SuperAdminPoolBuyingAll />
+            }, {
+                path: '/super-admin/pool-buying/:id',
+                element: <SuperAdminPoolDetails />
+            }, {
+                path: '/super-admin/pool-buying/:id/investor/:investorId',
+                element: <SuperAdminPoolInvestorDetails />
             },
         ]
 

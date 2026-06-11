@@ -11,6 +11,12 @@ export interface TotalSales {
   changePercent: number;
   sparklineData: number[];
 }
+export interface NavItem {
+  label: string;
+  path: string;
+  icon?: string;      // ← make optional
+  iconImg?: string;
+}
 
 export interface FarmlandStats {
   totalFarmlands: number;
@@ -92,6 +98,7 @@ export interface SubscriberGrowthData {
 import { SuperAdminFarmlandData } from "../components/SuperAdminFarmlandCard";
 import { FarmlandListCardData } from "../components/SuperAdminFarmlandsListCard";
 import { SuperAdminUserCardData } from "../components/SuperAdminUserListCard";
+import { PoolBuyingCardData } from "../components/PoolBuyingCard";
 
 export interface AssignedFarmlandDetailsData {
   id: string;
@@ -204,6 +211,33 @@ export interface UserProfileData {
   recentActivity: UserProfileActivity[];
 }
 
+export interface PoolInvestor {
+  id: string;
+  name: string;
+  avatar: string;
+  investedAmount: string;
+  landAllocated: string;
+  ownershipPercent: string;
+  location: string;
+  investedOn: string;
+  plotId: string;
+  poolName: string;
+  status: "Active" | "Closed" | "Pending";
+  tenure: string;
+}
+
+export interface PoolDetailData {
+  id: string;
+  farmlandId: string;
+  totalLandArea: string;
+  raisedAmount: string;
+  targetAmount: string;
+  totalInvestment: string;
+  totalInvestors: number;
+  mapImage: string;
+  investors: PoolInvestor[];
+}
+
 export interface DashboardData {
   visitors: VisitorStats;
   totalSales: TotalSales;
@@ -221,4 +255,6 @@ export interface DashboardData {
   userProfile: UserProfileData;
   farmlandSpecificDetails: FarmlandSpecificDetails;
   agentProfile: AgentProfileData;
+  poolBuyingPools: PoolBuyingCardData[];
+  poolDetails: Record<string, PoolDetailData>;
 }
