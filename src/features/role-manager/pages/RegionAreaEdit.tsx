@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { decompressGeoJSON } from "../utils/utils";
+import { decompressGeoJSON, buildAreasBoundaryGeoJSON, buildRegionsBoundaryGeoJSON } from "../utils/utils";
 import { getRegionColors, getAreaColors } from "../utils/colorPalette";
 import { ChevronLeft, X, Loader2, Search, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -1729,14 +1729,19 @@ const RegionAreaEdit: React.FC = () => {
     activeFilter,
   ]);
 
-  // ── Update region overlays whenever stateRegionsData changes ─────────────
+  // ── Update region overlays whenever stateRegionsData or selectedDistricts changes ─────────────
   useEffect(() => {
     if (map.current?.getSource("regions-source")) {
       (
         map.current.getSource("regions-source") as maplibregl.GeoJSONSource
       ).setData(stateRegionsData);
     }
-  }, [stateRegionsData]);
+    if (map.current?.getSource("regions-boundary-source")) {
+      (
+        map.current.getSource("regions-boundary-source") as maplibregl.GeoJSONSource
+      ).setData(buildRegionsBoundaryGeoJSON(stateRegionsData.features, selectedDistricts, geoMasterData, editRegionId));
+    }
+  }, [stateRegionsData, selectedDistricts, geoMasterData, editRegionId]);
 
   // ── Construct filtered district features for rendering in the active state ──
   const districtsGeoJSON = useMemo(() => {
@@ -1810,7 +1815,7 @@ const RegionAreaEdit: React.FC = () => {
               "fill-opacity": 1.0,
             },
           },
-          "states-border-line",
+          map.current.getLayer("regions-fill") ? "regions-fill" : "states-border-line",
         );
 
         map.current.addLayer(
@@ -1827,7 +1832,7 @@ const RegionAreaEdit: React.FC = () => {
               "line-opacity": 1.0,
             },
           },
-          "states-border-line",
+          map.current.getLayer("regions-line") ? "regions-line" : "states-border-line",
         );
 
         // Add clean text labels directly inside district polygons!
@@ -1935,8 +1940,12 @@ const RegionAreaEdit: React.FC = () => {
         map.current.setLayoutProperty("mandals-line", "visibility", "none");
         map.current.setLayoutProperty("mandals-labels", "visibility", "none");
       }
+      if (map.current.getLayer("areas-boundary-line")) {
+        map.current.setLayoutProperty("areas-boundary-line", "visibility", "none");
+      }
 
       if (map.current.getLayer("regions-fill")) {
+        map.current.setLayoutProperty("regions-fill", "visibility", "visible");
         if (selectedRegion) {
           const regionId = getRegionId(selectedRegion);
           map.current.setFilter("regions-fill", [
@@ -1949,6 +1958,7 @@ const RegionAreaEdit: React.FC = () => {
         }
       }
       if (map.current.getLayer("regions-line")) {
+        map.current.setLayoutProperty("regions-line", "visibility", "visible");
         if (selectedRegion) {
           const regionId = getRegionId(selectedRegion);
           map.current.setFilter("regions-line", [
@@ -2078,6 +2088,7 @@ const RegionAreaEdit: React.FC = () => {
       }
 
       if (map.current.getLayer("regions-fill")) {
+        map.current.setLayoutProperty("regions-fill", "visibility", "visible");
         if (parentRegionId) {
           // A region is selected — show only that region as grey background
           map.current.setFilter("regions-fill", [
@@ -2095,6 +2106,7 @@ const RegionAreaEdit: React.FC = () => {
         }
       }
       if (map.current.getLayer("regions-line")) {
+        map.current.setLayoutProperty("regions-line", "visibility", "visible");
         if (parentRegionId) {
           // A region is selected — highlight only that region's border
           map.current.setFilter("regions-line", [
@@ -2108,13 +2120,28 @@ const RegionAreaEdit: React.FC = () => {
         }
       }
 
+      const areasBoundaryGeoJSON = buildAreasBoundaryGeoJSON(
+        mandalsGeoJSON,
+        areasList,
+        selectedDistricts,
+      );
+
       const existingSource = map.current.getSource(
         "mandals-source",
       ) as maplibregl.GeoJSONSource;
       if (existingSource) {
         existingSource.setData(mandalsGeoJSON);
+        const areasBoundarySource = map.current.getSource("areas-boundary-source") as
+          | maplibregl.GeoJSONSource
+          | undefined;
+        if (areasBoundarySource) {
+          areasBoundarySource.setData(areasBoundaryGeoJSON);
+        }
         map.current.setLayoutProperty("mandals-fill", "visibility", "visible");
         map.current.setLayoutProperty("mandals-line", "visibility", "visible");
+        if (map.current.getLayer("areas-boundary-line")) {
+          map.current.setLayoutProperty("areas-boundary-line", "visibility", "visible");
+        }
         map.current.setLayoutProperty(
           "mandals-labels",
           "visibility",
@@ -2124,6 +2151,11 @@ const RegionAreaEdit: React.FC = () => {
         map.current.addSource("mandals-source", {
           type: "geojson",
           data: mandalsGeoJSON,
+        });
+
+        map.current.addSource("areas-boundary-source", {
+          type: "geojson",
+          data: areasBoundaryGeoJSON,
         });
 
         map.current.addLayer(
@@ -2156,6 +2188,25 @@ const RegionAreaEdit: React.FC = () => {
             paint: {
               "line-color": "#CBD5E1",
               "line-width": 1.0,
+              "line-opacity": 1.0,
+            },
+          },
+          "states-border-line",
+        );
+
+        // Thick black outer boundary for Areas
+        map.current.addLayer(
+          {
+            id: "areas-boundary-line",
+            type: "line",
+            source: "areas-boundary-source",
+            layout: {
+              "line-join": "round",
+              "line-cap": "round",
+            },
+            paint: {
+              "line-color": "#000000",
+              "line-width": 2.5,
               "line-opacity": 1.0,
             },
           },
@@ -2433,6 +2484,11 @@ const RegionAreaEdit: React.FC = () => {
           data: { type: "FeatureCollection", features: [] },
           generateId: true,
         });
+        map.current?.addSource("regions-boundary-source", {
+          type: "geojson",
+          data: { type: "FeatureCollection", features: [] },
+          generateId: true,
+        });
         map.current?.addLayer(
           {
             id: "regions-fill",
@@ -2443,16 +2499,20 @@ const RegionAreaEdit: React.FC = () => {
               "fill-opacity": 0.5,
             },
           },
-          "states-border-line",
+          map.current.getLayer("districts-line") ? "districts-line" : "states-border-line",
         );
         map.current?.addLayer(
           {
             id: "regions-line",
             type: "line",
-            source: "regions-source",
+            source: "regions-boundary-source",
+            layout: {
+              "line-join": "round",
+              "line-cap": "round",
+            },
             paint: {
-              "line-color": "#9BC2F3",
-              "line-width": 1.8,
+              "line-color": "#000000",
+              "line-width": 2.5,
               "line-opacity": 1.0,
             },
           },
