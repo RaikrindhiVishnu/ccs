@@ -18,10 +18,10 @@ export const UserDirectory = lazy(() => import ("../../features/role-manager/pag
 export const DesignSystem = lazy(() => import ("../../features/design-system/pages/DesignSystem"),);
 export const Login = lazy(() => import ("../../pages/Login"));
 export const CcsLogin = lazy(() => import ("../../features/ccs/pages/CCSLogin"));
-export const UpdateDefaultPassword = lazy(() => import ("../../pages/UpdateDefaultPassword"));
-export const ChangePassword = lazy(() => import ("../../pages/ChangePassword"));
-export const ForgotPassword = lazy(() => import ("../../pages/ForgotPassword"));
-export const PasswordSent = lazy(() => import ("../../pages/PasswordSent"));
+export const UpdateDefaultPassword = lazy(() => import ("../../features/ccs/pages/UpdateDefaultPassword"));
+export const ChangePassword = lazy(() => import ("../../features/ccs/pages/ChangePassword"));
+export const ForgotPassword = lazy(() => import ("../../features/ccs/pages/ForgotPassword"));
+export const PasswordSent = lazy(() => import ("../../features/ccs/pages/PasswordSent"));
 export const Home = lazy(() => import ("../../pages/Home"));
 export const AgentCreate = lazy(() => import ("../../features/role-manager/pages/AgentCreate"),);
 export const AgentEdit = lazy(() => import ("../../features/role-manager/pages/AgentEdit"),);

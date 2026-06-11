@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from "react-redux";
 import { Eye, EyeOff, Lock, User, ShieldCheck } from 'lucide-react';
+import { setCredentials } from "@/features/auth/store/authSlice";
+import { UserRole, ROLE_CODES } from "@/features/auth/types";
 import FrameBg from '@/assets/ccs login.jpg';
 import GlcLogo from '@/assets/glc-logo.svg';
 
@@ -8,7 +11,38 @@ export default function CCSLogin() {
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    const mockUser = { login_id: "ccs@glc.com", password: "ccs@123456", role_id: UserRole.CCS, first_name: "CCS", last_name: "Officer", id: 103 };
+
+    if (loginId === mockUser.login_id && password === mockUser.password) {
+      const roleCode = ROLE_CODES[mockUser.role_id];
+      dispatch(
+          setCredentials({
+            user: {
+              id: mockUser.id,
+              login_id: mockUser.login_id,
+              first_name: mockUser.first_name,
+              last_name: mockUser.last_name,
+              role_id: mockUser.role_id,
+              role: roleCode,
+              is_first_login: 0,
+            },
+            accessToken: "mock-token-" + roleCode.toLowerCase(),
+            refreshToken: "mock-refresh-" + roleCode.toLowerCase(),
+          })
+      );
+      navigate('/ccs/dashboard');
+    } else {
+      setError('Invalid login ID or password.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] flex items-center justify-center">
@@ -44,9 +78,12 @@ export default function CCSLogin() {
                 <p className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] lg:text-[16px] leading-[1.5] lg:leading-[26px] text-[#3D4949] m-0">
                   Secure access for authorized CCS. Please authenticate to continue.
                 </p>
+                {error && (
+                  <p className="text-red-500 text-sm mt-2 font-['Plus_Jakarta_Sans']">{error}</p>
+                )}
               </div>
 
-              <form className="flex flex-col gap-6 w-full" onSubmit={(e) => e.preventDefault()}>
+              <form className="flex flex-col gap-6 w-full" onSubmit={handleLogin}>
                 <div className="flex flex-col gap-2 w-full">
                   <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[20px] text-[#3D4949]">
                     Login ID
