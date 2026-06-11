@@ -141,6 +141,5 @@ export const SuperAdminPoolCreate = lazy(() => import ("../../features/super-adm
 export const SuperAdminPoolBuyingAll = lazy(() => import("../../features/super-admin/pages/SuperAdminPoolBuyingAll"),);
 export const SuperAdminPoolDetails = lazy(() => import ("../../features/super-admin/pages/SuperAdminPoolDetails"),);
 export const SuperAdminPoolInvestorDetails = lazy(() => import ("../../features/super-admin/pages/SuperAdminPoolInvestorDetails"),);
-export const SuperAdminPoolPreview = lazy(() => import("../../features/super-admin/pages/SuperAdminPoolPreview"));
 export const SuperAdminPoolPublished = lazy(() => import("../../features/super-admin/pages/SuperAdminPoolPublished"));
 export const SuperAdminPoolCreated = lazy(() => import("../../features/super-admin/pages/SuperAdminPoolCreated"));
