@@ -418,11 +418,17 @@ const buildRegionsGeoJSON = (
             ? f
             : buildRegionFeatureFromDistricts(f, masterData);
         if (synthesized) {
-          const regionId =
-            synthesized.properties?.region_id || synthesized.id || 1;
+          const regionId = Number(
+            synthesized.properties?.region_id ??
+              synthesized.properties?.regionId ??
+              synthesized.properties?.id ??
+              synthesized.id ??
+              1,
+          );
           const colors = getRegionColors(regionId);
           synthesized.properties = {
             ...synthesized.properties,
+            region_id: regionId,
             regionColor: colors.fill,
             regionBorderColor: colors.border,
           };
@@ -1306,6 +1312,9 @@ const RegionSelection: React.FC = () => {
             id: "districts-fill",
             type: "fill",
             source: "districts-source",
+            layout: {
+              visibility: mode === "area" && selectedRegion ? "none" : "visible",
+            },
             paint: {
               "fill-color": [
                 "case",
@@ -1326,6 +1335,9 @@ const RegionSelection: React.FC = () => {
             id: "districts-line",
             type: "line",
             source: "districts-source",
+            layout: {
+              visibility: mode === "area" && selectedRegion ? "none" : "visible",
+            },
             paint: {
               "line-color": "#CBD5E1",
               "line-width": 1.0,
@@ -1419,6 +1431,9 @@ const RegionSelection: React.FC = () => {
               id: "regions-fill",
               type: "fill",
               source: "regions-source",
+              layout: {
+                visibility: mode === "region" ? "visible" : "none",
+              },
               paint: {
                 "fill-color": "#9BC2F3",
                 "fill-opacity": 0.5,
@@ -1433,6 +1448,9 @@ const RegionSelection: React.FC = () => {
               id: "regions-line",
               type: "line",
               source: "regions-source",
+              layout: {
+                visibility: mode === "region" ? "visible" : "none",
+              },
               paint: {
                 "line-color": "#9BC2F3",
                 "line-width": 1.8,
@@ -1448,7 +1466,7 @@ const RegionSelection: React.FC = () => {
               id: "selected-region-3d",
               type: "fill-extrusion",
               source: "regions-source",
-              filter: ["==", ["coalesce", ["get", "region_id"], ["get", "id"]], -1],
+              filter: ["==", ["get", "region_id"], -1],
               paint: {
                 "fill-extrusion-color": "#9BC2F3",
                 "fill-extrusion-height": 35000, // 15 km tall block
@@ -1598,7 +1616,7 @@ const RegionSelection: React.FC = () => {
         if (map.current.getLayer("selected-region-3d")) {
           map.current.setFilter("selected-region-3d", [
             "==",
-            ["coalesce", ["get", "region_id"], ["get", "id"]],
+            ["get", "region_id"],
             regIdNum,
           ]);
         }
@@ -1630,7 +1648,7 @@ const RegionSelection: React.FC = () => {
         if (map.current.getLayer("selected-region-3d")) {
           map.current.setFilter("selected-region-3d", [
             "==",
-            ["coalesce", ["get", "region_id"], ["get", "id"]],
+            ["get", "region_id"],
             -1,
           ]);
         }
@@ -1656,7 +1674,7 @@ const RegionSelection: React.FC = () => {
     }
   }, [selectedRegion, mapLoaded, mode]);
 
-  // Effect to manage district layers visibility based on mode and region selection
+  // Effect to manage district layers visibility based on mode, state selection, and region selection
   useEffect(() => {
     if (!map.current || mapLoaded === 0) return;
 
@@ -1665,18 +1683,15 @@ const RegionSelection: React.FC = () => {
       const lineLayer = map.current.getLayer("districts-line");
 
       if (fillLayer && lineLayer) {
-        if (mode === "area") {
-          map.current.setLayoutProperty("districts-fill", "visibility", "none");
-          map.current.setLayoutProperty("districts-line", "visibility", "none");
-        } else {
-          map.current.setLayoutProperty("districts-fill", "visibility", "visible");
-          map.current.setLayoutProperty("districts-line", "visibility", "visible");
-        }
+        const visibility =
+          mode === "area" && selectedRegion ? "none" : "visible";
+        map.current.setLayoutProperty("districts-fill", "visibility", visibility);
+        map.current.setLayoutProperty("districts-line", "visibility", visibility);
       }
     } catch (err) {
       console.error("Error updating district layers visibility:", err);
     }
-  }, [mode, mapLoaded]);
+  }, [mode, mapLoaded, selectedRegion]);
 
   // Effect to manage 3D visual elevation and dimming of areas in Area Mode
   useEffect(() => {
@@ -1910,7 +1925,6 @@ const RegionSelection: React.FC = () => {
             const mName = props.name || props.d || "";
             const isAssigned: boolean = !!props.isAssigned;
             const areaName: string = props.areaName || "";
-            const areaColor: string = props.areaColor || "#64748b";
 
             setHoveredMandalName(mName || null);
 
@@ -2155,7 +2169,7 @@ const RegionSelection: React.FC = () => {
         console.error("Failed to render country regions from API:", err);
       }
     }
-  }, [regionsByCountryData, mapLoaded, geoMasterData, mode, selectedRegion]);
+  }, [regionsByCountryData, mapLoaded, geoMasterData]);
 
   // Effect to manage country regions visibility and filtering depending on mode and selection
   useEffect(() => {
@@ -2224,11 +2238,7 @@ const RegionSelection: React.FC = () => {
           }
 
           // Apply filter to show ONLY the selected region
-          const filter: any = [
-            "==",
-            ["coalesce", ["get", "region_id"], ["id"], ["get", "id"], -1],
-            regIdNum
-          ];
+          const filter: any = ["==", ["get", "region_id"], regIdNum];
           if (fillLayer) {
             map.current.setFilter("country-regions-fill", filter);
           }
@@ -2290,7 +2300,7 @@ const RegionSelection: React.FC = () => {
         // Safe check for early renders
       }
     }
-  }, [selectedState, selectedRegion, mode]);
+  }, [selectedState, selectedRegion, mode, mapLoaded, regionsByCountryData, geoMasterData]);
 
   const handleRemoveDistrict = (district: any) => {
     const dtId = district.id ?? district.featureId;

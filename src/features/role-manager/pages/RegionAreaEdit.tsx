@@ -411,11 +411,17 @@ const buildRegionsGeoJSON = (
             ? f
             : buildRegionFeatureFromDistricts(f, masterData);
         if (synthesized) {
-          const regionId =
-            synthesized.properties?.region_id || synthesized.id || 1;
+          const regionId = Number(
+            synthesized.properties?.region_id ??
+              synthesized.properties?.regionId ??
+              synthesized.properties?.id ??
+              synthesized.id ??
+              1,
+          );
           const colors = getRegionColors(regionId);
           synthesized.properties = {
             ...synthesized.properties,
+            region_id: regionId,
             regionColor: colors.fill,
             regionBorderColor: colors.border,
           };
@@ -1768,7 +1774,11 @@ const RegionAreaEdit: React.FC = () => {
       return;
 
     try {
-      const visibility = editModeType === "region" ? "visible" : "none";
+      const hasSelectedRegion = !!selectedRegion || !!urlAreaRegionId || !!editAreaId || !!sessionStorage.getItem("selected_region_id");
+      const visibility =
+        editModeType === "region"
+          ? "visible"
+          : (hasSelectedRegion ? "none" : "visible");
 
       if (!map.current.getSource("districts-source")) {
         // Add source + layers for the first time
@@ -1909,6 +1919,9 @@ const RegionAreaEdit: React.FC = () => {
     geoMasterData,
     allRegionsData,
     editModeType,
+    selectedRegion,
+    urlAreaRegionId,
+    editAreaId,
   ]);
 
   // ── Render mandal boundaries for Area Edit Mode or Zoomed View Mode ─────────
@@ -2056,11 +2069,12 @@ const RegionAreaEdit: React.FC = () => {
         selectedIds,
       );
 
-      // Hide districts
+      // Show/Hide districts
+      const districtsVis = parentRegionId ? "none" : "visible";
       if (map.current.getLayer("districts-fill")) {
-        map.current.setLayoutProperty("districts-fill", "visibility", "none");
-        map.current.setLayoutProperty("districts-line", "visibility", "none");
-        map.current.setLayoutProperty("districts-labels", "visibility", "none");
+        map.current.setLayoutProperty("districts-fill", "visibility", districtsVis);
+        map.current.setLayoutProperty("districts-line", "visibility", districtsVis);
+        map.current.setLayoutProperty("districts-labels", "visibility", districtsVis);
       }
 
       if (map.current.getLayer("regions-fill")) {
@@ -2683,8 +2697,6 @@ const RegionAreaEdit: React.FC = () => {
             !!searchParamsLocal.get("editAreaId");
           if (isEditModeLocal) return;
 
-          const modeLocal = searchParamsLocal.get("mode");
-
           if (e.features && e.features.length > 0) {
             const feature = e.features[0];
             const clickedStateId = feature.properties?.id || feature.id;
@@ -2727,9 +2739,6 @@ const RegionAreaEdit: React.FC = () => {
             !!searchParamsLocal.get("editRegionId") ||
             !!searchParamsLocal.get("editAreaId");
           if (isEditModeLocal) return;
-
-          // Disable hover interactions in Area Mode
-          const modeLocal = searchParamsLocal.get("mode");
 
           if (map.current && !selectedState)
             map.current.getCanvas().style.cursor = "pointer";
