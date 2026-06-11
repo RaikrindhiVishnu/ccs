@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Download, X } from "lucide-react";
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 
 const SuperAdminFarmlandDetails: React.FC = () => {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState<"Agent" | "Website">("Website");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [saleReason, setSaleReason] = useState("");
