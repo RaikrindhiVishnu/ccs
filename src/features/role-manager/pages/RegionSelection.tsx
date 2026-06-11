@@ -1085,6 +1085,7 @@ const RegionSelection: React.FC = () => {
           map.current?.addSource(statesSourceId, {
             type: "geojson",
             data: { type: "FeatureCollection", features: [] },
+            generateId: true,
           });
 
           // Add States Fill for interaction
@@ -1093,7 +1094,12 @@ const RegionSelection: React.FC = () => {
             type: "fill",
             source: statesSourceId,
             paint: {
-              "fill-color": "transparent",
+              "fill-color": [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                "#D3ECFE",
+                "transparent",
+              ],
             },
           });
 
@@ -1162,14 +1168,37 @@ const RegionSelection: React.FC = () => {
             }
           });
 
-          map.current?.on("mouseenter", "states-fill", () => {
-            if (map.current && !selectedState)
-              map.current.getCanvas().style.cursor = "pointer";
+          let hoveredStateId: any = null;
+          map.current?.on("mousemove", "states-fill", (e) => {
+            if (selectedState) return;
+            if (e.features && e.features.length > 0) {
+              if (hoveredStateId !== null) {
+                map.current?.setFeatureState(
+                  { source: "india-states", id: hoveredStateId },
+                  { hover: false }
+                );
+              }
+              const newId = e.features[0].id ?? e.features[0].properties?.id;
+              hoveredStateId = newId !== undefined && newId !== null ? newId : null;
+              if (hoveredStateId !== null) {
+                map.current?.setFeatureState(
+                  { source: "india-states", id: hoveredStateId },
+                  { hover: true }
+                );
+              }
+              if (map.current) map.current.getCanvas().style.cursor = "pointer";
+            }
           });
 
           map.current?.on("mouseleave", "states-fill", () => {
-            if (map.current && !selectedState)
-              map.current.getCanvas().style.cursor = "";
+            if (hoveredStateId !== null) {
+              map.current?.setFeatureState(
+                { source: "india-states", id: hoveredStateId },
+                { hover: false }
+              );
+            }
+            hoveredStateId = null;
+            if (map.current) map.current.getCanvas().style.cursor = "";
           });
 
           map.current?.on("mouseenter", "districts-fill", (e) => {
@@ -1318,10 +1347,12 @@ const RegionSelection: React.FC = () => {
             paint: {
               "fill-color": [
                 "case",
-                ["boolean", ["feature-state", "selected"], false],
-                "#9BC2F3",
                 ["boolean", ["get", "isAssigned"], false],
-                "#9BC2F3",
+                "#9BC2F3", // Keep existing color unchanged
+                ["boolean", ["feature-state", "selected"], false],
+                "#1D5E9C", // Selection color
+                ["boolean", ["feature-state", "hover"], false],
+                "#D3ECFE", // Hover color
                 "#FFFFFF",
               ],
               "fill-opacity": 1.0,
@@ -1963,10 +1994,12 @@ const RegionSelection: React.FC = () => {
             paint: {
               "fill-color": [
                 "case",
-                ["boolean", ["feature-state", "selected"], false],
-                "#9BC2F3",
                 ["boolean", ["get", "isAssigned"], false],
-                "#9BC2F3",
+                "#9BC2F3", // Keep existing color unchanged
+                ["boolean", ["feature-state", "selected"], false],
+                "#1D5E9C", // Selection color
+                ["boolean", ["feature-state", "hover"], false],
+                "#D3ECFE", // Hover color
                 "#FFFFFF",
               ],
               "fill-opacity": 1.0,
@@ -2049,9 +2082,15 @@ const RegionSelection: React.FC = () => {
         // Hover / click events
         let hoveredMandalId: any = null;
 
-        map.current.on("mouseenter", "mandals-fill", () => {
+        map.current.on("mouseenter", "mandals-fill", (e) => {
           if (map.current) {
-            map.current.getCanvas().style.cursor = "pointer";
+            const isAssigned =
+              e.features && e.features.length > 0
+                ? e.features[0].properties?.isAssigned
+                : false;
+            map.current.getCanvas().style.cursor = isAssigned
+              ? "not-allowed"
+              : "pointer";
           }
         });
 
@@ -2207,7 +2246,12 @@ const RegionSelection: React.FC = () => {
                   visibility: "none",
                 },
                 paint: {
-                  "fill-color": "#9BC2F3",
+                  "fill-color": [
+                    "case",
+                    ["boolean", ["feature-state", "hover"], false],
+                    "#D3ECFE",
+                    "#9BC2F3",
+                  ],
                   "fill-opacity": 0.5,
                 },
               },
@@ -2406,7 +2450,7 @@ const RegionSelection: React.FC = () => {
             map.current.setPaintProperty(
               "country-regions-fill",
               "fill-color",
-              "#9BC2F3"
+              "#1D5E9C"
             );
             map.current.setPaintProperty(
               "country-regions-fill",
@@ -2446,7 +2490,12 @@ const RegionSelection: React.FC = () => {
             map.current.setPaintProperty(
               "country-regions-fill",
               "fill-color",
-              "#9BC2F3"
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                "#D3ECFE",
+                "#9BC2F3",
+              ]
             );
             map.current.setPaintProperty(
               "country-regions-fill",
