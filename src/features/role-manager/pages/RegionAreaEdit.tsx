@@ -2206,7 +2206,7 @@ const RegionAreaEdit: React.FC = () => {
             },
             paint: {
               "line-color": "#000000",
-              "line-width": 2.5,
+              "line-width": 1.5,
               "line-opacity": 1.0,
             },
           },
@@ -2512,7 +2512,7 @@ const RegionAreaEdit: React.FC = () => {
             },
             paint: {
               "line-color": "#000000",
-              "line-width": 2.5,
+              "line-width": 1.5,
               "line-opacity": 1.0,
             },
           },

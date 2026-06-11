@@ -1347,6 +1347,29 @@ const RegionSelection: React.FC = () => {
           map.current.getLayer("regions-line") ? "regions-line" : "states-border-line",
         );
 
+        // Add clean text labels directly inside district polygons!
+        map.current.addLayer({
+          id: "districts-labels",
+          type: "symbol",
+          source: "districts-source",
+          layout: {
+            visibility: mode === "area" && selectedRegion ? "none" : "visible",
+            "text-field": ["coalesce", ["get", "name"], ["get", "d"], ""],
+            "text-size": 10,
+            "text-anchor": "center",
+            "text-justify": "center",
+            "text-max-width": 8,
+            "symbol-placement": "point",
+            "text-allow-overlap": false,
+          },
+          paint: {
+            "text-color": "#334155", // premium slate-700 color
+            "text-halo-color": "#ffffff", // white background halo for outstanding legibility
+            "text-halo-width": 1.5,
+            "text-opacity": 0.9,
+          },
+        });
+
         // District hover effect
         let hoveredDistrictId: number | string | null = null;
         map.current.on("mousemove", "districts-fill", (e) => {
@@ -1408,6 +1431,18 @@ const RegionSelection: React.FC = () => {
           "districts-source",
         ) as maplibregl.GeoJSONSource;
         source.setData(districtsGeoJSON);
+
+        // Synchronize visibility of district layers
+        const visibility = mode === "area" && selectedRegion ? "none" : "visible";
+        if (map.current.getLayer("districts-fill")) {
+          map.current.setLayoutProperty("districts-fill", "visibility", visibility);
+        }
+        if (map.current.getLayer("districts-line")) {
+          map.current.setLayoutProperty("districts-line", "visibility", visibility);
+        }
+        if (map.current.getLayer("districts-labels")) {
+          map.current.setLayoutProperty("districts-labels", "visibility", visibility);
+        }
       }
     } catch (err) {
       console.error("Failed to render districts:", err);
@@ -1461,7 +1496,7 @@ const RegionSelection: React.FC = () => {
               },
               paint: {
                 "line-color": "#000000",
-                "line-width": 2.5,
+                "line-width": 1.5,
                 "line-opacity": 1.0,
               },
             },
@@ -1657,7 +1692,7 @@ const RegionSelection: React.FC = () => {
           map.current.setLayoutProperty("regions-line", "visibility", "visible");
           map.current.setPaintProperty("regions-line", "line-color", "#000000");
           map.current.setPaintProperty("regions-line", "line-opacity", 1.0);
-          map.current.setPaintProperty("regions-line", "line-width", 2.5);
+          map.current.setPaintProperty("regions-line", "line-width", 1.5);
         }
       } else {
         // Restore map pitch and bearing to flat view
@@ -1690,7 +1725,7 @@ const RegionSelection: React.FC = () => {
           map.current.setLayoutProperty("regions-line", "visibility", "visible");
           map.current.setPaintProperty("regions-line", "line-color", "#000000");
           map.current.setPaintProperty("regions-line", "line-opacity", 1.0);
-          map.current.setPaintProperty("regions-line", "line-width", 2.5);
+          map.current.setPaintProperty("regions-line", "line-width", 1.5);
         }
       }
     } catch (err) {
@@ -1754,6 +1789,9 @@ const RegionSelection: React.FC = () => {
           mode === "area" && selectedRegion ? "none" : "visible";
         map.current.setLayoutProperty("districts-fill", "visibility", visibility);
         map.current.setLayoutProperty("districts-line", "visibility", visibility);
+        if (map.current.getLayer("districts-labels")) {
+          map.current.setLayoutProperty("districts-labels", "visibility", visibility);
+        }
       }
     } catch (err) {
       console.error("Error updating district layers visibility:", err);
@@ -1845,6 +1883,9 @@ const RegionSelection: React.FC = () => {
         if (map.current.getLayer("areas-boundary-line")) {
           map.current.setLayoutProperty("areas-boundary-line", "visibility", "none");
         }
+        if (map.current.getLayer("mandals-labels")) {
+          map.current.setLayoutProperty("mandals-labels", "visibility", "none");
+        }
       } catch (err) {
         console.error("Error clearing mandals data:", err);
       }
@@ -1883,6 +1924,9 @@ const RegionSelection: React.FC = () => {
       }
       if (map.current.getLayer("areas-boundary-line")) {
         map.current.setLayoutProperty("areas-boundary-line", "visibility", "visible");
+      }
+      if (map.current.getLayer("mandals-labels")) {
+        map.current.setLayoutProperty("mandals-labels", "visibility", "visible");
       }
 
       const existingSource = map.current.getSource("mandals-source") as
@@ -1957,12 +2001,32 @@ const RegionSelection: React.FC = () => {
             },
             paint: {
               "line-color": "#000000",
-              "line-width": 2.5,
+              "line-width": 1.5,
               "line-opacity": 1.0,
             },
           },
           "states-border-line",
         );
+
+        map.current.addLayer({
+          id: "mandals-labels",
+          type: "symbol",
+          source: "mandals-source",
+          layout: {
+            visibility: "visible",
+            "text-field": ["coalesce", ["get", "name"], ["get", "d"], ""],
+            "text-size": 8.5,
+            "text-anchor": "center",
+            "text-justify": "center",
+            "symbol-placement": "point",
+            "text-allow-overlap": false,
+          },
+          paint: {
+            "text-color": "#475569",
+            "text-halo-color": "#ffffff",
+            "text-halo-width": 1.5,
+          },
+        });
 
         // 3D Extrusion Layer for Selected Area Mandals
         map.current.addLayer(
@@ -2163,7 +2227,7 @@ const RegionSelection: React.FC = () => {
                 },
                 paint: {
                   "line-color": "#000000",
-                  "line-width": 2.5,
+                  "line-width": 1.5,
                   "line-opacity": 1.0,
                 },
               },
@@ -2364,7 +2428,7 @@ const RegionSelection: React.FC = () => {
             map.current.setPaintProperty(
               "country-regions-line",
               "line-width",
-              2.5
+              1.5
             );
           }
 
@@ -2401,10 +2465,10 @@ const RegionSelection: React.FC = () => {
               "line-opacity",
               1.0,
             );
-            map.current.setPaintProperty(
+             map.current.setPaintProperty(
               "country-regions-line",
               "line-width",
-              2.5,
+              1.5,
             );
           }
 
