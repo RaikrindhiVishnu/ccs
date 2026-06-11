@@ -71,7 +71,7 @@ export default function DashboardHeader() {
               startDate={startDate}
               endDate={endDate}
               mode="range"
-              onChange={(start, end) => {
+              onChange={(start: Date | null, end: Date | null) => {
                 setStartDate(start);
                 setEndDate(end);
               }}
@@ -95,7 +95,7 @@ export default function DashboardHeader() {
             <span className="sr-only">Notifications</span>
           </button>
           {showNotifications && (
-            <NotificationsPopover onClose={() => setShowNotifications(false)} />
+            <NotificationsPopover />
           )}
         </div>
       </div>

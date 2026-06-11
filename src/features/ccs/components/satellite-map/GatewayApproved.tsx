@@ -1,4 +1,3 @@
-import * as React from "react";
 import { ArrowLeft, Check, Copy } from "lucide-react";
 
 export type GatewayApprovedProps = {

@@ -113,7 +113,7 @@ export default function FarmlandList() {
                 <span className="sr-only">Notifications</span>
               </button>
               {showNotifications && (
-                <NotificationsPopover onClose={() => setShowNotifications(false)} />
+                <NotificationsPopover />
               )}
             </div>
           </div>
