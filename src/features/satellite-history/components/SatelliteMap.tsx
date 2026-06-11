@@ -56,7 +56,7 @@ const GOOGLE_SATELLITE_STYLE: maplibregl.StyleSpecification = {
 };
 
 export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
-  ({ tileUrl, coords, maxzoom = 9, interactive = true }, ref) => {
+  ({ tileUrl, coords, interactive = true }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<maplibregl.Map | null>(null);
     const markerRef = useRef<maplibregl.Marker | null>(null);

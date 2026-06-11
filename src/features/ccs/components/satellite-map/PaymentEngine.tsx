@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useState } from "react";
 import { ArrowLeft, Wallet, Check, Copy, MapPin, Shield } from "lucide-react";
 

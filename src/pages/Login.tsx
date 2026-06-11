@@ -217,19 +217,19 @@ function LoginScreen({
     if (mockUser) {
       const roleCode = ROLE_CODES[mockUser.role_id];
       dispatch(
-          setCredentials({
-            user: {
-              id: mockUser.id,
-              login_id: mockUser.login_id,
-              first_name: mockUser.first_name,
-              last_name: mockUser.last_name,
-              role_id: mockUser.role_id,
-              role: roleCode,
-              is_first_login: 0,
-            },
-            accessToken: "mock-token-" + roleCode.toLowerCase(),
-            refreshToken: "mock-refresh-" + roleCode.toLowerCase(),
-          })
+        setCredentials({
+          user: {
+            id: mockUser.id,
+            login_id: mockUser.login_id,
+            first_name: mockUser.first_name,
+            last_name: mockUser.last_name,
+            role_id: mockUser.role_id,
+            role: roleCode,
+            is_first_login: 0,
+          },
+          accessToken: "mock-token-" + roleCode.toLowerCase(),
+          refreshToken: "mock-refresh-" + roleCode.toLowerCase(),
+        })
       );
       onSuccess({ is_first_login: 0, passwordUsed: password });
       return;
@@ -239,19 +239,19 @@ function LoginScreen({
       setLoading(true);
       const response = await login({ login_id: loginId, password }).unwrap();
       dispatch(
-          setCredentials({
-            user: {
-              id: response.id,
-              login_id: response.login_id,
-              first_name: response.first_name,
-              last_name: response.last_name,
-              role_id: response.role_id,
-              role: ROLE_CODES[response.role_id] || "",
-              is_first_login: response.is_first_login,
-            },
-            accessToken: response.token,
-            refreshToken: response.refreshToken,
-          })
+        setCredentials({
+          user: {
+            id: response.id,
+            login_id: response.login_id,
+            first_name: response.first_name,
+            last_name: response.last_name,
+            role_id: response.role_id,
+            role: ROLE_CODES[response.role_id] || "",
+            is_first_login: response.is_first_login,
+          },
+          accessToken: response.token,
+          refreshToken: response.refreshToken,
+        })
       );
       onSuccess({ is_first_login: response.is_first_login, passwordUsed: password });
     } catch (err: any) {
@@ -352,10 +352,10 @@ function LoginScreen({
             {loading ? "Signing In..." : "Sign In"}
           </PrimaryButton>
         </div>
-        
+
         <div className="mt-4 flex justify-center">
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={() => navigate('/ccs/login')}
             className="border-none bg-transparent cursor-pointer font-sans text-[var(--brand-500)] hover:underline font-semibold text-sm"
           >

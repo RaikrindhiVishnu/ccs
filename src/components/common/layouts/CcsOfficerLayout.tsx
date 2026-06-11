@@ -1,7 +1,5 @@
-import { NavLink, useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
 import { LayoutGrid, CircleDashed, MapPin, type LucideIcon } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import { logOut } from '@/features/auth/store/authSlice';
 import { useRoleLayout } from '@/core/hooks/useRoleLayout';
 
 import logo from '@/assets/glc-logo.svg';
@@ -20,10 +18,7 @@ const NavIcon = ({ name }: { name: string }) => {
 
 export const CcsOfficerLayout = () => {
   const { navItems } = useRoleLayout();
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const location = useLocation();
-  const user = useAppSelector((state) => state.auth.user);
 
   const fullName = 'Ram Varma';
 
