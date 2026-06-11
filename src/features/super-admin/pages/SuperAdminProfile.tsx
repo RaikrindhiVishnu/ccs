@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Edit3, LogOut, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Edit3, LogOut } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 

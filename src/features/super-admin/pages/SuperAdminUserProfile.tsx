@@ -1,10 +1,9 @@
 import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 
 const SuperAdminUserProfile: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
   // In a real app, you would fetch user data by ID.
