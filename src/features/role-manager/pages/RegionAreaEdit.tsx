@@ -765,7 +765,7 @@ const RegionAreaEdit: React.FC = () => {
     { skip: !parentRegionId },
   );
 
-  const isAreaMode = getSearchParamFallback("mode") === "area";
+  const isAreaMode = getSearchParamFallback("mode") === "area" || !!editAreaId;
   const [triggerGetAreas] = useLazyGetAllAreasByRegionIdQuery();
   const [regionsWithAreas, setRegionsWithAreas] = useState<Set<number> | null>(null);
 
@@ -2933,7 +2933,7 @@ const RegionAreaEdit: React.FC = () => {
           if (!isAreaMode) return true;
           if (!regionsWithAreas) return true; // loading fallback
           const regionId = f.properties?.region_id || f.id;
-          return regionsWithAreas.has(Number(regionId));
+          return !regionsWithAreas.has(Number(regionId));
         })
         .map((f: any) => ({
           id: f.properties?.region_id || f.id,
