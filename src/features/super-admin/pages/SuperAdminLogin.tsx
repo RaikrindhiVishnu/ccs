@@ -10,8 +10,8 @@ import { setCredentials } from "@/features/auth/store/authSlice";
 import { UserRole, ROLE_CODES } from "@/features/auth/types";
 
 // ─── Dev Mock Users ───────────────────────────────────────────────────────────
-const MOCK_USERS=[
-  { login_id: "superadmin@glc.com", password: "superadmin@123", role_id: UserRole.SUPERADMIN, first_name: "Super", last_name: "Admin", id: 999 },
+const MOCK_USERS = [
+  { login_id: "superadmin@glc.com", password: "superadmin@123", role_id: UserRole.SADMIN, first_name: "Super", last_name: "Admin", id: 999 },
 ];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -209,7 +209,7 @@ function LoginScreen({
       (u) => u.login_id === loginId && u.password === password
     );
     if (mockUser) {
-      const roleCode=ROLE_CODES[mockUser.role_id] || "SUPERADMIN";
+      const roleCode = ROLE_CODES[mockUser.role_id as UserRole] || "SUPERADMIN";
       dispatch(
         setCredentials({
           user: {
@@ -355,10 +355,9 @@ function LoginScreen({
 
 // ─── SCREEN 2 · Forgot Password ───────────────────────────────────────────────
 function ForgotPasswordScreen({
-  onBack,
   onSuccess,
 }: {
-  onBack: () => void;
+  
   onSuccess: (maskedEmail: string) => void;
 }) {
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
@@ -721,7 +720,6 @@ export default function SuperAdminLogin() {
 
       {screen === "forgot-password" && (
         <ForgotPasswordScreen
-          onBack={() => setScreen("login")}
           onSuccess={(masked) => { setMaskedEmail(masked); setScreen("forgot-success"); }}
         />
       )}

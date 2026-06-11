@@ -2,6 +2,29 @@ import React, { useMemo, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Briefcase, Pencil, UserCircle, Layers } from "lucide-react";
 import { useGetAllFieldOfficersMutation } from "../api/roleManagerApi";
+import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
+
+const OfficerAvatar = ({ url, name }: { url?: string | null; name: string }) => {
+  const isS3Key = Boolean(url && !url.startsWith("http") && !url.startsWith("data:"));
+  const { data: s3Data } = useGeneratePresignedUrlQuery(url || "", { skip: !isS3Key });
+  const finalUrl = isS3Key ? s3Data?.url : url;
+
+  if (finalUrl) {
+    return (
+      <img
+        src={finalUrl}
+        alt={name}
+        className="w-12 h-12 rounded-full object-cover border border-[#E2E8F0] shadow-sm"
+      />
+    );
+  }
+
+  return (
+    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 border border-[#E2E8F0]">
+      <UserCircle className="w-6 h-6" />
+    </div>
+  );
+};
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
@@ -147,12 +170,12 @@ const AreaDetailsView: React.FC = () => {
 
 
 
-useEffect(() => {
-  if (fieldOfficersData?.data) {
-    console.log("FIELD OFFICERS SAMPLE:", fieldOfficersData.data[0]);
-    console.log("Current areaId:", areaId);
-  }
-}, [fieldOfficersData, areaId]);
+  useEffect(() => {
+    if (fieldOfficersData?.data) {
+      console.log("FIELD OFFICERS SAMPLE:", fieldOfficersData.data[0]);
+      console.log("Current areaId:", areaId);
+    }
+  }, [fieldOfficersData, areaId]);
 
   fieldOfficersData?.data?.forEach((o: any) => {
     console.log("OFFICER OBJECT", o);
@@ -178,21 +201,37 @@ useEffect(() => {
     ? new Date(createdOn).toLocaleTimeString()
     : "—";
 
- const fieldOfficer = {
-  name: geoProps?.field_officer_name || "Unassigned",
-  code: geoProps?.field_officer_id 
-    ? `FO-${geoProps.field_officer_id}` 
-    : "—",
-  avatar_url: null,
-};
-useEffect(() => {
-  if (areaGeoJson) {
-    const features = areaGeoJson?.data?.features || areaGeoJson?.features || [];
-    features.forEach((f: any) => {
-      console.log("GeoJSON props for area", areaId, ":", f.properties);
-    });
-  }
-}, [areaGeoJson]);
+  const fieldOfficer = useMemo(() => {
+    const rawId = geoProps?.field_officer_id;
+    const hasId = rawId && Number(rawId) !== 0 && String(rawId) !== "null";
+
+    if (hasId) {
+      const officersList = Array.isArray(fieldOfficersData?.data) ? fieldOfficersData.data : (Array.isArray(fieldOfficersData) ? fieldOfficersData : []);
+      const matched = officersList.find((o: any) => Number(o.id) === Number(rawId));
+      if (matched) {
+        const fullName = `${matched.first_name || ""} ${matched.last_name || ""}`.trim();
+        const officerCode = matched.user_code || (matched.code && matched.id ? `${matched.code}-${matched.id}` : `FO-${matched.id}`);
+        return {
+          name: fullName || geoProps?.field_officer_name || "Unassigned",
+          code: officerCode,
+          avatar_url: matched.profile_url || matched.avatar_url || null,
+        };
+      }
+    }
+    return {
+      name: geoProps?.field_officer_name || "Unassigned",
+      code: hasId ? `FO-${rawId}` : "—",
+      avatar_url: null,
+    };
+  }, [geoProps?.field_officer_id, geoProps?.field_officer_name, fieldOfficersData]);
+  useEffect(() => {
+    if (areaGeoJson) {
+      const features = areaGeoJson?.data?.features || areaGeoJson?.features || [];
+      features.forEach((f: any) => {
+        console.log("GeoJSON props for area", areaId, ":", f.properties);
+      });
+    }
+  }, [areaGeoJson]);
 
   const handleEditClick = () => {
     // Read the region ID that was stored in sessionStorage when user clicked the region
@@ -357,17 +396,7 @@ useEffect(() => {
                   Field Officer
                 </Typography>
                 <div className="flex items-center gap-4">
-                  {fieldOfficer?.avatar_url ? (
-                    <img
-                      src={fieldOfficer.avatar_url}
-                      alt="Field Officer"
-                      className="w-12 h-12 rounded-full object-cover border border-[#E2E8F0] shadow-sm"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 border border-[#E2E8F0]">
-                      <UserCircle className="w-6 h-6" />
-                    </div>
-                  )}
+                  <OfficerAvatar url={fieldOfficer?.avatar_url} name={fieldOfficer?.name || "Field Officer"} />
                   <div>
                     <Typography
                       variant="p"
@@ -379,7 +408,7 @@ useEffect(() => {
                       variant="span"
                       className="text-[#64748B] font-medium text-[13px]"
                     >
-                      Officer Code: {fieldOfficer.code || "—"}
+                      ID: {fieldOfficer.code || "—"}
                     </Typography>
                   </div>
                 </div>

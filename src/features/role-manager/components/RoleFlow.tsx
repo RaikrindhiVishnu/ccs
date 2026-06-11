@@ -15,7 +15,6 @@ interface RoleFlowProps {
   agentData?: any;
   stateId: string;
   regionId: string;
-  areaId: string;
 }
 
 export const RoleFlow: React.FC<RoleFlowProps> = ({
@@ -24,7 +23,6 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
   agentData,
   stateId,
   regionId,
-  areaId,
 }) => {
   const navigate = useNavigate();
 
@@ -155,7 +153,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
     setSelectedFO(null);
     setSelectedFieldOfficerIndex(0);
     setLocalAgents([]);
-  }, [stateId, regionId, areaId]);
+  }, [stateId, regionId]);
 
   const handleFieldOfficerClick = async (
     officer: any,
@@ -165,13 +163,10 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
     setSelectedFieldOfficerIndex(index);
 
     try {
-      const targetId = officer.role_id;
+      // const targetId = officer.originalId || officer.id;
 
       const response = await getAgentDetails({
-        state_id: stateId,
-        region_id: regionId,
-        area_id: areaId || officer.area_id || 0,
-        field_officer_id: targetId,
+        area_id: officer.area_id || 0,
       }).unwrap();
 
       setLocalAgents(response?.data || []);

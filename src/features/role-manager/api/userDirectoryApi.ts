@@ -21,7 +21,7 @@ export const userDirectoryApi = roleManagerApi.injectEndpoints({
         }),
 
         // 2. Field Officer Details
-        getFieldOfficerDetails: builder.query<any, { state_id: string | number; region_id: string | number; regional_officer_id: string | number; intelligence_officer_id: string | number; area_id?: string | number; offset?: string }>({
+        getFieldOfficerDetails: builder.query<any, { state_id: string | number; region_id: string | number; regional_officer_id: string | number | null; intelligence_officer_id: string | number | null; area_id?: string | number; offset?: string }>({
             query: (body) => ({
                 url: "/userDirectory/fieldOfficers",
                 method: "POST",
@@ -33,7 +33,7 @@ export const userDirectoryApi = roleManagerApi.injectEndpoints({
         }),
 
         // 3. Agent Details
-        getAgentDetails: builder.query<any, { state_id: string | number; region_id: string | number; area_id: string | number; field_officer_id: string | number }>({
+        getAgentDetails: builder.query<any, { area_id: string | number }>({
             query: (body) => ({
                 url: "/userDirectory/agentDetails",
                 method: "POST",

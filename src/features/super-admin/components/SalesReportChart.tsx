@@ -1,13 +1,11 @@
 import React from "react";
 import {
-  BarChart as RechartsBar,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
-  Legend,
   Line,
   ComposedChart,
 } from "recharts";

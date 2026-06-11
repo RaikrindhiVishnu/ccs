@@ -1,3 +1,4 @@
+import * as React from "react";
 import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutGrid,
@@ -5,12 +6,12 @@ import {
   FileText,
   Bell,
   List,
+  RefreshCw,
   type LucideIcon,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { useAppDispatch, useAppSelector } from "@/core/hooks";
-import { logOut } from "@/features/auth/store/authSlice";
+import { useAppSelector } from "@/core/hooks";
 import { useRoleLayout } from "@/core/hooks/useRoleLayout";
 import { Typography } from "@/components/ui/typography";
 
@@ -147,33 +148,169 @@ const NavItem = ({
   </div>
 );
 
+const NotificationsDropdown = ({ onClose }: { onClose: () => void }) => {
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
+
+  const handleRefresh = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsRefreshing(true);
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 800);
+  };
+
+  const notifications = [
+    {
+      id: 1,
+      title: "Alert: Batch of 15 Pending Farmlands...",
+      type: "New update",
+      desc: "A batch of farmlands has passed initial review. Please check zone assignments.",
+      time: "1:30PM",
+      isUnread: true,
+    },
+    {
+      id: 2,
+      title: "High Priority: Immediate Review For #1024",
+      type: "Review Request",
+      desc: "Marked as high priority. Needs environment impact validation before Friday.",
+      time: "10:30AM",
+      isUnread: true,
+    },
+    {
+      id: 3,
+      title: "Trend Alert: Critical Sunday Rejection Spike",
+      type: "Regional Expansion",
+      desc: "Significant rejection rate deviation. Investigate common rejection Causes",
+      time: "3:30PM",
+      isUnread: false,
+    },
+    {
+      id: 4,
+      title: "Information Uploaded: Environment Impact data for #315",
+      type: "Regional Expansion",
+      desc: "Social media Campaigns are currently your top registration channel.",
+      time: "3:30PM",
+      isUnread: false,
+    },
+  ];
+
+  React.useEffect(() => {
+    const handleClickOutside = () => {
+      onClose();
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="
+        absolute top-[calc(100%+0.75rem)] right-0
+        w-[clamp(22rem,28vw,28rem)]
+        bg-white
+        border border-[rgba(0,0,0,0.08)]
+        rounded-[24px]
+        shadow-[0px_10px_30px_rgba(0,0,0,0.08)]
+        z-50
+        flex flex-col
+        overflow-hidden
+        animate-in fade-in slide-in-from-top-2 duration-200
+      "
+    >
+      {/* Header */}
+      <div className="flex flex-row justify-between items-center px-6 py-4">
+        <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(1rem,1.25vw,1.4rem)] text-black">
+          Notifications
+        </span>
+        <button
+          onClick={handleRefresh}
+          className="p-1 text-black/60 hover:text-black transition-colors cursor-pointer"
+        >
+          <RefreshCw
+            className={cn(
+              "w-[clamp(1.1rem,1.39vw,1.6rem)] h-[clamp(1.1rem,1.39vw,1.6rem)]",
+              isRefreshing && "animate-spin"
+            )}
+          />
+        </button>
+      </div>
+
+      {/* Divider */}
+      <div className="h-[1px] bg-[rgba(0,0,0,0.12)] w-full" />
+
+      {/* List */}
+      <div
+        className="
+          flex-1 overflow-y-auto max-h-[clamp(24rem,30.8vw,35rem)]
+          divide-y divide-[rgba(0,0,0,0.04)]
+          scrollbar-thin scrollbar-thumb-[var(--brand-tint)]
+        "
+      >
+        {notifications.map((n) => (
+          <div
+            key={n.id}
+            className={cn(
+              "p-6 flex flex-col gap-2 transition-colors hover:bg-slate-50 cursor-pointer relative",
+              n.isUnread && "bg-slate-50/50"
+            )}
+          >
+            {/* Top row: Title & unread dot */}
+            <div className="flex flex-row justify-between items-start gap-4">
+              <h4 className="font-[family-name:var(--font-sans)] font-bold text-[clamp(0.85rem,1.04vw,1.2rem)] text-[#1E293B] leading-snug">
+                {n.title}
+              </h4>
+              {n.isUnread && (
+                <span className="w-2 h-2 rounded-full bg-[#7A951C] shrink-0 mt-1.5" />
+              )}
+            </div>
+
+            {/* Subtitle / category */}
+            <div className="flex items-center gap-1.5 text-[clamp(0.7rem,0.83vw,0.95rem)] text-[#94A3B8] font-medium font-[family-name:var(--font-sans)]">
+              <span className="w-1 h-1 rounded-full bg-[#CBD5E1]" />
+              <span>{n.type}</span>
+            </div>
+
+            {/* Description */}
+            <p className="font-[family-name:var(--font-sans)] font-normal text-[clamp(0.75rem,0.9vw,1.05rem)] text-[#868686] leading-relaxed pr-6">
+              {n.desc}
+            </p>
+
+            {/* Bottom time stamp */}
+            <div className="flex justify-end text-[clamp(0.65rem,0.76vw,0.9rem)] text-[#94A3B8] font-medium font-[family-name:var(--font-sans)] mt-1">
+              {n.time}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export const IntelligenceOfficerLayout = () => {
   const { navItems } = useRoleLayout();
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
   const user = useAppSelector((state) => state.auth.user);
+  const [showNotifications, setShowNotifications] = React.useState(false);
 
   const isDashboard = location.pathname === "/io/dashboard";
 
-  const handleLogout = () => {
-    dispatch(logOut());
-    navigate("/login", { replace: true });
-  };
-
   const fullName = user
     ? `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-      "Intelligence Officer"
+    "Intelligence Officer"
     : "Intelligence Officer";
 
   const initials = fullName
     ? fullName
-        .split(" ")
-        .map((n: string) => n[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
+      .split(" ")
+      .map((n: string) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase()
     : "IO";
 
   return (
@@ -231,7 +368,7 @@ export const IntelligenceOfficerLayout = () => {
 
       <header
         className="
-      relative z-[1]
+      relative z-[50]
       shrink-0 w-full
       flex items-center justify-between
 
@@ -304,58 +441,52 @@ xl:w-[7.5rem] xl:h-[3.625rem]
     2xl:gap-[0.9rem]
   "
         >
-          {/* BELL */}
-          <button
-            className="
-      relative
-      flex items-center justify-center
-      rounded-full
+          {/* BELL CONTAINER */}
+          <div className="relative">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowNotifications((prev) => !prev);
+              }}
+              className={cn(
+                "relative flex items-center justify-center rounded-full transition-colors outline-none",
+                "w-[2rem] h-[2rem] sm:w-[2.25rem] sm:h-[2.25rem] lg:w-[2.7rem] lg:h-[2.7rem] xl:w-[3.25rem] xl:h-[3.25rem]",
+                showNotifications
+                  ? "bg-[#B8D327] hover:bg-[#a5bf20]"
+                  : "bg-[var(--surface-card)] hover:bg-[var(--surface-page)]"
+              )}
+              aria-label="Notifications"
+            >
+              <Bell
+                strokeWidth={1.5}
+                color={showNotifications ? "#FFFFFF" : "var(--text-primary)"}
+                className="w-[0.9rem] h-[0.9rem] sm:w-[1rem] sm:h-[1rem] lg:w-[1.15rem] lg:h-[1.15rem] xl:w-[1.5rem] xl:h-[1.5rem]"
+              />
 
-      bg-[var(--surface-card)]
-      transition-colors
-      hover:bg-[var(--surface-page)]
+              {!showNotifications && (
+                <span
+                  className="
+                    absolute rounded-full
+                    bg-[var(--status-danger)]
+                    w-[0.25rem] h-[0.25rem]
+                    lg:w-[0.32rem] lg:h-[0.32rem]
+                    xl:w-[0.32rem] xl:h-[0.32rem]
+                    top-[0.45rem] right-[0.45rem]
+                    xl:top-[0.9rem] xl:right-[0.9rem]
+                  "
+                />
+              )}
+            </button>
 
-      w-[2rem] h-[2rem]
-      sm:w-[2.25rem] sm:h-[2.25rem]
-      lg:w-[2.7rem] lg:h-[2.7rem]
-      xl:w-[3.25rem] xl:h-[3.25rem]
-      2xl:w-[3.25rem] 2xl:h-[3.25rem]
-    "
-            aria-label="Notifications"
-          >
-            <Bell
-              strokeWidth={1.5}
-              color="var(--text-primary)"
-              className="
-        w-[0.9rem] h-[0.9rem]
-        sm:w-[1rem] sm:h-[1rem]
-        lg:w-[1.15rem] lg:h-[1.15rem]
-        xl:w-[1.5rem] xl:h-[1.5rem]
-      "
-            />
-
-            <span
-              className="
-        absolute rounded-full
-        bg-[var(--status-danger)]
-
-        w-[0.25rem] h-[0.25rem]
-        lg:w-[0.32rem] lg:h-[0.32rem]
-        xl:w-[0.32rem] xl:h-[0.32rem]
-
-        top-[0.45rem]
-        right-[0.45rem]
-
-        xl:top-[0.9rem]
-        xl:right-[0.9rem]
-      "
-            />
-          </button>
+            {showNotifications && (
+              <NotificationsDropdown onClose={() => setShowNotifications(false)} />
+            )}
+          </div>
 
           {/* AVATAR */}
           <button
-            onClick={handleLogout}
-            title="Logout"
+            onClick={() => navigate("/io/profile")}
+            title="Profile"
             className="
       relative overflow-hidden
       flex items-center justify-center

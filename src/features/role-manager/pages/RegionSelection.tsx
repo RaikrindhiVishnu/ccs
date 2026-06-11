@@ -2049,15 +2049,15 @@ const RegionSelection: React.FC = () => {
 
       {/* Custom Creation Modal */}
       {isModalOpen && (
-        <div className="fixed inset-y-0 right-0 z-[100] flex items-center pr-8 pointer-events-none">
-          <div className="relative flex flex-col gap-4 pointer-events-auto items-end">
+        <div className="fixed inset-x-0 bottom-0 md:inset-x-auto md:inset-y-0 md:right-0 z-[100] flex items-end md:items-center justify-center p-4 md:p-6 md:pr-8 pointer-events-none select-none">
+          <div className="relative w-full md:w-[430px] flex flex-col gap-4 pointer-events-auto items-end">
             {formErrors.general && (
-              <div className="w-[430px] bg-red-50 border border-red-100 rounded-xl p-4 flex items-center gap-3 text-red-600 shadow-sm animate-in slide-in-from-top-2">
+              <div className="w-full bg-red-50 border border-red-100 rounded-xl p-4 flex items-center gap-3 text-red-600 shadow-sm animate-in slide-in-from-top-2">
                 <div className="bg-red-600 rounded-full w-5 h-5 flex items-center justify-center text-white font-bold text-xs shrink-0">!</div>
                 <span className="font-medium text-sm">{formErrors.general}</span>
               </div>
             )}
-            <div className="relative w-[430px] h-auto min-h-[489px] flex flex-col bg-white rounded-[24px] border border-[#E1E5EF] shadow-lg overflow-hidden animate-in slide-in-from-right duration-300 p-[28px] pointer-events-auto">
+            <div className="relative w-full h-auto max-h-[50vh] md:max-h-[90vh] min-h-[400px] md:min-h-[489px] flex flex-col bg-white rounded-[24px] border border-[#E1E5EF] shadow-lg overflow-hidden animate-in slide-in-from-bottom md:slide-in-from-right duration-300 p-[20px] md:p-[28px] pointer-events-auto">
               <div className="flex items-start justify-between mb-[26px]">
                 <div className="flex gap-3">
                   <div className="mt-1 flex-shrink-0 w-[20px] h-[20px] rounded-[4px] bg-[#353535] flex items-center justify-center">
@@ -2272,11 +2272,11 @@ const RegionSelection: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-[20px] flex justify-center">
+              <div className="mt-[20px] flex justify-center w-full">
                 <button
                   disabled={isCreating}
                   onClick={handleCreateRegion}
-                  className="w-[374px] h-[54px] bg-[#2780C4] rounded-[100px] flex items-center justify-center gap-[3.21px] hover:bg-[#1E6B9B] transition-colors active:scale-[0.98] disabled:opacity-70"
+                  className="w-full max-w-[374px] h-[54px] bg-[#2780C4] rounded-[100px] flex items-center justify-center gap-[3.21px] hover:bg-[#1E6B9B] transition-colors active:scale-[0.98] disabled:opacity-70 border-0 cursor-pointer"
                 >
                   {isCreating && <Loader2 className="w-4 h-4 text-white animate-spin mr-2" />}
                   <span className="text-[12px] font-semibold text-white font-['Plus_Jakarta_Sans'] leading-[15px]">
@@ -2291,15 +2291,15 @@ const RegionSelection: React.FC = () => {
 
       {/* Custom Area Creation Modal */}
       {isAreaModalOpen && (
-        <div className="fixed inset-y-0 right-0 z-[100] flex items-center pr-8 pointer-events-none">
-          <div className="relative flex flex-col gap-4 pointer-events-auto items-end">
+        <div className="fixed inset-x-0 bottom-0 md:inset-x-auto md:inset-y-0 md:right-0 z-[100] flex items-end md:items-center justify-center p-4 md:p-6 md:pr-8 pointer-events-none select-none">
+          <div className="relative w-full md:w-[430px] flex flex-col gap-4 pointer-events-auto items-end">
             {formAreaErrors.general && (
-              <div className="w-[430px] bg-red-50 border border-red-100 rounded-xl p-4 flex items-center gap-3 text-red-600 shadow-sm animate-in slide-in-from-top-2">
+              <div className="w-full bg-red-50 border border-red-100 rounded-xl p-4 flex items-center gap-3 text-red-600 shadow-sm animate-in slide-in-from-top-2">
                 <div className="bg-red-600 rounded-full w-5 h-5 flex items-center justify-center text-white font-bold text-xs shrink-0">!</div>
                 <span className="font-medium text-sm">{formAreaErrors.general}</span>
               </div>
             )}
-            <div className="relative w-[430px] h-auto min-h-[489px] flex flex-col bg-white rounded-[24px] border border-[#E1E5EF] shadow-lg overflow-hidden animate-in slide-in-from-right duration-300 p-[28px] pointer-events-auto">
+            <div className="relative w-full h-auto max-h-[50vh] md:max-h-[90vh] min-h-[400px] md:min-h-[489px] flex flex-col bg-white rounded-[24px] border border-[#E1E5EF] shadow-lg overflow-hidden animate-in slide-in-from-bottom md:slide-in-from-right duration-300 p-[20px] md:p-[28px] pointer-events-auto">
               <div className="flex items-start justify-between mb-[26px]">
                 <div className="flex gap-3">
                   <div className="mt-1 flex-shrink-0 w-[20px] h-[20px] rounded-[4px] bg-[#353535] flex items-center justify-center">
@@ -2513,11 +2513,11 @@ const RegionSelection: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-[20px] flex justify-center">
+              <div className="mt-[20px] flex justify-center w-full">
                 <button
                   disabled={isCreatingArea}
                   onClick={handleCreateArea}
-                  className="w-[374px] h-[54px] bg-[#2780C4] rounded-[100px] flex items-center justify-center gap-[3.21px] hover:bg-[#1E6B9B] transition-colors active:scale-[0.98] disabled:opacity-70"
+                  className="w-full max-w-[374px] h-[54px] bg-[#2780C4] rounded-[100px] flex items-center justify-center gap-[3.21px] hover:bg-[#1E6B9B] transition-colors active:scale-[0.98] disabled:opacity-70 border-0 cursor-pointer"
                 >
                   {isCreatingArea && <Loader2 className="w-4 h-4 text-white animate-spin mr-2" />}
                   <span className="text-[12px] font-semibold text-white font-['Plus_Jakarta_Sans'] leading-[15px]">

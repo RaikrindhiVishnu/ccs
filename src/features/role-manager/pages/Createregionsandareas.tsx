@@ -219,7 +219,7 @@ const CreateRegionsAndAreas: React.FC = () => {
                 "leading-[1.875rem]",
               )}
             >
-              {isViewMode ? "View Regions and Areas" : "Create Regions and Areas"}
+              {isViewMode ? "Edit Regions and Areas" : "Create Regions and Areas"}
             </Typography>
           </div>
 
@@ -239,7 +239,7 @@ const CreateRegionsAndAreas: React.FC = () => {
             )}
           >
             <InfoCard
-              title={isViewMode ? "View Region" : "Region"}
+              title={isViewMode ? "Edit Region" : "Region"}
               description="A broad strategic territory managed by the Regional Officer, comprising multiple operational clusters."
               imageSrc={regionImg}
               imageAlt="Region illustration"
@@ -247,7 +247,7 @@ const CreateRegionsAndAreas: React.FC = () => {
             />
 
             <InfoCard
-              title={isViewMode ? "View Area" : "Area"}
+              title={isViewMode ? "Edit Area" : "Area"}
               description="A specific locality or zone within a Region where daily land sourcing operations take place."
               imageSrc={areasImg}
               imageAlt="Area illustration"

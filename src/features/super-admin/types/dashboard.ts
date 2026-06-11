@@ -11,12 +11,6 @@ export interface TotalSales {
   changePercent: number;
   sparklineData: number[];
 }
-export interface NavItem {
-  label: string;
-  path: string;
-  icon?: string;      // ← make optional
-  iconImg?: string;
-}
 
 export interface FarmlandStats {
   totalFarmlands: number;
