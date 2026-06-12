@@ -1,104 +1,121 @@
-import { VO3_FARMLANDS } from '../data/farmlandsMockData';
-import { VerificationOfficer3Card } from '../components/VerificationOfficer3Card';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import VO3Header from "../components/VO3Header";
+import VO3StatsCard from "../components/VO3StatsCard";
+import VO3AnalyticsSection from "../components/VO3AnalyticsSection";
+import VO3SectionHeader from "../components/VO3SectionHeader";
+import VO3FarmlandCard from "../components/VO3FarmlandCard";
 
-export const VerificationOfficer3Dashboard = () => {
+export const VerificationOfficer3Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  
-  // Stats
-  const total = VO3_FARMLANDS.length;
-  const assigned = VO3_FARMLANDS.filter(f => f.status === 'Assigned').length;
-  const inProgress = VO3_FARMLANDS.filter(f => f.status === 'In-Progress').length;
-  const completed = VO3_FARMLANDS.filter(f => f.status === 'Completed').length;
+  const [showAll, setShowAll] = useState(false);
 
-  // High priority cases
-  const highPriorityCases = VO3_FARMLANDS.filter(f => f.priority === 'HIGH' && f.status !== 'Completed');
+  const cardsData = [
+    {
+      id: "GLC-AP-113",
+      location: "Srikakulam, AP",
+      agentName: "Sravan",
+      totalAmount: "₹85,00,000",
+      valuePerAcre: "₹4,25,000",
+      totalArea: "80 Acres",
+      submissionDate: "Oct 12, 2025",
+    },
+    {
+      id: "GLC-AP-289",
+      location: "Kurnool, AP",
+      agentName: "Ananthu",
+      totalAmount: "₹85,00,000",
+      valuePerAcre: "₹4,25,000",
+      totalArea: "80 Acres",
+      submissionDate: "Oct 12, 2025",
+    },
+    {
+      id: "GLC-AP-125",
+      location: "Vijayawada, AP",
+      agentName: "Vishnu",
+      totalAmount: "₹85,00,000",
+      valuePerAcre: "₹4,25,000",
+      totalArea: "80 Acres",
+      submissionDate: "Oct 12, 2025",
+    },
+    {
+      id: "GLC-AP-089",
+      location: "Kurnool, AP",
+      agentName: "Ananthu",
+      totalAmount: "₹85,00,000",
+      valuePerAcre: "₹4,25,000",
+      totalArea: "80 Acres",
+      submissionDate: "Oct 12, 2025",
+    },
+  ];
+
+  const displayedCards = showAll ? cardsData : cardsData.slice(0, 3);
 
   return (
-    <div className="w-full flex flex-col gap-8 pb-12 animate-fadeIn">
-      {/* Welcome & Overview Header */}
-      <div className="flex flex-col gap-2 mt-4">
-        <h1 className="font-plus-jakarta font-extrabold text-[28px] md:text-[34px] tracking-tight text-[#191B1C]">
-          VERIFICATION OFFICER 3 WORKSPACE
-        </h1>
-        <p className="font-plus-jakarta font-medium text-sm md:text-base text-[#626C70]">
-          Review and audit regional agricultural estates, manage verification progress and finalize land boundaries.
-        </p>
+    <div className=" flex flex-col gap-[clamp(1.5rem,2.22vw,3.125rem)] select-none">
+      
+      {/* 1. Header component */}
+      <VO3Header
+        title="Verification Officer Dashboard"
+        subtitle="Next-generation platform infrastructure for scaling sustainable estates."
+      />
+
+      {/* 2. Stats summary card row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-[clamp(1rem,1.67vw,2.5rem)] w-full">
+        <VO3StatsCard
+          type="assigned"
+          title="Assigned documents"
+          value={187}
+          description="Total received from IO"
+        />
+        <VO3StatsCard
+          type="verified"
+          title="Verified"
+          value={142}
+          description="75.9% completion rate"
+        />
+        <VO3StatsCard
+          type="rejected"
+          title="Rejected"
+          value={56}
+          description="6.4% rejection rate"
+        />
+        <VO3StatsCard
+          type="pending"
+          title="Pending Review"
+          value={33}
+          description="17.6% in progress"
+        />
       </div>
 
-      {/* Stats Summary Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Stat 1 */}
-        <div className="bg-white rounded-[24px] p-6 shadow-sm border border-[rgba(225,226,237,0.5)] flex flex-col justify-between h-[140px] transition-all hover:-translate-y-1 hover:shadow-md">
-          <span className="text-[#626C70] font-medium text-[14px] uppercase tracking-wider">Total Farmlands</span>
-          <div className="flex justify-between items-baseline mt-4">
-            <span className="text-[36px] font-bold text-[#191B1C]">{total}</span>
-            <span className="text-[12px] bg-[#EAF3FA] text-[#2780C4] px-3 py-1 rounded-full font-semibold">Active Cycle</span>
-          </div>
-        </div>
+      {/* 3. Analytics Chart section */}
+      <VO3AnalyticsSection />
 
-        {/* Stat 2 */}
-        <div className="bg-white rounded-[24px] p-6 shadow-sm border border-[rgba(225,226,237,0.5)] flex flex-col justify-between h-[140px] transition-all hover:-translate-y-1 hover:shadow-md">
-          <span className="text-[#626C70] font-medium text-[14px] uppercase tracking-wider">Assigned Cases</span>
-          <div className="flex justify-between items-baseline mt-4">
-            <span className="text-[36px] font-bold text-[#191B1C]">{assigned}</span>
-            <button 
-              onClick={() => navigate('/verification-officer-3/assigned-farmlands')}
-              className="text-[12px] text-[#2780C4] hover:underline font-semibold bg-transparent border-none cursor-pointer"
-            >
-              View List
-            </button>
-          </div>
-        </div>
+      {/* 4. Section header for Immediate Action Queue */}
+      <VO3SectionHeader
+        title="Immediate Action Queue"
+        showViewAll={true}
+        viewAllText={showAll ? "View less" : "View all"}
+        onViewAll={() => setShowAll(!showAll)}
+      />
 
-        {/* Stat 3 */}
-        <div className="bg-white rounded-[24px] p-6 shadow-sm border border-[rgba(225,226,237,0.5)] flex flex-col justify-between h-[140px] transition-all hover:-translate-y-1 hover:shadow-md">
-          <span className="text-[#626C70] font-medium text-[14px] uppercase tracking-wider">In-Progress audits</span>
-          <div className="flex justify-between items-baseline mt-4">
-            <span className="text-[36px] font-bold text-[#191B1C]">{inProgress}</span>
-            <button 
-              onClick={() => navigate('/verification-officer-3/in-progress-farmlands')}
-              className="text-[12px] text-[#2780C4] hover:underline font-semibold bg-transparent border-none cursor-pointer"
-            >
-              Resume
-            </button>
-          </div>
-        </div>
-
-        {/* Stat 4 */}
-        <div className="bg-white rounded-[24px] p-6 shadow-sm border border-[rgba(225,226,237,0.5)] flex flex-col justify-between h-[140px] transition-all hover:-translate-y-1 hover:shadow-md">
-          <span className="text-[#626C70] font-medium text-[14px] uppercase tracking-wider">Completed</span>
-          <div className="flex justify-between items-baseline mt-4">
-            <span className="text-[36px] font-bold text-[#16A34A]">{completed}</span>
-            <span className="text-[12px] bg-[#EAFBEF] text-[#16A34A] px-3 py-1 rounded-full font-semibold">100% Verified</span>
-          </div>
-        </div>
+      {/* 5. Bento Grid / Farmland cards section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(1rem,1.67vw,2.5rem)] w-full">
+        {displayedCards.map((card) => (
+          <VO3FarmlandCard
+            key={card.id}
+            id={card.id}
+            location={card.location}
+            agentName={card.agentName}
+            totalAmount={card.totalAmount}
+            valuePerAcre={card.valuePerAcre}
+            totalArea={card.totalArea}
+            submissionDate={card.submissionDate}
+            onActionClick={() => navigate("/verification-officer-3/assigned-farmlands")}
+          />
+        ))}
       </div>
 
-      {/* Main Grid: Priority Action Queue */}
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-          <h2 className="font-plus-jakarta font-bold text-[22px] text-[#191B1C]">
-            Priority Action Queue
-          </h2>
-          <span className="text-[#EF4646] font-semibold text-sm bg-red-50 px-3 py-1 rounded-full animate-pulse">
-            Attention Needed
-          </span>
-        </div>
-
-        {/* Queue Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {highPriorityCases.length > 0 ? (
-            highPriorityCases.map((farmland) => (
-              <VerificationOfficer3Card key={farmland.id} farmland={farmland} />
-            ))
-          ) : (
-            <div className="col-span-full bg-white border border-[rgba(225,226,237,0.5)] rounded-[24px] p-12 text-center text-[#626C70] font-medium shadow-sm">
-              All high priority audits are current. No immediate actions required.
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 };
