@@ -26,6 +26,7 @@ interface OwnerDetailsDocumentProps {
   setReligion: (val: string) => void;
   gender: string;
   setGender: (val: string) => void;
+  isVO3?: boolean;
 }
 
 export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
@@ -48,6 +49,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
   setReligion,
   gender,
   setGender,
+  isVO3 = false,
 }) => {
   const [activeStep, setActiveStep] = React.useState<"customer" | "local">("customer");
   const navigate = useNavigate();
@@ -55,16 +57,16 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
 
   const fullName = user
     ? `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-      "Intelligence Officer"
+    "Intelligence Officer"
     : "Intelligence Officer";
 
   const initials = fullName
     ? fullName
-        .split(" ")
-        .map((n: string) => n[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
+      .split(" ")
+      .map((n: string) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase()
     : "IO";
 
   return (
@@ -224,7 +226,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
           >
             {/* Frame 2147239964 */}
             <div className="absolute w-[clamp(8.125rem,12.78vw,15.3rem)] h-[clamp(6rem,9.44vw,11.3rem)] left-0 top-0">
-              
+
               {/* Line 495 */}
               <div
                 className="
@@ -255,7 +257,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                     }
                   `}
                 />
-                
+
                 {/* Customer Information text */}
                 <span
                   className={`
@@ -284,10 +286,9 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                   className={`
                     absolute left-[clamp(-1.0625rem,-1.67vw,-0.875rem)] top-[clamp(0.0625rem,0.1vw,0.125rem)] w-[clamp(0.5rem,0.78vw,1.03rem)] h-[clamp(0.5rem,0.78vw,1.03rem)] rounded-full
                     box-sizing-border-box transition-all duration-200
-                    ${
-                      activeStep === "local"
-                        ? "bg-[var(--brand-400)] border-2 border-[var(--text-primary)] shadow-[0_0_0_clamp(0.18rem,0.29vw,0.35rem)_#ffffff,0_0_0_clamp(0.275rem,0.43vw,0.515rem)_rgba(37,99,235,0.1)]"
-                        : "bg-[var(--surface-card)] border-[0.129375rem] border-[rgba(122,149,28,0.43)]"
+                    ${activeStep === "local"
+                      ? "bg-[var(--brand-400)] border-2 border-[var(--text-primary)] shadow-[0_0_0_clamp(0.18rem,0.29vw,0.35rem)_#ffffff,0_0_0_clamp(0.275rem,0.43vw,0.515rem)_rgba(37,99,235,0.1)]"
+                      : "bg-[var(--surface-card)] border-[0.129375rem] border-[rgba(122,149,28,0.43)]"
                     }
                   `}
                 />
@@ -467,7 +468,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                 "
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="#3D4949" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[clamp(0.75rem,0.97vw,1.5rem)] h-[clamp(0.75rem,0.97vw,1.5rem)] shrink-0">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
                 <input
                   type="text"
@@ -495,8 +496,8 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                 "
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="#3D4949" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[clamp(0.75rem,0.97vw,1.5rem)] h-[clamp(0.6rem,0.78vw,1.2rem)] shrink-0">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
                 </svg>
                 <input
                   type="text"
@@ -524,10 +525,10 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                 "
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="#3D4949" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[clamp(0.75rem,0.97vw,1.5rem)] h-[clamp(0.8rem,1.04vw,1.6rem)] shrink-0">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                  <line x1="16" y1="2" x2="16" y2="6"/>
-                  <line x1="8" y1="2" x2="8" y2="6"/>
-                  <line x1="3" y1="10" x2="21" y2="10"/>
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
                 </svg>
                 <input
                   type="text"
@@ -616,7 +617,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                 text-[clamp(0.625rem,0.97vw,1.1625rem)]
               "
             >
-              Back
+              {isVO3 ? "Turn Back" : "Back"}
             </button>
 
             <button
@@ -631,7 +632,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
                 text-[clamp(0.625rem,0.97vw,1.1625rem)]
               "
             >
-              Next
+              {isVO3 ? "Approve" : "Next"}
             </button>
           </div>
         </Card>

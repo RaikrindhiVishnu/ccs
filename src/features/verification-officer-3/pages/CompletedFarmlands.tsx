@@ -1,12 +1,8 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import VO3CompleteCard from '../components/VO3CompleteCard';
 
 export const CompletedFarmlands = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isPriorityOpen, setIsPriorityOpen] = useState(false);
-  const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'HIGH' | 'MEDIUM' | 'LOW'>('ALL');
 
   const baseCases = [
     { id: "GLC-VO3-06", title: "Kurnool Nandyal Farm", location: "Kurnool, Nandyal", landSize: "10 Acres", landValue: "₹1.5Cr", verificationDate: "06 Oct 2023, 11:30AM", priority: "LOW" as const },
@@ -16,19 +12,6 @@ export const CompletedFarmlands = () => {
     { id: "GLC-VO3-10", title: "Anantapur Orchard", location: "Anantapur, Gooty", landSize: "40 Acres", landValue: "₹2.8Cr", verificationDate: "02 Oct 2023, 5:00PM", priority: "HIGH" as const },
     { id: "GLC-VO3-11", title: "Chittoor Mango Grove", location: "Chittoor, Madanapalle", landSize: "30 Acres", landValue: "₹1.9Cr", verificationDate: "01 Oct 2023, 9:30AM", priority: "MEDIUM" as const },
   ];
-
-  // Apply Search and Priority filter
-  const filteredCases = baseCases.filter((farmland) => {
-    const matchesSearch =
-      farmland.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      farmland.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      farmland.title.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesPriority =
-      priorityFilter === 'ALL' || farmland.priority === priorityFilter;
-
-    return matchesSearch && matchesPriority;
-  });
 
   return (
     <div className="w-full flex flex-col ">
@@ -47,9 +30,9 @@ export const CompletedFarmlands = () => {
       </div>
 
       {/* Grid of Cards */}
-      {filteredCases.length > 0 ? (
+      {baseCases.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[clamp(0.8rem,1.11vw,1.5rem)] gap-y-[clamp(1.0rem,1.52vw,2.0rem)] w-full pb-[40px]">
-          {filteredCases.map((farmland) => (
+          {baseCases.map((farmland) => (
             <VO3CompleteCard
               key={farmland.id}
               id={farmland.id}

@@ -1,11 +1,8 @@
-import { useState } from 'react';
-import { Search, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import VO3ProgressCard from '../components/VO3ProgressCard';
 
 export const InProgressFarmlands = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isPriorityOpen, setIsPriorityOpen] = useState(false);
-  const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'HIGH' | 'MEDIUM' | 'LOW'>('ALL');
+  const navigate = useNavigate();
 
   const baseCases = [
     { id: "GLCSOS 01", location: "Tanuku, Andhra Pradesh", agentName: "Ananthu", totalArea: "14.5 Acres", costPerAcre: "₹24L", estimatedValue: "₹3.48Cr", priority: "HIGH" as const },
@@ -18,19 +15,6 @@ export const InProgressFarmlands = () => {
     { id: "GLCSOS 08", location: "Kadapa, Andhra Pradesh", agentName: "Vijay Prasad", totalArea: "11.2 Acres", costPerAcre: "₹25L", estimatedValue: "₹2.80Cr", priority: "MEDIUM" as const },
     { id: "GLCSOS 09", location: "Kurnool, Andhra Pradesh", agentName: "Rajesh Goud", totalArea: "16.0 Acres", costPerAcre: "₹21L", estimatedValue: "₹3.36Cr", priority: "LOW" as const },
   ];
-
-  // Apply Search and Priority filter
-  const filteredCases = baseCases.filter((farmland) => {
-    const matchesSearch =
-      farmland.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      farmland.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      farmland.agentName.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesPriority =
-      priorityFilter === 'ALL' || farmland.priority === priorityFilter;
-
-    return matchesSearch && matchesPriority;
-  });
 
   return (
     <div className="w-full flex flex-col ">
@@ -47,9 +31,9 @@ export const InProgressFarmlands = () => {
       </div>
 
       {/* Grid of Cards */}
-      {filteredCases.length > 0 ? (
+      {baseCases.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[clamp(1rem,1.67vw,3.5rem)] w-full pb-[40px]">
-          {filteredCases.map((farmland) => (
+          {baseCases.map((farmland) => (
             <VO3ProgressCard
               key={farmland.id}
               id={farmland.id}
@@ -60,6 +44,7 @@ export const InProgressFarmlands = () => {
               estimatedValue={farmland.estimatedValue}
               status="IN PROGRESS"
               actionLabel="Resume Verification"
+              onActionClick={() => navigate(`/verification-officer-3/assigned-farmland/${farmland.id}`)}
             />
           ))}
         </div>

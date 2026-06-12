@@ -12,6 +12,7 @@ import { LocalIntelligenceDocument } from "./LocalIntelligenceDocument";
 import { Bell } from "lucide-react";
 import { useAppSelector } from "@/core/hooks";
 import { RequestedInfoReasonModal } from "./RequestedInfoReasonModal";
+import { VO3_FARMLANDS } from "@/features/verification-officer-3/data/farmlandsMockData";
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 /* TYPES & INTERFACES                                                           */
@@ -615,9 +616,9 @@ const TopNav = ({
       <BackButton
         label={
           isCompletedVO3
-            ? "Go Back"
+            ? "Go Back to Dashboard"
             : isRequestedInfo
-              ? "Go Back to Requested Info"
+              ? "Go Back to Dashboard"
               : "Go Back to Dashboard"
         }
         variant="light"
@@ -872,11 +873,21 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
     return location.pathname.includes("/completed-farmland");
   }, [location]);
 
+  const isAssignedVO3 = React.useMemo(() => {
+    return location.pathname.includes("/verification-officer-3/assigned-farmland");
+  }, [location]);
+
   const matchedVO3Item = React.useMemo(() => {
     return completedCasesVO3.find((item) => item.id === id);
   }, [id]);
 
-  const [activeStep, setActiveStep] = React.useState<"list" | "owner-details" | "family-tree" | "land-details" | "local-intelligence">("list");
+  const matchedVO3AssignedItem = React.useMemo(() => {
+    return VO3_FARMLANDS.find((item) => item.id === id);
+  }, [id]);
+
+  const [activeStep, setActiveStep] = React.useState<"list" | "owner-details" | "family-tree" | "land-details" | "local-intelligence">(
+    isAssignedVO3 ? "owner-details" : "list"
+  );
   const [showReasonModal, setShowReasonModal] = React.useState(false);
   const [cameFromModal, setCameFromModal] = React.useState(false);
 
@@ -911,6 +922,26 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
         liveStatus: "NA",
         landSize: matchedVO3Item.landSize,
         landValue: matchedVO3Item.landValue,
+      };
+    }
+
+    if (isAssignedVO3) {
+      const matched = matchedVO3AssignedItem || matchedItem;
+      return {
+        heroImageUrl: afimg,
+        badge: "ASSIGNED FARMLAND",
+        farmlandName: matched ? ((matched as any).title || (matched as any).farmlandId || matched.id) : "Farmland Audit",
+        location: matched ? matched.location : "Srikakulam, AP",
+        totalValuation: matched ? ((matched as any).amount || (matched as any).totalAmount || "85 Lakhs") : "85 Lakhs",
+        farmlandId: id || "GLCSOS 01",
+        assignedAgent: {
+          name: matched ? (matched.agentName || "Agent Vinod") : "Agent Vinod",
+          avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80",
+        },
+        creationTime: matched ? ((matched as any).createdTime || (matched as any).submissionDate || "10th Oct") : "10th Oct",
+        lastUpdated: "8th Oct, 09:15 AM",
+        systemStatus: matched ? ((matched as any).agentStatus || "Active") : "Active",
+        liveStatus: "NA",
       };
     }
 
@@ -953,7 +984,13 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
   if (activeStep === "owner-details") {
     return (
       <OwnerDetailsDocument
-        onBack={() => setActiveStep("list")}
+        onBack={() => {
+          if (isAssignedVO3) {
+            navigate("/verification-officer-3/assigned-farmlands");
+          } else {
+            setActiveStep("list");
+          }
+        }}
         onNext={() => setActiveStep("family-tree")}
         onTabChange={(tab) => {
           if (tab === "owner") setActiveStep("owner-details");
@@ -979,6 +1016,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
         setReligion={setReligion}
         gender={gender}
         setGender={setGender}
+        isVO3={isAssignedVO3}
       />
     );
   }
@@ -1001,6 +1039,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
         firstName={firstName}
         lastName={lastName}
         gender={gender}
+        isVO3={isAssignedVO3}
       />
     );
   }
@@ -1022,6 +1061,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
           else setActiveStep("owner-details");
         }}
         farmlandId={displayData.farmlandId}
+        isVO3={isAssignedVO3}
       />
     );
   }
@@ -1039,8 +1079,12 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
           }
         }}
         onNext={() => {
-          alert("Farmland document updated successfully!");
-          setActiveStep("list");
+          if (isAssignedVO3) {
+            navigate("/verification-officer-3/assigned-farmlands");
+          } else {
+            alert("Farmland document updated successfully!");
+            setActiveStep("list");
+          }
         }}
         onStepChange={(step) => {
           if (step === "customer") {
@@ -1055,6 +1099,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
         }}
         farmlandId={displayData.farmlandId}
         isFromRejection={cameFromModal || isRequestedInfo}
+        isVO3={isAssignedVO3}
       />
     );
   }

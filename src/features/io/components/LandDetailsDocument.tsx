@@ -13,6 +13,7 @@ interface LandDetailsDocumentProps {
   onTabChange: (tab: "owner" | "family" | "land") => void;
   onStepChange?: (step: "customer" | "local") => void;
   farmlandId?: string;
+  isVO3?: boolean;
 }
 
 export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
@@ -21,6 +22,7 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
   onTabChange,
   onStepChange,
   farmlandId = "GLCSOS 01",
+  isVO3 = false,
 }) => {
   const [activeStep, setActiveStep] = React.useState<"customer" | "local">("customer");
   const navigate = useNavigate();
@@ -485,7 +487,7 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
                 text-[clamp(0.625rem,0.97vw,1.1625rem)]
               "
             >
-              Back
+              {isVO3 ? "Turn Back" : "Back"}
             </button>
 
             <button
@@ -500,7 +502,7 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
                 text-[clamp(0.625rem,0.97vw,1.1625rem)]
               "
             >
-              Next
+              {isVO3 ? "Approve" : "Next"}
             </button>
           </div>
         </Card>

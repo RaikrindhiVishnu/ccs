@@ -16,6 +16,7 @@ interface FamilyTreeDocumentProps {
   firstName: string;
   lastName: string;
   gender: string;
+  isVO3?: boolean;
 }
 
 export const FamilyTreeDocument: React.FC<FamilyTreeDocumentProps> = ({
@@ -27,6 +28,7 @@ export const FamilyTreeDocument: React.FC<FamilyTreeDocumentProps> = ({
   firstName,
   lastName,
   gender,
+  isVO3 = false,
 }) => {
   const [activeStep, setActiveStep] = React.useState<"customer" | "local">("customer");
   const navigate = useNavigate();
@@ -524,7 +526,7 @@ export const FamilyTreeDocument: React.FC<FamilyTreeDocumentProps> = ({
                 font-[family-name:var(--font-sans)]
               "
             >
-              Back
+              {isVO3 ? "Turn Back" : "Back"}
             </button>
 
             <button
@@ -540,7 +542,7 @@ export const FamilyTreeDocument: React.FC<FamilyTreeDocumentProps> = ({
                 font-[family-name:var(--font-sans)]
               "
             >
-              Next
+              {isVO3 ? "Approve" : "Next"}
             </button>
           </div>
         </Card>

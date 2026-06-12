@@ -1,30 +1,14 @@
-import { useState } from 'react';
-import { Search, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { VO3_FARMLANDS } from '../data/farmlandsMockData';
 import VO3FarmlandCard from '../components/VO3FarmlandCard';
 
 export const AssignedFarmlands = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isPriorityOpen, setIsPriorityOpen] = useState(false);
-  const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'HIGH' | 'MEDIUM' | 'LOW'>('ALL');
+  const navigate = useNavigate();
 
   // Filter Assigned farmlands
   const assignedCases = VO3_FARMLANDS.filter(
     (f) => f.status === 'Assigned'
   );
-
-  // Apply Search and Priority filter
-  const filteredCases = assignedCases.filter((farmland) => {
-    const matchesSearch =
-      farmland.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      farmland.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      farmland.agentName.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesPriority =
-      priorityFilter === 'ALL' || farmland.priority === priorityFilter;
-
-    return matchesSearch && matchesPriority;
-  });
 
   return (
     <div className="w-full flex flex-col ">
@@ -42,9 +26,9 @@ export const AssignedFarmlands = () => {
       </div>
 
       {/* Grid of Cards */}
-      {filteredCases.length > 0 ? (
+      {assignedCases.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[clamp(1rem,1.67vw,3.5rem)] w-full pb-[40px]">
-          {filteredCases.map((farmland) => (
+          {assignedCases.map((farmland) => (
             <VO3FarmlandCard
               key={farmland.id}
               id={farmland.id}
@@ -55,6 +39,7 @@ export const AssignedFarmlands = () => {
               totalArea={farmland.totalArea}
               submissionDate={farmland.submissionDate}
               priority={farmland.priority}
+              onActionClick={() => navigate(`/verification-officer-3/assigned-farmland/${farmland.id}`)}
             />
           ))}
         </div>

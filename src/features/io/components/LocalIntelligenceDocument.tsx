@@ -13,6 +13,7 @@ interface LocalIntelligenceDocumentProps {
   onStepChange?: (step: "customer" | "local") => void;
   farmlandId?: string;
   isFromRejection?: boolean;
+  isVO3?: boolean;
 }
 
 const subTabs = [
@@ -126,7 +127,8 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
   onNext,
   onStepChange,
   farmlandId = "GLCSOS 01",
-  isFromRejection = false
+  isFromRejection = false,
+  isVO3 = false,
 }) => {
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
@@ -206,14 +208,16 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
     const isSourceTab = activeSubTab === "source";
     const currentValue = isSourceTab ? sourcePersonType : selections[activeSubTab];
 
-    if (!currentValue) {
+    if (!isVO3 && !currentValue) {
       setToastMessage(`Please make a selection for ${currentTab.label}`);
       return;
     }
 
     if (currentIndex < subTabs.length - 1) {
       const nextTab = subTabs[currentIndex + 1];
-      setToastMessage(`${currentTab.label} "Files" has been saved`);
+      if (!isVO3) {
+        setToastMessage(`${currentTab.label} "Files" has been saved`);
+      }
       setActiveSubTab(nextTab.id);
     } else {
       setShowSuccessModal(true);
@@ -1421,7 +1425,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 "
               >
                 <span className="font-sans font-medium text-[0.875rem] leading-[1.125rem] text-[rgba(39,128,196,0.8)] text-center">
-                  Back
+                  {isVO3 ? "Turn Back" : "Back"}
                 </span>
               </button>
 
@@ -1436,7 +1440,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 "
               >
                 <span className="font-sans font-semibold text-[0.875rem] leading-[1.125rem] text-white text-center">
-                  {activeSubTab === "issues" ? "Next" : "Save"}
+                  {isVO3 ? "Approve" : (activeSubTab === "issues" ? "Next" : "Save")}
                 </span>
               </button>
             </div>
@@ -1545,7 +1549,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
 
             {/* Success Text */}
             <p className="font-sans font-bold text-[clamp(1rem,1.39vw,1.5rem)] leading-[clamp(1.25rem,1.74vw,1.875rem)] text-[#3D4949] text-center px-4 max-w-[450px]">
-              Farmland ID: {farmlandId} has been successfully Approved
+              Farmland ID: {farmlandId} has been successfully Verified
             </p>
 
             {/* Done Button */}

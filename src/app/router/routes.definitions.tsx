@@ -490,6 +490,10 @@ export const authRoutes: RouteObject[] = [
         element: <Farmlanddocument />,
     },
     {
+        path: '/verification-officer-3/assigned-farmland/:id',
+        element: <Farmlanddocument />,
+    },
+    {
         path: '/verification-officer-1/completed-farmland/:id',
         element: <VerificationOfficer1CompletedFarmlandDetails />,
     },
