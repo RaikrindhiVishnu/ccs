@@ -4,7 +4,7 @@ import Successcard from "@/components/ui/Successcard";
 import { useAppSelector } from "@/core/hooks";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { decompressGeoJSON } from "../utils/utils";
+import { decompressGeoJSON, buildOuterBoundariesGeoJSON, buildAreasBoundaryGeoJSON, buildRegionsBoundaryGeoJSON } from "../utils/utils";
 import { getRegionColors, getAreaColors } from "../utils/colorPalette";
 import { Maximize2, ChevronLeft, X, Loader2 } from "lucide-react";
 
@@ -71,6 +71,166 @@ function toFeatureCollection(
       },
     })),
   };
+}
+
+/**
+ * Helper to extract unique coordinate vertices from a GeoJSON geometry.
+ * Rounds coordinates to 5 decimal places (~1.1 meter precision) for robust snapping.
+ */
+function getGeometryVertices(geometry: any): Set<string> {
+  const vertices = new Set<string>();
+
+  const extract = (coords: any) => {
+    if (!coords) return;
+    if (typeof coords[0] === "number") {
+      const lng = coords[0].toFixed(5);
+      const lat = coords[1].toFixed(5);
+      vertices.add(`${lng},${lat}`);
+    } else if (Array.isArray(coords)) {
+      coords.forEach(extract);
+    }
+  };
+
+  if (geometry && geometry.coordinates) {
+    extract(geometry.coordinates);
+  }
+  return vertices;
+}
+
+/**
+ * Checks if two mandal geometries share at least one boundary vertex (i.e. they are adjacent)
+ */
+function areGeometriesAdjacent(geom1: any, geom2: any): boolean {
+  if (!geom1 || !geom2) return false;
+  const vertices1 = getGeometryVertices(geom1);
+  const vertices2 = getGeometryVertices(geom2);
+
+  for (const coord of vertices1) {
+    if (vertices2.has(coord)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Traverses geoMasterData to find a mandal's geometry by its ID.
+ */
+function findMandalGeometry(mandalId: number, geoData: any): any {
+  if (!geoData || !geoData.countries) return null;
+  let foundGeom: any = null;
+
+  for (const country of geoData.countries) {
+    if (!country.states) continue;
+    for (const state of country.states) {
+      if (!state.districts) continue;
+      for (const district of state.districts) {
+        if (!district.mandals) continue;
+        for (const mandal of district.mandals) {
+          if (Number(mandal.i) === mandalId) {
+            foundGeom = mandal.g;
+            return foundGeom;
+          }
+        }
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Performs a Breadth-First Search (BFS) over selected mandals to verify they are connected.
+ */
+function isSelectionContiguous(selectedIds: number[], geoData: any): boolean {
+  if (selectedIds.length <= 1) return true;
+
+  const geometries = new Map<number, any>();
+  selectedIds.forEach((id) => {
+    const geom = findMandalGeometry(id, geoData);
+    if (geom) {
+      geometries.set(id, geom);
+    }
+  });
+
+  const visited = new Set<number>();
+  const queue: number[] = [selectedIds[0]];
+  visited.add(selectedIds[0]);
+
+  let head = 0;
+  while (head < queue.length) {
+    const currentId = queue[head++];
+    const currentGeom = geometries.get(currentId);
+    if (!currentGeom) continue;
+
+    selectedIds.forEach((otherId) => {
+      if (!visited.has(otherId)) {
+        const otherGeom = geometries.get(otherId);
+        if (otherGeom && areGeometriesAdjacent(currentGeom, otherGeom)) {
+          visited.add(otherId);
+          queue.push(otherId);
+        }
+      }
+    });
+  }
+
+  return visited.size === selectedIds.length;
+}
+
+/**
+ * Traverses geoMasterData to find a district's geometry by its ID.
+ */
+function findDistrictGeometry(districtId: number, geoData: any): any {
+  if (!geoData || !geoData.countries) return null;
+  for (const country of geoData.countries) {
+    if (!country.states) continue;
+    for (const state of country.states) {
+      if (!state.districts) continue;
+      for (const district of state.districts) {
+        if (Number(district.i) === districtId) {
+          return district.g;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Performs a Breadth-First Search (BFS) over selected districts to verify they are connected.
+ */
+function isDistrictSelectionContiguous(selectedIds: number[], geoData: any): boolean {
+  if (selectedIds.length <= 1) return true;
+
+  const geometries = new Map<number, any>();
+  selectedIds.forEach((id) => {
+    const geom = findDistrictGeometry(id, geoData);
+    if (geom) {
+      geometries.set(id, geom);
+    }
+  });
+
+  const visited = new Set<number>();
+  const queue: number[] = [selectedIds[0]];
+  visited.add(selectedIds[0]);
+
+  let head = 0;
+  while (head < queue.length) {
+    const currentId = queue[head++];
+    const currentGeom = geometries.get(currentId);
+    if (!currentGeom) continue;
+
+    selectedIds.forEach((otherId) => {
+      if (!visited.has(otherId)) {
+        const otherGeom = geometries.get(otherId);
+        if (otherGeom && areGeometriesAdjacent(currentGeom, otherGeom)) {
+          visited.add(otherId);
+          queue.push(otherId);
+        }
+      }
+    });
+  }
+
+  return visited.size === selectedIds.length;
 }
 
 /** Extract a FeatureCollection of all countries */
@@ -258,11 +418,17 @@ const buildRegionsGeoJSON = (
             ? f
             : buildRegionFeatureFromDistricts(f, masterData);
         if (synthesized) {
-          const regionId =
-            synthesized.properties?.region_id || synthesized.id || 1;
+          const regionId = Number(
+            synthesized.properties?.region_id ??
+              synthesized.properties?.regionId ??
+              synthesized.properties?.id ??
+              synthesized.id ??
+              1,
+          );
           const colors = getRegionColors(regionId);
           synthesized.properties = {
             ...synthesized.properties,
+            region_id: regionId,
             regionColor: colors.fill,
             regionBorderColor: colors.border,
           };
@@ -310,6 +476,8 @@ const RegionSelection: React.FC = () => {
   const map = useRef<maplibregl.Map | null>(null);
   const popup = useRef<maplibregl.Popup | null>(null);
   const selectedRegionIdRef = useRef<any>(null);
+  const areasDataRef = useRef<any>(null);
+
 
   const [searchParams] = useSearchParams();
   const mode = searchParams.get("mode") || "region";
@@ -353,6 +521,8 @@ const RegionSelection: React.FC = () => {
   const [hoveredMandalName, setHoveredMandalName] = useState<string | null>(
     null,
   );
+  const [selectedAreaDetails, setSelectedAreaDetails] = useState<{ areaName: string; areaCode: string; mandalIds: any[] } | null>(null);
+
 
   // Automatically open/close modals based on selections
   useEffect(() => {
@@ -377,6 +547,14 @@ const RegionSelection: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (!selectedRegion || mode !== "area") {
+      setSelectedMandals([]);
+      setAreaName("");
+      setAreaCode("");
+    }
+  }, [selectedRegion, mode]);
+
+  useEffect(() => {
     setIsAreaModalOpen(selectedMandals.length > 0);
     if (selectedMandals.length === 0) {
       setFormAreaErrors({});
@@ -392,6 +570,7 @@ const RegionSelection: React.FC = () => {
       selectedRegion?.id ??
       null;
   }, [selectedRegion]);
+
 
   const handleRemoveMandal = (mandal: any) => {
     const featId = mandal.id ?? mandal.featureId;
@@ -453,6 +632,11 @@ const RegionSelection: React.FC = () => {
       { region_id: Number(selectedRegionId) },
       { skip: !selectedRegionId },
     );
+
+  useEffect(() => {
+    areasDataRef.current = areasData;
+  }, [areasData]);
+
 
   // Filter country regions for selected state to render emerald overlays in Region Mode
   const stateRegionsData = useMemo(() => {
@@ -540,6 +724,28 @@ const RegionSelection: React.FC = () => {
         }
         return prev.filter((d) => (d.id ?? d.featureId) !== dtId);
       } else {
+        // If we are adding a district, check if it's adjacent to currently selected districts (if selection is not empty)
+        if (mode === "region" && prev.length > 0 && geoMasterData) {
+          const clickedGeom = findDistrictGeometry(dtId, geoMasterData);
+          if (clickedGeom) {
+            let hasAdjacent = false;
+            for (const selectedDistrict of prev) {
+              const selectedDistrictId = Number(selectedDistrict.id ?? selectedDistrict.featureId);
+              const selectedGeom = findDistrictGeometry(selectedDistrictId, geoMasterData);
+              if (selectedGeom && areGeometriesAdjacent(clickedGeom, selectedGeom)) {
+                hasAdjacent = true;
+                break;
+              }
+            }
+            if (!hasAdjacent) {
+              setTimeout(() => {
+                toast.warning("To keep the Region contiguous, please select a district adjacent to your currently selected districts.");
+              }, 0);
+              return prev;
+            }
+          }
+        }
+
         if (map.current) {
           map.current.setFeatureState(
             { source: "districts-source", id: dtId },
@@ -637,6 +843,28 @@ const RegionSelection: React.FC = () => {
         }
         return prev.filter((m) => (m.id ?? m.featureId) !== mId);
       } else {
+        // If we are adding a mandal, check if it's adjacent to currently selected mandals (if selection is not empty)
+        if (mode === "area" && prev.length > 0 && geoMasterData) {
+          const clickedGeom = findMandalGeometry(mId, geoMasterData);
+          if (clickedGeom) {
+            let hasAdjacent = false;
+            for (const selectedMandal of prev) {
+              const selectedMandalId = Number(selectedMandal.id ?? selectedMandal.featureId);
+              const selectedGeom = findMandalGeometry(selectedMandalId, geoMasterData);
+              if (selectedGeom && areGeometriesAdjacent(clickedGeom, selectedGeom)) {
+                hasAdjacent = true;
+                break;
+              }
+            }
+            if (!hasAdjacent) {
+              setTimeout(() => {
+                toast.warning("To keep the Area contiguous, please select a mandal adjacent to your currently selected mandals.");
+              }, 0);
+              return prev;
+            }
+          }
+        }
+
         if (map.current) {
           map.current.setFeatureState(
             { source: "mandals-source", id: mId },
@@ -657,6 +885,17 @@ const RegionSelection: React.FC = () => {
       }
     });
   };
+
+  const toggleDistrictSelectionRef = useRef(toggleDistrictSelection);
+  const toggleMandalSelectionRef = useRef(toggleMandalSelection);
+
+  useEffect(() => {
+    toggleDistrictSelectionRef.current = toggleDistrictSelection;
+  });
+
+  useEffect(() => {
+    toggleMandalSelectionRef.current = toggleMandalSelection;
+  });
 
   const { data: regionOfficerDetailsRes } = useGetRegionOfficerDetailsQuery(
     {
@@ -738,7 +977,9 @@ const RegionSelection: React.FC = () => {
     setIsZooming(false);
     setSelectedState(null);
     setSelectedRegion(null);
+    setSelectedAreaDetails(null);
     setHoveredMandalName(null);
+
     setSelectedDistricts([]);
     setDistrictSearchQuery("");
     setDistrictDropdownOpen(false);
@@ -797,7 +1038,7 @@ const RegionSelection: React.FC = () => {
       popup.current = new maplibregl.Popup({
         closeButton: false,
         closeOnClick: false,
-        className: "custom-district-popup",
+        className: "custom-district-popup mapcn-tooltip",
       });
 
       map.current.addControl(new maplibregl.NavigationControl(), "top-right");
@@ -844,6 +1085,7 @@ const RegionSelection: React.FC = () => {
           map.current?.addSource(statesSourceId, {
             type: "geojson",
             data: { type: "FeatureCollection", features: [] },
+            generateId: true,
           });
 
           // Add States Fill for interaction
@@ -852,7 +1094,12 @@ const RegionSelection: React.FC = () => {
             type: "fill",
             source: statesSourceId,
             paint: {
-              "fill-color": "transparent",
+              "fill-color": [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                "#D3ECFE",
+                "transparent",
+              ],
             },
           });
 
@@ -880,7 +1127,6 @@ const RegionSelection: React.FC = () => {
 
           // Updated Click Handler: Only trigger on actual states
           map.current?.on("click", "states-fill", (e) => {
-            if (mode === "area") return; // Disable state zoom in Area Mode
             if (e.features && e.features.length > 0 && !selectedState) {
               const feature = e.features[0];
               setSelectedState({
@@ -901,56 +1147,58 @@ const RegionSelection: React.FC = () => {
 
           // District Click Handler (Multi-select)
           map.current?.on("click", "districts-fill", (e) => {
-            if (mode === "area") return; // Block selection in Area Mode
+            if (e.defaultPrevented) return;
+            const currentSearchParams = new URLSearchParams(window.location.search);
+            const currentMode = currentSearchParams.get("mode") || "region";
+            if (currentMode === "area") return; // Block selection in Area Mode
             if (e.features && e.features.length > 0) {
               const districtFeature = e.features[0];
               const districtData = districtFeature.properties;
 
-              if (districtData?.isAssigned) {
-                toast.warning(
-                  `${districtData.name || districtData.d || districtData.description || "This district"} is already part of an existing region.`,
-                );
-                return;
-              }
-
-              // New parser gives us `id` directly as a numeric property
               const dtId = districtData?.id ?? districtFeature.id;
+              const district = {
+                i: Number(dtId),
+                id: Number(dtId),
+                featureId: districtFeature.id,
+                d: districtData?.name ?? districtData?.d ?? "",
+                c: districtData?.code ?? districtData?.c ?? "",
+              };
 
-              setSelectedDistricts((prev) => {
-                const isAlreadySelected = prev.find(
-                  (d) => (d.id ?? d.featureId) === dtId,
-                );
-
-                if (isAlreadySelected) {
-                  map.current?.setFeatureState(
-                    { source: "districts-source", id: districtFeature.id },
-                    { selected: false },
-                  );
-                  return prev.filter((d) => (d.id ?? d.featureId) !== dtId);
-                } else {
-                  map.current?.setFeatureState(
-                    { source: "districts-source", id: districtFeature.id },
-                    { selected: true },
-                  );
-                  return [
-                    ...prev,
-                    { ...districtData, featureId: districtFeature.id },
-                  ];
-                }
-              });
+              toggleDistrictSelectionRef.current(district);
             }
           });
 
-          map.current?.on("mouseenter", "states-fill", () => {
-            if (mode === "area") return; // Disable cursor change in Area Mode
-            if (map.current && !selectedState)
-              map.current.getCanvas().style.cursor = "pointer";
+          let hoveredStateId: any = null;
+          map.current?.on("mousemove", "states-fill", (e) => {
+            if (selectedState) return;
+            if (e.features && e.features.length > 0) {
+              if (hoveredStateId !== null) {
+                map.current?.setFeatureState(
+                  { source: "india-states", id: hoveredStateId },
+                  { hover: false }
+                );
+              }
+              const newId = e.features[0].id ?? e.features[0].properties?.id;
+              hoveredStateId = newId !== undefined && newId !== null ? newId : null;
+              if (hoveredStateId !== null) {
+                map.current?.setFeatureState(
+                  { source: "india-states", id: hoveredStateId },
+                  { hover: true }
+                );
+              }
+              if (map.current) map.current.getCanvas().style.cursor = "pointer";
+            }
           });
 
           map.current?.on("mouseleave", "states-fill", () => {
-            if (mode === "area") return; // Disable cursor change in Area Mode
-            if (map.current && !selectedState)
-              map.current.getCanvas().style.cursor = "";
+            if (hoveredStateId !== null) {
+              map.current?.setFeatureState(
+                { source: "india-states", id: hoveredStateId },
+                { hover: false }
+              );
+            }
+            hoveredStateId = null;
+            if (map.current) map.current.getCanvas().style.cursor = "";
           });
 
           map.current?.on("mouseenter", "districts-fill", (e) => {
@@ -1000,12 +1248,76 @@ const RegionSelection: React.FC = () => {
     };
   }, []);
 
-  // Handle Zoom Out transition when returning to India view
+  // Handle Zoom Out transition when returning to India view, and update filters for state isolation
   useEffect(() => {
-    if (!selectedState && mapLoaded > 0 && isZoomed) {
-      resetView();
+    if (!map.current || mapLoaded === 0) return;
+
+    try {
+      if (selectedState) {
+        const stateId = selectedState.properties?.id;
+        if (stateId !== undefined) {
+          // Hide outer country outline and country fill, and world land
+          if (map.current.getLayer("india-fill")) {
+            map.current.setLayoutProperty("india-fill", "visibility", "none");
+          }
+          if (map.current.getLayer("india-border-line")) {
+            map.current.setLayoutProperty("india-border-line", "visibility", "none");
+          }
+          if (map.current.getLayer("world-land-fill")) {
+            map.current.setLayoutProperty("world-land-fill", "visibility", "none");
+          }
+
+          // Make states-fill solid grey to render the selected state
+          if (map.current.getLayer("states-fill")) {
+            map.current.setPaintProperty("states-fill", "fill-color", "#F0EEF0");
+            map.current.setFilter("states-fill", ["==", ["get", "id"], stateId]);
+            // If a region is selected in Area Mode, hide the state-fill completely so only the region is visible
+            if (mode === "area" && selectedRegion) {
+              map.current.setLayoutProperty("states-fill", "visibility", "none");
+            } else {
+              map.current.setLayoutProperty("states-fill", "visibility", "visible");
+            }
+          }
+          if (map.current.getLayer("states-border-line")) {
+            map.current.setFilter("states-border-line", ["==", ["get", "id"], stateId]);
+            if (mode === "area" && selectedRegion) {
+              map.current.setLayoutProperty("states-border-line", "visibility", "none");
+            } else {
+              map.current.setLayoutProperty("states-border-line", "visibility", "visible");
+            }
+          }
+        }
+      } else {
+        // Restore country borders and fill, and world land
+        if (map.current.getLayer("india-fill")) {
+          map.current.setLayoutProperty("india-fill", "visibility", "visible");
+        }
+        if (map.current.getLayer("india-border-line")) {
+          map.current.setLayoutProperty("india-border-line", "visibility", "visible");
+        }
+        if (map.current.getLayer("world-land-fill")) {
+          map.current.setLayoutProperty("world-land-fill", "visibility", "visible");
+        }
+
+        // Reset states-fill to transparent
+        if (map.current.getLayer("states-fill")) {
+          map.current.setPaintProperty("states-fill", "fill-color", "transparent");
+          map.current.setFilter("states-fill", null);
+          map.current.setLayoutProperty("states-fill", "visibility", "visible");
+        }
+        if (map.current.getLayer("states-border-line")) {
+          map.current.setFilter("states-border-line", null);
+          map.current.setLayoutProperty("states-border-line", "visibility", "visible");
+        }
+
+        if (isZoomed) {
+          resetView();
+        }
+      }
+    } catch (err) {
+      console.error("Error updating map filters for selected state:", err);
     }
-  }, [selectedState]);
+  }, [selectedState, mapLoaded, isZoomed, selectedRegion, mode]);
 
   // ── Task 5: Dynamic district rendering when a state is selected ──────────
   useEffect(() => {
@@ -1029,26 +1341,24 @@ const RegionSelection: React.FC = () => {
             id: "districts-fill",
             type: "fill",
             source: "districts-source",
+            layout: {
+              visibility: mode === "area" && selectedRegion ? "none" : "visible",
+            },
             paint: {
               "fill-color": [
                 "case",
                 ["boolean", ["get", "isAssigned"], false],
-                "#94a3b8",
-                "#3b82f6",
-              ],
-              "fill-opacity": [
-                "case",
-                ["boolean", ["get", "isAssigned"], false],
-                0.2,
+                "#9BC2F3", // Keep existing color unchanged
                 ["boolean", ["feature-state", "selected"], false],
-                0.35,
+                "#1D5E9C", // Selection color
                 ["boolean", ["feature-state", "hover"], false],
-                0.15,
-                0,
+                "#D3ECFE", // Hover color
+                "#FFFFFF",
               ],
+              "fill-opacity": 1.0,
             },
           },
-          "states-border-line",
+          map.current.getLayer("regions-fill") ? "regions-fill" : "states-border-line",
         );
 
         map.current.addLayer(
@@ -1056,20 +1366,40 @@ const RegionSelection: React.FC = () => {
             id: "districts-line",
             type: "line",
             source: "districts-source",
+            layout: {
+              visibility: mode === "area" && selectedRegion ? "none" : "visible",
+            },
             paint: {
-              "line-color": [
-                "case",
-                ["boolean", ["get", "isAssigned"], false],
-                "#64748b",
-                "#3b82f6",
-              ],
-              "line-width": 0.8,
-              "line-dasharray": [2, 1],
-              "line-opacity": 0.6,
+              "line-color": "#CBD5E1",
+              "line-width": 1.0,
+              "line-opacity": 1.0,
             },
           },
-          "states-border-line",
+          map.current.getLayer("regions-line") ? "regions-line" : "states-border-line",
         );
+
+        // Add clean text labels directly inside district polygons!
+        map.current.addLayer({
+          id: "districts-labels",
+          type: "symbol",
+          source: "districts-source",
+          layout: {
+            visibility: mode === "area" && selectedRegion ? "none" : "visible",
+            "text-field": ["coalesce", ["get", "name"], ["get", "d"], ""],
+            "text-size": 10,
+            "text-anchor": "center",
+            "text-justify": "center",
+            "text-max-width": 8,
+            "symbol-placement": "point",
+            "text-allow-overlap": false,
+          },
+          paint: {
+            "text-color": "#334155", // premium slate-700 color
+            "text-halo-color": "#ffffff", // white background halo for outstanding legibility
+            "text-halo-width": 1.5,
+            "text-opacity": 0.9,
+          },
+        });
 
         // District hover effect
         let hoveredDistrictId: number | string | null = null;
@@ -1088,7 +1418,10 @@ const RegionSelection: React.FC = () => {
               popup.current
                 .setLngLat(e.lngLat)
                 .setHTML(
-                  `<div style="font-weight: 700; color: #1e293b;">${dName}</div>`,
+                  `<div class="mapcn-tooltip-inner">
+                    <span class="mapcn-tooltip-label">District</span>
+                    <div class="mapcn-tooltip-title">${dName}</div>
+                  </div>`,
                 )
                 .addTo(map.current);
             }
@@ -1132,6 +1465,18 @@ const RegionSelection: React.FC = () => {
           "districts-source",
         ) as maplibregl.GeoJSONSource;
         source.setData(districtsGeoJSON);
+
+        // Synchronize visibility of district layers
+        const visibility = mode === "area" && selectedRegion ? "none" : "visible";
+        if (map.current.getLayer("districts-fill")) {
+          map.current.setLayoutProperty("districts-fill", "visibility", visibility);
+        }
+        if (map.current.getLayer("districts-line")) {
+          map.current.setLayoutProperty("districts-line", "visibility", visibility);
+        }
+        if (map.current.getLayer("districts-labels")) {
+          map.current.setLayoutProperty("districts-labels", "visibility", visibility);
+        }
       }
     } catch (err) {
       console.error("Failed to render districts:", err);
@@ -1149,23 +1494,27 @@ const RegionSelection: React.FC = () => {
             generateId: true,
           });
 
-          // Fill Layer for Regions (emerald/teal transparent overlay)
+          map.current?.addSource("regions-boundary-source", {
+            type: "geojson",
+            data: buildRegionsBoundaryGeoJSON(stateRegionsData.features, selectedDistricts, geoMasterData),
+            generateId: true,
+          });
+
+          // Fill Layer for Regions
           map.current?.addLayer(
             {
               id: "regions-fill",
               type: "fill",
               source: "regions-source",
+              layout: {
+                visibility: "visible",
+              },
               paint: {
-                "fill-color": ["coalesce", ["get", "regionColor"], "#10b981"],
-                "fill-opacity": [
-                  "case",
-                  ["boolean", ["feature-state", "hover"], false],
-                  0.35,
-                  0.2,
-                ],
+                "fill-color": "#9BC2F3",
+                "fill-opacity": 0.5,
               },
             },
-            "states-border-line",
+            map.current.getLayer("districts-line") ? "districts-line" : "states-border-line",
           );
 
           // Line Layer for Region borders
@@ -1173,18 +1522,49 @@ const RegionSelection: React.FC = () => {
             {
               id: "regions-line",
               type: "line",
-              source: "regions-source",
+              source: "regions-boundary-source",
+              layout: {
+                visibility: "visible",
+                "line-join": "round",
+                "line-cap": "round",
+              },
               paint: {
-                "line-color": [
-                  "coalesce",
-                  ["get", "regionBorderColor"],
-                  "#059669",
-                ],
-                "line-width": 1.8,
+                "line-color": "#000000",
+                "line-width": 1.5,
+                "line-opacity": 1.0,
               },
             },
             "states-border-line",
           );
+
+          // 3D Extrusion Layer for Selected Region (looking like a 3D block rising up)
+          map.current?.addLayer(
+            {
+              id: "selected-region-3d",
+              type: "fill-extrusion",
+              source: "regions-source",
+              filter: ["==", ["get", "region_id"], -1],
+              paint: {
+                "fill-extrusion-color": "#9BC2F3",
+                "fill-extrusion-height": 35000, // 15 km tall block
+                "fill-extrusion-base": 0,
+                "fill-extrusion-opacity": 0.85,
+              },
+            },
+            "states-border-line",
+          );
+
+          // Click handler to select and isolate/elevate region in Region Mode
+          map.current?.on("click", "regions-fill", (e) => {
+            const currentSearchParams = new URLSearchParams(window.location.search);
+            const currentMode = currentSearchParams.get("mode") || "region";
+            if (currentMode !== "region") return;
+            if (e.features && e.features.length > 0) {
+              const feature = e.features[0];
+              setSelectedRegion(feature);
+              e.preventDefault();
+            }
+          });
 
           // Hover effect for regions
           let hoveredRegionId: any = null;
@@ -1225,9 +1605,10 @@ const RegionSelection: React.FC = () => {
                 districtLabel = props.district_ids.join(", ");
               }
               const html = `
-                <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.3;">
-                  <div style="font-weight:700;font-size:13px;color:#0f172a;">${regionName}</div>
-                  ${districtLabel ? `<div style="font-size:11px;color:#475569;margin-top:4px;">${districtLabel}</div>` : ""}
+                <div class="mapcn-tooltip-inner">
+                  <span class="mapcn-tooltip-label">Region</span>
+                  <div class="mapcn-tooltip-title">${regionName}</div>
+                  ${districtLabel ? `<div style="font-size:10px;color:#cbd5e1;margin-top:2px;line-height:1.2;">${districtLabel}</div>` : ""}
                 </div>
               `;
               if (map.current && popup.current) {
@@ -1254,6 +1635,33 @@ const RegionSelection: React.FC = () => {
             "regions-source",
           ) as maplibregl.GeoJSONSource;
           source.setData(stateRegionsData);
+
+          const boundarySource = map.current.getSource(
+            "regions-boundary-source",
+          ) as maplibregl.GeoJSONSource;
+          if (boundarySource) {
+            boundarySource.setData(buildRegionsBoundaryGeoJSON(stateRegionsData.features, selectedDistricts, geoMasterData));
+          }
+        }
+
+        // Dynamic visibility depending on the mode to avoid duplicate rendering/overlaps
+        const fillLayer = map.current.getLayer("regions-fill");
+        const lineLayer = map.current.getLayer("regions-line");
+        const visibility = "visible";
+
+        if (fillLayer) {
+          map.current.setLayoutProperty(
+            "regions-fill",
+            "visibility",
+            visibility,
+          );
+        }
+        if (lineLayer) {
+          map.current.setLayoutProperty(
+            "regions-line",
+            "visibility",
+            visibility,
+          );
         }
       } catch (err) {
         console.error(
@@ -1266,12 +1674,258 @@ const RegionSelection: React.FC = () => {
         "regions-source",
       ) as maplibregl.GeoJSONSource;
       source.setData({ type: "FeatureCollection", features: [] });
+
+      const boundarySource = map.current.getSource(
+        "regions-boundary-source",
+      ) as maplibregl.GeoJSONSource;
+      if (boundarySource) {
+        boundarySource.setData({ type: "FeatureCollection", features: [] });
+      }
     }
-  }, [selectedState, stateRegionsData, mapLoaded]);
+  }, [selectedState, stateRegionsData, mapLoaded, mode, selectedDistricts, geoMasterData]);
+
+  // Effect to manage 3D visual elevation and dimming of regions in Region Mode
+  useEffect(() => {
+    if (!map.current || mapLoaded === 0 || mode !== "region") return;
+
+    try {
+      const selectedRegionId =
+        selectedRegion?.properties?.region_id ??
+        selectedRegion?.properties?.id ??
+        selectedRegion?.id;
+
+      if (selectedRegionId !== undefined && selectedRegionId !== null) {
+        const regIdNum = Number(selectedRegionId);
+
+        // Ease map to pitched 3D view in place (keep current center/zoom)
+        map.current?.easeTo({
+          pitch: 45,
+          bearing: -10,
+          duration: 1200,
+        });
+
+        // Update filter for the 3D extruded selected region layer
+        if (map.current.getLayer("selected-region-3d")) {
+          map.current.setFilter("selected-region-3d", [
+            "==",
+            ["get", "region_id"],
+            regIdNum,
+          ]);
+        }
+
+        // Keep other flat regions visible on the map
+        if (map.current.getLayer("regions-fill")) {
+          map.current.setLayoutProperty("regions-fill", "visibility", "visible");
+          map.current.setPaintProperty("regions-fill", "fill-opacity", [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            0.35,
+            0.2,
+          ]);
+        }
+        if (map.current.getLayer("regions-line")) {
+          map.current.setLayoutProperty("regions-line", "visibility", "visible");
+          map.current.setPaintProperty("regions-line", "line-color", "#000000");
+          map.current.setPaintProperty("regions-line", "line-opacity", 1.0);
+          map.current.setPaintProperty("regions-line", "line-width", 1.5);
+        }
+      } else {
+        // Restore map pitch and bearing to flat view
+        map.current?.easeTo({
+          pitch: 0,
+          bearing: 0,
+          duration: 1200,
+        });
+
+        // Hide the 3D extruded layer
+        if (map.current.getLayer("selected-region-3d")) {
+          map.current.setFilter("selected-region-3d", [
+            "==",
+            ["get", "region_id"],
+            -1,
+          ]);
+        }
+
+        // Restore flat regions visibility and default opacity
+        if (map.current.getLayer("regions-fill")) {
+          map.current.setLayoutProperty("regions-fill", "visibility", "visible");
+          map.current.setPaintProperty("regions-fill", "fill-opacity", [
+            "case",
+            ["boolean", ["feature-state", "hover"], false],
+            0.35,
+            0.2,
+          ]);
+        }
+        if (map.current.getLayer("regions-line")) {
+          map.current.setLayoutProperty("regions-line", "visibility", "visible");
+          map.current.setPaintProperty("regions-line", "line-color", "#000000");
+          map.current.setPaintProperty("regions-line", "line-opacity", 1.0);
+          map.current.setPaintProperty("regions-line", "line-width", 1.5);
+        }
+      }
+    } catch (err) {
+      console.error("Error updating map styling for selected region:", err);
+    }
+  }, [selectedRegion, mapLoaded, mode]);
+
+  // Effect to manage regions visibility and filtering in Area Mode
+  useEffect(() => {
+    if (!map.current || mapLoaded === 0 || mode !== "area") return;
+
+    try {
+      const fillLayer = map.current.getLayer("regions-fill");
+      const lineLayer = map.current.getLayer("regions-line");
+
+      if (fillLayer || lineLayer) {
+        const selectedRegionId =
+          selectedRegion?.properties?.region_id ??
+          selectedRegion?.properties?.id ??
+          selectedRegion?.id;
+
+        if (selectedRegionId !== undefined && selectedRegionId !== null) {
+          const regIdNum = Number(selectedRegionId);
+          const filter: any = ["==", ["coalesce", ["get", "region_id"], ["get", "id"]], regIdNum];
+
+          if (fillLayer) {
+            map.current.setFilter("regions-fill", filter);
+            map.current.setLayoutProperty("regions-fill", "visibility", "visible");
+          }
+          if (lineLayer) {
+            map.current.setFilter("regions-line", filter);
+            map.current.setLayoutProperty("regions-line", "visibility", "visible");
+          }
+        } else {
+          // No region selected — show all regions in the state
+          if (fillLayer) {
+            map.current.setFilter("regions-fill", null);
+            map.current.setLayoutProperty("regions-fill", "visibility", "visible");
+          }
+          if (lineLayer) {
+            map.current.setFilter("regions-line", null);
+            map.current.setLayoutProperty("regions-line", "visibility", "visible");
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Error managing regions filtering in Area Mode:", err);
+    }
+  }, [selectedRegion, mapLoaded, mode]);
+
+  // Effect to manage district layers visibility based on mode, state selection, and region selection
+  useEffect(() => {
+    if (!map.current || mapLoaded === 0) return;
+
+    try {
+      const fillLayer = map.current.getLayer("districts-fill");
+      const lineLayer = map.current.getLayer("districts-line");
+
+      if (fillLayer && lineLayer) {
+        const visibility =
+          mode === "area" && selectedRegion ? "none" : "visible";
+        map.current.setLayoutProperty("districts-fill", "visibility", visibility);
+        map.current.setLayoutProperty("districts-line", "visibility", visibility);
+        if (map.current.getLayer("districts-labels")) {
+          map.current.setLayoutProperty("districts-labels", "visibility", visibility);
+        }
+      }
+    } catch (err) {
+      console.error("Error updating district layers visibility:", err);
+    }
+  }, [mode, mapLoaded, selectedRegion]);
+
+  // Effect to manage 3D visual elevation and dimming of areas in Area Mode
+  useEffect(() => {
+    if (!map.current || mapLoaded === 0 || mode !== "area") return;
+
+    try {
+      if (selectedAreaDetails) {
+        // Ease map to pitched 3D view in place
+        map.current.easeTo({
+          pitch: 45,
+          bearing: -10,
+          duration: 1200,
+        });
+
+        // Set filter for 3D extrusion of selected area mandals
+        if (map.current.getLayer("selected-area-3d")) {
+          map.current.setFilter("selected-area-3d", [
+            "in",
+            ["get", "id"],
+            ["literal", selectedAreaDetails.mandalIds.map(Number)],
+          ]);
+        }
+
+        // Hide other flat mandals on the map
+        if (map.current.getLayer("mandals-fill")) {
+          map.current.setLayoutProperty("mandals-fill", "visibility", "none");
+        }
+        if (map.current.getLayer("mandals-line")) {
+          map.current.setLayoutProperty("mandals-line", "visibility", "none");
+        }
+      } else {
+        // Restore map pitch and bearing to flat view
+        map.current.easeTo({
+          pitch: 0,
+          bearing: 0,
+          duration: 1200,
+        });
+
+        // Hide 3D extrusion layer
+        if (map.current.getLayer("selected-area-3d")) {
+          map.current.setFilter("selected-area-3d", ["==", ["get", "id"], -1]);
+        }
+
+        // Restore flat mandals to default opacity case
+        if (map.current.getLayer("mandals-fill")) {
+          map.current.setLayoutProperty("mandals-fill", "visibility", "visible");
+          map.current.setPaintProperty("mandals-fill", "fill-opacity", 1.0);
+        }
+        if (map.current.getLayer("mandals-line")) {
+          map.current.setLayoutProperty("mandals-line", "visibility", "visible");
+        }
+      }
+    } catch (err) {
+      console.error("Error updating map 3D styling for selected area:", err);
+    }
+  }, [selectedAreaDetails, mapLoaded, mode]);
+
 
   // Effect to dynamically update (or create) mandals-source when areasData or selectedRegion updates
   useEffect(() => {
-    if (!map.current || !geoMasterData || !selectedRegion) return;
+    if (!map.current || !geoMasterData || mode !== "area") return;
+
+    if (!selectedRegion) {
+      // Clear mandals data and hide layers if no region is selected
+      try {
+        if (map.current.getSource("mandals-source")) {
+          const source = map.current.getSource(
+            "mandals-source",
+          ) as maplibregl.GeoJSONSource;
+          source.setData({ type: "FeatureCollection", features: [] });
+        }
+        if (map.current.getSource("areas-boundary-source")) {
+          const source = map.current.getSource(
+            "areas-boundary-source",
+          ) as maplibregl.GeoJSONSource;
+          source.setData({ type: "FeatureCollection", features: [] });
+        }
+        if (map.current.getLayer("mandals-fill")) {
+          map.current.setLayoutProperty("mandals-fill", "visibility", "none");
+        }
+        if (map.current.getLayer("mandals-line")) {
+          map.current.setLayoutProperty("mandals-line", "visibility", "none");
+        }
+        if (map.current.getLayer("areas-boundary-line")) {
+          map.current.setLayoutProperty("areas-boundary-line", "visibility", "none");
+        }
+        if (map.current.getLayer("mandals-labels")) {
+          map.current.setLayoutProperty("mandals-labels", "visibility", "none");
+        }
+      } catch (err) {
+        console.error("Error clearing mandals data:", err);
+      }
+      return;
+    }
 
     try {
       const districtIds = getDistrictIdsFromRegion(
@@ -1290,6 +1944,26 @@ const RegionSelection: React.FC = () => {
         regionId,
       );
 
+      const areasBoundaryGeoJSON = buildAreasBoundaryGeoJSON(
+        mandalsGeoJSON,
+        areasList,
+        selectedMandals,
+      );
+
+      // Ensure layers are visible when a region is selected
+      if (map.current.getLayer("mandals-fill")) {
+        map.current.setLayoutProperty("mandals-fill", "visibility", "visible");
+      }
+      if (map.current.getLayer("mandals-line")) {
+        map.current.setLayoutProperty("mandals-line", "visibility", "visible");
+      }
+      if (map.current.getLayer("areas-boundary-line")) {
+        map.current.setLayoutProperty("areas-boundary-line", "visibility", "visible");
+      }
+      if (map.current.getLayer("mandals-labels")) {
+        map.current.setLayoutProperty("mandals-labels", "visibility", "visible");
+      }
+
       const existingSource = map.current.getSource("mandals-source") as
         | maplibregl.GeoJSONSource
         | undefined;
@@ -1297,11 +1971,22 @@ const RegionSelection: React.FC = () => {
       if (existingSource) {
         // Source already exists — just refresh the data
         existingSource.setData(mandalsGeoJSON);
+        const areasBoundarySource = map.current.getSource("areas-boundary-source") as
+          | maplibregl.GeoJSONSource
+          | undefined;
+        if (areasBoundarySource) {
+          areasBoundarySource.setData(areasBoundaryGeoJSON);
+        }
       } else {
         // Source doesn't exist yet — create source + layers + events from scratch
         map.current.addSource("mandals-source", {
           type: "geojson",
           data: mandalsGeoJSON,
+        });
+
+        map.current.addSource("areas-boundary-source", {
+          type: "geojson",
+          data: areasBoundaryGeoJSON,
         });
 
         // Fill layer with dynamic area colors
@@ -1314,39 +1999,89 @@ const RegionSelection: React.FC = () => {
               "fill-color": [
                 "case",
                 ["boolean", ["get", "isAssigned"], false],
-                ["coalesce", ["get", "areaColor"], "#94a3b8"],
+                "#9BC2F3", // Keep existing color unchanged
                 ["boolean", ["feature-state", "selected"], false],
-                "#0284c7",
-                "#38bdf8",
-              ],
-              "fill-opacity": [
-                "case",
-                ["boolean", ["get", "isAssigned"], false],
-                0.4,
-                ["boolean", ["feature-state", "selected"], false],
-                0.55,
+                "#1D5E9C", // Selection color
                 ["boolean", ["feature-state", "hover"], false],
-                0.45,
-                0.25,
+                "#D3ECFE", // Hover color
+                "#FFFFFF",
               ],
+              "fill-opacity": 1.0,
             },
           },
           "states-border-line",
         );
 
-        // Teal outline
+        // Neutral outline
         map.current.addLayer(
           {
             id: "mandals-line",
             type: "line",
             source: "mandals-source",
             paint: {
-              "line-color": "#0d9488",
-              "line-width": 1.2,
+              "line-color": "#CBD5E1",
+              "line-width": 1.0,
             },
           },
           "states-border-line",
         );
+
+        // Thick black outer boundary for Areas
+        map.current.addLayer(
+          {
+            id: "areas-boundary-line",
+            type: "line",
+            source: "areas-boundary-source",
+            layout: {
+              "line-join": "round",
+              "line-cap": "round",
+            },
+            paint: {
+              "line-color": "#000000",
+              "line-width": 1.5,
+              "line-opacity": 1.0,
+            },
+          },
+          "states-border-line",
+        );
+
+        map.current.addLayer({
+          id: "mandals-labels",
+          type: "symbol",
+          source: "mandals-source",
+          layout: {
+            visibility: "visible",
+            "text-field": ["coalesce", ["get", "name"], ["get", "d"], ""],
+            "text-size": 8.5,
+            "text-anchor": "center",
+            "text-justify": "center",
+            "symbol-placement": "point",
+            "text-allow-overlap": false,
+          },
+          paint: {
+            "text-color": "#475569",
+            "text-halo-color": "#ffffff",
+            "text-halo-width": 1.5,
+          },
+        });
+
+        // 3D Extrusion Layer for Selected Area Mandals
+        map.current.addLayer(
+          {
+            id: "selected-area-3d",
+            type: "fill-extrusion",
+            source: "mandals-source",
+            filter: ["==", ["get", "id"], -1],
+            paint: {
+              "fill-extrusion-color": "#9BC2F3",
+              "fill-extrusion-height": 5000,
+              "fill-extrusion-base": 0,
+              "fill-extrusion-opacity": 0.85,
+            },
+          },
+          "states-border-line",
+        );
+
 
         // Hover / click events
         let hoveredMandalId: any = null;
@@ -1370,33 +2105,38 @@ const RegionSelection: React.FC = () => {
             const mId = mData?.id ?? feature.id;
 
             if (mData?.isAssigned) {
-              const nameText = mData.areaName
-                ? `assigned to Area "${mData.areaName}"`
-                : "assigned to an existing area";
-              toast.warning(
-                `${mData.name || "This mandal"} is already ${nameText}.`,
+              const areasList = areasDataRef.current?.data || [];
+              const matchedArea = areasList.find((area: any) =>
+                area.mandal_ids?.map(Number).includes(Number(mId))
               );
+              if (matchedArea) {
+                setSelectedAreaDetails({
+                  areaName: matchedArea.area_name || matchedArea.areaName || "",
+                  areaCode: matchedArea.area_code || matchedArea.areaCode || "",
+                  mandalIds: matchedArea.mandal_ids || [],
+                });
+              } else {
+                const nameText = mData.areaName
+                  ? `assigned to Area "${mData.areaName}"`
+                  : "assigned to an existing area";
+                toast.warning(
+                  `${mData.name || "This mandal"} is already ${nameText}.`,
+                );
+              }
               return;
             }
 
-            setSelectedMandals((prev) => {
-              const isAlreadySelected = prev.find(
-                (m) => (m.id ?? m.featureId) === mId,
-              );
-              if (isAlreadySelected) {
-                map.current?.setFeatureState(
-                  { source: "mandals-source", id: feature.id },
-                  { selected: false },
-                );
-                return prev.filter((m) => (m.id ?? m.featureId) !== mId);
-              } else {
-                map.current?.setFeatureState(
-                  { source: "mandals-source", id: feature.id },
-                  { selected: true },
-                );
-                return [...prev, { ...mData, featureId: feature.id }];
-              }
-            });
+
+            const mandal = {
+              i: Number(mId),
+              id: Number(mId),
+              featureId: feature.id,
+              d: mData?.name ?? mData?.d ?? "",
+              c: mData?.code ?? mData?.c ?? "",
+              district_id: mData?.district_id ?? mData?.districtId ?? 5,
+            };
+
+            toggleMandalSelectionRef.current(mandal);
           }
         });
 
@@ -1407,33 +2147,22 @@ const RegionSelection: React.FC = () => {
             const mName = props.name || props.d || "";
             const isAssigned: boolean = !!props.isAssigned;
             const areaName: string = props.areaName || "";
-            const areaColor: string = props.areaColor || "#64748b";
 
             setHoveredMandalName(mName || null);
 
             if (map.current && popup.current) {
               const areaTag =
                 isAssigned && areaName
-                  ? `<div style="
-                    display:inline-flex;align-items:center;gap:5px;
-                    margin-top:5px;padding:2px 8px;border-radius:999px;
-                    background:${areaColor}22;border:1.5px solid ${areaColor};
-                    font-size:10px;font-weight:700;color:${areaColor};letter-spacing:0.05em;
-                    white-space:nowrap;
-                  ">
-                    <span style="width:7px;height:7px;border-radius:50%;background:${areaColor};display:inline-block;flex-shrink:0;"></span>
-                    ${areaName}
-                  </div>`
+                  ? `<div class="mapcn-tooltip-badge">
+                      <span class="mapcn-tooltip-badge-dot"></span>
+                      ${areaName}
+                    </div>`
                   : "";
 
               const html = `
-                <div style="
-                  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-                  background:white;border-radius:10px;padding:9px 12px;
-                  box-shadow:0 4px 20px rgba(0,0,0,0.15);min-width:120px;
-                  border:1px solid #e2e8f0;
-                ">
-                  <div style="font-weight:700;font-size:13px;color:#0f172a;line-height:1.3;">${mName}</div>
+                <div class="mapcn-tooltip-inner">
+                  <span class="mapcn-tooltip-label">Mandal</span>
+                  <div class="mapcn-tooltip-title">${mName}</div>
                   ${areaTag}
                 </div>`;
 
@@ -1475,7 +2204,7 @@ const RegionSelection: React.FC = () => {
     } catch (err) {
       console.error("Failed to dynamically update mandals data:", err);
     }
-  }, [areasData, selectedRegion, geoMasterData, mapLoaded]);
+  }, [areasData, selectedRegion, geoMasterData, mapLoaded, mode, selectedMandals]);
 
   // Effect to process and render country-wide regions when in India map view
   useEffect(() => {
@@ -1495,38 +2224,49 @@ const RegionSelection: React.FC = () => {
               generateId: true,
             });
 
-            // Fill Layer for Country Regions (Beautiful Violet transparent overlay)
+            map.current?.addSource("country-regions-boundary-source", {
+              type: "geojson",
+              data: buildOuterBoundariesGeoJSON(finalData.features),
+              generateId: true,
+            });
+
+            // Fill Layer for Country Regions
             map.current?.addLayer(
               {
                 id: "country-regions-fill",
                 type: "fill",
                 source: "country-regions-source",
+                layout: {
+                  visibility: "none",
+                },
                 paint: {
-                  "fill-color": ["coalesce", ["get", "regionColor"], "#8b5cf6"],
-                  "fill-opacity": [
+                  "fill-color": [
                     "case",
                     ["boolean", ["feature-state", "hover"], false],
-                    0.4,
-                    0.2,
+                    "#D3ECFE",
+                    "#9BC2F3",
                   ],
+                  "fill-opacity": 0.5,
                 },
               },
-              "states-border-line",
-            ); // Insert below state borders
+              map.current.getLayer("districts-line") ? "districts-line" : "states-border-line",
+            );
 
             // Line Layer for Country Region borders
             map.current?.addLayer(
               {
                 id: "country-regions-line",
                 type: "line",
-                source: "country-regions-source",
+                source: "country-regions-boundary-source",
+                layout: {
+                  visibility: "none",
+                  "line-join": "round",
+                  "line-cap": "round",
+                },
                 paint: {
-                  "line-color": [
-                    "coalesce",
-                    ["get", "regionBorderColor"],
-                    "#6d28d9",
-                  ],
+                  "line-color": "#000000",
                   "line-width": 1.5,
+                  "line-opacity": 1.0,
                 },
               },
               "states-border-line",
@@ -1534,7 +2274,9 @@ const RegionSelection: React.FC = () => {
 
             // Click Handler for dynamic zoom & mandals rendering in Area Mode
             map.current?.on("click", "country-regions-fill", (e) => {
-              if (mode !== "area") return;
+              const currentSearchParams = new URLSearchParams(window.location.search);
+              const currentMode = currentSearchParams.get("mode") || "region";
+              if (currentMode !== "area") return;
               if (e.features && e.features.length > 0) {
                 const feature = e.features[0];
                 const clickedId =
@@ -1617,9 +2359,10 @@ const RegionSelection: React.FC = () => {
                   districtLabel = props.district_ids.join(", ");
                 }
                 const html = `
-                  <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.3;">
-                    <div style="font-weight:700;font-size:13px;color:#0f172a;">${regionName}</div>
-                    ${districtLabel ? `<div style="font-size:11px;color:#475569;margin-top:4px;">${districtLabel}</div>` : ""}
+                  <div class="mapcn-tooltip-inner">
+                    <span class="mapcn-tooltip-label">Region</span>
+                    <div class="mapcn-tooltip-title">${regionName}</div>
+                    ${districtLabel ? `<div style="font-size:10px;color:#cbd5e1;margin-top:2px;line-height:1.2;">${districtLabel}</div>` : ""}
                   </div>
                 `;
                 if (map.current && popup.current) {
@@ -1645,25 +2388,34 @@ const RegionSelection: React.FC = () => {
             const source = map.current.getSource(
               "country-regions-source",
             ) as maplibregl.GeoJSONSource;
-            source.setData(finalData);
+            if (source) {
+              source.setData(finalData);
+            }
+            const boundarySource = map.current.getSource(
+              "country-regions-boundary-source",
+            ) as maplibregl.GeoJSONSource;
+            if (boundarySource) {
+              boundarySource.setData(buildOuterBoundariesGeoJSON(finalData.features));
+            }
           }
         }
       } catch (err) {
         console.error("Failed to render country regions from API:", err);
       }
     }
-  }, [regionsByCountryData, mapLoaded, geoMasterData, mode, selectedRegion]);
+  }, [regionsByCountryData, mapLoaded, geoMasterData]);
 
-  // Effect to manage country regions visibility depending on mode and selection
+  // Effect to manage country regions visibility and filtering depending on mode and selection
   useEffect(() => {
     if (map.current) {
       try {
         const fillLayer = map.current.getLayer("country-regions-fill");
         const lineLayer = map.current.getLayer("country-regions-line");
 
-        // Always keep regions visible — click handler already blocks selection in region mode
-        // When a state is selected, the emerald regions-source overlay shows state-filtered regions
-        const visibility = "visible";
+        // Keep country regions layer visible once a state is selected in Area Mode
+        // so that they remain interactive and allow switching regions directly.
+        const visibility =
+          mode === "area" && selectedState ? "visible" : "none";
 
         if (fillLayer) {
           map.current.setLayoutProperty(
@@ -1679,11 +2431,115 @@ const RegionSelection: React.FC = () => {
             visibility,
           );
         }
+
+        // Apply dynamic paint property styling when a region is selected vs when cleared
+        const selectedRegionId =
+          selectedRegion?.properties?.region_id ??
+          selectedRegion?.properties?.id ??
+          selectedRegion?.id;
+
+        if (selectedRegionId !== undefined && selectedRegionId !== null) {
+          const regIdNum = Number(selectedRegionId);
+          // Region is selected
+          if (fillLayer) {
+            map.current.setPaintProperty(
+              "country-regions-fill",
+              "fill-color",
+              "#1D5E9C"
+            );
+            map.current.setPaintProperty(
+              "country-regions-fill",
+              "fill-opacity",
+              0.5
+            );
+          }
+          if (lineLayer) {
+            map.current.setPaintProperty(
+              "country-regions-line",
+              "line-color",
+              "#000000"
+            );
+            map.current.setPaintProperty(
+              "country-regions-line",
+              "line-opacity",
+              1.0
+            );
+            map.current.setPaintProperty(
+              "country-regions-line",
+              "line-width",
+              1.5
+            );
+          }
+
+          // Apply filter to show ONLY the selected region
+          const filter: any = ["==", ["get", "region_id"], regIdNum];
+          if (fillLayer) {
+            map.current.setFilter("country-regions-fill", filter);
+          }
+          if (lineLayer) {
+            map.current.setFilter("country-regions-line", filter);
+          }
+        } else {
+          // No region is selected
+          if (fillLayer) {
+            map.current.setPaintProperty(
+              "country-regions-fill",
+              "fill-color",
+              [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                "#D3ECFE",
+                "#9BC2F3",
+              ]
+            );
+            map.current.setPaintProperty(
+              "country-regions-fill",
+              "fill-opacity",
+              0.5
+            );
+          }
+          if (lineLayer) {
+            map.current.setPaintProperty(
+              "country-regions-line",
+              "line-color",
+              "#000000"
+            );
+            map.current.setPaintProperty(
+              "country-regions-line",
+              "line-opacity",
+              1.0,
+            );
+             map.current.setPaintProperty(
+              "country-regions-line",
+              "line-width",
+              1.5,
+            );
+          }
+
+          // Apply filter to show only regions in the selected state
+          const selectedStateId = selectedState?.properties?.id;
+          if (selectedStateId !== undefined && selectedStateId !== null) {
+            const filter: any = ["==", ["get", "state_id"], Number(selectedStateId)];
+            if (fillLayer) {
+              map.current.setFilter("country-regions-fill", filter);
+            }
+            if (lineLayer) {
+              map.current.setFilter("country-regions-line", filter);
+            }
+          } else {
+            if (fillLayer) {
+              map.current.setFilter("country-regions-fill", null);
+            }
+            if (lineLayer) {
+              map.current.setFilter("country-regions-line", null);
+            }
+          }
+        }
       } catch (err) {
         // Safe check for early renders
       }
     }
-  }, [selectedState, regionsByCountryData, mode]);
+  }, [selectedState, selectedRegion, mode, mapLoaded, regionsByCountryData, geoMasterData]);
 
   const handleRemoveDistrict = (district: any) => {
     const dtId = district.id ?? district.featureId;
@@ -1715,10 +2571,17 @@ const RegionSelection: React.FC = () => {
     }
     setFormErrors({});
 
+    const districtIds = selectedDistricts.map((d) =>
+      Number(d.id ?? d.featureId),
+    );
+
+    // Verify that the selection forms a contiguous region
+    if (geoMasterData && !isDistrictSelectionContiguous(districtIds, geoMasterData)) {
+      toast.error("Your selected districts must form a contiguous (fully connected) region. Please adjust your selection.");
+      return;
+    }
+
     try {
-      const districtIds = selectedDistricts.map((d) =>
-        Number(d.id ?? d.featureId),
-      );
 
       const res = await createRegion({
         regionName,
@@ -1794,6 +2657,16 @@ const RegionSelection: React.FC = () => {
       return;
     }
     setFormAreaErrors({});
+
+    const mandalIds = selectedMandals.map((m) =>
+      Number(m.id ?? m.featureId),
+    );
+
+    // Verify that the selection forms a contiguous area
+    if (geoMasterData && !isSelectionContiguous(mandalIds, geoMasterData)) {
+      toast.error("Your selected mandals must form a contiguous (fully connected) area. Please adjust your selection.");
+      return;
+    }
 
     try {
       const assignments = selectedMandals.map((m) => ({
@@ -1929,17 +2802,134 @@ const RegionSelection: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-50/50 relative">
+      <style>{`
+        /* MapCN-inspired modern tooltip style */
+        .mapcn-tooltip {
+          pointer-events: none;
+          z-index: 9999;
+        }
+
+        @keyframes mapcn-content-fade-in {
+          from {
+            opacity: 0;
+            transform: scale(0.96) translateY(4px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
+        .mapcn-tooltip .maplibregl-popup-content {
+          background: rgba(9, 20, 38, 0.95) !important;
+          backdrop-filter: blur(8px) !important;
+          -webkit-backdrop-filter: blur(8px) !important;
+          border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+          border-radius: 12px !important;
+          padding: 10px 14px !important;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3) !important;
+          color: #ffffff !important;
+          animation: mapcn-content-fade-in 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          transform-origin: center bottom;
+        }
+
+        .mapcn-tooltip-inner {
+          font-family: 'Plus Jakarta Sans', sans-serif !important;
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          line-height: 1.3;
+        }
+
+        .mapcn-tooltip-label {
+          font-size: 9px !important;
+          font-weight: 700 !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.06em !important;
+          color: #94a3b8 !important;
+        }
+
+        .mapcn-tooltip-title {
+          font-size: 13px !important;
+          font-weight: 700 !important;
+          color: #ffffff !important;
+        }
+
+        .mapcn-tooltip-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          margin-top: 6px;
+          padding: 3px 8px;
+          border-radius: 9999px;
+          background: rgba(39, 128, 196, 0.2) !important;
+          border: 1px solid rgba(39, 128, 196, 0.4) !important;
+          font-size: 9px !important;
+          font-weight: 700 !important;
+          color: #38bdf8 !important;
+          white-space: nowrap;
+          width: fit-content;
+        }
+
+        .mapcn-tooltip-badge-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: #38bdf8 !important;
+          display: inline-block;
+          flex-shrink: 0;
+        }
+
+        /* Styled tip/arrow for all anchor positions */
+        .mapcn-tooltip.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+          border-bottom-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+          border-top-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+          border-right-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+          border-left-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-top-left .maplibregl-popup-tip {
+          border-bottom-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+          border-bottom-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip {
+          border-top-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+          border-top-color: rgba(9, 20, 38, 0.95) !important;
+        }
+      `}</style>
       {/* Dynamic Header */}
       <div className="absolute top-8 left-8 right-8 z-20 flex items-center justify-between pointer-events-none">
         <div className="flex items-center gap-4 pointer-events-auto">
           <button
             onClick={() => {
-              if (selectedState || selectedRegion) {
+              if (selectedAreaDetails) {
+                setSelectedAreaDetails(null);
+              } else if ((mode === "region" || mode === "area") && selectedRegion) {
+                setSelectedRegion(null);
+                setSelectedMandals([]);
+                if (selectedState) {
+                  const bounds = getFeatureBounds(selectedState);
+                  map.current?.fitBounds(bounds, {
+                    padding: 100,
+                    duration: 1200,
+                  });
+                }
+              } else if (selectedState) {
                 resetView();
               } else {
                 navigate("/role-manager/create-regions-and-areas");
               }
             }}
+
             className="p-2.5 rounded-full bg-white/70 backdrop-blur-md border border-white/40 shadow-lg hover:bg-white/90 hover:scale-105 active:scale-95 transition-all pointer-events-auto flex items-center justify-center"
             title={
               selectedState || selectedRegion
@@ -1968,6 +2958,17 @@ const RegionSelection: React.FC = () => {
                 {selectedState.properties?.name ||
                   selectedState.properties?.STNAME ||
                   ""}
+              </p>
+            </div>
+          )}
+
+          {mode === "region" && selectedState && selectedRegion && (
+            <div className="bg-purple-500/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-purple-500/30 shadow-md animate-in slide-in-from-left-4 duration-500 flex flex-col gap-0.5">
+              <span className="text-[9px] font-bold text-purple-700 uppercase tracking-[0.18em] block leading-none mb-0.5">
+                Viewing Region
+              </span>
+              <p className="text-sm font-extrabold text-purple-900 tracking-tight leading-none uppercase">
+                {selectedRegion.properties?.region_name || selectedRegion.properties?.regionName || selectedRegion.properties?.name || "Operational Region"}
               </p>
             </div>
           )}
@@ -2047,6 +3048,149 @@ const RegionSelection: React.FC = () => {
         </div>
       </div>
 
+      {/* Selected Region Detail Card in Region Mode */}
+      {mode === "region" && selectedRegion && (
+        <div className="fixed inset-x-0 bottom-0 md:inset-x-auto md:inset-y-0 md:right-0 z-[100] flex items-end md:items-center justify-center p-4 md:p-6 md:pr-8 pointer-events-none select-none animate-in slide-in-from-bottom md:slide-in-from-right duration-300">
+          <div className="relative w-full md:w-[430px] flex flex-col gap-4 pointer-events-auto items-end">
+            <div className="relative w-full h-auto max-h-[50vh] md:max-h-[90vh] flex flex-col bg-white/90 backdrop-blur-xl rounded-[24px] border border-[#E1E5EF] shadow-2xl overflow-hidden p-[20px] md:p-[28px] pointer-events-auto">
+              <div className="flex items-start justify-between mb-[20px]">
+                <div className="flex gap-3">
+                  <div className="mt-1 flex-shrink-0 w-[20px] h-[20px] rounded-[4px] bg-[#2780C4] flex items-center justify-center text-white font-bold text-xs">
+                    R
+                  </div>
+                  <div className="flex flex-col gap-[6px]">
+                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-[0.18em] block leading-none">
+                      Region Details
+                    </span>
+                    <h3 className="text-[20px] font-bold text-[#353535] font-['Plus_Jakarta_Sans'] leading-[26px]">
+                      {selectedRegion.properties?.region_name || selectedRegion.properties?.regionName || selectedRegion.properties?.name || "Operational Region"}
+                    </h3>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedRegion(null)}
+                  className="p-1.5 rounded-full hover:bg-slate-100 transition-colors border border-transparent shadow-sm cursor-pointer"
+                >
+                  <X className="w-5 h-5 text-slate-400 hover:text-slate-600" />
+                </button>
+              </div>
+
+              <div className="flex-1 flex flex-col gap-4 overflow-y-auto custom-scrollbar pr-1 mb-6">
+                <div className="flex flex-col gap-[6px]">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Region Code</span>
+                  <span className="text-sm font-semibold text-slate-700 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 self-start">
+                    {selectedRegion.properties?.region_code || selectedRegion.properties?.regionCode || selectedRegion.properties?.code || "N/A"}
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-[8px]">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Covered Districts</span>
+                  <div className="flex flex-wrap gap-2">
+                    {(() => {
+                      const props = selectedRegion.properties || {};
+                      let districts: string[] = [];
+                      if (Array.isArray(props.districts)) {
+                        districts = props.districts.map((d: any) => d?.name || d?.d || d?.district_name || d?.districtName).filter(Boolean);
+                      } else if (typeof props.all_districts === "string") {
+                        districts = props.all_districts.split(",").map((s: string) => s.trim());
+                      } else if (Array.isArray(props.district_ids)) {
+                        districts = props.district_ids.map(String);
+                      }
+                      if (districts.length === 0) return <span className="text-sm text-slate-500 italic">No districts mapped</span>;
+                      return districts.map((name, i) => (
+                        <span key={i} className="text-xs font-medium text-slate-600 bg-slate-100 border border-slate-200/60 px-2.5 py-1 rounded-lg">
+                          {name}
+                        </span>
+                      ));
+                    })()}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex mt-2">
+                <button
+                  onClick={() => setSelectedRegion(null)}
+                  className="w-full h-[44px] rounded-full bg-[#2780C4] hover:bg-[#1f6aaa] text-white shadow-lg hover:shadow-xl transition-all font-bold text-xs cursor-pointer flex items-center justify-center"
+                >
+                  Back to Map
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Selected Area Detail Card in Area Mode */}
+      {mode === "area" && selectedAreaDetails && (
+        <div className="fixed inset-x-0 bottom-0 md:inset-x-auto md:inset-y-0 md:right-0 z-[100] flex items-end md:items-center justify-center p-4 md:p-6 md:pr-8 pointer-events-none select-none animate-in slide-in-from-bottom md:slide-in-from-right duration-300">
+          <div className="relative w-full md:w-[430px] flex flex-col gap-4 pointer-events-auto items-end">
+            <div className="relative w-full h-auto max-h-[50vh] md:max-h-[90vh] flex flex-col bg-white/90 backdrop-blur-xl rounded-[24px] border border-[#E1E5EF] shadow-2xl overflow-hidden p-[20px] md:p-[28px] pointer-events-auto">
+              <div className="flex items-start justify-between mb-[20px]">
+                <div className="flex gap-3">
+                  <div className="mt-1 flex-shrink-0 w-[20px] h-[20px] rounded-[4px] bg-[#0d9488] flex items-center justify-center text-white font-bold text-xs">
+                    A
+                  </div>
+                  <div className="flex flex-col gap-[6px]">
+                    <span className="text-[10px] font-bold text-teal-600 uppercase tracking-[0.18em] block leading-none">
+                      Area Details
+                    </span>
+                    <h3 className="text-[20px] font-bold text-[#353535] font-['Plus_Jakarta_Sans'] leading-[26px]">
+                      {selectedAreaDetails.areaName || "Operational Area"}
+                    </h3>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedAreaDetails(null)}
+                  className="p-1.5 rounded-full hover:bg-slate-100 transition-colors border border-transparent shadow-sm cursor-pointer"
+                >
+                  <X className="w-5 h-5 text-slate-400 hover:text-slate-600" />
+                </button>
+              </div>
+
+              <div className="flex-1 flex flex-col gap-4 overflow-y-auto custom-scrollbar pr-1 mb-6">
+                <div className="flex flex-col gap-[6px]">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Area Code</span>
+                  <span className="text-sm font-semibold text-slate-700 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 self-start">
+                    {selectedAreaDetails.areaCode || "N/A"}
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-[8px]">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Covered Sub-Areas (Mandals)</span>
+                  <div className="flex flex-wrap gap-2">
+                    {(() => {
+                      const mandalIds = selectedAreaDetails.mandalIds || [];
+                      const mandals = mandalIds
+                        .map((mId: any) => {
+                          const mObj = regionMandals.find((rm: any) => rm.i === Number(mId));
+                          return mObj?.d || mObj?.name || `Mandal ${mId}`;
+                        })
+                        .filter(Boolean);
+
+                      if (mandals.length === 0) return <span className="text-sm text-slate-500 italic">No mandals mapped</span>;
+                      return mandals.map((name, i) => (
+                        <span key={i} className="text-xs font-medium text-slate-600 bg-slate-100 border border-slate-200/60 px-2.5 py-1 rounded-lg">
+                          {name}
+                        </span>
+                      ));
+                    })()}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex mt-2">
+                <button
+                  onClick={() => setSelectedAreaDetails(null)}
+                  className="w-full h-[44px] rounded-full bg-[#0d9488] hover:bg-[#0b7a70] text-white shadow-lg hover:shadow-xl transition-all font-bold text-xs cursor-pointer flex items-center justify-center"
+                >
+                  Back to Map
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
       {/* Custom Creation Modal */}
       {isModalOpen && (
         <div className="fixed inset-x-0 bottom-0 md:inset-x-auto md:inset-y-0 md:right-0 z-[100] flex items-end md:items-center justify-center p-4 md:p-6 md:pr-8 pointer-events-none select-none">
@@ -2061,7 +3205,7 @@ const RegionSelection: React.FC = () => {
               <div className="flex items-start justify-between mb-[26px]">
                 <div className="flex gap-3">
                   <div className="mt-1 flex-shrink-0 w-[20px] h-[20px] rounded-[4px] bg-[#353535] flex items-center justify-center">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>
                   </div>
                   <div className="flex flex-col gap-[6px]">
                     <h3 className="text-[24px] font-bold text-[#353535] font-['Plus_Jakarta_Sans'] leading-[30px]">
@@ -2150,9 +3294,8 @@ const RegionSelection: React.FC = () => {
                           : "Select Districts"}
                       </span>
                       <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
-                          districtDropdownOpen ? "rotate-180" : ""
-                        }`}
+                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${districtDropdownOpen ? "rotate-180" : ""
+                          }`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -2199,13 +3342,12 @@ const RegionSelection: React.FC = () => {
                                 <div
                                   key={district.i}
                                   onClick={() => toggleDistrictSelection(district)}
-                                  className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${
-                                    isAssigned
-                                      ? "bg-slate-50 text-slate-400 cursor-not-allowed"
-                                      : isSelected
-                                      ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
-                                      : "hover:bg-slate-50 text-slate-700"
-                                  }`}
+                                  className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${isAssigned
+                                    ? "bg-[#9BC2F3] text-slate-700 cursor-not-allowed opacity-60"
+                                    : isSelected
+                                      ? "bg-[#9BC2F3] text-blue-950 hover:bg-[#85b0e5]"
+                                      : "bg-white hover:bg-slate-50 text-slate-700"
+                                    }`}
                                 >
                                   <div className="flex items-center gap-2">
                                     {!isAssigned && (
@@ -2221,7 +3363,7 @@ const RegionSelection: React.FC = () => {
 
                                   {isAssigned && (
                                     <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
-                                     
+
                                       <svg
                                         className="w-4 h-4 text-emerald-600"
                                         fill="none"
@@ -2250,7 +3392,7 @@ const RegionSelection: React.FC = () => {
                     )}
                   </div>
                   {formErrors.districts && <span className="text-red-500 text-xs mt-[-4px]">{formErrors.districts}</span>}
-                  
+
                   <div className="flex flex-wrap gap-[10px] mt-1 max-h-24 overflow-y-auto custom-scrollbar">
                     {selectedDistricts
                       .map((d, i) => (
@@ -2258,7 +3400,7 @@ const RegionSelection: React.FC = () => {
                           key={i}
                           onClick={() => {
                             handleRemoveDistrict(d);
-                            if (selectedDistricts.length <= 1) setFormErrors({...formErrors, districts: "Please select at least one district.", general: "Please fill in all fields and select districts"});
+                            if (selectedDistricts.length <= 1) setFormErrors({ ...formErrors, districts: "Please select at least one district.", general: "Please fill in all fields and select districts" });
                           }}
                           className="h-[40px] px-[25px] rounded-[9px] bg-white border border-[rgba(90,92,94,0.4)] flex items-center justify-center gap-[10px] cursor-pointer hover:bg-slate-50 transition-colors group"
                         >
@@ -2303,7 +3445,7 @@ const RegionSelection: React.FC = () => {
               <div className="flex items-start justify-between mb-[26px]">
                 <div className="flex gap-3">
                   <div className="mt-1 flex-shrink-0 w-[20px] h-[20px] rounded-[4px] bg-[#353535] flex items-center justify-center">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>
                   </div>
                   <div className="flex flex-col gap-[6px]">
                     <h3 className="text-[24px] font-bold text-[#353535] font-['Plus_Jakarta_Sans'] leading-[30px]">
@@ -2392,9 +3534,8 @@ const RegionSelection: React.FC = () => {
                           : "Select Mandals"}
                       </span>
                       <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
-                          mandalDropdownOpen ? "rotate-180" : ""
-                        }`}
+                        className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${mandalDropdownOpen ? "rotate-180" : ""
+                          }`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -2441,13 +3582,12 @@ const RegionSelection: React.FC = () => {
                                 <div
                                   key={mandal.i}
                                   onClick={() => toggleMandalSelection(mandal)}
-                                  className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${
-                                    isAssigned
-                                      ? "bg-slate-50 text-slate-400 cursor-not-allowed"
-                                      : isSelected
-                                      ? "bg-blue-50 text-[#2780C4] hover:bg-blue-100"
-                                      : "hover:bg-slate-50 text-slate-700"
-                                  }`}
+                                  className={`flex items-center justify-between px-3 py-2 rounded-[8px] cursor-pointer text-[13px] font-medium transition-colors ${isAssigned
+                                    ? "bg-[#9BC2F3] text-slate-700 cursor-not-allowed opacity-60"
+                                    : isSelected
+                                      ? "bg-[#9BC2F3] text-blue-950 hover:bg-[#85b0e5]"
+                                      : "bg-white hover:bg-slate-50 text-slate-700"
+                                    }`}
                                 >
                                   <div className="flex items-center gap-2">
                                     {!isAssigned && (
@@ -2491,7 +3631,7 @@ const RegionSelection: React.FC = () => {
                     )}
                   </div>
                   {formAreaErrors.mandals && <span className="text-red-500 text-xs mt-[-4px]">{formAreaErrors.mandals}</span>}
-                  
+
                   <div className="flex flex-wrap gap-[10px] mt-1 max-h-24 overflow-y-auto custom-scrollbar">
                     {selectedMandals
                       .map((m, i) => (
@@ -2499,7 +3639,7 @@ const RegionSelection: React.FC = () => {
                           key={i}
                           onClick={() => {
                             handleRemoveMandal(m);
-                            if (selectedMandals.length <= 1) setFormAreaErrors({...formAreaErrors, mandals: "Please select at least one mandal.", general: "Please fill in all area fields and select mandals"});
+                            if (selectedMandals.length <= 1) setFormAreaErrors({ ...formAreaErrors, mandals: "Please select at least one mandal.", general: "Please fill in all area fields and select mandals" });
                           }}
                           className="h-[40px] px-[25px] rounded-[9px] bg-white border border-[rgba(90,92,94,0.4)] flex items-center justify-center gap-[10px] cursor-pointer hover:bg-slate-50 transition-colors group"
                         >

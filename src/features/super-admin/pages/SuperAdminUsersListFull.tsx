@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Search, ChevronDown, ArrowUpRight } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import SuperAdminHeader from "@/features/super-admin/components/SuperAdminHeader";
 import VisitorSalesCard from "@/features/super-admin/components/VisitorSalesCard";

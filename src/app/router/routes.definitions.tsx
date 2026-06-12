@@ -12,11 +12,22 @@ import {
     AgentApprovals,
     Agentdetailpage,
     FarmlandRequest,
+    FarmlandRequestMap,
+    FarmlandRequestAnalysis,
+    FarmlandRequestGateway,
+    FarmlandRequestGatewayApproved,
+    FarmlandRequestPayment,
     FarmlandList,
+    FarmlandListMap,
     RoleManagerDashboard,
     UserDirectory,
     DesignSystem,
     Login,
+    CcsLogin,
+    UpdateDefaultPassword,
+    ChangePassword,
+    ForgotPassword,
+    PasswordSent,
     Home,
     AgentCreate,
     AgentEdit,
@@ -136,6 +147,21 @@ export const guestRoutes: RouteObject[] = [
     }, {
         path: '/super-admin/login',
         element: <SuperAdminLogin />
+    }, {
+        path: '/ccs/login',
+        element: <CcsLogin />
+    }, {
+        path: '/ccs/update-default-password',
+        element: <UpdateDefaultPassword />
+    }, {
+        path: '/ccs/change-password',
+        element: <ChangePassword />
+    }, {
+        path: '/ccs/forgot-password',
+        element: <ForgotPassword />
+    }, {
+        path: '/ccs/password-sent',
+        element: <PasswordSent />
     },
 ];
 
@@ -169,8 +195,26 @@ export const authRoutes: RouteObject[] = [
                 path: '/farmland-request',
                 element: <FarmlandRequest />
             }, {
+                path: '/farmland-request/map/:id',
+                element: <FarmlandRequestMap />
+            }, {
+                path: '/farmland-request/analysis/:id',
+                element: <FarmlandRequestAnalysis />
+            }, {
+                path: '/farmland-request/gateway/:id',
+                element: <FarmlandRequestGateway />
+            }, {
+                path: '/farmland-request/gateway-approved/:id',
+                element: <FarmlandRequestGatewayApproved />
+            }, {
+                path: '/farmland-request/payment/:id',
+                element: <FarmlandRequestPayment />
+            }, {
                 path: '/farmland-list',
                 element: <FarmlandList />
+            }, {
+                path: '/farmland-list/map/:id',
+                element: <FarmlandListMap />
             }, {
                 path: '/send-payment-link',
                 element: <SendPaymentLink />

@@ -17,9 +17,10 @@ export default function CcsDashboard() {
         px-[1.375rem] py-[1.375rem]
         xl:px-[1.875rem] xl:py-[1.875rem]
         2xl:px-[2.5rem] 2xl:py-[2.5rem]
+        overflow-visible
       "
     >
-      <div className="shrink-0">
+      <div className="shrink-0 relative z-50">
         <DashboardHeader />
       </div>
 
@@ -27,12 +28,12 @@ export default function CcsDashboard() {
         className="
           mt-[1.375rem] grid grid-cols-1 items-start
           lg:grid-cols-[1fr_23.75rem] lg:gap-[0.875rem]
-          xl:grid-cols-[1fr_26.25rem] xl:gap-[1rem] xl:mt-[1.75rem]
+          xl:grid-cols-[1fr_30.25rem] xl:gap-[1rem] xl:mt-[1.75rem]
           2xl:grid-cols-[1fr_30.25rem] 2xl:gap-[1.125rem] 2xl:mt-[2.125rem]
         "
       >
         {/* ════ LEFT COLUMN ════ */}
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full xl:max-w-[582px] w-full">
           <div className="grid grid-cols-2 gap-[0.75rem] xl:gap-[0.875rem] 2xl:gap-[0.9375rem]">
             {statsData.slice(0, 3).map((item, index) => (
               <div key={item.title} className={index === 0 ? "col-span-2" : ""}>
@@ -49,7 +50,7 @@ export default function CcsDashboard() {
           <div className="mt-[1.75rem] xl:mt-[2rem] 2xl:mt-[2.3125rem]">
             <Typography
               variant="h2"
-              className="mb-[0.75rem] font-extrabold uppercase leading-[120%] text-[#171717] text-[1.125rem] xl:text-[1.25rem] xl:mb-[0.875rem] 2xl:text-[1.5rem] 2xl:mb-[1rem]"
+              className="mb-[0.75rem] font-[family-name:var(--font-sans)] font-extrabold uppercase leading-[120%] text-[#171717] text-[24px]"
             >
               Pipeline Status
             </Typography>
@@ -65,7 +66,7 @@ export default function CcsDashboard() {
         <div
           className="
             flex flex-col rounded-[33px] bg-[#FFFFFF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]
-            px-[30px] pt-[30px] pb-[30px] w-full
+            px-[30px] pt-[30px] pb-[30px] w-full xl:h-[716px]
           "
         >
           <div className="flex min-h-0 flex-1 flex-col mt-0">

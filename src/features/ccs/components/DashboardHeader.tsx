@@ -21,7 +21,7 @@ export default function DashboardHeader() {
   };
 
   return (
-    <div className="flex items-center justify-between relative z-40">
+    <div className="flex items-center justify-between relative z-20">
       <div className="flex items-center gap-[10px]">
         <img
           src={dashboardIcon}
@@ -30,7 +30,7 @@ export default function DashboardHeader() {
         />
         <Typography
           variant="h2"
-          className="font-['Plus_Jakarta_Sans'] text-[24px] font-semibold leading-[30px] text-[#000000]"
+          className="font-['Plus_Jakarta_Sans'] text-[16px] font-semibold leading-[20px] text-[#000000]"
         >
           Dashboard
         </Typography>
@@ -56,7 +56,7 @@ export default function DashboardHeader() {
           </div>
         )}
 
-        <div className="relative">
+        <div className="relative z-50">
           <button 
             onClick={() => {
               setShowCalendar(!showCalendar);
@@ -70,7 +70,8 @@ export default function DashboardHeader() {
             <CalendarPopover 
               startDate={startDate}
               endDate={endDate}
-              onChange={(start, end) => {
+              mode="range"
+              onChange={(start: Date | null, end: Date | null) => {
                 setStartDate(start);
                 setEndDate(end);
               }}
@@ -94,7 +95,7 @@ export default function DashboardHeader() {
             <span className="sr-only">Notifications</span>
           </button>
           {showNotifications && (
-            <NotificationsPopover onClose={() => setShowNotifications(false)} />
+            <NotificationsPopover />
           )}
         </div>
       </div>

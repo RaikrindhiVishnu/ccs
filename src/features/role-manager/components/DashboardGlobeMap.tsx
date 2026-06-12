@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { decompressGeoJSON } from "../utils/utils";
+import { decompressGeoJSON, buildOuterBoundariesGeoJSON, buildAreasBoundaryGeoJSON } from "../utils/utils";
 import { getRegionColors, getAreaColors } from "../utils/colorPalette";
 import { Loader2, ChevronLeft } from "lucide-react";
 import {
@@ -27,10 +27,10 @@ function extractStatesGeoJSON(data: GeoMasterData): GeoJSON.FeatureCollection { 
 
 const getDistrictIdsFromRegion = (feature: any, masterData: GeoMasterData | null): number[] => {
   const props = feature?.properties || {};
-  
+
   let districts = props.districts;
   if (typeof districts === "string") {
-    try { districts = JSON.parse(districts); } catch (e) {}
+    try { districts = JSON.parse(districts); } catch (e) { }
   }
   if (Array.isArray(districts)) {
     const ids = districts.map((d: any) => Number(d.id || d.i || d.district_id)).filter((id: number) => !isNaN(id) && id > 0);
@@ -39,7 +39,7 @@ const getDistrictIdsFromRegion = (feature: any, masterData: GeoMasterData | null
 
   let district_ids = props.district_ids;
   if (typeof district_ids === "string") {
-    try { district_ids = JSON.parse(district_ids); } catch (e) {}
+    try { district_ids = JSON.parse(district_ids); } catch (e) { }
   }
   if (Array.isArray(district_ids)) {
     const ids = district_ids.map(Number).filter((id: number) => !isNaN(id) && id > 0);
@@ -107,7 +107,7 @@ const extractAllAreasGeoJSON = (data: GeoMasterData | null, areasList: any[], di
           if (!isNaN(idNum)) assignedMandalMap.set(idNum, { color, areaName: area.area_name || area.areaName || "" });
         });
       }
-      
+
       if (Array.isArray(area.assignments)) {
         area.assignments.forEach((assignment: any) => {
           const idNum = Number(assignment.mandal_id || assignment.mandalId);
@@ -219,14 +219,182 @@ const DashboardGlobeMap: React.FC = () => {
     return extractAllAreasGeoJSON(geoMasterData, areasList, districtIds);
   }, [selectedRegion, areasByRegionData, geoMasterData]);
 
+  const stateDistrictsData = useMemo(() => {
+    if (!selectedState || !geoMasterData) return { type: "FeatureCollection" as const, features: [] };
+    const stateId = selectedState.properties?.id;
+    if (stateId === undefined) return { type: "FeatureCollection" as const, features: [] };
+    const stateObj = geoMasterData.countries.flatMap((c) => c.states ?? []).find((s) => s.i === stateId);
+    if (!stateObj) return { type: "FeatureCollection" as const, features: [] };
+    return toFeatureCollection(stateObj.districts ?? []);
+  }, [selectedState, geoMasterData]);
+
+  const regionsBoundaryData = useMemo(() => {
+    return buildOuterBoundariesGeoJSON(stateRegionsData.features);
+  }, [stateRegionsData]);
+
+  const areasBoundaryData = useMemo(() => {
+    if (!selectedRegion || !geoMasterData) return { type: "FeatureCollection" as const, features: [] };
+    const areasList = (areasByRegionData && Array.isArray(areasByRegionData.data)) ? areasByRegionData.data : (Array.isArray(areasByRegionData) ? areasByRegionData : []);
+    return buildAreasBoundaryGeoJSON(stateAreasData, areasList);
+  }, [selectedRegion, stateAreasData, areasByRegionData, geoMasterData]);
+
   useEffect(() => {
     if (map.current?.getSource("regions-source")) {
       (map.current.getSource("regions-source") as maplibregl.GeoJSONSource).setData(stateRegionsData);
     }
+    if (map.current?.getSource("regions-boundary-source")) {
+      (map.current.getSource("regions-boundary-source") as maplibregl.GeoJSONSource).setData(regionsBoundaryData);
+    }
+    if (map.current?.getSource("districts-source")) {
+      (map.current.getSource("districts-source") as maplibregl.GeoJSONSource).setData(stateDistrictsData);
+    }
     if (map.current?.getSource("areas-source")) {
       (map.current.getSource("areas-source") as maplibregl.GeoJSONSource).setData(stateAreasData);
     }
-  }, [stateRegionsData, stateAreasData]);
+    if (map.current?.getSource("areas-boundary-source")) {
+      (map.current.getSource("areas-boundary-source") as maplibregl.GeoJSONSource).setData(areasBoundaryData);
+    }
+  }, [stateRegionsData, regionsBoundaryData, stateDistrictsData, stateAreasData, areasBoundaryData]);
+
+  // Synchronize map layers/filters with selection state
+  useEffect(() => {
+    if (!map.current || mapLoaded === 0) return;
+
+    try {
+      if (selectedState) {
+        const stateId = selectedState.properties?.id;
+        if (stateId !== undefined) {
+          // Hide outer country and world land layers
+          if (map.current.getLayer("india-fill")) {
+            map.current.setLayoutProperty("india-fill", "visibility", "none");
+          }
+          if (map.current.getLayer("india-border-line")) {
+            map.current.setLayoutProperty("india-border-line", "visibility", "none");
+          }
+          if (map.current.getLayer("world-land-fill")) {
+            map.current.setLayoutProperty("world-land-fill", "visibility", "none");
+          }
+
+          // If a region is selected (Area Mode), hide the state fill and state borders completely
+          if (selectedRegion) {
+            if (map.current.getLayer("states-fill")) {
+              map.current.setLayoutProperty("states-fill", "visibility", "none");
+            }
+            if (map.current.getLayer("states-border-line")) {
+              map.current.setLayoutProperty("states-border-line", "visibility", "none");
+            }
+            if (map.current.getLayer("districts-fill")) {
+              map.current.setLayoutProperty("districts-fill", "visibility", "none");
+            }
+            if (map.current.getLayer("districts-line")) {
+              map.current.setLayoutProperty("districts-line", "visibility", "none");
+            }
+            if (map.current.getLayer("districts-labels")) {
+              map.current.setLayoutProperty("districts-labels", "visibility", "none");
+            }
+
+            // Filter regions-fill/line to show only the selected region
+            const regionId = Number(
+              selectedRegion.properties?.region_id ||
+              selectedRegion.properties?.regionId ||
+              selectedRegion.properties?.id ||
+              selectedRegion.id
+            );
+            if (map.current.getLayer("regions-fill")) {
+              map.current.setFilter("regions-fill", ["==", ["coalesce", ["get", "region_id"], ["get", "regionId"], ["id"]], regionId]);
+            }
+            if (map.current.getLayer("regions-line")) {
+              map.current.setFilter("regions-line", ["==", ["coalesce", ["get", "region_id"], ["get", "regionId"], ["id"]], regionId]);
+            }
+
+            // Show area/mandal labels
+            if (map.current.getLayer("mandals-labels")) {
+              map.current.setLayoutProperty("mandals-labels", "visibility", "visible");
+            }
+          } else {
+            // Region Mode: selectedState is true, but selectedRegion is null
+            if (map.current.getLayer("states-fill")) {
+              map.current.setPaintProperty("states-fill", "fill-color", "#F0EEF0");
+              map.current.setFilter("states-fill", ["==", ["get", "id"], stateId]);
+              map.current.setLayoutProperty("states-fill", "visibility", "visible");
+            }
+            if (map.current.getLayer("states-border-line")) {
+              map.current.setFilter("states-border-line", ["==", ["get", "id"], stateId]);
+              map.current.setLayoutProperty("states-border-line", "visibility", "visible");
+            }
+            if (map.current.getLayer("districts-fill")) {
+              map.current.setLayoutProperty("districts-fill", "visibility", "visible");
+            }
+            if (map.current.getLayer("districts-line")) {
+              map.current.setLayoutProperty("districts-line", "visibility", "visible");
+            }
+            if (map.current.getLayer("districts-labels")) {
+              map.current.setLayoutProperty("districts-labels", "visibility", "visible");
+            }
+
+            // Reset region filters to show all regions in the state
+            if (map.current.getLayer("regions-fill")) {
+              map.current.setFilter("regions-fill", null);
+            }
+            if (map.current.getLayer("regions-line")) {
+              map.current.setFilter("regions-line", null);
+            }
+
+            // Hide area/mandal labels
+            if (map.current.getLayer("mandals-labels")) {
+              map.current.setLayoutProperty("mandals-labels", "visibility", "none");
+            }
+          }
+        }
+      } else {
+        // State Mode (Initial state, zoom out view)
+        if (map.current.getLayer("india-fill")) {
+          map.current.setLayoutProperty("india-fill", "visibility", "visible");
+        }
+        if (map.current.getLayer("india-border-line")) {
+          map.current.setLayoutProperty("india-border-line", "visibility", "visible");
+        }
+        if (map.current.getLayer("world-land-fill")) {
+          map.current.setLayoutProperty("world-land-fill", "visibility", "visible");
+        }
+
+        // Reset states layers
+        if (map.current.getLayer("states-fill")) {
+          map.current.setPaintProperty("states-fill", "fill-color", "transparent");
+          map.current.setFilter("states-fill", null);
+          map.current.setLayoutProperty("states-fill", "visibility", "visible");
+        }
+        if (map.current.getLayer("states-border-line")) {
+          map.current.setFilter("states-border-line", null);
+          map.current.setLayoutProperty("states-border-line", "visibility", "visible");
+        }
+        if (map.current.getLayer("districts-fill")) {
+          map.current.setLayoutProperty("districts-fill", "visibility", "none");
+        }
+        if (map.current.getLayer("districts-line")) {
+          map.current.setLayoutProperty("districts-line", "visibility", "none");
+        }
+        if (map.current.getLayer("districts-labels")) {
+          map.current.setLayoutProperty("districts-labels", "visibility", "none");
+        }
+
+        // Reset regions layers
+        if (map.current.getLayer("regions-fill")) {
+          map.current.setFilter("regions-fill", null);
+        }
+        if (map.current.getLayer("regions-line")) {
+          map.current.setFilter("regions-line", null);
+        }
+
+        // Hide area/mandal labels
+        if (map.current.getLayer("mandals-labels")) {
+          map.current.setLayoutProperty("mandals-labels", "visibility", "none");
+        }
+      }
+    } catch (err) {
+      console.error("Error synchronizing map state layers/filters:", err);
+    }
+  }, [selectedState, selectedRegion, mapLoaded]);
 
   // Initialize MapLibre
   useEffect(() => {
@@ -239,7 +407,7 @@ const DashboardGlobeMap: React.FC = () => {
         zoom: 2,
       });
       map.current = mapInstance;
-      popup.current = new maplibregl.Popup({ closeButton: false, closeOnClick: false, className: "custom-district-popup" });
+      popup.current = new maplibregl.Popup({ closeButton: false, closeOnClick: false, className: "mapcn-tooltip" });
       map.current.addControl(new maplibregl.NavigationControl(), "top-right");
 
       map.current.on("style.load", () => {
@@ -254,16 +422,171 @@ const DashboardGlobeMap: React.FC = () => {
         map.current?.addLayer({ id: "india-border-line", type: "line", source: "india-border", paint: { "line-color": "#94a3b8", "line-width": 1.2 } });
 
         map.current?.addSource("india-states", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
-        map.current?.addLayer({ id: "states-fill", type: "fill", source: "india-states", paint: { "fill-color": "transparent" } });
+        map.current?.addLayer({
+          id: "states-fill",
+          type: "fill",
+          source: "india-states",
+          paint: {
+            "fill-color": [
+              "case",
+              ["boolean", ["feature-state", "hover"], false],
+              "#D3ECFE",
+              "transparent"
+            ]
+          }
+        });
         map.current?.addLayer({ id: "states-border-line", type: "line", source: "india-states", paint: { "line-color": "#475569", "line-width": 1.5 } });
 
-        map.current?.addSource("regions-source", { type: "geojson", data: { type: "FeatureCollection", features: [] }, generateId: true });
-        map.current?.addLayer({ id: "regions-fill", type: "fill", source: "regions-source", paint: { "fill-color": ["coalesce", ["get", "regionColor"], "#0ea5e9"], "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.8, ["case", ["boolean", ["feature-state", "selected"], false], 0.1, 0.6]] } }, "states-border-line");
-        map.current?.addLayer({ id: "regions-line", type: "line", source: "regions-source", paint: { "line-color": ["coalesce", ["get", "regionBorderColor"], "#059669"], "line-width": 2, "line-opacity": 0.6 } }, "states-border-line");
+        map.current?.addSource("districts-source", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+        map.current?.addLayer({
+          id: "districts-fill",
+          type: "fill",
+          source: "districts-source",
+          layout: {
+            visibility: "none",
+          },
+          paint: {
+            "fill-color": [
+              "case",
+              ["boolean", ["feature-state", "hover"], false],
+              "#D3ECFE",
+              "#FFFFFF"
+            ],
+            "fill-opacity": 1.0
+          }
+        }, "states-border-line");
+        map.current?.addLayer({
+          id: "districts-line",
+          type: "line",
+          source: "districts-source",
+          layout: {
+            visibility: "none",
+          },
+          paint: {
+            "line-color": "#CBD5E1",
+            "line-width": 1.0,
+            "line-opacity": 1.0,
+          }
+        }, "states-border-line");
+        map.current?.addLayer({
+          id: "districts-labels",
+          type: "symbol",
+          source: "districts-source",
+          layout: {
+            visibility: "none",
+            "text-field": ["coalesce", ["get", "name"], ["get", "d"], ""],
+            "text-size": 10,
+            "text-anchor": "center",
+            "text-justify": "center",
+            "symbol-placement": "point",
+            "text-allow-overlap": false,
+          },
+          paint: {
+            "text-color": "#475569",
+            "text-halo-color": "#ffffff",
+            "text-halo-width": 1.5,
+          },
+        });
 
-        map.current?.addSource("areas-source", { type: "geojson", data: { type: "FeatureCollection", features: [] }, generateId: true });
-        map.current?.addLayer({ id: "areas-fill", type: "fill", source: "areas-source", paint: { "fill-color": ["case", ["boolean", ["get", "isAssigned"], false], ["coalesce", ["get", "areaColor"], "#3b82f6"], ["case", ["boolean", ["feature-state", "hover"], false], "rgba(255,255,255,0.4)", "rgba(255,255,255,0.01)"]], "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 0.9, 0.7] } }, "states-border-line");
-        map.current?.addLayer({ id: "areas-line", type: "line", source: "areas-source", paint: { "line-color": ["case", ["boolean", ["get", "isAssigned"], false], ["coalesce", ["get", "areaColor"], "#3b82f6"], "#0891b2"], "line-width": ["case", ["boolean", ["get", "isAssigned"], false], 2.5, 1.8], "line-opacity": ["case", ["boolean", ["get", "isAssigned"], false], 0.7, 0.6] } }, "states-border-line");
+        map.current?.addSource("regions-source", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+        map.current?.addLayer({
+          id: "regions-fill",
+          type: "fill",
+          source: "regions-source",
+          paint: {
+            "fill-color": [
+              "case",
+              ["boolean", ["feature-state", "hover"], false],
+              "#D3ECFE",
+              "#9BC2F3"
+            ],
+            "fill-opacity": 0.5
+          }
+        }, "states-border-line");
+        map.current?.addSource("regions-boundary-source", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+        map.current?.addLayer({
+          id: "regions-line",
+          type: "line",
+          source: "regions-boundary-source",
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#000000",
+            "line-width": 1.5,
+            "line-opacity": 1.0
+          }
+        }, "states-border-line");
+
+        map.current?.addSource("areas-source", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+        map.current?.addLayer({
+          id: "areas-fill",
+          type: "fill",
+          source: "areas-source",
+          paint: {
+            "fill-color": [
+              "case",
+              ["boolean", ["get", "isAssigned"], false],
+              "#9BC2F3",
+              ["case",
+                ["boolean", ["feature-state", "hover"], false],
+                "#D3ECFE",
+                "#FFFFFF"
+              ]
+            ],
+            "fill-opacity": 1.0
+          }
+        }, "states-border-line");
+
+        // Thin internal boundaries for mandals/districts
+        map.current?.addLayer({
+          id: "areas-line",
+          type: "line",
+          source: "areas-source",
+          paint: {
+            "line-color": "#CBD5E1",
+            "line-width": 1.0,
+            "line-opacity": 1.0
+          }
+        }, "states-border-line");
+
+        // Thick black outer boundary for Areas
+        map.current?.addSource("areas-boundary-source", { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+        map.current?.addLayer({
+          id: "areas-boundary-line",
+          type: "line",
+          source: "areas-boundary-source",
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#000000",
+            "line-width": 1.5,
+            "line-opacity": 1.0
+          }
+        }, "states-border-line");
+
+        map.current?.addLayer({
+          id: "mandals-labels",
+          type: "symbol",
+          source: "areas-source",
+          layout: {
+            visibility: "none",
+            "text-field": ["coalesce", ["get", "name"], ["get", "d"], ""],
+            "text-size": 8.5,
+            "text-anchor": "center",
+            "text-justify": "center",
+            "symbol-placement": "point",
+            "text-allow-overlap": false,
+          },
+          paint: {
+            "text-color": "#475569",
+            "text-halo-color": "#ffffff",
+            "text-halo-width": 1.5,
+          },
+        });
 
         // State click → zoom in
         map.current?.on("click", "states-fill", (e) => {
@@ -282,13 +605,13 @@ const DashboardGlobeMap: React.FC = () => {
           if (e.features && e.features.length > 0) {
             const feature = e.features[0];
             const region = { type: "Feature", geometry: feature.geometry, properties: feature.properties, id: feature.id };
-            
+
             if (activeRegionId !== null) {
-               map.current?.setFeatureState({ source: "regions-source", id: activeRegionId }, { selected: false });
+              map.current?.setFeatureState({ source: "regions-source", id: activeRegionId }, { selected: false });
             }
             activeRegionId = feature.id;
             if (activeRegionId !== null) {
-               map.current?.setFeatureState({ source: "regions-source", id: activeRegionId }, { selected: true });
+              map.current?.setFeatureState({ source: "regions-source", id: activeRegionId }, { selected: true });
             }
 
             setSelectedRegion(region);
@@ -304,7 +627,7 @@ const DashboardGlobeMap: React.FC = () => {
           if (!e.features || e.features.length === 0) return;
           const feature = e.features[0];
           const props = feature.properties || {};
-          
+
           if (type === "region") {
             if (hoveredRegionId !== null) map.current?.setFeatureState({ source: "regions-source", id: hoveredRegionId }, { hover: false });
             hoveredRegionId = feature.id ?? null;
@@ -321,13 +644,30 @@ const DashboardGlobeMap: React.FC = () => {
               const subtitle = props.name || "Mandal";
               setHoveredMandalName(subtitle);
               setHoveredRegionName(null);
-              popup.current.setLngLat(e.lngLat).setHTML(`<div style="font-family:sans-serif;line-height:1.3"><div style="font-weight:700;font-size:13px;color:#0f172a">${title}</div><div style="font-size:11px;color:#475569;margin-top:4px">${subtitle}</div></div>`).addTo(map.current);
+              popup.current
+                .setLngLat(e.lngLat)
+                .setHTML(
+                  `<div class="mapcn-tooltip-inner">
+                    <span class="mapcn-tooltip-label">${title}</span>
+                    <div class="mapcn-tooltip-title">${subtitle}</div>
+                  </div>`
+                )
+                .addTo(map.current);
             } else {
               const regionName = props.region_name || props.regionName || props.name || "Region";
               const subtitle = Array.isArray(props.districts) ? props.districts.map((d: any) => d?.name || d?.d || "").filter(Boolean).join(", ") : props.all_districts || "";
               setHoveredRegionName(regionName);
               setHoveredMandalName(null);
-              popup.current.setLngLat(e.lngLat).setHTML(`<div style="font-family:sans-serif;line-height:1.3"><div style="font-weight:700;font-size:13px;color:#0f172a">${regionName}</div>${subtitle ? `<div style="font-size:11px;color:#475569;margin-top:4px">${subtitle}</div>` : ""}</div>`).addTo(map.current);
+              popup.current
+                .setLngLat(e.lngLat)
+                .setHTML(
+                  `<div class="mapcn-tooltip-inner">
+                    <span class="mapcn-tooltip-label">Region</span>
+                    <div class="mapcn-tooltip-title">${regionName}</div>
+                    ${subtitle ? `<div style="font-size:10px;color:#94a3b8;margin-top:2px;font-weight:500;">${subtitle}</div>` : ""}
+                  </div>`
+                )
+                .addTo(map.current);
             }
           }
           if (map.current) map.current.getCanvas().style.cursor = "pointer";
@@ -372,8 +712,38 @@ const DashboardGlobeMap: React.FC = () => {
         map.current?.on("mouseleave", "areas-fill", resetTooltipHoverState);
         map.current?.on("mouseleave", "regions-fill", resetTooltipHoverState);
 
-        map.current?.on("mouseenter", "states-fill", () => { if (map.current && !selectedState) map.current.getCanvas().style.cursor = "pointer"; });
-        map.current?.on("mouseleave", "states-fill", () => { if (map.current) map.current.getCanvas().style.cursor = ""; });
+        let hoveredStateId: any = null;
+        map.current?.on("mousemove", "states-fill", (e) => {
+          if (selectedState) return;
+          if (e.features && e.features.length > 0) {
+            if (hoveredStateId !== null) {
+              map.current?.setFeatureState(
+                { source: "india-states", id: hoveredStateId },
+                { hover: false }
+              );
+            }
+            const newId = e.features[0].id ?? e.features[0].properties?.id;
+            hoveredStateId = newId !== undefined && newId !== null ? newId : null;
+            if (hoveredStateId !== null) {
+              map.current?.setFeatureState(
+                { source: "india-states", id: hoveredStateId },
+                { hover: true }
+              );
+            }
+            if (map.current) map.current.getCanvas().style.cursor = "pointer";
+          }
+        });
+
+        map.current?.on("mouseleave", "states-fill", () => {
+          if (hoveredStateId !== null) {
+            map.current?.setFeatureState(
+              { source: "india-states", id: hoveredStateId },
+              { hover: false }
+            );
+          }
+          hoveredStateId = null;
+          if (map.current) map.current.getCanvas().style.cursor = "";
+        });
 
         setMapLoaded((p) => p + 1);
         map.current?.flyTo({ center: [78.9629, 20.5937], zoom: 3.5, duration: 3000, essential: true });
@@ -383,24 +753,118 @@ const DashboardGlobeMap: React.FC = () => {
     return () => { if (map.current) { map.current.remove(); map.current = null; } };
   }, []);
 
+  const goBackOneLevel = () => {
+    if (selectedRegion) {
+      setSelectedRegion(null);
+      if (selectedState) {
+        const bounds = getFeatureBounds(selectedState);
+        map.current?.fitBounds(bounds, { padding: 100, duration: 1200 });
+      }
+    } else if (selectedState) {
+      resetView();
+    }
+  };
+
   const resetView = () => {
     map.current?.flyTo({ center: [78.9629, 20.5937], zoom: 3.5, duration: 1500, essential: true });
     setIsZoomed(false);
     setSelectedState(null);
     setSelectedRegion(null);
     (map.current?.getSource("regions-source") as maplibregl.GeoJSONSource)?.setData({ type: "FeatureCollection", features: [] });
+    (map.current?.getSource("regions-boundary-source") as maplibregl.GeoJSONSource)?.setData({ type: "FeatureCollection", features: [] });
+    (map.current?.getSource("districts-source") as maplibregl.GeoJSONSource)?.setData({ type: "FeatureCollection", features: [] });
     (map.current?.getSource("areas-source") as maplibregl.GeoJSONSource)?.setData({ type: "FeatureCollection", features: [] });
+    (map.current?.getSource("areas-boundary-source") as maplibregl.GeoJSONSource)?.setData({ type: "FeatureCollection", features: [] });
     // Note: the activeRegionId will reset when regions-source is cleared
   };
 
   return (
     <div className="relative w-full h-full bg-[#D6E6FF] overflow-hidden">
+      <style>{`
+        /* MapCN-inspired modern tooltip style */
+        .mapcn-tooltip {
+          pointer-events: none;
+          z-index: 9999;
+        }
+
+        @keyframes mapcn-content-fade-in {
+          from {
+            opacity: 0;
+            transform: scale(0.96) translateY(4px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
+        .mapcn-tooltip .maplibregl-popup-content {
+          background: rgba(9, 20, 38, 0.95) !important;
+          backdrop-filter: blur(8px) !important;
+          -webkit-backdrop-filter: blur(8px) !important;
+          border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+          border-radius: 12px !important;
+          padding: 10px 14px !important;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3) !important;
+          color: #ffffff !important;
+          animation: mapcn-content-fade-in 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          transform-origin: center bottom;
+        }
+
+        .mapcn-tooltip-inner {
+          font-family: 'Plus Jakarta Sans', sans-serif !important;
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          line-height: 1.3;
+        }
+
+        .mapcn-tooltip-label {
+          font-size: 9px !important;
+          font-weight: 700 !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.06em !important;
+          color: #94a3b8 !important;
+        }
+
+        .mapcn-tooltip-title {
+          font-size: 13px !important;
+          font-weight: 700 !important;
+          color: #ffffff !important;
+        }
+
+        /* Styled tip/arrow for all anchor positions */
+        .mapcn-tooltip.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+          border-bottom-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+          border-top-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+          border-right-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+          border-left-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-top-left .maplibregl-popup-tip {
+          border-bottom-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+          border-bottom-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip {
+          border-top-color: rgba(9, 20, 38, 0.95) !important;
+        }
+        .mapcn-tooltip.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+          border-top-color: rgba(9, 20, 38, 0.95) !important;
+        }
+      `}</style>
       {/* Dynamic Header / Breadcrumbs */}
       <div className="absolute top-6 left-6 right-6 z-20 flex items-center justify-between pointer-events-none">
         <div className="flex items-center gap-3 pointer-events-auto">
           {isZoomed && (
             <button
-              onClick={resetView}
+              onClick={goBackOneLevel}
               className="p-2.5 rounded-full bg-white/70 backdrop-blur-md border border-white/40 shadow-lg hover:bg-white/90 hover:scale-105 active:scale-95 transition-all flex items-center justify-center mr-1 cursor-pointer"
               title="Back"
             >
@@ -417,7 +881,7 @@ const DashboardGlobeMap: React.FC = () => {
             </p>
           </div>
 
-          {selectedState && !selectedRegion && (
+          {selectedState && (
             <div className="bg-blue-500/20 backdrop-blur-md px-4 py-2 rounded-2xl border border-blue-500/30 shadow-md animate-in slide-in-from-left-4 duration-500 flex flex-col gap-0.5">
               <span className="text-[9px] font-bold text-blue-700 uppercase tracking-[0.18em] block leading-none mb-0.5">
                 Viewing State

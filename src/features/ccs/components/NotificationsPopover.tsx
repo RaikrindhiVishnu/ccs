@@ -1,10 +1,6 @@
 import { RefreshCw } from 'lucide-react';
 
-type Props = {
-  // Add props if needed in the future
-};
-
-export default function NotificationsPopover(props: Props) {
+export default function NotificationsPopover() {
   const notifications = [
     {
       title: 'Urgent Action Required',
