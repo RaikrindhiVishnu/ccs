@@ -78,13 +78,13 @@ export const MOCK_USERS: Record<
     email: 'superadmin@glc.com',
     password: 'superadmin@123',
     name: 'Super Admin',
-    role: 'SUPERADMIN',
+    role: 'SADMIN',
   },
 };
 
 // ─── Master Layout Config ─────────────────────────────────────────────────────
 export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
-  SUPERADMIN: {
+  SADMIN: {
   layoutVariant: "sidebar-super-admin",
   roleLabel: "Super Admin",
   navItems: [

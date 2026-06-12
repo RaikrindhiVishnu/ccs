@@ -12,7 +12,7 @@ export const DashboardRedirect = () => {
   if (user.role === 'CCS') return <Navigate to="/ccs/dashboard" replace />;
   if (user.role === 'FO') return <Navigate to="/field-officer/dashboard" replace />;
   if (user.role === 'RO') return <Navigate to="/regional-officer/dashboard" replace />;
-  if (user.role === 'SUPERADMIN') return <Navigate to="/super-admin/dashboard" replace />;
+  if (user.role === 'SADMIN') return <Navigate to="/super-admin/dashboard" replace />;
   if (user.role === 'VO2') return <Navigate to="/verification-officer-2/dashboard" replace />;
   if (user.role === 'VO1') return <Navigate to="/verification-officer-1/dashboard" replace />;
   
