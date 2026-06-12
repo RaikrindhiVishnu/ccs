@@ -29,13 +29,13 @@ export const VerificationOfficer3Layout = () => {
   const bgClass = activeItem === "dashboard" ? "bg-[var(--surface-card)]" : "bg-[#F9F9FB]";
 
   return (
-    <div className={`min-h-screen ${bgClass} flex flex-col font-sans pb-12 layout-container-zoom`}>
+    <div className={`min-h-screen ${bgClass} flex flex-col font-sans pb-12`}>
       {/* Top Header Bar */}
-      <header className="bg-[var(--surface-card)] mx-auto flex items-center justify-between shadow-[0px_0px_40px_rgba(0,0,0,0.12)] relative z-50 transition-all duration-300 w-[clamp(58.35rem,91.18%,108.275rem)] h-[clamp(3.68rem,5.18rem,6.85rem)] mt-[clamp(1.25rem,1.74rem,2.31rem)] px-[clamp(1.06rem,1.5rem,2rem)] rounded-[clamp(0.7rem,0.98rem,1.31rem)]">
+      <header className="bg-[var(--surface-card)] mx-auto flex items-center justify-between shadow-[0px_0px_40px_rgba(0,0,0,0.12)] relative z-50 transition-all duration-300 w-[clamp(58.35rem,91.18%,180.0rem)] h-[clamp(3.68rem,5.76vw,10.0rem)] mt-[clamp(1.25rem,1.94vw,4.5rem)] px-[clamp(1.06rem,1.67vw,3.5rem)] rounded-[clamp(0.7rem,1.11vw,2.5rem)]">
         {/* Logo Section */}
         <button
           onClick={() => navigate("/verification-officer-3/dashboard")}
-          className="flex items-center justify-center border-none bg-transparent cursor-pointer select-none shrink-0 w-[clamp(4.53rem,7.76%,8.41rem)] h-[clamp(2.18rem,3.06rem,4.04rem)]"
+          className="flex items-center justify-center border-none bg-transparent cursor-pointer select-none shrink-0 w-[clamp(4.53rem,7.76%,15.0rem)] h-[clamp(2.18rem,3.4vw,6.0rem)]"
         >
           <img
             src={voLogo}
@@ -45,7 +45,7 @@ export const VerificationOfficer3Layout = () => {
         </button>
 
         {/* Central Navigation Items */}
-        <nav className="flex items-center gap-[1rem] md:gap-0 overflow-x-auto md:overflow-visible no-scrollbar max-w-[50%] md:max-w-none md:absolute md:left-[calc(50%-clamp(34.53rem,59.18%,64.1rem)/2+clamp(1.73rem,2.97%,3.22rem))] md:w-[clamp(34.53rem,59.18%,64.1rem)] md:h-[clamp(1.78rem,2.5rem,3.3rem)] md:top-[clamp(0.975rem,1.375rem,1.81rem)]">
+        <nav className="flex items-center gap-[1rem] md:gap-0 overflow-x-auto md:overflow-visible no-scrollbar max-w-[50%] md:max-w-none md:absolute md:left-[calc(50%-clamp(34.53rem,59.18%,100.0rem)/2+clamp(1.73rem,2.97%,6.0rem))] md:w-[clamp(34.53rem,59.18%,100.0rem)] md:h-[clamp(1.78rem,2.78vw,5.0rem)] md:top-[clamp(0.975rem,1.53vw,3.0rem)]">
           {/* Active Sliding Background Pill */}
           <div
             className={`hidden md:block absolute h-full bg-[var(--btn-lime)] rounded-[1.25rem] transition-all duration-300 ease-out z-0 ${getActivePillClasses()}`}
@@ -97,9 +97,9 @@ export const VerificationOfficer3Layout = () => {
         </nav>
 
         {/* Right Action Section */}
-        <div className="flex items-center shrink-0 w-[clamp(5.19rem,8.92%,9.66rem)] h-[clamp(2.31rem,3.25rem,4.29rem)] gap-[clamp(0.58rem,0.81rem,1.08rem)]">
+        <div className="flex items-center shrink-0 w-[clamp(5.19rem,8.92%,15.0rem)] h-[clamp(2.31rem,3.61vw,6.0rem)] gap-[clamp(0.58rem,0.81vw,2.0rem)]">
           {/* Bell Icon */}
-          <button className="rounded-full bg-white flex items-center justify-center relative hover:bg-gray-50 transition-colors border-none cursor-pointer p-0 w-[clamp(2.31rem,3.25rem,4.29rem)] h-[clamp(2.31rem,3.25rem,4.29rem)]">
+          <button className="rounded-full bg-white flex items-center justify-center relative hover:bg-gray-50 transition-colors border-none cursor-pointer p-0 w-[clamp(2.31rem,3.61vw,6.0rem)] h-[clamp(2.31rem,3.61vw,6.0rem)]">
             {/* Bell SVG */}
             <svg
               width="50%"
@@ -137,7 +137,7 @@ export const VerificationOfficer3Layout = () => {
           </button>
 
           {/* Avatar Profile */}
-          <button className="rounded-full overflow-hidden border border-gray-100 shadow-sm cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center p-0 bg-white w-[clamp(2.31rem,3.25rem,4.29rem)] h-[clamp(2.31rem,3.25rem,4.29rem)]">
+          <button className="rounded-full overflow-hidden border border-gray-100 shadow-sm cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center p-0 bg-white w-[clamp(2.31rem,3.61vw,6.0rem)] h-[clamp(2.31rem,3.61vw,6.0rem)]">
             <img
               src={profileImg}
               alt="Profile"
@@ -148,7 +148,7 @@ export const VerificationOfficer3Layout = () => {
       </header>
 
       {/* Main Content Area */}
-      <main className="mx-auto px-4 xl:px-0 flex-1 flex flex-col justify-start w-[clamp(58.35rem,91.18%,108.275rem)] mt-[clamp(1.78rem,2.5rem,3.3rem)]">
+      <main className="mx-auto px-4 xl:px-0 flex-1 flex flex-col justify-start w-[clamp(58.35rem,91.18%,180.0rem)] mt-[clamp(1.78rem,2.78vw,5.0rem)]">
         <Outlet />
       </main>
     </div>

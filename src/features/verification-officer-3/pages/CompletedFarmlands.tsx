@@ -1,24 +1,26 @@
 import { useState } from 'react';
-import { Search, ChevronDown } from 'lucide-react';
-import { VO3_FARMLANDS } from '../data/farmlandsMockData';
-import VO3FarmlandCard from '../components/VO3FarmlandCard';
+import VO3CompleteCard from '../components/VO3CompleteCard';
 
 export const CompletedFarmlands = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isPriorityOpen, setIsPriorityOpen] = useState(false);
   const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'HIGH' | 'MEDIUM' | 'LOW'>('ALL');
 
-  // Filter Completed farmlands
-  const completedCases = VO3_FARMLANDS.filter(
-    (f) => f.status === 'Completed'
-  );
+  const baseCases = [
+    { id: "GLC-VO3-06", title: "Kurnool Nandyal Farm", location: "Kurnool, Nandyal", landSize: "10 Acres", landValue: "₹1.5Cr", verificationDate: "06 Oct 2023, 11:30AM", priority: "LOW" as const },
+    { id: "GLC-VO3-07", title: "Krishna Estate", location: "Krishna, Machilipatnam", landSize: "18 Acres", landValue: "₹3.5Cr", verificationDate: "05 Oct 2023, 2:15PM", priority: "HIGH" as const },
+    { id: "GLC-VO3-08", title: "Mysuru Estate", location: "Guntur, Andhra Pradesh", landSize: "150 Acres", landValue: "₹37,50,000", verificationDate: "12 Oct 2023, 4:30PM", priority: "MEDIUM" as const },
+    { id: "GLC-VO3-09", title: "Nellore Farms", location: "Nellore, Gudur", landSize: "25 Acres", landValue: "₹1.2Cr", verificationDate: "04 Oct 2023, 10:00AM", priority: "LOW" as const },
+    { id: "GLC-VO3-10", title: "Anantapur Orchard", location: "Anantapur, Gooty", landSize: "40 Acres", landValue: "₹2.8Cr", verificationDate: "02 Oct 2023, 5:00PM", priority: "HIGH" as const },
+    { id: "GLC-VO3-11", title: "Chittoor Mango Grove", location: "Chittoor, Madanapalle", landSize: "30 Acres", landValue: "₹1.9Cr", verificationDate: "01 Oct 2023, 9:30AM", priority: "MEDIUM" as const },
+  ];
 
   // Apply Search and Priority filter
-  const filteredCases = completedCases.filter((farmland) => {
+  const filteredCases = baseCases.filter((farmland) => {
     const matchesSearch =
       farmland.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       farmland.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      farmland.agentName.toLowerCase().includes(searchQuery.toLowerCase());
+      farmland.title.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesPriority =
       priorityFilter === 'ALL' || farmland.priority === priorityFilter;
@@ -27,88 +29,34 @@ export const CompletedFarmlands = () => {
   });
 
   return (
-    <div className="w-full flex flex-col pt-[10px]">
+    <div className="w-full flex flex-col ">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4 mb-[40px]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4 mb-[clamp(1.5rem,2.5vw,4.5rem)]">
         {/* Title and Subtitle */}
-        <div className="flex flex-col gap-[4px]">
-          <h1 className="font-plus-jakarta font-medium text-[#191B23] text-[24px] leading-[24px]">
+        <div className="flex flex-col gap-[clamp(0.125rem,0.25vw,1.0rem)]">
+          <h1 className="font-plus-jakarta font-bold text-[#1A1C1D] text-[clamp(1.3rem,1.8vw,2.5rem)] tracking-[-1.2px] leading-[clamp(2.2rem,3.33vw,4.0rem)] m-0">
             Completed Farmlands
           </h1>
-          <p className="font-inter font-normal text-[#505F76] text-[16px] leading-[24px]">
-            View historical audit trails, boundary certificates and valuation reports.
+          <p className="font-plus-jakarta font-normal text-[#3D4949] text-[clamp(0.85rem,1.11vw,1.5rem)] leading-[clamp(1.4rem,1.94vw,2.5rem)] m-0">
+            Fully audited and verified farmland assets.
           </p>
         </div>
 
-        {/* Search & Filter Actions */}
-        <div className="flex items-center gap-[12px] flex-wrap">
-          {/* Search Bar */}
-          <div 
-            className="relative bg-white flex items-center w-full md:w-[384px] h-[49px] border border-[#E1E2ED] shadow-sm rounded-full px-[16px] py-[14px] pl-[48px]"
-          >
-            <Search size={18} className="text-[#737686] absolute left-[16px]" />
-            <input 
-              type="text" 
-              placeholder="Search by ID, Location, or Agent..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none w-full font-inter placeholder:text-[#6B7280] text-[#191B23] text-[16px] leading-[19px]"
-            />
-          </div>
-
-          {/* Priority Dropdown */}
-          <div className="relative">
-            <button 
-              onClick={() => setIsPriorityOpen(!isPriorityOpen)}
-              className="bg-white flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors h-[49px] border border-[#E1E2ED] shadow-sm rounded-full px-[28px] py-[14px] gap-[8px]"
-            >
-              <span className="font-inter font-normal text-[#6B7280] text-[16px] leading-[19px]">
-                Priority: {priorityFilter}
-              </span>
-              <ChevronDown size={16} className="text-[#6B7280]" />
-            </button>
-
-            {isPriorityOpen && (
-              <div 
-                className="absolute bg-white shadow-[0px_4px_12px_rgba(0,0,0,0.1)] z-50 rounded-[24px] w-[180px] top-[59px] right-0 flex flex-col p-3 gap-1"
-              >
-                {['ALL', 'HIGH', 'MEDIUM', 'LOW'].map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => {
-                      setPriorityFilter(p as any);
-                      setIsPriorityOpen(false);
-                    }}
-                    className={`w-full text-left px-4 py-2 text-[14px] font-inter rounded-xl border-none cursor-pointer transition-colors ${
-                      priorityFilter === p
-                        ? 'bg-[#BDD327] text-black font-semibold'
-                        : 'bg-transparent text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    {p === 'ALL' ? 'All Priorities' : `${p} Priority`}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
       </div>
 
       {/* Grid of Cards */}
       {filteredCases.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px] w-full pb-[40px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[clamp(0.8rem,1.11vw,1.5rem)] gap-y-[clamp(1.0rem,1.52vw,2.0rem)] w-full pb-[40px]">
           {filteredCases.map((farmland) => (
-            <VO3FarmlandCard
+            <VO3CompleteCard
               key={farmland.id}
               id={farmland.id}
+              title={farmland.title}
               location={farmland.location}
-              agentName={farmland.agentName}
-              totalAmount={farmland.amount}
-              valuePerAcre={farmland.costPerAcre}
-              totalArea={farmland.totalArea}
-              submissionDate={farmland.submissionDate}
-              priority={farmland.priority}
-              actionLabel="View Certification"
+              landSize={farmland.landSize}
+              landValue={farmland.landValue}
+              verificationDate={farmland.verificationDate}
+              status="VERIFIED"
             />
           ))}
         </div>

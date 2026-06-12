@@ -3718,19 +3718,3 @@ h1 {
 }
 
 
-/* ─── DYNAMIC LAYOUT ZOOM FOR HIGH-RESOLUTION SCREENS ───────────────── */
-@media (min-width: 1900px) {
-  .layout-container-zoom {
-    zoom: 1.3333;
-    -moz-transform: scale(1.3333);
-    -moz-transform-origin: top center;
-  }
-}
-
-@media (min-width: 2560px) {
-  .layout-container-zoom {
-    zoom: 1.7778;
-    -moz-transform: scale(1.7778);
-    -moz-transform-origin: top center;
-  }
-}
