@@ -1,4 +1,3 @@
-import React from 'react';
 import { VO3_FARMLANDS } from '../data/farmlandsMockData';
 import { VerificationOfficer3Card } from '../components/VerificationOfficer3Card';
 import { useNavigate } from 'react-router-dom';
