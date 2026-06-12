@@ -1,5 +1,7 @@
-import { ArrowLeft, Check, Copy } from "lucide-react";
-
+import { ArrowLeft, Check } from "lucide-react";
+import fee4 from "@/assets/fee4.svg";
+import fee5 from "@/assets/fee5.svg";
+import fee6 from "@/assets/fee6.svg";
 export type GatewayApprovedProps = {
   onBack: () => void;
   onProceed: () => void;
@@ -74,7 +76,7 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
 
       <CheckmarkHeader />
 
-      <div className="flex flex-col gap-[30px] w-full max-w-[1034px] px-[20px] pb-[100px]">
+      <div className="flex flex-col gap-[30px] w-full px-[20px] pb-[100px]" style={{ maxWidth: '1034px' }}>
         
         {/* Officer Fee Allocation Card */}
         <div className="w-full bg-[#FFFFFF] rounded-[32px] pt-[24px] pb-[24px] shadow-sm">
@@ -86,8 +88,8 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
             {/* RO Verification */}
             <div className="flex flex-col gap-[16px]">
               <div className="flex items-center gap-[12px]">
-                <div className="w-[34px] h-[34px] bg-[#F3F4F5] rounded-full flex items-center justify-center">
-                  <Copy className="w-[14px] h-[14px] text-[#091426]" />
+                <div className="w-[34px] h-[34px] bg-[#F3F4F5] rounded-full flex items-center justify-center shrink-0">
+                  <img src={fee4} alt="RO Verification" className="w-[14px] h-[12.5px] object-contain" />
                 </div>
                 <div className="flex flex-col">
                   <span className="font-['Plus_Jakarta_Sans'] font-bold text-[13.4px] leading-[20px] text-[#091426]">
@@ -98,7 +100,7 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
                   </span>
                 </div>
               </div>
-              <div className="relative w-full h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
+              <div className="relative w-[236px] h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
                 <span className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] text-[#717783] mr-[8px]">₹</span>
                 <input 
                   type="text" 
@@ -111,8 +113,8 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
             {/* FO Ground Inspection */}
             <div className="flex flex-col gap-[16px]">
               <div className="flex items-center gap-[12px]">
-                <div className="w-[34px] h-[34px] bg-[#F3F4F5] rounded-full flex items-center justify-center">
-                  <Copy className="w-[14px] h-[14px] text-[#091426]" />
+                <div className="w-[34px] h-[34px] bg-[#F3F4F5] rounded-full flex items-center justify-center shrink-0">
+                  <img src={fee5} alt="FO Ground Inspection" className="w-[14px] h-[14px] object-contain" />
                 </div>
                 <div className="flex flex-col">
                   <span className="font-['Plus_Jakarta_Sans'] font-bold text-[13.4px] leading-[20px] text-[#091426]">
@@ -123,7 +125,7 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
                   </span>
                 </div>
               </div>
-              <div className="relative w-full h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
+              <div className="relative w-[236px] h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
                 <span className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] text-[#717783] mr-[8px]">₹</span>
                 <input 
                   type="text" 
@@ -136,8 +138,8 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
             {/* IO Intelligence Report */}
             <div className="flex flex-col gap-[16px]">
               <div className="flex items-center gap-[12px]">
-                <div className="w-[34px] h-[34px] bg-[#F3F4F5] rounded-full flex items-center justify-center">
-                  <Copy className="w-[14px] h-[14px] text-[#091426]" />
+                <div className="w-[34px] h-[34px] bg-[#F3F4F5] rounded-full flex items-center justify-center shrink-0">
+                  <img src={fee6} alt="IO Intelligence Report" className="w-[14px] h-[14px] object-contain" />
                 </div>
                 <div className="flex flex-col">
                   <span className="font-['Plus_Jakarta_Sans'] font-bold text-[13.4px] leading-[20px] text-[#091426]">
@@ -148,7 +150,7 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
                   </span>
                 </div>
               </div>
-              <div className="relative w-full h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
+              <div className="relative w-[236px] h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
                 <span className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] text-[#717783] mr-[8px]">₹</span>
                 <input 
                   type="text" 

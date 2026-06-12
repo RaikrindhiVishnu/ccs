@@ -30,7 +30,7 @@ export default function DashboardHeader() {
         />
         <Typography
           variant="h2"
-          className="font-['Plus_Jakarta_Sans'] text-[24px] font-semibold leading-[30px] text-[#000000]"
+          className="font-['Plus_Jakarta_Sans'] text-[16px] font-semibold leading-[20px] text-[#000000]"
         >
           Dashboard
         </Typography>

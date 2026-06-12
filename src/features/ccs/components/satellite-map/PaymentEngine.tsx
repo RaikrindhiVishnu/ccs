@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { ArrowLeft, Wallet, Check, Copy, MapPin, Shield } from "lucide-react";
+import { ArrowLeft, Wallet, Check } from "lucide-react";
+import fee1 from "@/assets/fee1.svg";
+import fee2 from "@/assets/fee2.svg";
+import fee3 from "@/assets/fee3.svg";
+import fee4 from "@/assets/fee4.svg";
+import fee5 from "@/assets/fee5.svg";
+import fee6 from "@/assets/fee6.svg";
+import walletImage from "@/assets/wallet.svg";
 
 export type PaymentEngineProps = {
   onBack: () => void;
@@ -80,7 +87,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
               <div className="bg-[#F3F4F5] rounded-[26.8px] p-[13.4px] flex flex-col gap-[13.4px]">
                 {/* Farmland ID */}
                 <div className="flex gap-[13.4px]">
-                  <div className="w-[18.4px] pt-[1.6px]"><MapPin className="w-[13px] h-[13px] text-[#00629E]" /></div>
+                  <div className="w-[18.4px] pt-[1.6px]"><img src={fee1} alt="Farmland ID" className="w-[13px] h-[13px] object-contain" /></div>
                   <div className="flex flex-col">
                     <span className="font-['Plus_Jakarta_Sans'] font-bold text-[8.4px] leading-[13px] tracking-[0.4px] uppercase text-[#75777D]">Farmland ID</span>
                     <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[11.75px] leading-[17px] text-[#091426]">GLCSOS 01</span>
@@ -88,7 +95,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                 </div>
                 {/* Location */}
                 <div className="flex gap-[13.4px]">
-                  <div className="w-[18.4px] pt-[1.6px]"><MapPin className="w-[13px] h-[13px] text-[#00629E]" /></div>
+                  <div className="w-[18.4px] pt-[1.6px]"><img src={fee2} alt="Location" className="w-[13px] h-[13px] object-contain" /></div>
                   <div className="flex flex-col">
                     <span className="font-['Plus_Jakarta_Sans'] font-bold text-[8.4px] leading-[13px] tracking-[0.4px] uppercase text-[#75777D]">Location</span>
                     <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[11.75px] leading-[17px] text-[#091426]">17.48, 78.38</span>
@@ -96,7 +103,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                 </div>
                 {/* Status */}
                 <div className="flex gap-[13.4px]">
-                  <div className="w-[18.4px] pt-[1.6px]"><Shield className="w-[13px] h-[13px] text-[#00629E]" /></div>
+                  <div className="w-[18.4px] pt-[1.6px]"><img src={fee3} alt="Status" className="w-[13px] h-[13px] object-contain" /></div>
                   <div className="flex flex-col">
                     <span className="font-['Plus_Jakarta_Sans'] font-bold text-[8.4px] leading-[13px] tracking-[0.4px] uppercase text-[#75777D]">Status</span>
                     <div className="flex items-center gap-[6.7px]">
@@ -135,11 +142,38 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
               <div className="absolute inset-0 z-0 bg-[radial-gradient(54.59%_124.57%_at_50%_50%,#00629E_0%,rgba(0,98,158,0)_70%)] opacity-20"></div>
               
               {/* Wallet Icon */}
-              <div className="relative z-10 mb-[26.8px]">
-                <div className="w-[67px] h-[67px] bg-[#091426] border-[3.3px] border-[#FFFFFF] shadow-[0px_0px_33.5px_rgba(0,98,158,0.4)] rounded-full flex items-center justify-center">
-                  <Wallet className="w-[34px] h-[34px] text-[#FFFFFF]" />
+              <div className="relative z-10 mb-[26.8px] flex justify-center items-center">
+                <div
+                  className="
+                    flex items-center justify-center
+                    w-[67px]
+                    h-[67px]
+                    rounded-full
+                    border-[4px]
+                    border-white
+                    bg-[#091426]
+                    shadow-[0_0_0_5px_#B8D4E9,0_0_20px_rgba(39,128,196,0.3)]
+                  "
+                >
+                  <img
+                    src={walletImage}
+                    alt="Wallet"
+                    className="
+                        w-[30px]
+                        h-[30px]
+                        object-contain
+                    "
+                  />
                 </div>
-                <div className="absolute -inset-[8.4px] border-[3.3px] border-[rgba(0,98,158,0.3)] rounded-full z-[-1]"></div>
+                <div
+                  className="
+                    absolute inset-[-8px]
+                    rounded-full
+                    border-[3px]
+                    border-[rgba(39,128,196,0.5)]
+                    z-[-1]
+                  "
+                />
               </div>
 
               {/* Total Fee Label */}
@@ -157,7 +191,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
             <div className="flex items-center justify-center gap-[6px] mt-[16px] mb-[24px]">
               <Check className="w-[12px] h-[12px] text-[#717783]" strokeWidth={3} />
               <span className="font-['Plus_Jakarta_Sans'] font-medium text-[12px] leading-[17px] tracking-[0.36px] text-[#717783]">
-                Notification has sent to Field Officer
+                Notification will be sent to Investor
               </span>
             </div>
 
@@ -178,7 +212,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                 <div className="flex justify-between items-center w-full">
                   <div className="flex items-center gap-[13.4px]">
                     <div className="w-[33.5px] h-[33.5px] bg-[#F3F4F5] rounded-full flex items-center justify-center shrink-0">
-                      <Copy className="w-[14px] h-[12.5px] text-[#091426]" />
+                      <img src={fee4} alt="RO Verification" className="w-[14px] h-[12.5px] object-contain" />
                     </div>
                     <div className="flex flex-col">
                       <span className="font-['Plus_Jakarta_Sans'] font-bold text-[13.4px] leading-[20px] text-[#091426]">
@@ -198,7 +232,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                 <div className="flex justify-between items-center w-full">
                   <div className="flex items-center gap-[13.4px]">
                     <div className="w-[33.5px] h-[33.5px] bg-[#F3F4F5] rounded-full flex items-center justify-center shrink-0">
-                      <MapPin className="w-[14.3px] h-[14px] text-[#091426]" />
+                      <img src={fee5} alt="FO Ground Inspection" className="w-[14px] h-[14px] object-contain" />
                     </div>
                     <div className="flex flex-col">
                       <span className="font-['Plus_Jakarta_Sans'] font-bold text-[13.4px] leading-[20px] text-[#091426]">
@@ -218,7 +252,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                 <div className="flex justify-between items-center w-full">
                   <div className="flex items-center gap-[13.4px]">
                     <div className="w-[33.5px] h-[33.5px] bg-[#F3F4F5] rounded-full flex items-center justify-center shrink-0">
-                      <Shield className="w-[13.3px] h-[14px] text-[#091426]" />
+                      <img src={fee6} alt="IO Intelligence Report" className="w-[14px] h-[14px] object-contain" />
                     </div>
                     <div className="flex flex-col">
                       <span className="font-['Plus_Jakarta_Sans'] font-bold text-[13.4px] leading-[20px] text-[#091426]">

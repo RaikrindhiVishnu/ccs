@@ -112,9 +112,9 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     layoutVariant: 'sidebar-ccs-officer',
     roleLabel: 'CCS Officer',
     navItems: [
-      { label: 'Dashboard',        path: '/',                 icon: 'LayoutDashboard', iconImg: dashboardIcon    },
-      { label: 'Farmland Request', path: '/farmland-request', icon: 'CircleDashed',    iconImg: farmlandReqIcon  },
-      { label: 'Farmland List',    path: '/farmland-list',    icon: 'MapPin',          iconImg: farmlandListIcon },
+      { label: 'Dashboard',          path: '/ccs/dashboard',                 icon: 'LayoutDashboard', iconImg: dashboardIcon    },
+      { label: 'Assigned Farmlands', path: '/farmland-request', icon: 'CircleDashed',    iconImg: farmlandReqIcon  },
+      { label: 'Farmlands List',     path: '/farmland-list',    icon: 'MapPin',          iconImg: farmlandListIcon },
     ],
   },
 

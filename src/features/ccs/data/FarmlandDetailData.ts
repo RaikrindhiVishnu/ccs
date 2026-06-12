@@ -6,7 +6,7 @@ export const FARMLAND_DETAILS: Record<string, FarmlandDetail> = {
     farmlandId: "GLCSOS 01",
     ownerName: "Ramudu Kumar",
     number: "9826537123",
-    email: "ramudu@gmail.com",
+    email: "ramudu@gmail.com/1986",
     dateOfBirth: "13/01/1986",
     religion: "Hindu",
     caste: "Hindu",

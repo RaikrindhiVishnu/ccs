@@ -29,7 +29,7 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
         rounded-[32px] border-0 bg-[#FFFFFF]
         p-[32px] shadow-sm
         transition-shadow hover:shadow-md
-        min-h-[338px]
+        min-h-[338px] w-full
       "
     >
       {/* ── CARD HEADER ── */}
@@ -51,12 +51,11 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
         </div>
 
         {/* Priority Badge */}
-        <div 
-          className={`flex items-center justify-center px-3 py-1 rounded-full border ${
-            isHigh 
-              ? 'bg-[#FEF2F2] border-[#FEE2E2] text-[#DC2626]' 
+        <div
+          className={`flex items-center justify-center px-3 py-1 rounded-full border ${isHigh
+              ? 'bg-[#FEF2F2] border-[#FEE2E2] text-[#DC2626]'
               : 'bg-[#FFFBEB] border-[#FEF3C7] text-[#D97706]'
-          }`}
+            }`}
         >
           <span className="font-['Plus_Jakarta_Sans'] text-[12px] leading-[16px]">
             {item.priority}
@@ -66,7 +65,7 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
 
       {/* ── DATA GRID ── */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-6 mb-8">
-        <InfoField label="AGENT NAME" value={item.agentName} />
+        <InfoField label="AGENT NAME" value={item.agentName} valueClassName="text-[20px]" />
         <InfoField label="CREATED DATE" value={item.createdDate} />
         <InfoField label="TOTAL ACRES" value={item.totalAcres} />
         <InfoField label="VALUATION" value={item.valuation} />
@@ -90,13 +89,13 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
 }
 
 /* ── InfoField helper ── */
-function InfoField({ label, value }: { label: string; value: string; }) {
+function InfoField({ label, value, valueClassName }: { label: string; value: string; valueClassName?: string; }) {
   return (
     <div className="flex flex-col gap-[6px]">
       <span className="font-['Plus_Jakarta_Sans'] text-[12px] font-medium leading-[16px] tracking-[0.6px] uppercase text-[#3D4949] opacity-60 whitespace-nowrap">
         {label}
       </span>
-      <span className="font-['Plus_Jakarta_Sans'] text-[16px] font-semibold leading-[24px] text-[#1A1C1D] break-words">
+      <span className={`font-['Plus_Jakarta_Sans'] font-semibold leading-[24px] text-[#1A1C1D] break-words ${valueClassName || 'text-[16px]'}`}>
         {value}
       </span>
     </div>
