@@ -374,6 +374,10 @@ export const authRoutes: RouteObject[] = [
         element: <IOProfile />
     },
     {
+        path: '/verification-officer-3/profile',
+        element: <IOProfile />
+    },
+    {
         element: <RegionalOfficerLayout />,
         children: [
             { path: '/regional-officer/dashboard',          element: <RegionalOfficerDashboard /> },
@@ -480,6 +484,10 @@ export const authRoutes: RouteObject[] = [
                 element: <VerificationOfficer3CompletedFarmlands />,
             },
         ],
+    },
+    {
+        path: '/verification-officer-3/completed-farmland/:id',
+        element: <Farmlanddocument />,
     },
     {
         path: '/verification-officer-1/completed-farmland/:id',

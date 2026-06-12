@@ -31,6 +31,9 @@ export interface FarmlandDetailData {
   };
   creationTime: string;
   lastUpdated: string;
+  verificationTime?: string;
+  landSize?: string;
+  landValue?: string;
   // Current Status
   systemStatus: string;
   liveStatus: string;
@@ -180,8 +183,10 @@ const StatusBox = ({
 
 const HeroSection = ({
   data,
+  isCompletedVO3,
 }: {
   data: FarmlandDetailData;
+  isCompletedVO3?: boolean;
 }) => (
   <div
     className="
@@ -219,21 +224,33 @@ const HeroSection = ({
       <div className="flex flex-col gap-[clamp(0.356rem,0.56vw,0.665rem)]">
         {/* Badge pill */}
         <div
-          className="
-            inline-flex items-center self-start
-            bg-[var(--illus-card-white-bg)] border border-[var(--border-soft)]
-            backdrop-filter backdrop-blur-[6px] rounded-full
-            px-[clamp(0.53rem,0.83vw,1rem)]
-            py-[clamp(0.177rem,0.28vw,0.33rem)]
-          "
+          className={
+            isCompletedVO3
+              ? "inline-flex items-center self-start bg-[#ECFDF5] rounded-full px-[clamp(0.53rem,0.83vw,1rem)] py-[clamp(0.177rem,0.28vw,0.33rem)] gap-[6px]"
+              : "inline-flex items-center self-start bg-[var(--illus-card-white-bg)] border border-[var(--border-soft)] backdrop-filter backdrop-blur-[6px] rounded-full px-[clamp(0.53rem,0.83vw,1rem)] py-[clamp(0.177rem,0.28vw,0.33rem)]"
+          }
         >
+          {isCompletedVO3 && (
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#047857"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="shrink-0"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          )}
           <span
-            className="
-              font-bold uppercase tracking-[0.6px] text-white
-              text-[clamp(0.53rem,0.83vw,1rem)]
-              leading-[clamp(0.71rem,1.11vw,1.33rem)]
-              font-[family-name:var(--font-sans)]
-            "
+            className={
+              isCompletedVO3
+                ? "font-bold uppercase tracking-[0.6px] text-[#047857] text-[clamp(0.53rem,0.83vw,1rem)] leading-[clamp(0.71rem,1.11vw,1.33rem)] font-[family-name:var(--font-sans)]"
+                : "font-bold uppercase tracking-[0.6px] text-white text-[clamp(0.53rem,0.83vw,1rem)] leading-[clamp(0.71rem,1.11vw,1.33rem)] font-[family-name:var(--font-sans)]"
+            }
           >
             {data.badge ?? "ASSIGNED FARMLAND"}
           </span>
@@ -268,42 +285,119 @@ const HeroSection = ({
         </div>
       </div>
 
-      {/* Right: Total Valuation card */}
-      <div
-        className="
-          flex flex-col items-end justify-center
-          bg-[var(--surface-card)] border border-[var(--border-soft)]
-          backdrop-filter backdrop-blur-[10px]
-          rounded-[clamp(0.71rem,1.11vw,1.33rem)]
-          p-[clamp(1.0625rem,1.67vw,2rem)]
-          gap-[clamp(0.177rem,0.28vw,0.33rem)]
-          w-[clamp(7.4375rem,11.67vw,14rem)]
-          h-[clamp(4.7rem,7.36vw,8.8125rem)]
-          shrink-0
-        "
-      >
-        <span
+      {/* Right side metric box(es) */}
+      {isCompletedVO3 ? (
+        <div className="flex flex-row gap-[clamp(0.71rem,1.11vw,1.33rem)] shrink-0">
+          {/* Land Size Box */}
+          <div
+            className="
+              flex flex-col items-center justify-center
+              bg-[var(--surface-card)] border border-[var(--border-soft)]
+              backdrop-filter backdrop-blur-[10px]
+              rounded-[clamp(0.71rem,1.11vw,1.33rem)]
+              p-[clamp(0.8rem,1.25vw,1.5rem)]
+              gap-[clamp(0.177rem,0.28vw,0.33rem)]
+              w-[clamp(7.4375rem,11.67vw,14rem)]
+              h-[clamp(4.7rem,7.36vw,8.8125rem)]
+            "
+          >
+            <span
+              className="
+                font-semibold uppercase tracking-[0.6px] text-center
+                text-[var(--text-secondary)]
+                text-[clamp(0.53rem,0.83vw,1rem)]
+                leading-[clamp(0.71rem,1.11vw,1.33rem)]
+                font-[family-name:var(--font-sans)]
+              "
+            >
+              LAND SIZE
+            </span>
+            <span
+              className="
+                font-bold text-[var(--text-strong)] text-center
+                text-[clamp(1.2rem,1.8vw,2.2rem)]
+                leading-[clamp(1.6rem,2.5vw,3rem)]
+                font-[family-name:var(--font-sans)]
+              "
+            >
+              {data.landSize ?? "150 Acres"}
+            </span>
+          </div>
+
+          {/* Land Value Box */}
+          <div
+            className="
+              flex flex-col items-center justify-center
+              bg-[var(--surface-card)] border border-[var(--border-soft)]
+              backdrop-filter backdrop-blur-[10px]
+              rounded-[clamp(0.71rem,1.11vw,1.33rem)]
+              p-[clamp(0.8rem,1.25vw,1.5rem)]
+              gap-[clamp(0.177rem,0.28vw,0.33rem)]
+              w-[clamp(7.4375rem,11.67vw,14rem)]
+              h-[clamp(4.7rem,7.36vw,8.8125rem)]
+            "
+          >
+            <span
+              className="
+                font-semibold uppercase tracking-[0.6px] text-center
+                text-[var(--text-secondary)]
+                text-[clamp(0.53rem,0.83vw,1rem)]
+                leading-[clamp(0.71rem,1.11vw,1.33rem)]
+                font-[family-name:var(--font-sans)]
+              "
+            >
+              LAND VALUE
+            </span>
+            <span
+              className="
+                font-bold text-[var(--text-strong)] text-center
+                text-[clamp(1.2rem,1.8vw,2.2rem)]
+                leading-[clamp(1.6rem,2.5vw,3rem)]
+                font-[family-name:var(--font-sans)]
+              "
+            >
+              {data.landValue ?? "37 Lakhs"}
+            </span>
+          </div>
+        </div>
+      ) : (
+        /* Right: Total Valuation card */
+        <div
           className="
-            font-semibold uppercase tracking-[0.6px] text-right
-            text-[var(--text-secondary)]
-            text-[clamp(0.53rem,0.83vw,1rem)]
-            leading-[clamp(0.71rem,1.11vw,1.33rem)]
-            font-[family-name:var(--font-sans)]
+            flex flex-col items-end justify-center
+            bg-[var(--surface-card)] border border-[var(--border-soft)]
+            backdrop-filter backdrop-blur-[10px]
+            rounded-[clamp(0.71rem,1.11vw,1.33rem)]
+            p-[clamp(1.0625rem,1.67vw,2rem)]
+            gap-[clamp(0.177rem,0.28vw,0.33rem)]
+            w-[clamp(7.4375rem,11.67vw,14rem)]
+            h-[clamp(4.7rem,7.36vw,8.8125rem)]
+            shrink-0
           "
         >
-          TOTAL VALUATION
-        </span>
-        <span
-          className="
-            font-bold text-[var(--text-strong)] text-right
-            text-[clamp(1.33rem,2.08vw,2.5rem)]
-            leading-[clamp(1.6rem,2.5vw,3rem)]
-            font-[family-name:var(--font-sans)]
-          "
-        >
-          {data.totalValuation}
-        </span>
-      </div>
+          <span
+            className="
+              font-semibold uppercase tracking-[0.6px] text-right
+              text-[var(--text-secondary)]
+              text-[clamp(0.53rem,0.83vw,1rem)]
+              leading-[clamp(0.71rem,1.11vw,1.33rem)]
+              font-[family-name:var(--font-sans)]
+            "
+          >
+            TOTAL VALUATION
+          </span>
+          <span
+            className="
+              font-bold text-[var(--text-strong)] text-right
+              text-[clamp(1.33rem,2.08vw,2.5rem)]
+              leading-[clamp(1.6rem,2.5vw,3rem)]
+              font-[family-name:var(--font-sans)]
+            "
+          >
+            {data.totalValuation}
+          </span>
+        </div>
+      )}
     </div>
   </div>
 );
@@ -312,7 +406,13 @@ const HeroSection = ({
 /* ASSET DETAILS CARD                                                           */
 /* ─────────────────────────────────────────────────────────────────────────── */
 
-const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
+const AssetDetailsCard = ({
+  data,
+  isCompletedVO3,
+}: {
+  data: FarmlandDetailData;
+  isCompletedVO3?: boolean;
+}) => (
   <Card
     className="
       flex flex-col
@@ -406,7 +506,7 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
           </span>
         </InfoField>
         <InfoField
-          label="LAST UPDATED"
+          label={isCompletedVO3 ? "VERIFICATION TIME" : "LAST UPDATED"}
           fontSizeClass="text-[clamp(0.44rem,0.69vw,0.83rem)] leading-[clamp(0.66rem,1.04vw,1.25rem)]"
         >
           <span
@@ -417,7 +517,7 @@ const AssetDetailsCard = ({ data }: { data: FarmlandDetailData }) => (
               font-[family-name:var(--font-sans)]
             "
           >
-            {data.lastUpdated}
+            {isCompletedVO3 ? data.verificationTime : data.lastUpdated}
           </span>
         </InfoField>
       </div>
@@ -486,9 +586,11 @@ const CurrentStatusCard = ({ data }: { data: FarmlandDetailData }) => (
 const TopNav = ({
   onBack,
   isRequestedInfo,
+  isCompletedVO3,
 }: {
   onBack?: () => void;
   isRequestedInfo?: boolean;
+  isCompletedVO3?: boolean;
 }) => {
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
@@ -511,7 +613,13 @@ const TopNav = ({
     <div className="flex items-center justify-between w-full">
       {/* Back button */}
       <BackButton
-        label={isRequestedInfo ? "Go Back to Requested Info" : "Go Back to Dashboard"}
+        label={
+          isCompletedVO3
+            ? "Go Back"
+            : isRequestedInfo
+              ? "Go Back to Requested Info"
+              : "Go Back to Dashboard"
+        }
         variant="light"
         size="default"
         onClick={onBack}
@@ -565,7 +673,13 @@ const TopNav = ({
 
         {/* Avatar */}
         <button
-          onClick={() => navigate("/io/profile")}
+          onClick={() => {
+            if (isCompletedVO3) {
+              navigate("/verification-officer-3/profile");
+            } else {
+              navigate("/io/profile");
+            }
+          }}
           title="Profile"
           className="
             relative overflow-hidden
@@ -615,11 +729,13 @@ const BottomActions = ({
   onUpload,
   isRequestedInfo,
   onViewReason,
+  isCompletedVO3,
 }: {
   onBack?: () => void;
   onUpload?: () => void;
   isRequestedInfo?: boolean;
   onViewReason?: () => void;
+  isCompletedVO3?: boolean;
 }) => (
   <div
     className="
@@ -630,7 +746,23 @@ const BottomActions = ({
       pb-[clamp(2.125rem,3.33vw,4rem)]
     "
   >
-    {isRequestedInfo ? (
+    {isCompletedVO3 ? (
+      <button
+        onClick={onBack}
+        className="
+          inline-flex items-center justify-center
+          rounded-full bg-[#2780C4] hover:bg-[#1f6da9]
+          font-semibold text-white
+          transition-opacity hover:opacity-90
+          w-[clamp(5.375rem,8.4vw,10rem)]
+          h-[clamp(1.6875rem,2.64vw,3.16rem)]
+          text-[clamp(0.625rem,0.97vw,1.1625rem)]
+          font-[family-name:var(--font-sans)]
+        "
+      >
+        Done
+      </button>
+    ) : isRequestedInfo ? (
       <>
         {/* View Reason */}
         <button
@@ -648,23 +780,6 @@ const BottomActions = ({
         >
           View Reason
         </button>
-
-        {/* Edit */}
-        {/* <button
-          onClick={onUpload}
-          className="
-            inline-flex items-center justify-center
-            rounded-full bg-[#2780C4] hover:bg-[#1f6da9]
-            font-semibold text-white
-            transition-opacity hover:opacity-90
-            w-[clamp(5.375rem,8.4vw,10rem)]
-            h-[clamp(1.6875rem,2.64vw,3.16rem)]
-            text-[clamp(0.625rem,0.97vw,1.1625rem)]
-            font-[family-name:var(--font-sans)]
-          "
-        >
-          Edit
-        </button> */}
       </>
     ) : (
       <>
@@ -728,6 +843,15 @@ const defaultData: FarmlandDetailData = {
   liveStatus: "NA",
 };
 
+const completedCasesVO3 = [
+  { id: "GLC-VO3-06", title: "Kurnool Nandyal Farm", location: "Kurnool, Nandyal", landSize: "10 Acres", landValue: "₹1.5Cr", verificationDate: "06 Oct 2023, 11:30AM", priority: "LOW" },
+  { id: "GLC-VO3-07", title: "Krishna Estate", location: "Krishna, Machilipatnam", landSize: "18 Acres", landValue: "₹3.5Cr", verificationDate: "05 Oct 2023, 2:15PM", priority: "HIGH" },
+  { id: "GLC-VO3-08", title: "Mysuru Estate", location: "Guntur, Andhra Pradesh", landSize: "150 Acres", landValue: "37 Lakhs", verificationDate: "12 Oct 2023, 4:30PM", priority: "MEDIUM" },
+  { id: "GLC-VO3-09", title: "Nellore Farms", location: "Nellore, Gudur", landSize: "25 Acres", landValue: "₹1.2Cr", verificationDate: "04 Oct 2023, 10:00AM", priority: "LOW" },
+  { id: "GLC-VO3-10", title: "Anantapur Orchard", location: "Anantapur, Gooty", landSize: "40 Acres", landValue: "₹2.8Cr", verificationDate: "02 Oct 2023, 5:00PM", priority: "HIGH" },
+  { id: "GLC-VO3-11", title: "Chittoor Mango Grove", location: "Chittoor, Madanapalle", landSize: "30 Acres", landValue: "₹1.9Cr", verificationDate: "01 Oct 2023, 9:30AM", priority: "MEDIUM" },
+];
+
 const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
   data,
   onBack,
@@ -744,6 +868,14 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
     );
   }, [location]);
 
+  const isCompletedVO3 = React.useMemo(() => {
+    return location.pathname.includes("/completed-farmland");
+  }, [location]);
+
+  const matchedVO3Item = React.useMemo(() => {
+    return completedCasesVO3.find((item) => item.id === id);
+  }, [id]);
+
   const [activeStep, setActiveStep] = React.useState<"list" | "owner-details" | "family-tree" | "land-details" | "local-intelligence">("list");
   const [showReasonModal, setShowReasonModal] = React.useState(false);
   const [cameFromModal, setCameFromModal] = React.useState(false);
@@ -759,30 +891,56 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
 
   const matchedItem = FARMLAND_CARD_DUMMY.find((item) => item.id === id);
 
-  const displayData = matchedItem
-    ? {
-      heroImageUrl: afimg,
-      badge: isRequestedInfo ? "REQUESTED INFORMATION" : "ASSIGNED FARMLAND",
-      farmlandName:
-        matchedItem.farmlandId === "GLCSOS 01"
-          ? "GLC SOS -001"
-          : matchedItem.farmlandId.replace("GLCSOS ", "GLC SOS -00"),
-      location: matchedItem.location,
-      totalValuation: `${matchedItem.totalAmount.replace("₹", "")} ${matchedItem.totalAmountUnit.toLowerCase()}`,
-      farmlandId: matchedItem.farmlandId,
-      assignedAgent: {
-        name: matchedItem.agentName,
-        avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80",
-      },
-      creationTime: matchedItem.createdTime,
-      lastUpdated: "8th Oct, 09:15 AM",
-      systemStatus: matchedItem.agentStatus,
-      liveStatus: "NA",
+  const displayData = React.useMemo(() => {
+    if (isCompletedVO3 && matchedVO3Item) {
+      return {
+        heroImageUrl: afimg,
+        badge: "VERIFIED",
+        farmlandName: matchedVO3Item.title,
+        location: matchedVO3Item.location,
+        totalValuation: matchedVO3Item.landValue,
+        farmlandId: "GLCSOS 01",
+        assignedAgent: {
+          name: "Ravi Kumar",
+          avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80",
+        },
+        creationTime: "6th Oct, 12:53 PM",
+        lastUpdated: "8th Oct, 09:15 AM",
+        verificationTime: matchedVO3Item.verificationDate,
+        systemStatus: "Active",
+        liveStatus: "NA",
+        landSize: matchedVO3Item.landSize,
+        landValue: matchedVO3Item.landValue,
+      };
     }
-    : data || {
+
+    if (matchedItem) {
+      return {
+        heroImageUrl: afimg,
+        badge: isRequestedInfo ? "REQUESTED INFORMATION" : "ASSIGNED FARMLAND",
+        farmlandName:
+          matchedItem.farmlandId === "GLCSOS 01"
+            ? "GLC SOS -001"
+            : matchedItem.farmlandId.replace("GLCSOS ", "GLC SOS -00"),
+        location: matchedItem.location,
+        totalValuation: `${matchedItem.totalAmount.replace("₹", "")} ${matchedItem.totalAmountUnit.toLowerCase()}`,
+        farmlandId: matchedItem.farmlandId,
+        assignedAgent: {
+          name: matchedItem.agentName,
+          avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&q=80",
+        },
+        creationTime: matchedItem.createdTime,
+        lastUpdated: "8th Oct, 09:15 AM",
+        systemStatus: matchedItem.agentStatus,
+        liveStatus: "NA",
+      };
+    }
+
+    return data || {
       ...defaultData,
       badge: isRequestedInfo ? "REQUESTED INFORMATION" : "ASSIGNED FARMLAND",
     };
+  }, [isCompletedVO3, matchedVO3Item, matchedItem, data, isRequestedInfo]);
 
   const handleBack = onBack || (() => navigate(-1));
   const handleUpload = () => {
@@ -920,7 +1078,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
       >
         {/* Top nav wrapped in its own 40px padding */}
         <div className="px-[clamp(1.775rem,2.78vw,3.3rem)] w-full">
-          <TopNav onBack={handleBack} isRequestedInfo={isRequestedInfo} />
+          <TopNav onBack={handleBack} isRequestedInfo={isRequestedInfo} isCompletedVO3={isCompletedVO3} />
         </div>
 
         {/* Main page content wrapper in its own 96px padding */}
@@ -941,12 +1099,12 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
                 leading-[clamp(2.125rem,3.33vw,4rem)]
               "
             >
-              {isRequestedInfo ? "Requested Information" : "Assigned Farmlands"}
+              {isCompletedVO3 ? "Completed Farmlands" : isRequestedInfo ? "Requested Information" : "Assigned Farmlands"}
             </Typography>
           </div>
 
           {/* Hero */}
-          <HeroSection data={displayData} />
+          <HeroSection data={displayData} isCompletedVO3={isCompletedVO3} />
 
           {/* Bento grid */}
           <div
@@ -958,7 +1116,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
               mt-[clamp(2.125rem,3.33vw,4rem)]
             "
           >
-            <AssetDetailsCard data={displayData} />
+            <AssetDetailsCard data={displayData} isCompletedVO3={isCompletedVO3} />
             <CurrentStatusCard data={displayData} />
           </div>
 
@@ -968,6 +1126,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
             onUpload={handleUpload}
             isRequestedInfo={isRequestedInfo}
             onViewReason={() => setShowReasonModal(true)}
+            isCompletedVO3={isCompletedVO3}
           />
         </div>
       </div>

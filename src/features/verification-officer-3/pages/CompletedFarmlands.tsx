@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import VO3CompleteCard from '../components/VO3CompleteCard';
 
 export const CompletedFarmlands = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [isPriorityOpen, setIsPriorityOpen] = useState(false);
   const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'HIGH' | 'MEDIUM' | 'LOW'>('ALL');
@@ -9,7 +11,7 @@ export const CompletedFarmlands = () => {
   const baseCases = [
     { id: "GLC-VO3-06", title: "Kurnool Nandyal Farm", location: "Kurnool, Nandyal", landSize: "10 Acres", landValue: "₹1.5Cr", verificationDate: "06 Oct 2023, 11:30AM", priority: "LOW" as const },
     { id: "GLC-VO3-07", title: "Krishna Estate", location: "Krishna, Machilipatnam", landSize: "18 Acres", landValue: "₹3.5Cr", verificationDate: "05 Oct 2023, 2:15PM", priority: "HIGH" as const },
-    { id: "GLC-VO3-08", title: "Mysuru Estate", location: "Guntur, Andhra Pradesh", landSize: "150 Acres", landValue: "₹37,50,000", verificationDate: "12 Oct 2023, 4:30PM", priority: "MEDIUM" as const },
+    { id: "GLC-VO3-08", title: "Mysuru Estate", location: "Guntur, Andhra Pradesh", landSize: "150 Acres", landValue: "37 Lakhs", verificationDate: "12 Oct 2023, 4:30PM", priority: "MEDIUM" as const },
     { id: "GLC-VO3-09", title: "Nellore Farms", location: "Nellore, Gudur", landSize: "25 Acres", landValue: "₹1.2Cr", verificationDate: "04 Oct 2023, 10:00AM", priority: "LOW" as const },
     { id: "GLC-VO3-10", title: "Anantapur Orchard", location: "Anantapur, Gooty", landSize: "40 Acres", landValue: "₹2.8Cr", verificationDate: "02 Oct 2023, 5:00PM", priority: "HIGH" as const },
     { id: "GLC-VO3-11", title: "Chittoor Mango Grove", location: "Chittoor, Madanapalle", landSize: "30 Acres", landValue: "₹1.9Cr", verificationDate: "01 Oct 2023, 9:30AM", priority: "MEDIUM" as const },
@@ -57,6 +59,7 @@ export const CompletedFarmlands = () => {
               landValue={farmland.landValue}
               verificationDate={farmland.verificationDate}
               status="VERIFIED"
+              onCardClick={() => navigate(`/verification-officer-3/completed-farmland/${farmland.id}`)}
             />
           ))}
         </div>

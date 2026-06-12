@@ -2,10 +2,18 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import voLogo from "@/assets/vo-logo.svg";
 import profileImg from "@/assets/profile.svg";
 import { VERIFICATION_OFFICER_3_NAV_ITEMS } from "@/features/verification-officer-3/data/navigation";
+import { useAppDispatch } from "@/core/hooks";
+import { logOut } from "@/features/auth/store/authSlice";
 
 export const VerificationOfficer3Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    dispatch(logOut());
+    navigate("/login", { replace: true });
+  };
 
   // Determine active item based on current path
   const activeItem = VERIFICATION_OFFICER_3_NAV_ITEMS.find(item => location.pathname.includes(item.path))?.id || "dashboard";
@@ -137,7 +145,10 @@ export const VerificationOfficer3Layout = () => {
           </button>
 
           {/* Avatar Profile */}
-          <button className="rounded-full overflow-hidden border border-gray-100 shadow-sm cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center p-0 bg-white w-[clamp(2.31rem,3.61vw,6.0rem)] h-[clamp(2.31rem,3.61vw,6.0rem)]">
+          <button
+            onClick={() => navigate("/verification-officer-3/profile")}
+            className="rounded-full overflow-hidden border border-gray-100 shadow-sm cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center p-0 bg-white w-[clamp(2.31rem,3.61vw,6.0rem)] h-[clamp(2.31rem,3.61vw,6.0rem)]"
+          >
             <img
               src={profileImg}
               alt="Profile"
