@@ -22,7 +22,7 @@ const TopPerformersList: React.FC<Props> = ({ performers }) => {
         "gap-[8px]",
         "cursor-pointer hover:shadow-md transition-shadow"
       )}
-    >
+     >
       <p className="m-0 font-inter font-semibold text-[clamp(0.875rem,1.2vw,1.125rem)] text-[var(--text-primary)] mb-4 w-full text-left">
         Top Performer's List
       </p>
@@ -33,10 +33,11 @@ const TopPerformersList: React.FC<Props> = ({ performers }) => {
           <div
             key={performer.id}
             className={cn(
-              "flex flex-col items-center gap-1.5 shrink-0",
-              "transition-transform duration-200",
-              performer.isTopPerformer && "scale-105",
-            )}
+  "flex flex-col items-center shrink-0 bg-[#F5F5F5] rounded-[24px] transition-transform duration-200",
+  performer.isTopPerformer
+    ? "w-[120px] h-[180px] pt-4 pb-3 px-2"
+    : "w-[100px] h-[145px] pt-4 pb-3 px-2"
+)}
           >
             {/* Avatar */}
             <div
