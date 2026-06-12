@@ -1,20 +1,26 @@
 import { useState } from 'react';
 import { Search, ChevronDown } from 'lucide-react';
-import { VO3_FARMLANDS } from '../data/farmlandsMockData';
-import VO3FarmlandCard from '../components/VO3FarmlandCard';
+import VO3ProgressCard from '../components/VO3ProgressCard';
 
 export const InProgressFarmlands = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isPriorityOpen, setIsPriorityOpen] = useState(false);
   const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'HIGH' | 'MEDIUM' | 'LOW'>('ALL');
 
-  // Filter In-Progress farmlands
-  const inProgressCases = VO3_FARMLANDS.filter(
-    (f) => f.status === 'In-Progress'
-  );
+  const baseCases = [
+    { id: "GLCSOS 01", location: "Tanuku, Andhra Pradesh", agentName: "Ananthu", totalArea: "14.5 Acres", costPerAcre: "₹24L", estimatedValue: "₹3.48Cr", priority: "HIGH" as const },
+    { id: "GLCSOS 02", location: "Kakinada, Andhra Pradesh", agentName: "Ram Varma", totalArea: "18.2 Acres", costPerAcre: "₹18L", estimatedValue: "₹3.28Cr", priority: "MEDIUM" as const },
+    { id: "GLCSOS 03", location: "Nellore, Andhra Pradesh", agentName: "Sravan Kumar", totalArea: "10.0 Acres", costPerAcre: "₹32L", estimatedValue: "₹3.20Cr", priority: "LOW" as const },
+    { id: "GLCSOS 04", location: "Chittoor, Andhra Pradesh", agentName: "Praveen Raj", totalArea: "22.4 Acres", costPerAcre: "₹15L", estimatedValue: "₹3.36Cr", priority: "HIGH" as const },
+    { id: "GLCSOS 05", location: "Guntur, Andhra Pradesh", agentName: "Manoj Swamy", totalArea: "15.0 Acres", costPerAcre: "₹22L", estimatedValue: "₹3.30Cr", priority: "MEDIUM" as const },
+    { id: "GLCSOS 06", location: "Eluru, Andhra Pradesh", agentName: "Anil Kumar", totalArea: "12.8 Acres", costPerAcre: "₹20L", estimatedValue: "₹2.56Cr", priority: "LOW" as const },
+    { id: "GLCSOS 07", location: "Anantapur, Andhra Pradesh", agentName: "Sanjay Dutt", totalArea: "19.5 Acres", costPerAcre: "₹19L", estimatedValue: "₹3.70Cr", priority: "HIGH" as const },
+    { id: "GLCSOS 08", location: "Kadapa, Andhra Pradesh", agentName: "Vijay Prasad", totalArea: "11.2 Acres", costPerAcre: "₹25L", estimatedValue: "₹2.80Cr", priority: "MEDIUM" as const },
+    { id: "GLCSOS 09", location: "Kurnool, Andhra Pradesh", agentName: "Rajesh Goud", totalArea: "16.0 Acres", costPerAcre: "₹21L", estimatedValue: "₹3.36Cr", priority: "LOW" as const },
+  ];
 
   // Apply Search and Priority filter
-  const filteredCases = inProgressCases.filter((farmland) => {
+  const filteredCases = baseCases.filter((farmland) => {
     const matchesSearch =
       farmland.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       farmland.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -27,88 +33,33 @@ export const InProgressFarmlands = () => {
   });
 
   return (
-    <div className="w-full flex flex-col pt-[10px]">
+    <div className="w-full flex flex-col ">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4 mb-[40px]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4 mb-[clamp(1.5rem,2.5vw,3.5rem)]">
         {/* Title and Subtitle */}
-        <div className="flex flex-col gap-[4px]">
-          <h1 className="font-plus-jakarta font-medium text-[#191B23] text-[24px] leading-[24px]">
-            In-Progress Farmland Audits
+        <div className="flex flex-col gap-[clamp(0.125rem,0.25vw,0.5rem)]">
+          <h1 className="font-plus-jakarta font-bold text-[#1A1C1D] text-[clamp(1.3rem,1.8vw,2.125rem)] leading-[clamp(2.0rem,2.77vw,3.0rem)] m-0">
+           In-Progress Farmlands
           </h1>
-          <p className="font-inter font-normal text-[#505F76] text-[16px] leading-[24px]">
-            Track status, update environmental reviews, and resolve pending issues for active cases.
-          </p>
-        </div>
-
-        {/* Search & Filter Actions */}
-        <div className="flex items-center gap-[12px] flex-wrap">
-          {/* Search Bar */}
-          <div 
-            className="relative bg-white flex items-center w-full md:w-[384px] h-[49px] border border-[#E1E2ED] shadow-sm rounded-full px-[16px] py-[14px] pl-[48px]"
-          >
-            <Search size={18} className="text-[#737686] absolute left-[16px]" />
-            <input 
-              type="text" 
-              placeholder="Search by ID, Location, or Agent..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none w-full font-inter placeholder:text-[#6B7280] text-[#191B23] text-[16px] leading-[19px]"
-            />
-          </div>
-
-          {/* Priority Dropdown */}
-          <div className="relative">
-            <button 
-              onClick={() => setIsPriorityOpen(!isPriorityOpen)}
-              className="bg-white flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors h-[49px] border border-[#E1E2ED] shadow-sm rounded-full px-[28px] py-[14px] gap-[8px]"
-            >
-              <span className="font-inter font-normal text-[#6B7280] text-[16px] leading-[19px]">
-                Priority: {priorityFilter}
-              </span>
-              <ChevronDown size={16} className="text-[#6B7280]" />
-            </button>
-
-            {isPriorityOpen && (
-              <div 
-                className="absolute bg-white shadow-[0px_4px_12px_rgba(0,0,0,0.1)] z-50 rounded-[24px] w-[180px] top-[59px] right-0 flex flex-col p-3 gap-1"
-              >
-                {['ALL', 'HIGH', 'MEDIUM', 'LOW'].map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => {
-                      setPriorityFilter(p as any);
-                      setIsPriorityOpen(false);
-                    }}
-                    className={`w-full text-left px-4 py-2 text-[14px] font-inter rounded-xl border-none cursor-pointer transition-colors ${
-                      priorityFilter === p
-                        ? 'bg-[#BDD327] text-black font-semibold'
-                        : 'bg-transparent text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    {p === 'ALL' ? 'All Priorities' : `${p} Priority`}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <p className="font-plus-jakarta font-normal text-[#3D4949] text-[clamp(0.85rem,1.11vw,1.25rem)] leading-[clamp(1.4rem,1.94vw,2.2rem)] m-0">
+         Resume the verification of the farmlands          </p>
         </div>
       </div>
 
       {/* Grid of Cards */}
       {filteredCases.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px] w-full pb-[40px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[clamp(1rem,1.67vw,2.5rem)] w-full pb-[40px]">
           {filteredCases.map((farmland) => (
-            <VO3FarmlandCard
+            <VO3ProgressCard
               key={farmland.id}
               id={farmland.id}
               location={farmland.location}
               agentName={farmland.agentName}
-              totalAmount={farmland.amount}
-              valuePerAcre={farmland.costPerAcre}
               totalArea={farmland.totalArea}
-              submissionDate={farmland.submissionDate}
-              priority={farmland.priority}
-              progress={farmland.progress}
+              costPerAcre={farmland.costPerAcre}
+              estimatedValue={farmland.estimatedValue}
+              status="IN PROGRESS"
+              actionLabel="Resume Verification"
             />
           ))}
         </div>
