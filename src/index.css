@@ -225,11 +225,15 @@ body {
 
 /* ─── GLOBAL: Hide scrollbars everywhere, keep scroll functional ── */
 * {
-  scrollbar-width: none;        /* Firefox */
-  -ms-overflow-style: none;     /* IE / Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE / Edge */
 }
+
 *::-webkit-scrollbar {
-  display: none;                /* Chrome / Safari / Opera */
+  display: none;
+  /* Chrome / Safari / Opera */
 }
 
 .font-inter {
@@ -3713,8 +3717,9 @@ h1 {
   display: none;
 }
 
+
 /* ─── DYNAMIC LAYOUT ZOOM FOR HIGH-RESOLUTION SCREENS ───────────────── */
-@media (min-width: 1920px) {
+@media (min-width: 1900px) {
   .layout-container-zoom {
     zoom: 1.3333;
     -moz-transform: scale(1.3333);
@@ -3729,4 +3734,3 @@ h1 {
     -moz-transform-origin: top center;
   }
 }
-

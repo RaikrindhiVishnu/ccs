@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Search, ChevronDown } from 'lucide-react';
 import { VO3_FARMLANDS } from '../data/farmlandsMockData';
-import { VerificationOfficer3Card } from '../components/VerificationOfficer3Card';
+import VO3FarmlandCard from '../components/VO3FarmlandCard';
 
 export const InProgressFarmlands = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -98,7 +98,18 @@ export const InProgressFarmlands = () => {
       {filteredCases.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px] w-full pb-[40px]">
           {filteredCases.map((farmland) => (
-            <VerificationOfficer3Card key={farmland.id} farmland={farmland} />
+            <VO3FarmlandCard
+              key={farmland.id}
+              id={farmland.id}
+              location={farmland.location}
+              agentName={farmland.agentName}
+              totalAmount={farmland.amount}
+              valuePerAcre={farmland.costPerAcre}
+              totalArea={farmland.totalArea}
+              submissionDate={farmland.submissionDate}
+              priority={farmland.priority}
+              progress={farmland.progress}
+            />
           ))}
         </div>
       ) : (
