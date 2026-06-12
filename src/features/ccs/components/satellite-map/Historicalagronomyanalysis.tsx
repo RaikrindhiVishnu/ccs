@@ -336,7 +336,7 @@ function GeospatialControlsPanel({
     absolute z-30
     top-[1.25rem] lg:top-[1.5rem] xl:top-[1.75rem] 2xl:top-[2rem]
     right-[1.25rem] lg:right-[1.5rem] xl:right-[1.75rem] 2xl:right-[2rem]
-    w-[12.5rem] lg:w-[13.5rem] xl:w-[15rem] 2xl:w-[286px]
+    w-[206px] h-[184px]
   "
     >
       <div
@@ -491,9 +491,10 @@ function VerificationVerdictPanel({ onAuthorize }: { onAuthorize?: () => void })
       className="absolute z-30 bg-[rgba(255,255,255,0.95)] backdrop-blur-md rounded-[42px] p-[28px] flex flex-col justify-between shadow-[0px_27.93px_55.86px_-13.41px_rgba(0,0,0,0.05)]"
       style={{
         width: '285px',
+        height: '547px',
+        maxHeight: 'calc(100vh - 270px)',
         top: '238px',
-        right: '32px',
-        bottom: '57px'
+        right: '32px'
       }}
     >
       <div className="flex flex-col h-full">
@@ -511,7 +512,7 @@ function VerificationVerdictPanel({ onAuthorize }: { onAuthorize?: () => void })
         </div>
 
         {/* List */}
-        <div className="flex flex-col gap-[21px] flex-1">
+        <div className="flex flex-col gap-[21px] flex-1 overflow-y-auto custom-scrollbar">
           {/* Item 1 */}
           <div className="flex items-center gap-[14px]">
             <div className="w-[28px] h-[28px] bg-[rgba(105,182,254,0.2)] rounded-full flex items-center justify-center shrink-0">

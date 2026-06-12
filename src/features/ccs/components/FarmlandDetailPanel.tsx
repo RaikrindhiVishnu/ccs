@@ -30,7 +30,7 @@ const STATUS_CONFIG: Record<
   FarmlandDetail["status"],
   { label: string; color: string }
 > = {
-  COMPLETED: { label: "Completed",  color: "#16A34A" },
+  COMPLETED: { label: "Completed",  color: "#489C2C" },
   ACTIVE:    { label: "Active",     color: "#2780C4" },
   PENDING:   { label: "Pending",    color: "#D97706" },
   REJECTED:  { label: "Rejected",   color: "#DC2626" },
@@ -73,7 +73,7 @@ export default function FarmlandDetailPanel({
 
       {/* ── RIGHT PANEL ── */}
       <div
-        className={`absolute z-50 right-[49px] top-[52px] w-[411px] h-[calc(100vh-104px)] max-h-[721px] bg-[#FFFFFF] shadow-[0px_20px_25px_-5px_rgba(0,0,0,0.1),0px_8px_10px_-6px_rgba(0,0,0,0.1)] border border-transparent rounded-[12px] flex flex-col transition-transform duration-300 ease-in-out ${
+        className={`absolute z-50 right-[49px] top-[52px] w-[411px] h-[682px] max-h-[calc(100vh-104px)] bg-[#FFFFFF] shadow-[0px_20px_25px_-5px_rgba(0,0,0,0.1),0px_8px_10px_-6px_rgba(0,0,0,0.1)] border border-transparent rounded-[12px] flex flex-col transition-transform duration-300 ease-in-out ${
           open ? "translate-x-0" : "translate-x-[calc(100%+49px)]"
         }`}
       >
@@ -116,7 +116,7 @@ export default function FarmlandDetailPanel({
                 >
                   {STATUS_CONFIG[detail.status].label}
                   {detail.status === "COMPLETED" && detail.liveOnWebsite && (
-                    <span className="ml-[6px] font-normal text-[13px] text-[#6B7280]">
+                    <span className="ml-[6px] font-bold text-[16px]">
                       (live in website)
                     </span>
                   )}

@@ -65,9 +65,9 @@ export default function FarmlandRequest() {
 
   return (
     <div className="relative h-full overflow-hidden">
-      <FiltersModal 
-        isOpen={filtersOpen} 
-        onClose={() => setFiltersOpen(false)} 
+      <FiltersModal
+        isOpen={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
         initialFilters={activeFilters}
         onApply={(newFilters) => setActiveFilters(newFilters)}
       />
@@ -106,7 +106,7 @@ export default function FarmlandRequest() {
             </div>
 
             {/* FILTER */}
-            <button 
+            <button
               onClick={() => setFiltersOpen(true)}
               className="flex shrink-0 h-[52px] w-[52px] items-center justify-center rounded-[40px] bg-[#FFFFFF] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] hover:bg-gray-50 transition-colors"
             >
@@ -115,7 +115,7 @@ export default function FarmlandRequest() {
 
             {/* BELL */}
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setShowNotifications(!showNotifications)}
                 className="relative shrink-0 flex h-[52px] w-[52px] items-center justify-center rounded-[40px] bg-[#FFFFFF] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] hover:bg-gray-50 transition-colors"
               >
@@ -134,9 +134,9 @@ export default function FarmlandRequest() {
         {activeFilterEntries.length > 0 && (
           <div className="flex flex-wrap gap-[12px] mb-6">
             {activeFilterEntries.map((filter) => (
-              <div 
-                key={filter.key} 
-                onClick={() => setActiveFilters(prev => ({ ...prev, [filter.key]: "" }))} 
+              <div
+                key={filter.key}
+                onClick={() => setActiveFilters(prev => ({ ...prev, [filter.key]: "" }))}
                 className="h-[42px] px-[20px] bg-[#FFFFFF] border border-[rgba(39,128,196,0.5)] shadow-[0px_8px_32px_rgba(31,38,135,0.03)] backdrop-blur-[12px] rounded-full flex items-center gap-[8px] cursor-pointer hover:bg-gray-50 transition-colors"
               >
                 <span className="font-['Plus_Jakarta_Sans'] font-medium text-[14px] leading-[20px] text-[#2780C4]">
@@ -148,13 +148,12 @@ export default function FarmlandRequest() {
           </div>
         )}
 
-        {/* ── CARD GRID ── */}
         <div
           className="
             grid grid-cols-1 content-start gap-3
             lg:grid-cols-2 lg:gap-4
             xl:gap-[1.125rem]
-            2xl:grid-cols-3 2xl:gap-5
+            2xl:gap-5
           "
         >
           {filteredData.length > 0 ? (
