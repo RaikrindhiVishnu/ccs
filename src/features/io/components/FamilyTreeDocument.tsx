@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 interface FamilyTreeDocumentProps {
   onBack: () => void;
+  onGoBackDashboard?: () => void;
   onNext: () => void;
   onTabChange: (tab: "owner" | "family" | "land") => void;
   onStepChange?: (step: "customer" | "local") => void;
@@ -21,6 +22,7 @@ interface FamilyTreeDocumentProps {
 
 export const FamilyTreeDocument: React.FC<FamilyTreeDocumentProps> = ({
   onBack,
+  onGoBackDashboard,
   onNext,
   onTabChange,
   onStepChange,
@@ -65,7 +67,7 @@ export const FamilyTreeDocument: React.FC<FamilyTreeDocumentProps> = ({
           label="Go back to dashboard"
           variant="light"
           size="default"
-          onClick={onBack}
+          onClick={onGoBackDashboard || onBack}
           className="
             w-[clamp(15.5rem,16.67vw,20rem)]
             h-[clamp(2.31rem,3.61vw,4.3rem)]
@@ -526,7 +528,7 @@ export const FamilyTreeDocument: React.FC<FamilyTreeDocumentProps> = ({
                 font-[family-name:var(--font-sans)]
               "
             >
-              {isVO3 ? "Turn Back" : "Back"}
+              Back
             </button>
 
             <button

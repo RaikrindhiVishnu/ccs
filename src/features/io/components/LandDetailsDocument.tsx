@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 interface LandDetailsDocumentProps {
   onBack: () => void;
+  onGoBackDashboard?: () => void;
   onNext: () => void;
   onTabChange: (tab: "owner" | "family" | "land") => void;
   onStepChange?: (step: "customer" | "local") => void;
@@ -18,6 +19,7 @@ interface LandDetailsDocumentProps {
 
 export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
   onBack,
+  onGoBackDashboard,
   onNext,
   onTabChange,
   onStepChange,
@@ -59,7 +61,7 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
           label="Go back to dashboard"
           variant="light"
           size="default"
-          onClick={onBack}
+          onClick={onGoBackDashboard || onBack}
           className="
             w-[clamp(15.5rem,16.67vw,20rem)]
             h-[clamp(2.31rem,3.61vw,4.3rem)]
@@ -487,7 +489,7 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
                 text-[clamp(0.625rem,0.97vw,1.1625rem)]
               "
             >
-              {isVO3 ? "Turn Back" : "Back"}
+              Back
             </button>
 
             <button

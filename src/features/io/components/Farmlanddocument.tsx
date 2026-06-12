@@ -9,7 +9,7 @@ import { OwnerDetailsDocument } from "./OwnerDetailsDocument";
 import { FamilyTreeDocument } from "./FamilyTreeDocument";
 import { LandDetailsDocument } from "./LandDetailsDocument";
 import { LocalIntelligenceDocument } from "./LocalIntelligenceDocument";
-import { Bell } from "lucide-react";
+import { Bell, X } from "lucide-react";
 import { useAppSelector } from "@/core/hooks";
 import { RequestedInfoReasonModal } from "./RequestedInfoReasonModal";
 import { VO3_FARMLANDS } from "@/features/verification-officer-3/data/farmlandsMockData";
@@ -890,6 +890,8 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
   );
   const [showReasonModal, setShowReasonModal] = React.useState(false);
   const [cameFromModal, setCameFromModal] = React.useState(false);
+  const [showTurnBackModal, setShowTurnBackModal] = React.useState(false);
+  const [turnBackReason, setTurnBackReason] = React.useState("");
 
   // Lifted form data state
   const [firstName, setFirstName] = React.useState("Ramudu");
@@ -974,6 +976,13 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
   }, [isCompletedVO3, matchedVO3Item, matchedItem, data, isRequestedInfo]);
 
   const handleBack = onBack || (() => navigate(-1));
+  const goBackToDashboard = () => {
+    if (isAssignedVO3) {
+      navigate("/verification-officer-3/assigned-farmlands");
+    } else {
+      setActiveStep("list");
+    }
+  };
   const handleUpload = () => {
     if (onUpload) {
       onUpload();
@@ -981,16 +990,19 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
     setActiveStep("owner-details");
   };
 
+  let stepContent = null;
+
   if (activeStep === "owner-details") {
-    return (
+    stepContent = (
       <OwnerDetailsDocument
         onBack={() => {
           if (isAssignedVO3) {
-            navigate("/verification-officer-3/assigned-farmlands");
+            setShowTurnBackModal(true);
           } else {
             setActiveStep("list");
           }
         }}
+        onGoBackDashboard={goBackToDashboard}
         onNext={() => setActiveStep("family-tree")}
         onTabChange={(tab) => {
           if (tab === "owner") setActiveStep("owner-details");
@@ -1019,12 +1031,11 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
         isVO3={isAssignedVO3}
       />
     );
-  }
-
-  if (activeStep === "family-tree") {
-    return (
+  } else if (activeStep === "family-tree") {
+    stepContent = (
       <FamilyTreeDocument
         onBack={() => setActiveStep("owner-details")}
+        onGoBackDashboard={goBackToDashboard}
         onNext={() => setActiveStep("land-details")}
         onTabChange={(tab) => {
           if (tab === "owner") setActiveStep("owner-details");
@@ -1042,12 +1053,11 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
         isVO3={isAssignedVO3}
       />
     );
-  }
-
-  if (activeStep === "land-details") {
-    return (
+  } else if (activeStep === "land-details") {
+    stepContent = (
       <LandDetailsDocument
         onBack={() => setActiveStep("family-tree")}
+        onGoBackDashboard={goBackToDashboard}
         onNext={() => {
           setActiveStep("local-intelligence");
         }}
@@ -1064,10 +1074,8 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
         isVO3={isAssignedVO3}
       />
     );
-  }
-
-  if (activeStep === "local-intelligence") {
-    return (
+  } else if (activeStep === "local-intelligence") {
+    stepContent = (
       <LocalIntelligenceDocument
         onBack={() => {
           if (cameFromModal) {
@@ -1078,6 +1086,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
             setActiveStep("land-details");
           }
         }}
+        onGoBackDashboard={goBackToDashboard}
         onNext={() => {
           if (isAssignedVO3) {
             navigate("/verification-officer-3/assigned-farmlands");
@@ -1101,6 +1110,78 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
         isFromRejection={cameFromModal || isRequestedInfo}
         isVO3={isAssignedVO3}
       />
+    );
+  }
+
+  if (stepContent) {
+    return (
+      <>
+        {stepContent}
+        {showTurnBackModal && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999] flex items-center justify-center p-4 animate-in fade-in duration-300">
+            <div
+              className="
+                relative w-full max-w-[clamp(30rem,46.67vw,42rem)] min-h-[clamp(22rem,30.07vw,32rem)] bg-white rounded-[clamp(1.5rem,2.2vw,2.5rem)]
+                flex flex-col gap-4 shadow-[0px_20px_40px_rgba(0,49,50,0.06)]
+              "
+            >
+              {/* Header: Title and Close Button */}
+              <div className="pt-[clamp(1.25rem,1.67vw,2rem)] px-[clamp(1.5rem,2.22vw,2.5rem)] flex flex-row justify-between items-center w-full">
+                <h3 className="font-sans font-semibold text-[clamp(1.25rem,1.67vw,1.75rem)] leading-[clamp(1.65rem,2.22vw,2.5rem)] tracking-[-0.6px] text-[#1A1C1D]">
+                  Turnback
+                </h3>
+                <button
+                  onClick={() => setShowTurnBackModal(false)}
+                  className="w-[clamp(1.5rem,2.08vw,2.5rem)] h-[clamp(1.5rem,2.08vw,2.5rem)] rounded-full flex items-center justify-center bg-transparent border-none hover:bg-gray-100 transition-colors cursor-pointer"
+                  aria-label="Close"
+                >
+                  <X className="w-[clamp(1rem,1.39vw,1.5rem)] h-[clamp(1rem,1.39vw,1.5rem)] text-black" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="px-[clamp(1.5rem,2.22vw,2.5rem)] pb-[clamp(1.5rem,2.22vw,2.5rem)] flex flex-col gap-[clamp(0.75rem,1.11vw,1.5rem)] w-full">
+                <div className="flex flex-col gap-[clamp(0.4rem,0.6vw,0.8rem)] w-full">
+                  <span className="font-sans font-normal text-[clamp(0.8rem,0.97vw,1.1rem)] leading-[clamp(1rem,1.39vw,1.5rem)] text-[#3D4949]">
+                    Provide the reason for turnback:
+                  </span>
+
+                  {/* Textarea container */}
+                  <div className="relative w-full h-[clamp(10rem,13.88vw,15rem)] bg-[#F3F3F5] border border-[#BCC9C9] rounded-[clamp(0.75rem,1.11vw,1.25rem)]">
+                    <textarea
+                      value={turnBackReason}
+                      onChange={(e) => setTurnBackReason(e.target.value)}
+                      placeholder="Start write here..."
+                      className="
+                        w-full h-full bg-transparent outline-none border-none resize-none
+                        p-[clamp(1rem,1.39vw,1.75rem)] font-sans font-normal text-[clamp(0.9rem,1.11vw,1.25rem)] leading-[clamp(1.25rem,1.8vw,2rem)] text-[#1A1C1D]
+                        placeholder:text-[rgba(26,28,29,0.3)]
+                      "
+                    />
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  onClick={() => {
+                    setShowTurnBackModal(false);
+                    navigate("/verification-officer-3/assigned-farmlands");
+                  }}
+                  className="
+                    flex flex-row justify-center items-center px-[clamp(0.5rem,0.69vw,1rem)] py-[clamp(0.5rem,0.69vw,1rem)] gap-2
+                    w-[clamp(6.5rem,8.4vw,8.5rem)] h-[clamp(2.25rem,2.64vw,2.75rem)] bg-[#2780C4] hover:bg-[#1f6da9] rounded-[clamp(1.5rem,2.2vw,2.5rem)]
+                    cursor-pointer transition-colors shadow-md hover:shadow-lg self-end
+                  "
+                >
+                  <span className="font-sans font-semibold text-[clamp(0.8rem,0.97vw,1.1rem)] leading-[clamp(1rem,1.25vw,1.5rem)] text-white text-center">
+                    Submit
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
     );
   }
 

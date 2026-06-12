@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 interface OwnerDetailsDocumentProps {
   onBack: () => void;
+  onGoBackDashboard?: () => void;
   onNext: () => void;
   onTabChange: (tab: "owner" | "family" | "land") => void;
   onStepChange?: (step: "customer" | "local") => void;
@@ -31,6 +32,7 @@ interface OwnerDetailsDocumentProps {
 
 export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
   onBack,
+  onGoBackDashboard,
   onNext,
   onTabChange,
   onStepChange,
@@ -86,7 +88,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
           label="Go back to dashboard"
           variant="light"
           size="default"
-          onClick={onBack}
+          onClick={onGoBackDashboard || onBack}
           className="
             w-[clamp(15.5rem,16.67vw,20rem)]
             h-[clamp(2.31rem,3.61vw,4.3rem)]

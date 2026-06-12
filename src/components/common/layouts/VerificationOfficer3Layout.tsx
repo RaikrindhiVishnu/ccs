@@ -146,7 +146,7 @@ export const VerificationOfficer3Layout = () => {
 
           {/* Avatar Profile */}
           <button
-            onClick={() => navigate("/verification-officer-3/profile")}
+            onClick={handleLogout}
             className="rounded-full overflow-hidden border border-gray-100 shadow-sm cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center p-0 bg-white w-[clamp(2.31rem,3.61vw,6.0rem)] h-[clamp(2.31rem,3.61vw,6.0rem)]"
           >
             <img
