@@ -17,6 +17,7 @@ const MOCK_USERS = [
   { login_id: "io@glc.com", password: "io@123456", role_id: UserRole.IO, first_name: "Intelligence", last_name: "Officer", id: 105 },
   { login_id: "regional@glc.com", password: "regional@123", role_id: UserRole.RO, first_name: "Edward", last_name: "Janowski", id: 106 },
   { login_id: "vo2@glc.com", password: "vo2@123", role_id: UserRole.VO2, first_name: "Verification", last_name: "Officer 2", id: 107 },
+  { login_id: "vo3@glc.com", password: "vo3@123", role_id: UserRole.VO3, first_name: "Verification", last_name: "Officer 3", id: 108 },
 ];
 
 // ─── Types ────────────────────────────────────────────────────────────────────

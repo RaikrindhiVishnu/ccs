@@ -90,6 +90,23 @@ export const VerificationOfficer1Layout = lazy(
   () => import("../../components/common/layouts/VerificationOfficer1Layout"),
 );
 
+// Verification Officer 3 (VO3)
+export const VerificationOfficer3Dashboard = lazy(
+  () => import("../../features/verification-officer-3/pages/VerificationOfficer3Dashboard"),
+);
+export const VerificationOfficer3AssignedFarmlands = lazy(
+  () => import("../../features/verification-officer-3/pages/AssignedFarmlands"),
+);
+export const VerificationOfficer3InProgressFarmlands = lazy(
+  () => import("../../features/verification-officer-3/pages/InProgressFarmlands"),
+);
+export const VerificationOfficer3CompletedFarmlands = lazy(
+  () => import("../../features/verification-officer-3/pages/CompletedFarmlands"),
+);
+export const VerificationOfficer3Layout = lazy(
+  () => import("../../components/common/layouts/VerificationOfficer3Layout"),
+);
+
 
 // Dev Imports
 export const Assignedfarmland = lazy(() => import ("../../features/io/pages/Assignedfarmland"),);

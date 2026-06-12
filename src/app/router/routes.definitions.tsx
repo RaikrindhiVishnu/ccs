@@ -90,6 +90,13 @@ import {
     VerificationOfficer1AssignedFarmlandsOwnerDetails,
     VerificationOfficer1Layout,
 
+    // Verification Officer 3 imports
+    VerificationOfficer3Dashboard,
+    VerificationOfficer3AssignedFarmlands,
+    VerificationOfficer3InProgressFarmlands,
+    VerificationOfficer3CompletedFarmlands,
+    VerificationOfficer3Layout,
+
     // Dev imports
     DraftsPage,
     FieldOfficerLayout,
@@ -445,6 +452,32 @@ export const authRoutes: RouteObject[] = [
             {
                 path: "completed-farmland",
                 element: <VerificationOfficer1CompletedFarmlands />,
+            },
+        ],
+    },
+    {
+        path: "verification-officer-3",
+        element: <VerificationOfficer3Layout />,
+        children: [
+            {
+                index: true,
+                element: <VerificationOfficer3Dashboard />,
+            },
+            {
+                path: "dashboard",
+                element: <VerificationOfficer3Dashboard />,
+            },
+            {
+                path: "assigned-farmlands",
+                element: <VerificationOfficer3AssignedFarmlands />,
+            },
+            {
+                path: "in-progress-farmlands",
+                element: <VerificationOfficer3InProgressFarmlands />,
+            },
+            {
+                path: "completed-farmland",
+                element: <VerificationOfficer3CompletedFarmlands />,
             },
         ],
     },

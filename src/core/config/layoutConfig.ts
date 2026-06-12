@@ -71,6 +71,12 @@ export const MOCK_USERS: Record<
     name: 'Super Admin',
     role: 'SUPERADMIN',
   },
+  VO3_OFFICER: {
+    email: 'vo3@glc.com',
+    password: 'vo3@123',
+    name: 'Verification Officer 3',
+    role: 'VO3',
+  },
 };
 
 // ─── Master Layout Config ─────────────────────────────────────────────────────
@@ -136,6 +142,17 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
       { label: 'Dashboard', path: '/regional-officer/dashboard',          icon: 'LayoutDashboard' },
       { label: 'Farmlands', path: '/regional-officer/assigned-farmlands', icon: 'Map'             },
       { label: 'Reports',   path: '/regional-officer/reports',            icon: 'FileText'        },
+    ],
+  },
+
+  VO3: {
+    layoutVariant: 'header-only',
+    roleLabel: 'Verification Officer 3',
+    navItems: [
+      { label: 'Dashboard',            path: '/verification-officer-3/dashboard',           icon: 'LayoutDashboard' },
+      { label: 'Assigned',             path: '/verification-officer-3/assigned-farmlands',  icon: 'Shield' },
+      { label: 'In-Progress Farmland', path: '/verification-officer-3/in-progress-farmlands', icon: 'FileText' },
+      { label: 'Completed Farmlands',  path: '/verification-officer-3/completed-farmlands',  icon: 'List' },
     ],
   },
 };
