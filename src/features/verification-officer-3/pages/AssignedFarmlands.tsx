@@ -27,76 +27,23 @@ export const AssignedFarmlands = () => {
   });
 
   return (
-    <div className="w-full flex flex-col pt-[10px]">
+    <div className="w-full flex flex-col ">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4 mb-[40px]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4 mb-[clamp(1.5rem,2.5vw,3.5rem)]">
         {/* Title and Subtitle */}
-        <div className="flex flex-col gap-[4px]">
-          <h1 className="font-plus-jakarta font-medium text-[#191B23] text-[24px] leading-[24px]">
-            Assigned Farmlands
+        <div className="flex flex-col gap-[clamp(0.125rem,0.25vw,0.5rem)]">
+          <h1 className="font-plus-jakarta font-bold text-[#1A1C1D] text-[clamp(1.3rem,1.8vw,2.125rem)] leading-[clamp(2.0rem,2.77vw,3.0rem)] m-0">
+            Assigned Farmlands Queue
           </h1>
-          <p className="font-inter font-normal text-[#505F76] text-[16px] leading-[24px]">
-            Manage and review newly assigned estates waiting for initial verification.
+          <p className="font-plus-jakarta font-normal text-[#3D4949] text-[clamp(0.85rem,1.11vw,1.25rem)] leading-[clamp(1.4rem,1.94vw,2.2rem)] m-0">
+            Review and verify land Records submitted by Intelligence Officers.
           </p>
-        </div>
-
-        {/* Search & Filter Actions */}
-        <div className="flex items-center gap-[12px] flex-wrap">
-          {/* Search Bar */}
-          <div 
-            className="relative bg-white flex items-center w-full md:w-[384px] h-[49px] border border-[#E1E2ED] shadow-sm rounded-full px-[16px] py-[14px] pl-[48px]"
-          >
-            <Search size={18} className="text-[#737686] absolute left-[16px]" />
-            <input 
-              type="text" 
-              placeholder="Search by ID, Location, or Agent..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none outline-none w-full font-inter placeholder:text-[#6B7280] text-[#191B23] text-[16px] leading-[19px]"
-            />
-          </div>
-
-          {/* Priority Dropdown */}
-          <div className="relative">
-            <button 
-              onClick={() => setIsPriorityOpen(!isPriorityOpen)}
-              className="bg-white flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors h-[49px] border border-[#E1E2ED] shadow-sm rounded-full px-[28px] py-[14px] gap-[8px]"
-            >
-              <span className="font-inter font-normal text-[#6B7280] text-[16px] leading-[19px]">
-                Priority: {priorityFilter}
-              </span>
-              <ChevronDown size={16} className="text-[#6B7280]" />
-            </button>
-
-            {isPriorityOpen && (
-              <div 
-                className="absolute bg-white shadow-[0px_4px_12px_rgba(0,0,0,0.1)] z-50 rounded-[24px] w-[180px] top-[59px] right-0 flex flex-col p-3 gap-1"
-              >
-                {['ALL', 'HIGH', 'MEDIUM', 'LOW'].map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => {
-                      setPriorityFilter(p as any);
-                      setIsPriorityOpen(false);
-                    }}
-                    className={`w-full text-left px-4 py-2 text-[14px] font-inter rounded-xl border-none cursor-pointer transition-colors ${
-                      priorityFilter === p
-                        ? 'bg-[#BDD327] text-black font-semibold'
-                        : 'bg-transparent text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    {p === 'ALL' ? 'All Priorities' : `${p} Priority`}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
       {/* Grid of Cards */}
       {filteredCases.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px] w-full pb-[40px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[clamp(1rem,1.67vw,2.5rem)] w-full pb-[40px]">
           {filteredCases.map((farmland) => (
             <VO3FarmlandCard
               key={farmland.id}

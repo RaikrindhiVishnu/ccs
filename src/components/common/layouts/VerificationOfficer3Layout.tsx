@@ -26,8 +26,10 @@ export const VerificationOfficer3Layout = () => {
     }
   };
 
+  const bgClass = activeItem === "dashboard" ? "bg-[var(--surface-card)]" : "bg-[#F9F9FB]";
+
   return (
-    <div className="min-h-screen bg-[var(--surface-card)] flex flex-col font-sans pb-12 layout-container-zoom">
+    <div className={`min-h-screen ${bgClass} flex flex-col font-sans pb-12 layout-container-zoom`}>
       {/* Top Header Bar */}
       <header className="bg-[var(--surface-card)] mx-auto flex items-center justify-between shadow-[0px_0px_40px_rgba(0,0,0,0.12)] relative z-50 transition-all duration-300 w-[clamp(58.35rem,91.18%,108.275rem)] h-[clamp(3.68rem,5.18rem,6.85rem)] mt-[clamp(1.25rem,1.74rem,2.31rem)] px-[clamp(1.06rem,1.5rem,2rem)] rounded-[clamp(0.7rem,0.98rem,1.31rem)]">
         {/* Logo Section */}
