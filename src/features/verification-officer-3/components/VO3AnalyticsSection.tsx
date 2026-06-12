@@ -31,16 +31,16 @@ export const VO3AnalyticsSection: React.FC = () => {
   ];
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-[411fr_897fr] gap-[clamp(1rem,1.5rem,2.5rem)] w-full h-auto select-none">
+    <div className="grid grid-cols-1 lg:grid-cols-[411fr_897fr] gap-[clamp(1rem,1.5rem,2.5rem)] w-full h-auto select-none">
 
       {/* Left Panel: Case Priority Distribution */}
       <div className="flex flex-col bg-white border border-[rgba(0,0,0,0.1)] rounded-[1.5rem] p-[clamp(1.06rem,1.5rem,1.98rem)] w-full h-[clamp(18.375rem,25.875rem,34.125rem)] relative">
         {/* Header */}
         <div className="flex justify-between items-center w-full mb-[clamp(1.06rem,1.5rem,1.98rem)]">
-          <h3 className="font-sans font-medium text-[var(--text-strong)] text-[clamp(0.8rem,1.125rem,1.5rem)] leading-none m-0">
+          <h3 className="font-sans font-medium text-[var(--text-strong)] text-[clamp(0.8rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.125rem] leading-none m-0">
             Case Priority Distribution
           </h3>
-          <button className="flex items-center gap-[0.25rem] px-[clamp(0.53rem,0.75rem,0.99rem)] py-[clamp(0.2rem,0.28rem,0.37rem)] bg-white border border-[rgba(0,0,0,0.14)] rounded-full text-[clamp(0.64rem,0.9rem,1.19rem)] font-sans font-normal text-black cursor-pointer hover:bg-gray-50 transition-colors">
+          <button className="flex items-center gap-[0.25rem] px-[clamp(0.53rem,0.75rem,0.99rem)] py-[clamp(0.2rem,0.28rem,0.37rem)] bg-white border border-[rgba(0,0,0,0.14)] rounded-full text-[clamp(0.64rem,1.0vw,1.19rem)] [@media(min-width:1900px)]:text-[0.9rem] font-sans font-normal text-black cursor-pointer hover:bg-gray-50 transition-colors">
             Weekly
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M6 9l6 6 6-6" />
@@ -81,10 +81,10 @@ export const VO3AnalyticsSection: React.FC = () => {
 
           {/* Donut Center text */}
           <div className="absolute flex flex-col items-center justify-center text-center">
-            <span className="font-sans font-semibold text-[#3D4A0D] text-[clamp(1.08rem,1.53rem,2.02rem)] leading-none mb-[0.25rem]">
+            <span className="font-sans font-semibold text-[#3D4A0D] text-[clamp(1.08rem,1.7vw,2.02rem)] [@media(min-width:1900px)]:text-[1.53rem] leading-none mb-[0.25rem]">
               138
             </span>
-            <span className="font-sans font-semibold text-black text-[clamp(0.46rem,0.656rem,0.87rem)] leading-none uppercase tracking-wider">
+            <span className="font-sans font-semibold text-black text-[clamp(0.46rem,0.656rem,0.87rem)] [@media(min-width:1900px)]:text-[0.656rem] leading-none uppercase tracking-wider">
               Total Cases
             </span>
           </div>
@@ -98,7 +98,7 @@ export const VO3AnalyticsSection: React.FC = () => {
                 className="w-[clamp(0.53rem,0.75rem,0.99rem)] h-[clamp(0.53rem,0.75rem,0.99rem)] rounded-full shrink-0"
                 style={{ backgroundColor: slice.color, border: slice.color === "#F7F9FF" ? "0.5px solid rgba(0, 0, 0, 0.15)" : "none" }}
               />
-              <span className="font-sans font-normal text-[#3D4949] text-[clamp(0.62rem,0.875rem,1.16rem)] leading-none whitespace-nowrap">
+              <span className="font-sans font-normal text-[#3D4949] text-[clamp(0.62rem,0.97vw,1.16rem)] [@media(min-width:1900px)]:text-[0.875rem] leading-none whitespace-nowrap">
                 {slice.label} ({slice.value})
               </span>
             </div>
@@ -110,10 +110,10 @@ export const VO3AnalyticsSection: React.FC = () => {
       <div className="flex flex-col bg-white border border-[rgba(0,0,0,0.1)] rounded-[1.577rem] p-[clamp(1.5rem,2.06rem,2.78rem)] w-full h-[clamp(18.375rem,25.875rem,34.125rem)] relative">
         {/* Header */}
         <div className="flex justify-between items-center w-full mb-[clamp(1.5rem,2.06rem,2.78rem)] px-[clamp(0.2rem,0.36rem,0.8rem)]">
-          <h3 className="font-sans font-medium text-[var(--text-strong)] text-[clamp(0.8rem,1.125rem,1.5rem)] leading-none m-0">
+          <h3 className="font-sans font-medium text-[var(--text-strong)] text-[clamp(0.8rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.125rem] leading-none m-0">
             Monthly Clearance Rate
           </h3>
-          <button className="flex items-center gap-[0.25rem] px-[clamp(0.53rem,0.75rem,0.99rem)] py-[clamp(0.2rem,0.28rem,0.37rem)] bg-white border border-[rgba(0,0,0,0.14)] rounded-full text-[clamp(0.64rem,0.9rem,1.19rem)] font-sans font-normal text-black cursor-pointer hover:bg-gray-50 transition-colors">
+          <button className="flex items-center gap-[0.25rem] px-[clamp(0.53rem,0.75rem,0.99rem)] py-[clamp(0.2rem,0.28rem,0.37rem)] bg-white border border-[rgba(0,0,0,0.14)] rounded-full text-[clamp(0.64rem,1.0vw,1.19rem)] [@media(min-width:1900px)]:text-[0.9rem] font-sans font-normal text-black cursor-pointer hover:bg-gray-50 transition-colors">
             Monthly
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M6 9l6 6 6-6" />
@@ -140,7 +140,7 @@ export const VO3AnalyticsSection: React.FC = () => {
                 style={{ bottom: `${item.value}%` }}
               >
                 {/* Y Axis Label */}
-                <span className="absolute right-full mr-[clamp(1.5rem,2.5rem,3.0rem)] font-inter font-normal text-[#5A5C5E] text-[clamp(0.6rem,0.76rem,1.0rem)] text-right whitespace-nowrap">
+                <span className="absolute right-full mr-[clamp(1.5rem,2.5rem,3.0rem)] font-inter font-normal text-[#5A5C5E] text-[clamp(0.6rem,0.85vw,1.0rem)] [@media(min-width:1900px)]:text-[0.76rem] text-right whitespace-nowrap">
                   {item.label}
                 </span>
                 {/* Dashed Grid Line */}
@@ -165,7 +165,7 @@ export const VO3AnalyticsSection: React.FC = () => {
                 >
                   {/* Inside Bar Value Pill */}
                   <div className="w-[clamp(1.4rem,1.925rem,3.09rem)] h-[clamp(1.4rem,1.925rem,3.09rem)] bg-white rounded-full flex items-center justify-center shadow-sm">
-                    <span className="font-sans font-medium text-black text-[clamp(0.55rem,0.76rem,1.0rem)]">
+                    <span className="font-sans font-medium text-black text-[clamp(0.55rem,0.85vw,1.0rem)] [@media(min-width:1900px)]:text-[0.76rem]">
                       {data.value}
                     </span>
                   </div>
@@ -173,7 +173,7 @@ export const VO3AnalyticsSection: React.FC = () => {
 
                 {/* X Axis Label */}
                 <span
-                  className={`absolute bottom-[-2.0rem] font-sans text-[clamp(0.55rem,0.77rem,1.0rem)] text-center transition-opacity ${data.highlight
+                  className={`absolute bottom-[-2.0rem] font-sans text-[clamp(0.55rem,0.86vw,1.0rem)] [@media(min-width:1900px)]:text-[0.77rem] text-center transition-opacity ${data.highlight
                       ? "text-[#C8DE52] font-semibold"
                       : "text-[#5C5C5C] opacity-50 font-normal"
                     }`}

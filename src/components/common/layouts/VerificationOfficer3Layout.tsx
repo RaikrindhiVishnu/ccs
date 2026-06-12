@@ -14,13 +14,13 @@ export const VerificationOfficer3Layout = () => {
   const getActivePillClasses = () => {
     switch (activeItem) {
       case "dashboard":
-        return "md:left-[clamp(-1.24rem,-1.93%,-0.665rem)] md:w-[clamp(5.15rem,14.92%,9.56rem)]";
+        return "md:left-[-2.15%] md:w-[15.49%]";
       case "assigned":
-        return "md:left-[clamp(7.375rem,21.35%,13.69rem)] md:w-[clamp(4.75rem,13.77%,8.81rem)]";
+        return "md:left-[21.8%] md:w-[12.91%]";
       case "in-progress-farmland":
-        return "md:left-[clamp(14.35rem,41.57%,26.66rem)] md:w-[clamp(9.5rem,27.54%,17.66rem)]";
+        return "md:left-[42.0%] md:w-[26.68%]";
       case "completed-farmlands":
-        return "md:left-[clamp(26.09rem,75.54%,48.44rem)] md:w-[clamp(9.82rem,28.45%,18.24rem)]";
+        return "md:left-[75.96%] md:w-[27.57%]";
       default:
         return "";
     }
@@ -46,13 +46,13 @@ export const VerificationOfficer3Layout = () => {
         <nav className="flex items-center gap-[1rem] md:gap-0 overflow-x-auto md:overflow-visible no-scrollbar max-w-[50%] md:max-w-none md:absolute md:left-[calc(50%-clamp(34.53rem,59.18%,64.1rem)/2+clamp(1.73rem,2.97%,3.22rem))] md:w-[clamp(34.53rem,59.18%,64.1rem)] md:h-[clamp(1.78rem,2.5rem,3.3rem)] md:top-[clamp(0.975rem,1.375rem,1.81rem)]">
           {/* Active Sliding Background Pill */}
           <div
-            className={`hidden md:block absolute h-full bg-[var(--btn-lime)] rounded-[clamp(0.89rem,1.25rem,1.65rem)] transition-all duration-300 ease-out z-0 ${getActivePillClasses()}`}
+            className={`hidden md:block absolute h-full bg-[var(--btn-lime)] rounded-[1.25rem] transition-all duration-300 ease-out z-0 ${getActivePillClasses()}`}
           />
 
           {/* Dashboard */}
           <button
             onClick={() => navigate("/verification-officer-3/dashboard")}
-            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.125rem,1.5rem)] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[clamp(-0.41rem,-0.65%,-0.22rem)] md:w-[clamp(4.31rem,12.49%,8.0rem)] ${activeItem === "dashboard"
+            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[-0.65%] md:w-[12.49%] ${activeItem === "dashboard"
                 ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
                 : "bg-transparent text-black font-normal hover:opacity-75"
               }`}
@@ -63,7 +63,7 @@ export const VerificationOfficer3Layout = () => {
           {/* Assigned */}
           <button
             onClick={() => navigate("/verification-officer-3/assigned-farmlands")}
-            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.125rem,1.5rem)] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[clamp(8.04rem,23.3%,14.94rem)] md:w-[clamp(3.42rem,9.91%,6.35rem)] ${activeItem === "assigned"
+            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[23.3%] md:w-[9.91%] ${activeItem === "assigned"
                 ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
                 : "bg-transparent text-black font-normal hover:opacity-75"
               }`}
@@ -74,7 +74,7 @@ export const VerificationOfficer3Layout = () => {
           {/* In-Progress Farmland */}
           <button
             onClick={() => navigate("/verification-officer-3/in-progress-farmlands")}
-            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.125rem,1.5rem)] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[clamp(15.02rem,43.5%,27.87rem)] md:w-[clamp(8.18rem,23.68%,15.17rem)] ${activeItem === "in-progress-farmland"
+            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[43.5%] md:w-[23.68%] ${activeItem === "in-progress-farmland"
                 ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
                 : "bg-transparent text-black font-normal hover:opacity-75"
               }`}
@@ -85,7 +85,7 @@ export const VerificationOfficer3Layout = () => {
           {/* Completed Farmlands */}
           <button
             onClick={() => navigate("/verification-officer-3/completed-farmland")}
-            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.125rem,1.5rem)] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[clamp(26.75rem,77.46%,49.67rem)] md:w-[clamp(8.49rem,24.57%,15.75rem)] ${activeItem === "completed-farmlands"
+            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[77.46%] md:w-[24.57%] ${activeItem === "completed-farmlands"
                 ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
                 : "bg-transparent text-black font-normal hover:opacity-75"
               }`}
