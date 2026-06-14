@@ -31,7 +31,6 @@ export const ActiveVerifications = lazy(() => import ("../../features/ccs/pages/
 export const GeospatialAudit = lazy(() => import ("../../features/ccs/pages/Geospatialauditscreen"),);
 export const SendPaymentLink = lazy(() => import ("../../features/ccs/pages/payment"),);
 export const ProcessingFeeScreen = lazy(() => import ("../../features/ccs/pages/ProcessingFeeScreen"),);
-
 // Intelligence Officer (from upstream)
 export const IODashboard = lazy(() => import ("../../features/io/pages/Dashboard"),);
 
@@ -155,7 +154,7 @@ export const SuperAdminPoolInvestorDetails = lazy(() => import ("../../features/
 export const SuperAdminPoolPublished = lazy(() => import("../../features/super-admin/pool/SuperAdminPoolPublished"));
 export const SuperAdminPoolCreated = lazy(() => import("../../features/super-admin/pool/SuperAdminPoolCreated"));
 export const SuperAdminLegalDocuments = lazy(() => import('../../features/super-admin/legal-docs/VerificationFlow'));
-export const SuperAdminAgricultureReport = lazy(() => import('../../features/super-admin/legal-docs/VerificationFlow'));
+export const SuperAdminAgricultureReport = lazy(() => import('../../features/super-admin/legal-docs/AgricultureReportFlow'));
 export const SuperAdminLandBoundaries = lazy(() => import('../../features/super-admin/legal-docs/VerificationFlow'));
 export const SuperAdminValuation = lazy(() => import('../../features/super-admin/legal-docs/VerificationFlow'));
 export const SuperAdminLocalIntelligence = lazy(() => import('../../features/super-admin/legal-docs/VerificationFlow'));
