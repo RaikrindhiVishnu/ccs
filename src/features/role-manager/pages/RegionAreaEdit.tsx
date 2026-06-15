@@ -1907,6 +1907,20 @@ const RegionAreaEdit: React.FC = () => {
         map.current.on("click", "districts-fill", (e) => {
           const searchParamsLocal = new URLSearchParams(window.location.search);
           const isEditModeLocal = !!searchParamsLocal.get("editRegionId");
+          const editModeTypeLocal =
+            searchParamsLocal.get("mode") === "area" || !!searchParamsLocal.get("editAreaId") ? "area" : "region";
+
+          if (editModeTypeLocal === "area") {
+            if (e.features && e.features.length > 0) {
+              const districtFeature = e.features[0];
+              const isAssigned = districtFeature.properties?.isAssigned;
+              if (!isAssigned) {
+                toast.error("This district is not part of any region. Please select a created region or create a new region first.");
+              }
+            }
+            return;
+          }
+
           if (!isEditModeLocal) return;
 
           if (e.features && e.features.length > 0) {

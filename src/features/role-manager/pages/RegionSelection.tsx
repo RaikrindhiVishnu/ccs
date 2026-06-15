@@ -1150,7 +1150,16 @@ const RegionSelection: React.FC = () => {
             if (e.defaultPrevented) return;
             const currentSearchParams = new URLSearchParams(window.location.search);
             const currentMode = currentSearchParams.get("mode") || "region";
-            if (currentMode === "area") return; // Block selection in Area Mode
+            if (currentMode === "area") {
+              if (e.features && e.features.length > 0) {
+                const districtFeature = e.features[0];
+                const isAssigned = districtFeature.properties?.isAssigned;
+                if (!isAssigned) {
+                  toast.error("This district is not part of any region. Please select a created region or create a new region first.");
+                }
+              }
+              return; // Block selection in Area Mode
+            }
             if (e.features && e.features.length > 0) {
               const districtFeature = e.features[0];
               const districtData = districtFeature.properties;
