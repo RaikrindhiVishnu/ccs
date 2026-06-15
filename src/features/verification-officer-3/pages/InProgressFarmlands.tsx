@@ -8,6 +8,8 @@ export const InProgressFarmlands = () => {
   // Filter In-Progress farmlands dynamically
   const inProgressCases = VO3_FARMLANDS.filter((f) => {
     const savedStep = sessionStorage.getItem(`vo3_step_${f.id}`);
+    const isCompleted = sessionStorage.getItem(`vo3_completed_${f.id}`) === 'true';
+    if (isCompleted) return false;
     return f.status === 'In-Progress' || !!savedStep;
   });
 

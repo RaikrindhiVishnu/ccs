@@ -1123,6 +1123,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
           if (isAssignedVO3) {
             if (id) {
               sessionStorage.removeItem(`vo3_step_${id}`);
+              sessionStorage.setItem(`vo3_completed_${id}`, 'true');
             }
             navigate("/verification-officer-3/assigned-farmlands");
           } else {

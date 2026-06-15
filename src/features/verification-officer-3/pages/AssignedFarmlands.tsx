@@ -9,7 +9,8 @@ export const AssignedFarmlands = () => {
   const assignedCases = VO3_FARMLANDS.filter(
     (f) => {
       const savedStep = sessionStorage.getItem(`vo3_step_${f.id}`);
-      if (savedStep) return false;
+      const isCompleted = sessionStorage.getItem(`vo3_completed_${f.id}`) === 'true';
+      if (savedStep || isCompleted) return false;
       return f.status === 'Assigned';
     }
   );

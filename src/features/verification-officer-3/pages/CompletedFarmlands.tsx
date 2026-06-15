@@ -1,17 +1,15 @@
 import { useNavigate } from 'react-router-dom';
+import { VO3_FARMLANDS } from '../data/farmlandsMockData';
 import VO3CompleteCard from '../components/VO3CompleteCard';
 
 export const CompletedFarmlands = () => {
   const navigate = useNavigate();
 
-  const baseCases = [
-    { id: "GLC-VO3-06", title: "Kurnool Nandyal Farm", location: "Kurnool, Nandyal", landSize: "10 Acres", landValue: "₹1.5Cr", verificationDate: "06 Oct 2023, 11:30AM", priority: "LOW" as const },
-    { id: "GLC-VO3-07", title: "Krishna Estate", location: "Krishna, Machilipatnam", landSize: "18 Acres", landValue: "₹3.5Cr", verificationDate: "05 Oct 2023, 2:15PM", priority: "HIGH" as const },
-    { id: "GLC-VO3-08", title: "Mysuru Estate", location: "Guntur, Andhra Pradesh", landSize: "150 Acres", landValue: "37 Lakhs", verificationDate: "12 Oct 2023, 4:30PM", priority: "MEDIUM" as const },
-    { id: "GLC-VO3-09", title: "Nellore Farms", location: "Nellore, Gudur", landSize: "25 Acres", landValue: "₹1.2Cr", verificationDate: "04 Oct 2023, 10:00AM", priority: "LOW" as const },
-    { id: "GLC-VO3-10", title: "Anantapur Orchard", location: "Anantapur, Gooty", landSize: "40 Acres", landValue: "₹2.8Cr", verificationDate: "02 Oct 2023, 5:00PM", priority: "HIGH" as const },
-    { id: "GLC-VO3-11", title: "Chittoor Mango Grove", location: "Chittoor, Madanapalle", landSize: "30 Acres", landValue: "₹1.9Cr", verificationDate: "01 Oct 2023, 9:30AM", priority: "MEDIUM" as const },
-  ];
+  // Filter completed farmlands dynamically
+  const completedCases = VO3_FARMLANDS.filter((f) => {
+    const isCompleted = sessionStorage.getItem(`vo3_completed_${f.id}`) === 'true';
+    return f.status === 'Completed' || isCompleted;
+  });
 
   return (
     <div className="w-full flex flex-col ">
@@ -30,17 +28,17 @@ export const CompletedFarmlands = () => {
       </div>
 
       {/* Grid of Cards */}
-      {baseCases.length > 0 ? (
+      {completedCases.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[clamp(0.8rem,1.11vw,1.5rem)] gap-y-[clamp(1.0rem,1.52vw,2.0rem)] w-full pb-[40px]">
-          {baseCases.map((farmland) => (
+          {completedCases.map((farmland) => (
             <VO3CompleteCard
               key={farmland.id}
               id={farmland.id}
-              title={farmland.title}
+              title={farmland.agentName ? `${farmland.agentName}'s Farm` : farmland.id}
               location={farmland.location}
-              landSize={farmland.landSize}
-              landValue={farmland.landValue}
-              verificationDate={farmland.verificationDate}
+              landSize={farmland.totalArea}
+              landValue={farmland.amount.includes('₹') ? farmland.amount : `₹${farmland.amount}`}
+              verificationDate={farmland.submissionDate.includes('Oct') ? `${farmland.submissionDate} 2023, 11:30AM` : farmland.submissionDate}
               status="VERIFIED"
               onCardClick={() => navigate(`/verification-officer-3/completed-farmland/${farmland.id}`)}
             />
