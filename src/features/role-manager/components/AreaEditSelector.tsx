@@ -118,8 +118,14 @@ export const AreaEditSelector: React.FC<AreaEditSelectorProps> = ({
     return list;
   }, [areasList, filter, searchQuery]);
 
+  const isFirstMount = React.useRef(true);
+
   // Reset map filters and selection whenever the dropdown filter changes!
   useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
     onAreaSelect(null as any);
     if (mapRef.current) {
       if (mapRef.current.getLayer("mandals-fill")) {
@@ -134,17 +140,32 @@ export const AreaEditSelector: React.FC<AreaEditSelectorProps> = ({
     }
   }, [filter, onAreaSelect, mapRef]);
 
-  // Zoom to and isolate selected area
-  const handleAreaClick = (area: any) => {
-    const areaId = area.area_id || area.id;
-    onAreaSelect(Number(areaId));
-
+  // Zoom to and isolate selected area automatically when selectedAreaId changes
+  useEffect(() => {
     if (!mapRef.current) return;
+
+    if (!selectedAreaId) {
+      if (mapRef.current.getLayer("mandals-fill")) {
+        mapRef.current.setFilter("mandals-fill", null);
+      }
+      if (mapRef.current.getLayer("mandals-line")) {
+        mapRef.current.setFilter("mandals-line", null);
+      }
+      if (mapRef.current.getLayer("mandals-labels")) {
+        mapRef.current.setFilter("mandals-labels", null);
+      }
+      return;
+    }
+
+    const area = areasList.find(
+      (a: any) => Number(a.area_id || a.id || a.area_id) === Number(selectedAreaId)
+    );
+    if (!area) return;
 
     const mandalIds = area.mandal_ids || area.mandalIds || [];
     const mandalIdNumbers = mandalIds.map(Number);
 
-    // 1. Isolate mandal boundaries directly using Feature ID checking (100% Bulletproof!)
+    // 1. Isolate mandal boundaries directly using Feature ID checking
     if (mandalIdNumbers.length > 0) {
       const filterExpression = ["in", ["id"], ["literal", mandalIdNumbers]] as maplibregl.FilterSpecification;
 
@@ -169,6 +190,12 @@ export const AreaEditSelector: React.FC<AreaEditSelectorProps> = ({
         });
       }
     }
+  }, [selectedAreaId, areasList, mapRef, geoMasterData]);
+
+  // Zoom to and isolate selected area
+  const handleAreaClick = (area: any) => {
+    const areaId = area.area_id || area.id;
+    onAreaSelect(Number(areaId));
   };
 
   // Reset map filters when component unmounts or region changes

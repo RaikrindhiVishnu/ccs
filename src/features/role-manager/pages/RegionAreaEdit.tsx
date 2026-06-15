@@ -2448,6 +2448,8 @@ const RegionAreaEdit: React.FC = () => {
     editModeType,
     selectedDistricts,
     mapLoaded,
+    editAreaId,
+    editRegionId,
   ]);
 
   // ── Initialize MapLibre map ──────────────────────────────────────────────
@@ -3112,6 +3114,22 @@ const RegionAreaEdit: React.FC = () => {
 
   // ── Clear edit mode, reset states, and return map to India overview ─────
   const clearEditMode = () => {
+    if (editModeType === "area" && editAreaId) {
+      setActiveAreaId(Number(editAreaId));
+      setAssignPanelOpen(true);
+      setSearchParams({ mode: "area" });
+      setRegionName("");
+      setRegionCode("");
+      setSelectedDistricts([]);
+      setSelectedRegionalOfficerId(null);
+      setSelectedIntelligenceOfficerId(null);
+      setSelectedFieldOfficerId(null);
+      setHasInitialized(false);
+      setEditDropdownOpen(false);
+      setEditSearchQuery("");
+      return;
+    }
+
     setSearchParams({});
     setRegionName("");
     setRegionCode("");
