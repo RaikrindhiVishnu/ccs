@@ -1,19 +1,15 @@
+import { useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import voLogo from "@/assets/vo-logo.svg";
 import profileImg from "@/assets/profile.svg";
 import { VERIFICATION_OFFICER_3_NAV_ITEMS } from "@/features/verification-officer-3/data/navigation";
-import { useAppDispatch } from "@/core/hooks";
-import { logOut } from "@/features/auth/store/authSlice";
+import { NotificationsDropdown } from "@/components/ui/NotificationsDropdown";
+
 
 export const VerificationOfficer3Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useAppDispatch();
-
-  const handleLogout = () => {
-    dispatch(logOut());
-    navigate("/login", { replace: true });
-  };
+  const [showNotifications, setShowNotifications] = useState(false);
 
   // Determine active item based on current path
   const activeItem = VERIFICATION_OFFICER_3_NAV_ITEMS.find(item => location.pathname.includes(item.path))?.id || "dashboard";
@@ -63,8 +59,8 @@ export const VerificationOfficer3Layout = () => {
           <button
             onClick={() => navigate("/verification-officer-3/dashboard")}
             className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[-0.65%] md:w-[12.49%] ${activeItem === "dashboard"
-                ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
-                : "bg-transparent text-black font-normal hover:opacity-75"
+              ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
+              : "bg-transparent text-black font-normal hover:opacity-75"
               }`}
           >
             Dashboard
@@ -74,8 +70,8 @@ export const VerificationOfficer3Layout = () => {
           <button
             onClick={() => navigate("/verification-officer-3/assigned-farmlands")}
             className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[23.3%] md:w-[9.91%] ${activeItem === "assigned"
-                ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
-                : "bg-transparent text-black font-normal hover:opacity-75"
+              ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
+              : "bg-transparent text-black font-normal hover:opacity-75"
               }`}
           >
             Assigned
@@ -85,8 +81,8 @@ export const VerificationOfficer3Layout = () => {
           <button
             onClick={() => navigate("/verification-officer-3/in-progress-farmlands")}
             className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[43.5%] md:w-[23.68%] ${activeItem === "in-progress-farmland"
-                ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
-                : "bg-transparent text-black font-normal hover:opacity-75"
+              ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
+              : "bg-transparent text-black font-normal hover:opacity-75"
               }`}
           >
             In-Progress Farmland
@@ -96,8 +92,8 @@ export const VerificationOfficer3Layout = () => {
           <button
             onClick={() => navigate("/verification-officer-3/completed-farmland")}
             className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[77.46%] md:w-[24.57%] ${activeItem === "completed-farmlands"
-                ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
-                : "bg-transparent text-black font-normal hover:opacity-75"
+              ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
+              : "bg-transparent text-black font-normal hover:opacity-75"
               }`}
           >
             Completed Farmlands
@@ -106,47 +102,63 @@ export const VerificationOfficer3Layout = () => {
 
         {/* Right Action Section */}
         <div className="flex items-center shrink-0 w-[clamp(5.19rem,8.92%,15.0rem)] h-[clamp(2.31rem,3.61vw,6.0rem)] gap-[clamp(0.58rem,0.81vw,2.0rem)]">
-          {/* Bell Icon */}
-          <button className="rounded-full bg-white flex items-center justify-center relative hover:bg-gray-50 transition-colors border-none cursor-pointer p-0 w-[clamp(2.31rem,3.61vw,6.0rem)] h-[clamp(2.31rem,3.61vw,6.0rem)]">
-            {/* Bell SVG */}
-            <svg
-              width="50%"
-              height="50%"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="relative"
-            >
-              <path
-                d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
-                stroke="#2C2C2C"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M13.73 21a2 2 0 0 1-3.46 0"
-                stroke="#2C2C2C"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            {/* Red Notification Dot */}
-            <span
-              className="absolute bg-[#EF4646] rounded-full"
-              style={{
-                width: "9.6%",
-                height: "9.6%",
-                left: "62.5%",
-                top: "calc(50% - 12%)",
+          {/* Bell Container */}
+          <div className="relative flex items-center justify-center">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowNotifications((prev) => !prev);
               }}
-            />
-          </button>
+              className={`rounded-full flex items-center justify-center relative transition-colors border-none cursor-pointer p-0 w-[clamp(2.31rem,3.61vw,6.0rem)] h-[clamp(2.31rem,3.61vw,6.0rem)] ${showNotifications ? "bg-[#BDD327] hover:bg-[#a8bd21]" : "bg-white hover:bg-gray-50"
+                }`}
+              aria-label="Notifications"
+            >
+              {/* Bell SVG */}
+              <svg
+                width="50%"
+                height="50%"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="relative"
+              >
+                <path
+                  d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
+                  stroke={showNotifications ? "#FFFFFF" : "#2C2C2C"}
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M13.73 21a2 2 0 0 1-3.46 0"
+                  stroke={showNotifications ? "#FFFFFF" : "#2C2C2C"}
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              {/* Red Notification Dot */}
+              {!showNotifications && (
+                <span
+                  className="absolute bg-[#EF4646] rounded-full"
+                  style={{
+                    width: "9.6%",
+                    height: "9.6%",
+                    left: "62.5%",
+                    top: "calc(50% - 12%)",
+                  }}
+                />
+              )}
+            </button>
+
+            {showNotifications && (
+              <NotificationsDropdown onClose={() => setShowNotifications(false)} />
+            )}
+          </div>
 
           {/* Avatar Profile */}
           <button
-            onClick={handleLogout}
+            onClick={() => navigate("/verification-officer-3/profile")}
             className="rounded-full overflow-hidden border border-gray-100 shadow-sm cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center p-0 bg-white w-[clamp(2.31rem,3.61vw,6.0rem)] h-[clamp(2.31rem,3.61vw,6.0rem)]"
           >
             <img
