@@ -1956,6 +1956,35 @@ const RegionAreaEdit: React.FC = () => {
           map.current.setLayoutProperty("districts-labels", "visibility", visibility);
         }
       }
+
+      // Apply filters to districts to show only the selected region's districts in region view mode
+      const isRegionSelectionActive = editModeType === "region" && selectedRegion && !isEditMode;
+      if (isRegionSelectionActive) {
+        const regionDistrictIds = getDistrictIdsFromRegion(selectedRegion, geoMasterData);
+        const filterExpr = regionDistrictIds.length > 0
+          ? ["in", ["id"], ["literal", regionDistrictIds.map(Number)]]
+          : ["literal", false];
+
+        if (map.current.getLayer("districts-fill")) {
+          map.current.setFilter("districts-fill", filterExpr as maplibregl.FilterSpecification);
+        }
+        if (map.current.getLayer("districts-line")) {
+          map.current.setFilter("districts-line", filterExpr as maplibregl.FilterSpecification);
+        }
+        if (map.current.getLayer("districts-labels")) {
+          map.current.setFilter("districts-labels", filterExpr as maplibregl.FilterSpecification);
+        }
+      } else {
+        if (map.current.getLayer("districts-fill")) {
+          map.current.setFilter("districts-fill", null);
+        }
+        if (map.current.getLayer("districts-line")) {
+          map.current.setFilter("districts-line", null);
+        }
+        if (map.current.getLayer("districts-labels")) {
+          map.current.setFilter("districts-labels", null);
+        }
+      }
     } catch (err) {
       console.error("RegionAreaEdit: Failed to render districts:", err);
     }
@@ -1969,6 +1998,7 @@ const RegionAreaEdit: React.FC = () => {
     selectedRegion,
     urlAreaRegionId,
     editAreaId,
+    isEditMode,
   ]);
 
   // ── Render mandal boundaries for Area Edit Mode or Zoomed View Mode ─────────
@@ -3227,8 +3257,8 @@ const RegionAreaEdit: React.FC = () => {
           if (map.current.getLayer("states-fill")) {
             map.current.setPaintProperty("states-fill", "fill-color", "#F0EEF0");
             map.current.setFilter("states-fill", ["==", ["get", "id"], stateId]);
-            // If a region is selected in Area Mode, hide the state-fill completely so only the region is visible
-            if (editModeType === "area" && selectedRegion) {
+            // If a region is selected, hide the state-fill completely so only the region is visible
+            if (selectedRegion) {
               map.current.setLayoutProperty("states-fill", "visibility", "none");
             } else {
               map.current.setLayoutProperty("states-fill", "visibility", "visible");
@@ -3236,7 +3266,7 @@ const RegionAreaEdit: React.FC = () => {
           }
           if (map.current.getLayer("states-border-line")) {
             map.current.setFilter("states-border-line", ["==", ["get", "id"], stateId]);
-            if (editModeType === "area" && selectedRegion) {
+            if (selectedRegion) {
               map.current.setLayoutProperty("states-border-line", "visibility", "none");
             } else {
               map.current.setLayoutProperty("states-border-line", "visibility", "visible");
@@ -3736,7 +3766,7 @@ const RegionAreaEdit: React.FC = () => {
           onClick={() => {
             if (isEditMode) {
               clearEditMode();
-            } else if (editModeType === "area" && selectedRegion) {
+            } else if (selectedRegion) {
               setSelectedRegion(null);
               setActiveAreaId(null);
               if (selectedState && map.current) {
