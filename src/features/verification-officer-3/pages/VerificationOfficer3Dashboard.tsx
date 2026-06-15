@@ -94,9 +94,6 @@ export const VerificationOfficer3Dashboard: React.FC = () => {
       {/* 4. Section header for Immediate Action Queue */}
       <VO3SectionHeader
         title="Immediate Action Queue"
-        showViewAll={true}
-        viewAllText={showAll ? "View less" : "View all"}
-        onViewAll={() => setShowAll(!showAll)}
       />
 
       {/* 5. Bento Grid / Farmland cards section */}

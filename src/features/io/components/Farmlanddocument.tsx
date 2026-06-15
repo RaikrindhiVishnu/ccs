@@ -885,9 +885,27 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
     return VO3_FARMLANDS.find((item) => item.id === id);
   }, [id]);
 
+  // Initial step resolution for VO3 state persistence
+  const initialStep = React.useMemo(() => {
+    if (isAssignedVO3 && id) {
+      const savedStep = sessionStorage.getItem(`vo3_step_${id}`);
+      if (savedStep) {
+        return savedStep as "list" | "owner-details" | "family-tree" | "land-details" | "local-intelligence";
+      }
+    }
+    return isAssignedVO3 ? "owner-details" : "list";
+  }, [isAssignedVO3, id]);
+
   const [activeStep, setActiveStep] = React.useState<"list" | "owner-details" | "family-tree" | "land-details" | "local-intelligence">(
-    isAssignedVO3 ? "owner-details" : "list"
+    initialStep
   );
+
+  // Sync active step to sessionStorage for VO3 to enable "resume verification"
+  React.useEffect(() => {
+    if (isAssignedVO3 && id) {
+      sessionStorage.setItem(`vo3_step_${id}`, activeStep);
+    }
+  }, [activeStep, isAssignedVO3, id]);
   const [showReasonModal, setShowReasonModal] = React.useState(false);
   const [cameFromModal, setCameFromModal] = React.useState(false);
   const [showTurnBackModal, setShowTurnBackModal] = React.useState(false);
@@ -1103,6 +1121,9 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
         onGoBackDashboard={goBackToDashboard}
         onNext={() => {
           if (isAssignedVO3) {
+            if (id) {
+              sessionStorage.removeItem(`vo3_step_${id}`);
+            }
             navigate("/verification-officer-3/assigned-farmlands");
           } else {
             alert("Farmland document updated successfully!");

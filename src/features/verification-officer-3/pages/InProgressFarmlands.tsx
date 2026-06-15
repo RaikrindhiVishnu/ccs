@@ -1,20 +1,15 @@
 import { useNavigate } from 'react-router-dom';
+import { VO3_FARMLANDS } from '../data/farmlandsMockData';
 import VO3ProgressCard from '../components/VO3ProgressCard';
 
 export const InProgressFarmlands = () => {
   const navigate = useNavigate();
 
-  const baseCases = [
-    { id: "GLCSOS 01", location: "Tanuku, Andhra Pradesh", agentName: "Ananthu", totalArea: "14.5 Acres", costPerAcre: "₹24L", estimatedValue: "₹3.48Cr", priority: "HIGH" as const },
-    { id: "GLCSOS 02", location: "Kakinada, Andhra Pradesh", agentName: "Ram Varma", totalArea: "18.2 Acres", costPerAcre: "₹18L", estimatedValue: "₹3.28Cr", priority: "MEDIUM" as const },
-    { id: "GLCSOS 03", location: "Nellore, Andhra Pradesh", agentName: "Sravan Kumar", totalArea: "10.0 Acres", costPerAcre: "₹32L", estimatedValue: "₹3.20Cr", priority: "LOW" as const },
-    { id: "GLCSOS 04", location: "Chittoor, Andhra Pradesh", agentName: "Praveen Raj", totalArea: "22.4 Acres", costPerAcre: "₹15L", estimatedValue: "₹3.36Cr", priority: "HIGH" as const },
-    { id: "GLCSOS 05", location: "Guntur, Andhra Pradesh", agentName: "Manoj Swamy", totalArea: "15.0 Acres", costPerAcre: "₹22L", estimatedValue: "₹3.30Cr", priority: "MEDIUM" as const },
-    { id: "GLCSOS 06", location: "Eluru, Andhra Pradesh", agentName: "Anil Kumar", totalArea: "12.8 Acres", costPerAcre: "₹20L", estimatedValue: "₹2.56Cr", priority: "LOW" as const },
-    { id: "GLCSOS 07", location: "Anantapur, Andhra Pradesh", agentName: "Sanjay Dutt", totalArea: "19.5 Acres", costPerAcre: "₹19L", estimatedValue: "₹3.70Cr", priority: "HIGH" as const },
-    { id: "GLCSOS 08", location: "Kadapa, Andhra Pradesh", agentName: "Vijay Prasad", totalArea: "11.2 Acres", costPerAcre: "₹25L", estimatedValue: "₹2.80Cr", priority: "MEDIUM" as const },
-    { id: "GLCSOS 09", location: "Kurnool, Andhra Pradesh", agentName: "Rajesh Goud", totalArea: "16.0 Acres", costPerAcre: "₹21L", estimatedValue: "₹3.36Cr", priority: "LOW" as const },
-  ];
+  // Filter In-Progress farmlands dynamically
+  const inProgressCases = VO3_FARMLANDS.filter((f) => {
+    const savedStep = sessionStorage.getItem(`vo3_step_${f.id}`);
+    return f.status === 'In-Progress' || !!savedStep;
+  });
 
   return (
     <div className="w-full flex flex-col ">
@@ -31,17 +26,17 @@ export const InProgressFarmlands = () => {
       </div>
 
       {/* Grid of Cards */}
-      {baseCases.length > 0 ? (
+      {inProgressCases.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[clamp(1rem,1.67vw,3.5rem)] w-full pb-[40px]">
-          {baseCases.map((farmland) => (
+          {inProgressCases.map((farmland) => (
             <VO3ProgressCard
               key={farmland.id}
               id={farmland.id}
               location={farmland.location}
               agentName={farmland.agentName}
               totalArea={farmland.totalArea}
-              costPerAcre={farmland.costPerAcre}
-              estimatedValue={farmland.estimatedValue}
+              costPerAcre={farmland.costPerAcre.includes('₹') ? farmland.costPerAcre : `₹${farmland.costPerAcre}`}
+              estimatedValue={farmland.amount.includes('₹') ? farmland.amount : `₹${farmland.amount}`}
               status="IN PROGRESS"
               actionLabel="Resume Verification"
               onActionClick={() => navigate(`/verification-officer-3/assigned-farmland/${farmland.id}`)}
