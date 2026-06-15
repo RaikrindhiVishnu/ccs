@@ -504,6 +504,10 @@ const RegionAreaEdit: React.FC = () => {
 
   // Selected Region for View Mode (clicking region to zoom and show areas)
   const [selectedRegion, setSelectedRegion] = useState<any | null>(null);
+  const selectedRegionRef = useRef(selectedRegion);
+  useEffect(() => {
+    selectedRegionRef.current = selectedRegion;
+  }, [selectedRegion]);
   const [activeAreaId, setActiveAreaId] = useState<number | null>(null);
   const selectedRegionId = selectedRegion ? getRegionId(selectedRegion) : null;
   const selectedRegionName = useMemo(() => {
@@ -1424,9 +1428,9 @@ const RegionAreaEdit: React.FC = () => {
         if (map.current && mapLoaded > 0) {
           try {
             map.current.fitBounds(getFeatureBounds(rawRegion), {
-              padding: 150,
+              padding: 60,
               duration: 1500,
-              maxZoom: 6.5,
+              maxZoom: 8.5,
             });
           } catch (e) {
             console.error("[RegionAreaEdit] Zoom to region failed:", e);
@@ -2745,8 +2749,9 @@ const RegionAreaEdit: React.FC = () => {
               setIsZoomed(true);
               if (map.current) {
                 map.current.fitBounds(getFeatureBounds(feature), {
-                  padding: 120,
+                  padding: 60,
                   duration: 1500,
+                  maxZoom: 8.5,
                 });
               }
             } else {
@@ -2958,12 +2963,15 @@ const RegionAreaEdit: React.FC = () => {
           sessionStorage.removeItem("region_map_selected_state");
           sessionStorage.removeItem("region_map_is_zoomed");
         } else if (!isEditModeLocal) {
-          map.current?.flyTo({
-            center: [78.9629, 20.5937],
-            zoom: 3.5,
-            duration: 3000,
-            essential: true,
-          });
+          const isAreaMode = (getSearchParamFallback("mode") || "region") === "area";
+          if (!(isAreaMode && selectedRegionRef.current)) {
+            map.current?.flyTo({
+              center: [78.9629, 20.5937],
+              zoom: 3.5,
+              duration: 3000,
+              essential: true,
+            });
+          }
         }
 
         setTimeout(() => map.current?.resize(), 100);
@@ -3116,11 +3124,33 @@ const RegionAreaEdit: React.FC = () => {
           setSelectedRegion(matchedRegion);
           setAssignPanelOpen(true);
           setIsZoomed(true);
-          sessionStorage.removeItem("selected_region_id");
         }
       }
     }
   }, [allRegionsData, selectedRegion, isEditMode, searchParams]);
+
+  // Zoom to selectedRegion when map is loaded or when selectedRegion changes (only in mode=area)
+  useEffect(() => {
+    const mode = getSearchParamFallback("mode") || "region";
+    if (mode === "area" && selectedRegion && map.current && mapLoaded > 0) {
+      try {
+        const builtFeature = geoMasterData
+          ? buildRegionFeatureFromDistricts(selectedRegion, geoMasterData)
+          : null;
+        const target = builtFeature || selectedRegion;
+        if (target && target.geometry) {
+          const bounds = getFeatureBounds(target);
+          map.current.fitBounds(bounds, {
+            padding: 60,
+            duration: 1500,
+            maxZoom: 8.5,
+          });
+        }
+      } catch (err) {
+        console.error("[RegionAreaEdit] Failed to zoom to selected region:", err);
+      }
+    }
+  }, [selectedRegion, mapLoaded, geoMasterData]);
 
   const resetView = () => {
     map.current?.flyTo({
@@ -3132,6 +3162,7 @@ const RegionAreaEdit: React.FC = () => {
     setIsZoomed(false);
     setSelectedState(null); // triggers stateRegionsData → allRegionsData → regions re-render
     setSelectedRegion(null); // Clear selected region when resetting to India overview
+    sessionStorage.removeItem("selected_region_id");
     // Clear district boundaries (only visible inside a selected state)
     setAssignPanelOpen(false);
 
@@ -3145,6 +3176,19 @@ const RegionAreaEdit: React.FC = () => {
 
   // ── Clear edit mode, reset states, and return map to India overview ─────
   const clearEditMode = () => {
+    if (map.current) {
+      try {
+        map.current.removeFeatureState({ source: "mandals-source" });
+      } catch (e) {
+        console.error("Failed to clear mandals-source feature state:", e);
+      }
+      try {
+        map.current.removeFeatureState({ source: "districts-source" });
+      } catch (e) {
+        console.error("Failed to clear districts-source feature state:", e);
+      }
+    }
+
     if (editModeType === "area" && editAreaId) {
       setActiveAreaId(Number(editAreaId));
       setAssignPanelOpen(true);
@@ -3767,6 +3811,7 @@ const RegionAreaEdit: React.FC = () => {
             } else if (selectedRegion) {
               setSelectedRegion(null);
               setActiveAreaId(null);
+              sessionStorage.removeItem("selected_region_id");
               if (selectedState && map.current) {
                 map.current.fitBounds(getFeatureBounds(selectedState), {
                   padding: 100,
@@ -4419,8 +4464,15 @@ const RegionAreaEdit: React.FC = () => {
                                 onClick={() => {
                                   if (isSelected) {
                                     setSelectedRegion(null);
+                                    sessionStorage.removeItem("selected_region_id");
                                   } else {
                                     setSelectedRegion(region.rawFeature);
+                                    if (region.rawFeature) {
+                                      sessionStorage.setItem(
+                                        "selected_region_id",
+                                        String(getRegionId(region.rawFeature)),
+                                      );
+                                    }
                                     if (
                                       region.rawFeature &&
                                       map.current &&
@@ -4439,8 +4491,9 @@ const RegionAreaEdit: React.FC = () => {
                                           map.current.fitBounds(
                                             getFeatureBounds(target),
                                             {
-                                              padding: 80,
+                                              padding: 60,
                                               duration: 1500,
+                                              maxZoom: 8.5,
                                             },
                                           );
                                         }
@@ -4570,6 +4623,7 @@ const RegionAreaEdit: React.FC = () => {
                     onClose={() => {
                       setSelectedRegion(null);
                       setActiveAreaId(null);
+                      sessionStorage.removeItem("selected_region_id");
                       if (editModeType === "area") {
                         setAssignPanelOpen(false);
                       }
@@ -4766,8 +4820,15 @@ const RegionAreaEdit: React.FC = () => {
                                 onClick={() => {
                                   if (isSelected) {
                                     setSelectedRegion(null);
+                                    sessionStorage.removeItem("selected_region_id");
                                   } else {
                                     setSelectedRegion(region.rawFeature);
+                                    if (region.rawFeature) {
+                                      sessionStorage.setItem(
+                                        "selected_region_id",
+                                        String(getRegionId(region.rawFeature)),
+                                      );
+                                    }
                                     if (
                                       region.rawFeature &&
                                       map.current &&
@@ -4786,8 +4847,9 @@ const RegionAreaEdit: React.FC = () => {
                                           map.current.fitBounds(
                                             getFeatureBounds(target),
                                             {
-                                              padding: 80,
+                                              padding: 60,
                                               duration: 1500,
+                                              maxZoom: 8.5,
                                             },
                                           );
                                         }
