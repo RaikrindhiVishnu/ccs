@@ -3015,7 +3015,6 @@ const RegionAreaEdit: React.FC = () => {
 
       const assigned = mappedFeatures
         .filter((f: any) => {
-          if (isAreaMode) return true;
           return f.isAssignedFromApi;
         })
         .filter((f: any) => {
@@ -3033,14 +3032,13 @@ const RegionAreaEdit: React.FC = () => {
 
       const unassigned = mappedFeatures
         .filter((f: any) => {
-          if (isAreaMode) return true;
           return !f.isAssignedFromApi;
         })
         .filter((f: any) => {
           if (!isAreaMode) return true;
           if (!regionsWithAreas) return true; // loading fallback
           const regionId = f.properties?.region_id || f.id;
-          return !regionsWithAreas.has(Number(regionId));
+          return regionsWithAreas.has(Number(regionId));
         })
         .map((f: any) => ({
           id: f.properties?.region_id || f.id,
