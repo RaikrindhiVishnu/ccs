@@ -528,7 +528,7 @@ export const FamilyTreeDocument: React.FC<FamilyTreeDocumentProps> = ({
                 font-[family-name:var(--font-sans)]
               "
             >
-              Back
+              {isVO3 ? "Turn Back" : "Back"}
             </button>
 
             <button

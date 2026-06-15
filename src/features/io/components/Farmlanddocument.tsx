@@ -1034,7 +1034,13 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
   } else if (activeStep === "family-tree") {
     stepContent = (
       <FamilyTreeDocument
-        onBack={() => setActiveStep("owner-details")}
+        onBack={() => {
+          if (isAssignedVO3) {
+            setShowTurnBackModal(true);
+          } else {
+            setActiveStep("owner-details");
+          }
+        }}
         onGoBackDashboard={goBackToDashboard}
         onNext={() => setActiveStep("land-details")}
         onTabChange={(tab) => {
@@ -1056,7 +1062,13 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
   } else if (activeStep === "land-details") {
     stepContent = (
       <LandDetailsDocument
-        onBack={() => setActiveStep("family-tree")}
+        onBack={() => {
+          if (isAssignedVO3) {
+            setShowTurnBackModal(true);
+          } else {
+            setActiveStep("family-tree");
+          }
+        }}
         onGoBackDashboard={goBackToDashboard}
         onNext={() => {
           setActiveStep("local-intelligence");
@@ -1078,7 +1090,9 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
     stepContent = (
       <LocalIntelligenceDocument
         onBack={() => {
-          if (cameFromModal) {
+          if (isAssignedVO3) {
+            setShowTurnBackModal(true);
+          } else if (cameFromModal) {
             setCameFromModal(false);
             setActiveStep("list");
             setShowReasonModal(true);

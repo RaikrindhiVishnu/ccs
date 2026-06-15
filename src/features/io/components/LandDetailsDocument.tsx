@@ -489,7 +489,7 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
                 text-[clamp(0.625rem,0.97vw,1.1625rem)]
               "
             >
-              Back
+              {isVO3 ? "Turn Back" : "Back"}
             </button>
 
             <button

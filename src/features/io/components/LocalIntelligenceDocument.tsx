@@ -236,6 +236,10 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
   };
 
   const handleBackClick = () => {
+    if (isVO3) {
+      onBack();
+      return;
+    }
     const currentIndex = subTabs.findIndex((tab) => tab.id === activeSubTab);
     if (currentIndex > 0) {
       setActiveSubTab(subTabs[currentIndex - 1].id);
@@ -1426,7 +1430,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 "
               >
                 <span className="font-sans font-medium text-[0.875rem] leading-[1.125rem] text-[rgba(39,128,196,0.8)] text-center">
-                  Back
+                  {isVO3 ? "Turn Back" : "Back"}
                 </span>
               </button>
 
