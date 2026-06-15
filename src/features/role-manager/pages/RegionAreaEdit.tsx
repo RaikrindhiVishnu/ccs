@@ -707,7 +707,7 @@ const RegionAreaEdit: React.FC = () => {
       { refetchOnMountOrArgChange: true },
     );
 
-  const { data: editedRegionGeoJson } = useGetRegionGeoJsonQuery(
+  const { data: editedRegionGeoJson, isLoading: isLoadingRegionGeoJson } = useGetRegionGeoJsonQuery(
     { region_id: Number(editRegionId) },
     { skip: !editRegionId },
   );
@@ -741,7 +741,7 @@ const RegionAreaEdit: React.FC = () => {
     }
   }, [regionsByStateData, selectedStateId]);
 
-  const { data: areaGeoJsonData } = useGetAreaGeoJsonQuery(
+  const { data: areaGeoJsonData, isLoading: isLoadingAreaGeoJson } = useGetAreaGeoJsonQuery(
     { area_id: Number(editAreaId) },
     { skip: !editAreaId },
   );
@@ -766,6 +766,9 @@ const RegionAreaEdit: React.FC = () => {
   );
 
   const isAreaMode = getSearchParamFallback("mode") === "area" || !!editAreaId;
+  const isEditModeLoading =
+    (editModeType === "region" && isLoadingRegionGeoJson) ||
+    (editModeType === "area" && isLoadingAreaGeoJson);
   const [triggerGetAreas] = useLazyGetAllAreasByRegionIdQuery();
   const [regionsWithAreas, setRegionsWithAreas] = useState<Set<number> | null>(null);
 
@@ -3811,7 +3814,15 @@ const RegionAreaEdit: React.FC = () => {
             <div className="h-px bg-slate-100 mb-4 shrink-0 w-full" />
 
             {/* Form fields body (Scrollable) */}
-            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-5 mb-5 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-5 mb-5 custom-scrollbar relative">
+              {isEditModeLoading && (
+                <div className="absolute inset-0 bg-white/85 backdrop-blur-[2px] z-50 flex flex-col items-center justify-center gap-3 animate-in fade-in duration-300">
+                  <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    Loading Operational Details...
+                  </span>
+                </div>
+              )}
               {/* Input: Region/Area Name */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-0.5">
@@ -4156,9 +4167,10 @@ const RegionAreaEdit: React.FC = () => {
               <Button
                 variant="primary"
                 fullWidth
-                loading={isSaving}
+                loading={isSaving || isEditModeLoading}
+                disabled={isEditModeLoading}
                 onClick={handleSave}
-                className="h-12 text-xs font-bold uppercase tracking-widest rounded-2xl flex items-center justify-center gap-2 border-0 bg-blue-600 text-white shadow-md shadow-blue-500/20 hover:opacity-95"
+                className="h-12 text-xs font-bold uppercase tracking-widest rounded-2xl flex items-center justify-center gap-2 border-0 bg-blue-600 text-white shadow-md shadow-blue-500/20 hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save className="w-4 h-4" />
                 Save Changes
