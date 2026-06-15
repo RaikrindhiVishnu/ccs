@@ -68,6 +68,8 @@ import {
   VerificationOfficer1CompletedFarmlandDetails,
   VerificationOfficer1AssignedFarmlandsOwnerDetails,
   VerificationOfficer1Layout,
+  VerificationOfficer1Profile,
+  VerificationOfficer1Login,
 
     // Dev imports
     DraftsPage,
@@ -107,6 +109,9 @@ export const guestRoutes: RouteObject[] = [
     }, {
         path: '/super-admin/login',
         element: <SuperAdminLogin />
+    }, {
+        path: '/verification-officer-1/login',
+        element: <VerificationOfficer1Login />
     },
 ];
 
@@ -322,6 +327,10 @@ export const authRoutes: RouteObject[] = [
       {
         path: "completed-farmland",
         element: <VerificationOfficer1CompletedFarmlands />,
+      },
+      {
+        path: "profile",
+        element: <VerificationOfficer1Profile />,
       },
     ],
   },
