@@ -155,6 +155,6 @@ export const SuperAdminPoolPublished = lazy(() => import("../../features/super-a
 export const SuperAdminPoolCreated = lazy(() => import("../../features/super-admin/pool/SuperAdminPoolCreated"));
 export const SuperAdminLegalDocuments = lazy(() => import('../../features/super-admin/legal-docs/VerificationFlow'));
 export const SuperAdminAgricultureReport = lazy(() => import('../../features/super-admin/legal-docs/AgricultureReportFlow'));
-export const SuperAdminLandBoundaries = lazy(() => import('../../features/super-admin/legal-docs/VerificationFlow'));
+export const SuperAdminLandBoundaries = lazy(() => import('../../features/super-admin/legal-docs/LandBoundariesFlow'));
 export const SuperAdminValuation = lazy(() => import('../../features/super-admin/legal-docs/VerificationFlow'));
 export const SuperAdminLocalIntelligence = lazy(() => import('../../features/super-admin/legal-docs/VerificationFlow'));

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bell, Check, Download } from 'lucide-react';
 import { useViewportScale } from '@/hooks/useViewportScale';
 
@@ -19,7 +19,11 @@ interface UploadedFile {
   size: string;
 }
 
-const MOCK_FILES: UploadedFile[] = [
+// ─── Mock Data ────────────────────────────────────────────────────────────────
+
+const MOCK_COVER_IMAGE: UploadedFile = { id: 'cover-1', name: 'Cover image.pdf', size: '8MB' };
+
+const MOCK_UPLOADED_IMAGES: UploadedFile[] = [
   { id: '1', name: 'File_name_1.pdf', size: '8MB' },
   { id: '2', name: 'File_name_1.pdf', size: '8MB' },
 ];
@@ -31,20 +35,19 @@ adipiscing elit.do eiusmod. Lorem ipsum dolor sit amet,
 consectetur adipiscing elit. Lorem ipsum dolor sit amet,
 consectetur.`;
 
-// ─── Agriculture Report Tabs (11 tabs) ────────────────────────────────────────
+// ─── Land & Boundaries Tabs (10 tabs) ─────────────────────────────────────────
 
-const AGRICULTURE_TABS: DocumentTab[] = [
-  { id: 'local-agriculture-officer-report', label: 'Local Agriculture Officer Report', status: 'pending' },
-  { id: 'last-5-years-crop-yielding', label: 'Last 5 years Crop Yielding Report', status: 'pending' },
-  { id: 'soil', label: 'Soil', status: 'pending' },
-  { id: 'type-of-crop', label: 'Type of Crop', status: 'pending' },
-  { id: 'ground-water-level', label: 'Ground Water Level', status: 'pending' },
-  { id: 'types-of-crop-can-be-grown', label: 'Types of Crop can be grown', status: 'pending' },
-  { id: 'current-yield-cost', label: 'Current Yield Cost', status: 'pending' },
-  { id: 'current-cultivation', label: 'Current Cultivation', status: 'pending' },
-  { id: 'future-crops', label: 'Future Crops', status: 'pending' },
-  { id: 'maintenance', label: 'Maintenance', status: 'pending' },
-  { id: 'natural-advantages-disadvantages', label: 'Natural Advantages and Disadvantages', status: 'pending' },
+const LAND_BOUNDARIES_TABS: DocumentTab[] = [
+  { id: 'land-images', label: 'Land Images', status: 'pending' },
+  { id: 'landscape-view', label: 'Landscape View of Farmlands', status: 'pending' },
+  { id: 'shape-of-land', label: 'Shape of the Land', status: 'pending' },
+  { id: 'water-electricity', label: 'Water and Electricity Facility', status: 'pending' },
+  { id: 'master-plan', label: 'Master Plan', status: 'pending' },
+  { id: 'survey-report', label: 'Survey Report', status: 'pending' },
+  { id: 'east-boundaries', label: 'East Boundaries', status: 'pending' },
+  { id: 'west-boundaries', label: 'West Boundaries', status: 'pending' },
+  { id: 'north-boundaries', label: 'North Boundaries', status: 'pending' },
+  { id: 'south-boundaries', label: 'South Boundaries', status: 'pending' },
 ];
 
 // ─── Sidebar Stepper Config ───────────────────────────────────────────────────
@@ -137,14 +140,14 @@ const ProceedModal: React.FC<{
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/40 backdrop-blur-sm">
       <div className="bg-white rounded-[2rem] w-[500px] py-10 px-8 flex flex-col items-center shadow-[0_10px_40px_rgba(0,0,0,0.08)] relative">
-        <h2 className="font-bold text-[24px] mb-8 text-gray-900">Agriculture Report</h2>
+        <h2 className="font-bold text-[24px] mb-8 text-gray-900">Land & Boundaries</h2>
         
         <div className="mb-8">
           <StarBadge size={140} outerColor="#F3F4F6" innerColor="#A3C33D" />
         </div>
 
         <p className="text-center font-medium text-[17px] text-gray-800 leading-[1.6] mb-10 max-w-[360px]">
-          Proceed With '<span className="text-[#1D7ABE] font-bold">Land & Boundaries</span>' for
+          Proceed With '<span className="text-[#1D7ABE] font-bold">Valuation</span>' for
           Farmland ID: <span className="text-[#1D7ABE] font-bold">{farmlandId}</span> for further
           Verification.
         </p>
@@ -160,9 +163,24 @@ const ProceedModal: React.FC<{
   );
 };
 
+// ─── File Row Component ───────────────────────────────────────────────────────
+
+const FileRow: React.FC<{ file: UploadedFile }> = ({ file }) => (
+  <div className="flex items-center gap-4 bg-[#F0F4F8] rounded-2xl p-4 transition-colors hover:bg-[#e6ebf1]">
+    <PdfIcon />
+    <div className="flex-1 flex flex-col">
+      <span className="text-[14px] font-bold text-gray-900 leading-tight">{file.name}</span>
+      <span className="text-[12px] font-medium text-gray-400 mt-0.5">{file.size}</span>
+    </div>
+    <button className="p-2 hover:bg-white rounded-full transition-colors">
+      <Download size={20} className="text-gray-600" />
+    </button>
+  </div>
+);
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-const AgricultureReportFlow: React.FC = () => {
+const LandBoundariesFlow: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const scale = useViewportScale(1440, 1080);
@@ -171,9 +189,9 @@ const AgricultureReportFlow: React.FC = () => {
 
   // State
   const [tabs, setTabs] = useState<DocumentTab[]>(
-    AGRICULTURE_TABS.map(t => ({ ...t }))
+    LAND_BOUNDARIES_TABS.map(t => ({ ...t }))
   );
-  const [activeTabId, setActiveTabId] = useState(AGRICULTURE_TABS[0].id);
+  const [activeTabId, setActiveTabId] = useState(LAND_BOUNDARIES_TABS[0].id);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showProceedModal, setShowProceedModal] = useState(false);
 
@@ -203,7 +221,7 @@ const AgricultureReportFlow: React.FC = () => {
 
   const handleProceedNext = () => {
     setShowProceedModal(false);
-    navigate(`/super-admin/Documents/land-boundaries/${farmlandId}`);
+    navigate(`/super-admin/Documents/valuation/${farmlandId}`);
   };
 
   const navigateToStep = (stepPath: string, stepId: string) => {
@@ -280,7 +298,7 @@ const AgricultureReportFlow: React.FC = () => {
             <div className="absolute left-[27px] top-[10px] bottom-[10px] w-px bg-gray-200" />
             
             {FLOW_STEPS.map((step) => {
-              const isCurrent = step.id === 'agriculture-report';
+              const isCurrent = step.id === 'land-boundaries';
               return (
                 <div 
                   key={step.id} 
@@ -334,106 +352,21 @@ const AgricultureReportFlow: React.FC = () => {
         <div className="absolute left-[440px] right-[40px] top-[540px] bottom-[40px] bg-white shadow-sm rounded-[2rem] p-10 flex flex-col">
           <div className="flex gap-16 flex-1">
             
-            {/* Left Section - Conditional based on active tab */}
+            {/* Upload Files Section */}
             <div className="flex-1 flex flex-col">
-              {activeTabId === 'soil' ? (
-                <>
-                  <h3 className="text-[22px] font-bold text-gray-900 mb-6">Soil Type</h3>
-                  <div className="relative">
-                    <div className="flex items-center justify-between bg-white border border-gray-200 rounded-2xl px-5 py-4 cursor-pointer hover:border-gray-300 transition-colors">
-                      <span className="text-[15px] text-gray-800 font-medium">Alfiso(Black soil)</span>
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 7.5L10 12.5L15 7.5" stroke="#6B7280" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </div>
-                  </div>
-                </>
+              <h3 className="text-[22px] font-bold text-gray-900 mb-5">Uploaded Files</h3>
+              
+              {/* Cover Image Sub-section */}
+              <span className="text-[13px] font-medium text-gray-500 mb-2">Cover image</span>
+              <FileRow file={MOCK_COVER_IMAGE} />
 
-              ) : activeTabId === 'type-of-crop' ? (
-                <>
-                  <h3 className="text-[22px] font-bold text-gray-900 mb-6">Types of crops available present?</h3>
-                  <div className="relative">
-                    <div className="flex items-center justify-between bg-white border border-gray-200 rounded-2xl px-5 py-4 cursor-pointer hover:border-gray-300 transition-colors">
-                      <span className="text-[15px] text-gray-800 font-medium">Alfiso(Black soil)</span>
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 7.5L10 12.5L15 7.5" stroke="#6B7280" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </div>
-                  </div>
-                </>
-
-              ) : activeTabId === 'ground-water-level' ? (
-                <>
-                  <h3 className="text-[22px] font-bold text-gray-900 mb-6">Depth of the Ground Water level</h3>
-                  <div className="bg-white border border-gray-200 rounded-2xl px-5 py-4">
-                    <span className="text-[15px] text-gray-800 font-medium">100 feets</span>
-                  </div>
-                </>
-
-              ) : activeTabId === 'types-of-crop-can-be-grown' ? (
-                <>
-                  <h3 className="text-[22px] font-bold text-gray-900 mb-6">Types of crops can be grown in future?</h3>
-                  <div className="relative">
-                    <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-2xl px-4 py-3.5 cursor-pointer hover:border-gray-300 transition-colors">
-                      <span className="bg-[#A3C33D] text-white text-[13px] font-semibold px-3 py-1 rounded-lg">Rice</span>
-                      <span className="bg-[#A3C33D] text-white text-[13px] font-semibold px-3 py-1 rounded-lg">Corn</span>
-                      <div className="flex-1" />
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 7.5L10 12.5L15 7.5" stroke="#6B7280" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </div>
-                  </div>
-                </>
-
-              ) : activeTabId === 'current-yield-cost' ? (
-                <>
-                  <h3 className="text-[22px] font-bold text-gray-900 mb-6">What is the current yielding cost?</h3>
-                  <div className="bg-white border border-gray-200 rounded-2xl px-5 py-4 mb-6">
-                    <span className="text-[15px] text-gray-800 font-medium">1,00,000.00</span>
-                  </div>
-                  <h3 className="text-[22px] font-bold text-gray-900 mb-6">Current returns from yield?</h3>
-                  <div className="bg-white border border-gray-200 rounded-2xl px-5 py-4">
-                    <span className="text-[15px] text-gray-800 font-medium">1,00,000.00</span>
-                  </div>
-                </>
-
-              ) : activeTabId === 'current-cultivation' ? (
-                <>
-                  <h3 className="text-[22px] font-bold text-gray-900 mb-6">What is the current cultivation?</h3>
-                  <div className="relative">
-                    <div className="flex items-center justify-between bg-white border border-gray-200 rounded-2xl px-5 py-4 cursor-pointer hover:border-gray-300 transition-colors">
-                      <span className="text-[15px] text-gray-800 font-medium">Paddy</span>
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 7.5L10 12.5L15 7.5" stroke="#6B7280" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </div>
-                  </div>
-                </>
-
-              ) : activeTabId === 'future-crops' ? (
-                <>
-                  <h3 className="text-[22px] font-bold text-gray-900 mb-6">What are the future crops planned?</h3>
-                  <div className="relative">
-                    <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-2xl px-4 py-3.5 cursor-pointer hover:border-gray-300 transition-colors">
-                      <span className="bg-[#A3C33D] text-white text-[13px] font-semibold px-3 py-1 rounded-lg">Wheat</span>
-                      <span className="bg-[#A3C33D] text-white text-[13px] font-semibold px-3 py-1 rounded-lg">Sugarcane</span>
-                      <div className="flex-1" />
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 7.5L10 12.5L15 7.5" stroke="#6B7280" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </div>
-                  </div>
-                </>
-
-              ) : (
-                <>
-                  <h3 className="text-[22px] font-bold text-gray-900 mb-6">Uploaded Files</h3>
-                  <div className="flex flex-col gap-4">
-                    {MOCK_FILES.map((file) => (
-                      <div key={file.id} className="flex items-center gap-4 bg-[#F0F4F8] rounded-2xl p-4 transition-colors hover:bg-[#e6ebf1]">
-                        <PdfIcon />
-                        <div className="flex-1 flex flex-col">
-                          <span className="text-[14px] font-bold text-gray-900 leading-tight">{file.name}</span>
-                          <span className="text-[12px] font-medium text-gray-400 mt-0.5">{file.size}</span>
-                        </div>
-                        <button className="p-2 hover:bg-white rounded-full transition-colors">
-                          <Download size={20} className="text-gray-600" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
+              {/* Uploaded Images Sub-section */}
+              <span className="text-[13px] font-medium text-gray-500 mt-4 mb-2">Uploaded images</span>
+              <div className="flex flex-col gap-3">
+                {MOCK_UPLOADED_IMAGES.map((file) => (
+                  <FileRow key={file.id} file={file} />
+                ))}
+              </div>
             </div>
 
             {/* Comments Section */}
@@ -473,4 +406,4 @@ const AgricultureReportFlow: React.FC = () => {
   );
 };
 
-export default AgricultureReportFlow;
+export default LandBoundariesFlow;
