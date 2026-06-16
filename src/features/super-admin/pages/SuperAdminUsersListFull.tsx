@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 import SuperAdminHeader from "@/features/super-admin/components/SuperAdminHeader";
 import VisitorSalesCard from "@/features/super-admin/components/VisitorSalesCard";
 import FarmlandStatsCard from "@/features/super-admin/components/FarmlandStatsCard";
 import SuperAdminUserListCard from "@/features/super-admin/components/SuperAdminUserListCard";
-import type { SuperAdminUserCardData } from "@/features/super-admin/components/SuperAdminUserListCard";
+
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 
 const SuperAdminUsersListFull: React.FC = () => {
   const data = mockDashboardData;
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<string>("All");
   const [isOpen, setIsOpen] = useState(false);
 
@@ -46,13 +48,15 @@ const SuperAdminUsersListFull: React.FC = () => {
 
       {/* ── Users Section ── */}
       <div className="mt-6 flex flex-col gap-6">
-        <div className="flex flex-col">
-          <h2 className="text-[1.5rem] lg:text-[1.75rem] font-bold text-[var(--text-primary)] tracking-tight">
-            Users
-          </h2>
-          <p className="text-[0.875rem] text-[var(--text-muted)] font-medium">
-            Managed dossiers from premium agents
-          </p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="flex flex-col">
+            <h2 className="text-[1.5rem] lg:text-[1.75rem] font-bold text-[var(--text-primary)] tracking-tight">
+              Users
+            </h2>
+            <p className="text-[0.875rem] text-[var(--text-muted)] font-medium">
+              Managed dossiers from premium agents
+            </p>
+          </div>
         </div>
 
         <div className="flex flex-col xl:flex-row gap-4 justify-between xl:items-center">
@@ -80,7 +84,11 @@ const SuperAdminUsersListFull: React.FC = () => {
                   <button
                     key={option}
                     onClick={() => {
-                      setFilter(option);
+                      if (option === "All") {
+                        navigate("/super-admin/users-list/all");
+                      } else {
+                        setFilter(option);
+                      }
                       setIsOpen(false);
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -94,11 +102,11 @@ const SuperAdminUsersListFull: React.FC = () => {
         </div>
 
         <div className="flex flex-col gap-4">
-          {filteredUsers.map((user) => (
+          {filteredUsers.slice(0, 4).map((user) => (
             <SuperAdminUserListCard
               key={user.id}
               data={user}
-              onViewProfile={(id) => console.log("View Profile:", id)}
+              onViewProfile={(id) => navigate(`/super-admin/user-profile/${id}`)}
             />
           ))}
         </div>

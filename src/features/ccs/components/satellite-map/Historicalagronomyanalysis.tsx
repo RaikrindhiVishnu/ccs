@@ -3,6 +3,9 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
+import { SatelliteMap } from "@/features/satellite-history/components/SatelliteMap";
+import { useWaybackSource } from "@/features/satellite-history/hooks/useWaybackSource";
+import "@/features/satellite-history/satellite-history.css";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -146,13 +149,13 @@ function ClockIcon({ className }: { className?: string }) {
 
 function ForwardIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 22 14" fill="none" className={cn("shrink-0", className)}>
+    <svg viewBox="0 0 24 24" fill="none" className={cn("shrink-0", className)}>
       <path
-        d="M1 7h20M15 2l5 5-5 5"
+        d="M6 7 L12 12 L6 17 Z M13 7 L19 12 L13 17 Z"
         stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        strokeWidth="2"
         strokeLinejoin="round"
+        strokeLinecap="round"
       />
     </svg>
   );
@@ -169,89 +172,6 @@ function ChevronRight({ className }: { className?: string }) {
         strokeLinejoin="round"
       />
     </svg>
-  );
-}
-
-// ─── DummyMap ─────────────────────────────────────────────────────────────────
-
-function DummyMap() {
-  return (
-    <div className="absolute inset-0 z-0">
-      <div
-        className="
-          h-full w-full
-          bg-[radial-gradient(ellipse_at_30%_40%,#4a7c59_0%,transparent_50%),radial-gradient(ellipse_at_70%_60%,#3d6b47_0%,transparent_45%),radial-gradient(ellipse_at_50%_30%,#8fac6e_0%,transparent_40%),radial-gradient(ellipse_at_20%_70%,#5a8a4a_0%,transparent_35%),radial-gradient(ellipse_at_80%_20%,#c4a882_0%,transparent_40%),radial-gradient(ellipse_at_60%_80%,#6b9e5a_0%,transparent_35%),#4a7a3d]
-        "
-      >
-        <svg
-          className="absolute inset-0 h-full w-full"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M 0 60% Q 30% 55% 50% 50% T 100% 45%"
-            stroke="#c4a882"
-            strokeWidth="8"
-            fill="none"
-            opacity="0.7"
-          />
-          <path
-            d="M 0 62% Q 30% 57% 50% 52% T 100% 47%"
-            stroke="#b8997a"
-            strokeWidth="3"
-            fill="none"
-            opacity="0.5"
-          />
-          <path
-            d="M 20% 0 Q 25% 40% 30% 60% T 35% 100%"
-            stroke="#c4a882"
-            strokeWidth="5"
-            fill="none"
-            opacity="0.5"
-          />
-        </svg>
-
-        <svg
-          className="absolute inset-0 h-full w-full"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-        >
-          <polygon
-            points="35,25 55,20 65,30 68,45 60,58 50,62 38,58 28,48 27,35"
-            fill="rgba(200,220,240,0.6)"
-            stroke="rgba(180,200,220,0.9)"
-            strokeWidth="0.5"
-          />
-        </svg>
-
-        {[
-          { left: "15%", top: "25%" },
-          { left: "22%", top: "55%" },
-          { left: "75%", top: "70%" },
-          { left: "80%", top: "35%" },
-          { left: "60%", top: "15%" },
-          { left: "10%", top: "75%" },
-        ].map((pos, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full w-10 h-10 bg-[radial-gradient(circle,#2d5a1e_0%,#1a3a10_100%)] opacity-80 -translate-x-1/2 -translate-y-1/2"
-            style={{ left: pos.left, top: pos.top }}
-          />
-        ))}
-
-        <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-black/40 px-4 py-1">
-          <span className="text-[0.6rem] text-white/70">Camera: 991 m</span>
-          <span className="text-[0.6rem] text-white/70">
-            17°00′51.72″N 78°25′25.92″E
-          </span>
-          <span className="text-[0.6rem] text-white/70">704 m</span>
-        </div>
-
-        <div className="absolute bottom-6 right-4 flex items-center gap-1 rounded-full bg-black/50 px-3 py-1">
-          <span className="text-[0.65rem] font-medium text-white">3D</span>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -315,70 +235,49 @@ function TemporalRibbon({
 }) {
   return (
     <div
-      className="
-    absolute
-    bottom-[2rem] lg:bottom-[2.5rem] xl:bottom-[3rem] 2xl:bottom-[3.5rem]
-    left-0 right-0
-    flex justify-center
-    z-30
-    px-4
-  "
+      className="absolute bottom-[20px] md:bottom-[67px] left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[625px] h-[80px] md:h-[114px] flex items-center justify-between px-[20px] md:px-[47px] z-30 overflow-x-auto custom-scrollbar"
     >
-      <div
-        className="
-      flex items-center
-      px-[0.75rem] lg:px-[1rem] xl:px-[1.25rem] 2xl:px-[1.5rem]
-      h-[3.5rem] lg:h-[4rem] xl:h-[4.5rem] 2xl:h-[5rem]
-      rounded-[2.5rem]
-      bg-[var(--surface-card)]
-      shadow-[0px_28px_57px_-14px_rgba(0,0,0,0.25)]
-      gap-[0.0625rem] lg:gap-[0.125rem] xl:gap-[0.25rem]
-    "
-      >
-        {YEARS.map(({ year, icon }) => {
-          const isActive = year === activeYear;
+      {/* Shadow layer */}
+      <div className="absolute top-[0px] bottom-[0.44px] left-[0px] right-[-0.32px] bg-[#FFFFFF] rounded-[36.88px] shadow-[0px_28.81px_57.62px_-13.83px_rgba(0,0,0,0.25)] z-[-2]"></div>
+      
+      {/* Shell layer */}
+      <div className="absolute inset-0 bg-[rgba(255,255,255,0.2)] border-[1.15px] border-[rgba(255,255,255,0.4)] backdrop-blur-[36.88px] rounded-[36.88px] z-[-1]"></div>
 
+      {YEARS.map(({ year, icon }) => {
+        const isActive = year === activeYear;
+
+        if (isActive) {
           return (
             <button
               key={year}
               onClick={() => onYearChange(year)}
-              className={cn(
-                "relative flex flex-col items-center justify-center",
-                "gap-[0.2rem] lg:gap-[0.25rem]",
-                "transition-all duration-300 ease-in-out rounded-[2.5rem]",
-
-                isActive
-                  ? cn(
-                      "bg-[var(--brand-500)] text-[var(--surface-card)] z-10",
-                      "px-[1.1rem] lg:px-[1.35rem] xl:px-[1.6rem] 2xl:px-[1.85rem]",
-                      "py-[0.35rem] lg:py-[0.4rem] xl:py-[0.5rem]",
-                      "shadow-[0px_0px_0px_8px_var(--brand-tint-strong),0px_11px_17px_-3px_rgba(0,0,0,0.1)]",
-                      "-mt-[0.4rem] lg:-mt-[0.5rem]",
-                    )
-                  : cn(
-                      "text-[#A1A1AA] hover:text-[var(--text-subtle)]",
-                      "px-[0.6rem] lg:px-[0.75rem] xl:px-[0.875rem] 2xl:px-[1rem]",
-                      "py-[0.6rem] lg:py-[0.75rem]",
-                    ),
-              )}
+              className="flex flex-col items-center justify-center shrink-0 w-[110px] md:w-[135px] h-[70px] md:h-[79px] bg-[#2780C4] rounded-[11523px] shadow-[0px_0px_0px_9.2px_rgba(255,255,255,0.4),0px_11.5px_17.3px_-3.5px_rgba(0,0,0,0.1),0px_4.6px_6.9px_-4.6px_rgba(0,0,0,0.1)] transition-transform hover:scale-105 z-10"
             >
-              <span>{icon}</span>
-
-              <span
-                className={cn(
-                  "font-[family-name:var(--font-sans)] tracking-[0.08em] uppercase",
-                  "text-[0.55rem] lg:text-[0.6rem] xl:text-[0.65rem] 2xl:text-[0.7rem]",
-                  isActive
-                    ? "font-bold text-[var(--surface-card)]"
-                    : "font-normal text-[#A1A1AA]",
-                )}
-              >
+              <div className="w-[20px] h-[20px] md:w-[23.34px] md:h-[25.93px] text-[#FFFFFF] flex items-center justify-center mb-[4.6px]">
+                {icon}
+              </div>
+              <span className="font-['Plus_Jakarta_Sans'] font-bold text-[12px] md:text-[13.83px] leading-[21px] tracking-[1.15px] uppercase text-[#FFFFFF]">
                 {year}
               </span>
             </button>
           );
-        })}
-      </div>
+        }
+
+        return (
+          <button
+            key={year}
+            onClick={() => onYearChange(year)}
+            className="flex flex-col items-center justify-center gap-[4.61px] shrink-0 p-[10px] md:p-[13.8px] hover:bg-white/10 rounded-xl transition-colors z-10"
+          >
+            <div className="w-[18px] h-[18px] md:w-[20.74px] md:h-[20.74px] text-[#A1A1AA] flex items-center justify-center">
+              {icon}
+            </div>
+            <span className="font-['Plus_Jakarta_Sans'] font-normal text-[10px] md:text-[11.52px] leading-[17px] tracking-[1.15px] uppercase text-[#A1A1AA]">
+              {year}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -437,32 +336,33 @@ function GeospatialControlsPanel({
     absolute z-30
     top-[1.25rem] lg:top-[1.5rem] xl:top-[1.75rem] 2xl:top-[2rem]
     right-[1.25rem] lg:right-[1.5rem] xl:right-[1.75rem] 2xl:right-[2rem]
-    w-[12.5rem] lg:w-[13.5rem] xl:w-[15rem] 2xl:w-[16.5rem]
+    w-[206px] h-[184px]
   "
     >
       <div
         className="
       flex flex-col
-      rounded-[1.5rem] lg:rounded-[1.75rem] xl:rounded-[2rem] 2xl:rounded-[2.25rem]
-      bg-[var(--surface-card)]
-      border border-[var(--border-soft)]
-      shadow-[var(--shadow-card)]
-      px-[0.875rem] lg:px-[1rem] xl:px-[1.1rem] 2xl:px-[1.2rem]
-      pt-[0.75rem] lg:pt-[0.875rem] xl:pt-[1rem] 2xl:pt-[1.1rem]
-      pb-[0.75rem] lg:pb-[0.875rem] xl:pb-[1rem] 2xl:pb-[1.1rem]
+      rounded-[1.5rem] lg:rounded-[1.75rem] xl:rounded-[2rem] 2xl:rounded-[35.75px]
+      bg-white
+      border-[1.12px] border-white/80
+      backdrop-blur-[22.34px]
+      shadow-[0px_27.93px_55.86px_-13.41px_rgba(0,0,0,0.05)]
+      px-[0.875rem] lg:px-[1rem] xl:px-[1.1rem] 2xl:px-[17.88px]
+      pt-[0.75rem] lg:pt-[0.875rem] xl:pt-[1rem] 2xl:pt-[16.76px]
+      pb-[0.75rem] lg:pb-[0.875rem] xl:pb-[1rem] 2xl:pb-[17.88px]
     "
       >
         {/* Header */}
-        <div className="flex flex-col gap-[0.15rem] px-[0.4rem] pb-[0.625rem]">
+        <div className="flex flex-col gap-[4.47px] px-[0.4rem] 2xl:px-[8.94px] pb-[0.625rem] 2xl:pb-[17.88px]">
           <Typography
             as="h2"
             variant="span"
             className="
           font-[family-name:var(--font-sans)]
           font-semibold
-          text-[var(--text-heading)]
-          text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem]
-          leading-[1.3]
+          text-[#2D3622]
+          text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[20.11px]
+          leading-[1.25]
         "
           >
             Geospatial Controls
@@ -473,10 +373,10 @@ function GeospatialControlsPanel({
             variant="span"
             className="
           font-[family-name:var(--font-sans)]
-          font-medium
-          text-[var(--text-secondary)]
-          text-[0.625rem] lg:text-[0.6875rem] xl:text-[0.75rem]
-          leading-[1.4]
+          font-semibold
+          text-[#71717A]
+          text-[0.625rem] lg:text-[0.6875rem] xl:text-[0.75rem] 2xl:text-[15.64px]
+          leading-[1.43]
         "
           >
             V1.4.2 Active
@@ -489,16 +389,16 @@ function GeospatialControlsPanel({
           className="
         flex items-center justify-between
         w-full
-        mt-[0.4rem]
-        px-[0.75rem]
-        h-[2.5rem]
-        rounded-[0.875rem]
-        bg-[var(--surface-page)]
+        px-[0.75rem] 2xl:px-[17.88px]
+        h-[2.5rem] 2xl:h-[58.75px]
+        rounded-[0.875rem] 2xl:rounded-[11px]
+        bg-[#F9F9F9]
         transition-all duration-200
+        border-t border-t-black/5
       "
         >
-          <div className="flex items-center gap-[0.5rem]">
-            <span className="text-[var(--text-secondary)]">
+          <div className="flex items-center gap-[0.5rem] 2xl:gap-[17.88px]">
+            <span className="text-[#71717A]">
               {NAV_ITEMS.find((item) => item.id === activeItem)?.icon}
             </span>
 
@@ -507,9 +407,9 @@ function GeospatialControlsPanel({
               variant="span"
               className="
             font-[family-name:var(--font-sans)]
-            text-[0.75rem]
-            font-medium
-            text-[var(--text-secondary)]
+            text-[0.75rem] 2xl:text-[15.64px]
+            font-semibold
+            text-[#71717A]
           "
             >
               {NAV_ITEMS.find((item) => item.id === activeItem)?.label}
@@ -518,7 +418,7 @@ function GeospatialControlsPanel({
 
           <ChevronRight
             className={cn(
-              "w-[0.8rem] h-[0.8rem] text-[var(--text-secondary)] transition-transform duration-200",
+              "w-[0.8rem] h-[0.8rem] 2xl:w-[10px] 2xl:h-[15.63px] text-[#71717A] transition-transform duration-200",
               isOpen && "rotate-90",
             )}
           />
@@ -538,22 +438,22 @@ function GeospatialControlsPanel({
                     setIsOpen(false);
                   }}
                   className={cn(
-                    "flex items-center gap-[0.75rem]",
+                    "flex items-center gap-[0.75rem] 2xl:gap-[17.88px]",
                     "w-full text-left",
-                    "px-[0.75rem]",
-                    "h-[2.5rem]",
-                    "rounded-[0.875rem]",
+                    "px-[0.75rem] 2xl:px-[17.88px]",
+                    "h-[2.5rem] 2xl:h-[58.75px]",
+                    "rounded-[0.875rem] 2xl:rounded-[11px]",
                     "transition-all duration-200",
                     isActive
-                      ? "bg-[var(--surface-page)]"
-                      : "hover:bg-[var(--surface-page)]",
+                      ? "bg-[#F9F9F9]"
+                      : "hover:bg-[#F9F9F9]",
                   )}
                 >
                   <span
                     className={cn(
                       isActive
-                        ? "text-[var(--text-primary)]"
-                        : "text-[var(--text-secondary)]",
+                        ? "text-[#131600]"
+                        : "text-[#71717A]",
                     )}
                   >
                     {item.icon}
@@ -564,11 +464,11 @@ function GeospatialControlsPanel({
                     variant="span"
                     className={cn(
                       "font-[family-name:var(--font-sans)]",
-                      "text-[0.75rem]",
-                      "font-medium flex-1",
+                      "text-[0.75rem] 2xl:text-[15.64px]",
+                      "font-semibold flex-1",
                       isActive
-                        ? "text-[var(--text-primary)]"
-                        : "text-[var(--text-secondary)]",
+                        ? "text-[#131600]"
+                        : "text-[#71717A]",
                     )}
                   >
                     {item.label}
@@ -583,44 +483,138 @@ function GeospatialControlsPanel({
   );
 }
 
+// ─── Verification Verdict Panel ───────────────────────────────────────────────
+
+function VerificationVerdictPanel({ onAuthorize }: { onAuthorize?: () => void }) {
+  return (
+    <div
+      className="absolute z-30 bg-[rgba(255,255,255,0.95)] backdrop-blur-md rounded-[42px] p-[28px] flex flex-col justify-between shadow-[0px_27.93px_55.86px_-13.41px_rgba(0,0,0,0.05)]"
+      style={{
+        width: '285px',
+        height: '547px',
+        maxHeight: 'calc(100vh - 270px)',
+        top: '238px',
+        right: '32px'
+      }}
+    >
+      <div className="flex flex-col h-full">
+        {/* Header */}
+        <div className="flex gap-[10.5px] items-center shrink-0 mb-[28px]">
+          <div className="w-[34px] h-[35px] bg-[#EDEEEF] rounded-full flex items-center justify-center shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#091426]">
+              <path d="M18 20V10M12 20V4M6 20v-6" />
+            </svg>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-['Plus_Jakarta_Sans'] font-extrabold text-[15.78px] leading-[20px] text-[#091426]">Verification Verdict</span>
+            <span className="font-['Plus_Jakarta_Sans'] font-bold text-[8.77px] leading-[13px] tracking-[0.88px] uppercase text-[rgba(69,71,76,0.6)]">AUDIT REF: #9022-X</span>
+          </div>
+        </div>
+
+        {/* List */}
+        <div className="flex flex-col gap-[21px] flex-1 overflow-y-auto custom-scrollbar">
+          {/* Item 1 */}
+          <div className="flex items-center gap-[14px]">
+            <div className="w-[28px] h-[28px] bg-[rgba(105,182,254,0.2)] rounded-full flex items-center justify-center shrink-0">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#00629E]">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-['Plus_Jakarta_Sans'] font-bold text-[10.52px] leading-[14px] text-[#091426]">Revenue Check</span>
+              <span className="font-['Plus_Jakarta_Sans'] font-normal text-[8.77px] leading-[13px] text-[#45474C]">Documents validated via Land Bank</span>
+            </div>
+          </div>
+
+          {/* Item 2 */}
+          <div className="flex items-center gap-[14px]">
+            <div className="w-[28px] h-[28px] bg-[rgba(105,182,254,0.2)] rounded-full flex items-center justify-center shrink-0">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#00629E]">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-['Plus_Jakarta_Sans'] font-bold text-[10.52px] leading-[14px] text-[#091426]">Boundary Walk</span>
+              <span className="font-['Plus_Jakarta_Sans'] font-normal text-[8.77px] leading-[13px] text-[#45474C]">Geo-tagged perimeter confirmed</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Action */}
+        <div className="shrink-0 mt-[10px]">
+          <button 
+            onClick={onAuthorize}
+            className="w-full h-[47px] bg-[#2780C4] rounded-[28px] flex items-center justify-between px-[21px] hover:bg-[#1f669d] transition-colors"
+          >
+            <span className="font-['Plus_Jakarta_Sans'] font-extrabold text-[14px] leading-[21px] tracking-[-0.7px] text-[#FFFFFF]">Authorize Live Listing</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-[#FFFFFF]">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Export ──────────────────────────────────────────────────────────────
 
 export type HistoricalAgronomyAnalysisProps = {
   onBack?: () => void;
+  onAuthorize?: () => void;
 };
 
 export default function HistoricalAgronomyAnalysis({
   onBack,
+  onAuthorize,
 }: HistoricalAgronomyAnalysisProps) {
   const [activeYear, setActiveYear] = useState<Year>("2020");
   const [activeNav, setActiveNav] = useState("soil");
 
+  const date = `${activeYear}-01-01`;
+  const { sourceConfig } = useWaybackSource(date);
+
   return (
-    <div className="relative w-full h-full overflow-hidden">
+    <div className="relative w-full h-full overflow-hidden bg-[#131600]">
       {/* Map */}
-      <DummyMap />
+      <div className="absolute inset-0 z-0">
+        <SatelliteMap
+          tileUrl={sourceConfig?.url ?? ""}
+          maxzoom={sourceConfig?.maxzoom ?? 18}
+          coords={{ lat: 17.014366, lon: 78.423866 }} // Defaulting to Hyderabad area as in the dummy map text
+        />
+
+        {/* Bottom stats overlay from dummy map */}
+        <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-black/40 px-4 py-1 z-10">
+          <span className="text-[0.6rem] text-white/70">Camera: 991 m</span>
+          <span className="text-[0.6rem] text-white/70">
+            17°00′51.72″N 78°25′25.92″E
+          </span>
+          <span className="text-[0.6rem] text-white/70">704 m</span>
+        </div>
+
+        <div className="absolute bottom-6 right-4 flex items-center gap-1 rounded-full bg-black/50 px-3 py-1 z-10">
+          <span className="text-[0.65rem] font-medium text-white">3D</span>
+        </div>
+      </div>
 
       {/* ── Page header — top left inside map ── */}
       <div
         className="
           absolute z-30
-          top-[1.25rem] lg:top-[1.5rem] xl:top-[1.75rem] 2xl:top-[2rem]
-          left-[1.25rem] lg:left-[1.5rem] xl:left-[1.75rem] 2xl:left-[2rem]
-          right-[13.5rem] lg:right-[14.5rem] xl:right-[16rem] 2xl:right-[17.5rem]
-          flex items-center gap-[0.5rem] lg:gap-[0.625rem] xl:gap-[0.75rem]
+          top-[37px]
+          left-[36px]
         "
       >
         {onBack && (
           <button
             onClick={onBack}
-            className="
-              flex items-center justify-center shrink-0
-              w-[1.75rem] h-[1.75rem] lg:w-[2rem] lg:h-[2rem] xl:w-[2.125rem] xl:h-[2.125rem] 2xl:w-[2.25rem] 2xl:h-[2.25rem]
-              rounded-full bg-black/25 hover:bg-black/40
-              text-[var(--surface-card)] transition-colors
-            "
+            className="flex items-center justify-center gap-[8px] w-[135px] h-[52px] bg-[#FFFFFF] rounded-[60px] shadow-[0px_0px_4px_rgba(0,0,0,0.12)] hover:bg-gray-50 transition-colors"
           >
-            <ArrowLeft className="w-[0.75rem] h-[0.75rem] lg:w-[0.875rem] lg:h-[0.875rem] xl:w-[1rem] xl:h-[1rem]" />
+            <ArrowLeft className="w-[20px] h-[20px] text-[#353535]" strokeWidth={1.4} />
+            <span className="font-['Inter'] font-normal text-[16px] leading-[18px] text-[#353535]">
+              Go back
+            </span>
           </button>
         )}
       </div>
@@ -630,6 +624,9 @@ export default function HistoricalAgronomyAnalysis({
         activeItem={activeNav}
         onItemChange={setActiveNav}
       />
+
+      {/* ── Verification Verdict Panel — middle right ── */}
+      <VerificationVerdictPanel onAuthorize={onAuthorize} />
 
       {/* ── Temporal Ribbon — bottom center ── */}
       <TemporalRibbon activeYear={activeYear} onYearChange={setActiveYear} />

@@ -2,11 +2,20 @@
 // Replace these paths with your actual asset locations
 import dashboardIcon    from '@/assets/dashboard.svg';
 import farmlandReqIcon  from '@/assets/farmland-request.svg';
-import farmlandListIcon from '@/assets/farmland-list.svg';
+// import farmlandListIcon from '@/assets/farmland-list.svg';
+// import poolIcon         from '@/assets/poolicon.svg';
 import io1 from '@/assets/io1.svg';
 import io2 from '@/assets/io2.svg';
 import io3 from '@/assets/io3.svg';
 import io4 from '@/assets/io4.svg';
+
+//for superadmin side bar//
+
+import widgetIcon from "/public/super-admin/icons/Widget.svg";
+import assignedIcon from "/public/super-admin/icons/assignedicon.svg";
+import farmlandListIcon from "/public/super-admin/icons/farmlisticon.svg";
+import userIcon from "/public/super-admin/icons/usericon.svg";
+import poolIcon from "/public/super-admin/icons/poolicon.svg";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 export type LayoutVariant =
@@ -20,7 +29,7 @@ export type LayoutVariant =
 export type NavItem = {
   label: string;
   path: string;
-  icon: string;      // Lucide icon name (used by other roles)
+  icon?: string;      // Lucide icon name (used by other roles)
   iconImg?: string;  // Image asset (used by CCS_OFFICER)
 };
 
@@ -76,15 +85,36 @@ export const MOCK_USERS: Record<
 // ─── Master Layout Config ─────────────────────────────────────────────────────
 export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
   SUPERADMIN: {
-    layoutVariant: 'sidebar-super-admin',
-    roleLabel: 'Super Admin',
-    navItems: [
-      { label: 'Dashboard',          path: '/super-admin/dashboard',           icon: 'LayoutDashboard' },
-      { label: 'Assigned Farmlands', path: '/super-admin/farmlands',           icon: 'Layers' },
-      { label: 'Farmlands List',     path: '/super-admin/farmlands-list',      icon: 'Box' },
-      { label: 'User Management',    path: '/super-admin/users-list',               icon: 'Users' },
-    ],
-  },
+  layoutVariant: "sidebar-super-admin",
+  roleLabel: "Super Admin",
+  navItems: [
+    {
+      label: "Dashboard",
+      path: "/super-admin/dashboard",
+      iconImg: widgetIcon,
+    },
+    {
+      label: "Assigned Farmlands",
+      path: "/super-admin/farmlands",
+      iconImg: assignedIcon,
+    },
+    {
+      label: "Farmlands List",
+      path: "/super-admin/farmlands-list",
+      iconImg: farmlandListIcon,
+    },
+    {
+      label: "User Management",
+      path: "/super-admin/users-list",
+      iconImg: userIcon,
+    },
+    {
+      label: "Pool Buying",
+      path: "/super-admin/pool-buying",
+      iconImg: poolIcon,
+    },
+  ],
+},
 
   ROLEMNGR: {
     layoutVariant: 'sidebar-role-manager',
@@ -112,9 +142,9 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     layoutVariant: 'sidebar-ccs-officer',
     roleLabel: 'CCS Officer',
     navItems: [
-      { label: 'Dashboard',        path: '/',                 icon: 'LayoutDashboard', iconImg: dashboardIcon    },
-      { label: 'Farmland Request', path: '/farmland-request', icon: 'CircleDashed',    iconImg: farmlandReqIcon  },
-      { label: 'Farmland List',    path: '/farmland-list',    icon: 'MapPin',          iconImg: farmlandListIcon },
+      { label: 'Dashboard',          path: '/ccs/dashboard',                 icon: 'LayoutDashboard', iconImg: dashboardIcon    },
+      { label: 'Assigned Farmlands', path: '/farmland-request', icon: 'CircleDashed',    iconImg: farmlandReqIcon  },
+      { label: 'Farmlands List',     path: '/farmland-list',    icon: 'MapPin',          iconImg: farmlandListIcon },
     ],
   },
 

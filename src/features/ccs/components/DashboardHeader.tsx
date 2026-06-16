@@ -1,39 +1,103 @@
-import { Bell, Search } from 'lucide-react';
+import { useState } from 'react';
+import { Bell, CalendarDays, X } from 'lucide-react';
+import { format } from 'date-fns';
 import { Typography } from '@/components/ui/typography';
 import dashboardIcon from '@/assets/dashboard.svg';
+import CalendarPopover from './CalendarPopover';
+import NotificationsPopover from './NotificationsPopover';
 
 export default function DashboardHeader() {
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  
+  // Date range state
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+
+  const formatRange = () => {
+    if (!startDate) return null;
+    if (startDate && !endDate) return format(startDate, 'MMM d, yyyy');
+    return `${format(startDate, 'MMM d')} - ${format(endDate as Date, 'MMM d, yyyy')}`;
+  };
+
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-[0.4688rem]">
+    <div className="flex items-center justify-between relative z-20">
+      <div className="flex items-center gap-[10px]">
         <img
           src={dashboardIcon}
           alt="Dashboard"
-          className="h-[0.95rem] w-[0.95rem] shrink-0 object-contain lg:h-[1.066rem] lg:w-[1.066rem] xl:h-[1.125rem] xl:w-[1.125rem]"
+          className="h-[20px] w-[20px] shrink-0 object-contain"
         />
         <Typography
           variant="h2"
-          className="text-[1rem] font-normal leading-[1.5625rem] text-[var(--text-primary)] lg:text-[1.0625rem] xl:text-[1.125rem]"
+          className="font-['Plus_Jakarta_Sans'] text-[16px] font-semibold leading-[20px] text-[#000000]"
         >
           Dashboard
         </Typography>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2 rounded-[3.75rem] bg-[var(--surface-card)] px-4 py-[0.875rem] lg:px-5 lg:py-[0.9375rem]">
-          <Search className="h-5 w-5 shrink-0 text-[var(--text-subtle)]" strokeWidth={1.6} />
-          <input
-            placeholder="Search..."
-            className="w-[7rem] bg-transparent text-[0.9375rem] font-normal leading-[110%] text-[var(--text-subtle)] outline-none placeholder:text-[var(--text-subtle)] lg:w-[10rem] lg:text-base xl:w-[13rem] 2xl:w-[16rem]"
-          />
+      <div className="flex items-center gap-[18px]">
+        
+        {/* Custom Date Range Display */}
+        {startDate && (
+          <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-[0px_1px_2px_rgba(0,0,0,0.05)] border border-[#E1E5EF]">
+            <span className="text-[14px] font-medium text-[#14181F]">
+              {formatRange()}
+            </span>
+            <button 
+              onClick={() => {
+                setStartDate(null);
+                setEndDate(null);
+              }}
+              className="text-[#6F7C8E] hover:text-[#EF4646] transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        <div className="relative z-50">
+          <button 
+            onClick={() => {
+              setShowCalendar(!showCalendar);
+              setShowNotifications(false);
+            }}
+            className="relative flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#FFFFFF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[var(--brand-tint)]"
+          >
+            <CalendarDays className="h-[24px] w-[24px] text-[#000000]" strokeWidth={1.5} />
+          </button>
+          {showCalendar && (
+            <CalendarPopover 
+              startDate={startDate}
+              endDate={endDate}
+              mode="range"
+              onChange={(start: Date | null, end: Date | null) => {
+                setStartDate(start);
+                setEndDate(end);
+              }}
+              onClose={() => setShowCalendar(false)} 
+            />
+          )}
         </div>
 
-        {/* Icon-only circle button — no matching variant, keep raw */}
-        <button className="relative flex h-[3.125rem] w-[3.125rem] items-center justify-center rounded-full bg-[var(--surface-card)] transition-colors hover:bg-[var(--brand-tint)] xl:h-[3.25rem] xl:w-[3.25rem]">
-          <span className="absolute right-[0.75rem] top-[0.625rem] h-[0.3125rem] w-[0.3125rem] rounded-full bg-[var(--status-danger)]" />
-          <Bell className="h-5 w-5 text-[var(--surface-sidebar)]" strokeWidth={1.5} />
-          <span className="sr-only">Notifications</span>
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => {
+              setShowNotifications(!showNotifications);
+              setShowCalendar(false);
+            }}
+            className="relative flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#FFFFFF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[var(--brand-tint)]"
+          >
+            <div className="relative flex items-center justify-center h-[24px] w-[24px]">
+              <span className="absolute right-0 top-0 h-[6px] w-[6px] rounded-full bg-[#EF4646]" />
+              <Bell className="h-[24px] w-[24px] text-[#000000]" strokeWidth={1.5} />
+            </div>
+            <span className="sr-only">Notifications</span>
+          </button>
+          {showNotifications && (
+            <NotificationsPopover />
+          )}
+        </div>
       </div>
     </div>
   );

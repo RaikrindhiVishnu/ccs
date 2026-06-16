@@ -36,10 +36,11 @@
   --text-heading: #091426;
   --text-muted: rgba(0, 0, 0, 0.6);
   --text-muted-strong: rgba(0, 0, 0, 0.4);
+  --text-label-gray: #8A96A3;
   --text-supporting: #626c70;
   --profile-text: #191b1c;
   --text-button: #353535;
-  --text-strong:#000000;
+  --text-strong: #000000;
   /* ─── STATUS ────────────────────────────────────────────────── */
   --status-pending: var(--brand-500);
   --status-success: #16A34A;
@@ -220,6 +221,15 @@ body {
   font-family: var(--font-sans);
   background: var(--surface-page);
   color: var(--text-primary);
+}
+
+/* ─── GLOBAL: Hide scrollbars everywhere, keep scroll functional ── */
+* {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE / Edge */
+}
+*::-webkit-scrollbar {
+  display: none;                /* Chrome / Safari / Opera */
 }
 
 .font-inter {
@@ -3701,6 +3711,7 @@ h1 {
 .land-boundaries-file-card.cover-theme .cover-delete-bg:hover {
   opacity: 0.8;
 }
+
 /* ─── MAPLIBRE POPUP OVERRIDES ─────────────────────────────────── */
 .region-hover-popup .maplibregl-popup-content {
   background: transparent;

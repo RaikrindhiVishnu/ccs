@@ -2,7 +2,6 @@ import { Typography } from "@/components/ui/typography";
 import {
   DashboardHeader,
   StatsCard,
-  QuickActions,
   PipelineStatus,
   ScreeningChart,
   ActivityCard,
@@ -18,44 +17,47 @@ export default function CcsDashboard() {
         px-[1.375rem] py-[1.375rem]
         xl:px-[1.875rem] xl:py-[1.875rem]
         2xl:px-[2.5rem] 2xl:py-[2.5rem]
+        overflow-visible
       "
     >
-      <div className="shrink-0">
+      <div className="shrink-0 relative z-50">
         <DashboardHeader />
       </div>
 
       <div
         className="
-          mt-[1.375rem] grid flex-1 grid-cols-1
+          mt-[1.375rem] grid grid-cols-1 items-start
           lg:grid-cols-[1fr_23.75rem] lg:gap-[0.875rem]
-          xl:grid-cols-[1fr_26.25rem] xl:gap-[1rem] xl:mt-[1.75rem]
+          xl:grid-cols-[1fr_30.25rem] xl:gap-[1rem] xl:mt-[1.75rem]
           2xl:grid-cols-[1fr_30.25rem] 2xl:gap-[1.125rem] 2xl:mt-[2.125rem]
         "
       >
         {/* ════ LEFT COLUMN ════ */}
-        <div className="flex flex-col">
+        <div className="flex flex-col h-full xl:max-w-[582px] w-full">
           <div className="grid grid-cols-2 gap-[0.75rem] xl:gap-[0.875rem] 2xl:gap-[0.9375rem]">
-            {statsData.map((item) => (
-              <StatsCard
-                key={item.title}
-                title={item.title}
-                value={item.value}
-                icon={item.icon}
-              />
+            {statsData.slice(0, 3).map((item, index) => (
+              <div key={item.title} className={index === 0 ? "col-span-2" : ""}>
+                <StatsCard
+                  title={item.title}
+                  value={item.value}
+                  icon={item.icon}
+                  large={index === 0}
+                />
+              </div>
             ))}
           </div>
 
           <div className="mt-[1.75rem] xl:mt-[2rem] 2xl:mt-[2.3125rem]">
             <Typography
               variant="h2"
-              className="mb-[0.75rem] font-extrabold uppercase leading-[120%] text-[#171717] text-[1.125rem] xl:text-[1.25rem] xl:mb-[0.875rem] 2xl:text-[1.5rem] 2xl:mb-[1rem]"
+              className="mb-[0.75rem] font-[family-name:var(--font-sans)] font-extrabold uppercase leading-[120%] text-[#171717] text-[24px]"
             >
               Pipeline Status
             </Typography>
             <PipelineStatus />
           </div>
 
-          <div className="mt-auto pt-[1rem]">
+          <div className="mt-[42px]">
             <AlertBanner />
           </div>
         </div>
@@ -63,41 +65,33 @@ export default function CcsDashboard() {
         {/* ════ RIGHT PANEL ════ */}
         <div
           className="
-            flex flex-col rounded-[1.5rem] bg-[var(--surface-card)] gap-0
-            px-[1.5rem] py-[1.5rem]
-            xl:rounded-[1.75rem] xl:px-[2rem] xl:py-[2rem]
-            2xl:rounded-[2.0625rem] 2xl:px-[2.5rem] 2xl:py-[2.5rem]
+            flex flex-col rounded-[33px] bg-[#FFFFFF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]
+            px-[30px] pt-[30px] pb-[30px] w-full xl:h-[716px]
           "
         >
-          <div className="shrink-0">
-            <QuickActions />
-          </div>
-
-          <div className="flex min-h-0 flex-1 flex-col mt-[2.5rem] xl:mt-[3rem] 2xl:mt-[3.5rem]">
+          <div className="flex min-h-0 flex-1 flex-col mt-0">
             <ScreeningChart />
           </div>
 
-          <div className="shrink-0 mt-[1.25rem] xl:mt-[1.5rem] 2xl:mt-[1.75rem]">
+          <div className="shrink-0 mt-[30px]">
             <Typography
               variant="h3"
-              className="
-                -mt-[0.5rem] font-semibold uppercase leading-[120%] tracking-[1px] text-[#000]
-                text-[0.6875rem] mb-[0.75rem]
-                xl:-mt-[0.625rem] xl:text-[0.75rem] xl:mb-[0.875rem]
-                2xl:-mt-[0.75rem] 2xl:text-[0.875rem] 2xl:mb-[1rem]
-              "
+              className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[17px] tracking-[1px] uppercase text-[#000000] mb-[24px]"
             >
-              Your Activity
+              Recent Activity
             </Typography>
-            <div className="flex flex-col gap-[1.125rem] xl:gap-[1.375rem] 2xl:gap-[1.625rem]">
+            <div className="flex flex-col gap-[18px]">
               {activities.map((item, index) => (
-                <ActivityCard
-                  key={index}
-                  percentage={item.percentage}
-                  title={item.title}
-                  subtitle={item.subtitle}
-                  buttonText={item.buttonText}
-                />
+                <div key={index} className="flex flex-col gap-[18px]">
+                  <ActivityCard
+                    id={item.id}
+                    description={item.description}
+                    timeAgo={item.timeAgo}
+                  />
+                  {index < activities.length - 1 && (
+                    <div className="w-full h-0 border-t border-[rgba(0,0,0,0.06)]" />
+                  )}
+                </div>
               ))}
             </div>
           </div>

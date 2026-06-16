@@ -4,15 +4,14 @@ import { Typography } from '@/components/ui/typography';
 
 export type FarmlandRequestItem = {
   id: string;
-  name: string;
-  role: string;
-  avatar: string;
   farmlandId: string;
   location: string;
-  time: string;
-  area: string;
-  value: string;
-  amount: string;
+  priority: 'High' | 'Medium' | 'Low';
+  agentName: string;
+  createdDate: string;
+  totalAcres: string;
+  valuation: string;
+  assetValue: string;
 };
 
 type Props = {
@@ -21,151 +20,84 @@ type Props = {
 };
 
 export default function FarmlandRequestCard({ item, onClick }: Props) {
+  const isHigh = item.priority === 'High';
+
   return (
     <Card
       className="
         relative flex flex-col justify-between
-        rounded-[2rem] border-0 bg-[var(--surface-card)]
-        p-6 shadow-[var(--shadow-card)]
-        transition-shadow hover:shadow-[var(--shadow-dropdown)]
-        lg:p-7
-        xl:p-8
-        2xl:p-8
-        min-h-[280px]
-        lg:min-h-[300px]
-        xl:min-h-[334px]
+        rounded-[32px] border-0 bg-[#FFFFFF]
+        p-[32px] shadow-sm
+        transition-shadow hover:shadow-md
+        min-h-[338px] w-full
       "
     >
       {/* ── CARD HEADER ── */}
-      <div className="mb-5 flex items-center gap-3 lg:mb-6 xl:mb-8 xl:gap-4">
-        {/* Avatar */}
-        <div
-          className="
-            h-12 w-12 shrink-0
-            lg:h-[3.25rem] lg:w-[3.25rem]
-            xl:h-14 xl:w-14
-          "
-        >
-          <img
-            src={item.avatar}
-            alt={item.name}
-            className="h-full w-full rounded-full border-[1.4px] border-white object-cover"
-          />
-        </div>
-
-        {/* Name + Role */}
-        <div className="flex min-w-0 flex-col gap-[2px]">
+      <div className="flex items-start justify-between mb-6">
+        <div className="flex flex-col gap-1">
           <Typography
             variant="h3"
-            className="
-              truncate font-['Manrope'] text-[1rem] font-bold
-              leading-[1.75rem] tracking-normal text-[#1A1C1D]
-              lg:text-[1.125rem]
-              xl:text-[1.25rem]
-            "
+            className="font-['Plus_Jakarta_Sans'] text-[24px] font-semibold leading-[30px] text-[#1A1C1D]"
           >
-            {item.name}
+            {item.farmlandId}
           </Typography>
           <Typography
             as="span"
             variant="span"
-            className="
-              font-['Inter'] text-[0.75rem] font-medium
-              leading-5 text-[rgba(61,73,73,0.7)]
-              lg:text-[0.8125rem]
-              xl:text-[0.875rem]
-            "
+            className="font-['Inter'] text-[18px] font-medium leading-[22px] text-[#3D4949] opacity-70"
           >
-            {item.role}
+            {item.location}
           </Typography>
+        </div>
+
+        {/* Priority Badge */}
+        <div
+          className={`flex items-center justify-center px-3 py-1 rounded-full border ${isHigh
+              ? 'bg-[#FEF2F2] border-[#FEE2E2] text-[#DC2626]'
+              : 'bg-[#FFFBEB] border-[#FEF3C7] text-[#D97706]'
+            }`}
+        >
+          <span className="font-['Plus_Jakarta_Sans'] text-[12px] leading-[16px]">
+            {item.priority}
+          </span>
         </div>
       </div>
 
-      {/* ── DATA GRID — 2 col × 3 rows ── */}
-      <div
-        className="
-          grid grid-cols-2
-          gap-x-3 gap-y-4
-          lg:gap-x-4 lg:gap-y-[1.375rem]
-          xl:gap-x-4 xl:gap-y-[1.5rem]
-          2xl:gap-y-[1.75rem]
-        "
-      >
-        <InfoField label="Farmland ID" value={item.farmlandId} />
-        <InfoField label="Location"    value={item.location} />
-        <InfoField label="Time"        value={item.time} />
-        <InfoField label="Area"        value={item.area} />
-        <InfoField label="Value"       value={item.value}  accent />
-        <InfoField label="Amount"      value={item.amount} accent />
+      {/* ── DATA GRID ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-6 mb-8">
+        <InfoField label="AGENT NAME" value={item.agentName} valueClassName="text-[20px]" />
+        <InfoField label="CREATED DATE" value={item.createdDate} />
+        <InfoField label="TOTAL ACRES" value={item.totalAcres} />
+        <InfoField label="VALUATION" value={item.valuation} />
+        <InfoField label="ASSET VALUE" value={item.assetValue} />
       </div>
 
-      {/* ── CTA BUTTON — absolute bottom-right matching Figma 25px offsets ── */}
+      {/* ── CTA BUTTON ── */}
       <button
-        aria-label={`View details for ${item.name}`}
         onClick={() => onClick?.(item.id)}
-        className="
-          absolute
-          bottom-[1.3rem] right-[1.3rem]
-          lg:bottom-[1.5rem] lg:right-[1.5rem]
-          xl:bottom-[1.5625rem] xl:right-[1.5625rem]
-          flex h-11 w-11 items-center justify-center
-          lg:h-12 lg:w-12
-          rounded-full
-          border border-[rgba(188,201,201,0.1)]
-          bg-[#F9F9FB]
-          transition-colors
-          hover:border-[var(--brand-500)] hover:bg-[var(--brand-tint)]
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-500)]
-        "
+        className="w-full h-[44px] flex items-center justify-center gap-2 bg-[#2780C4] rounded-[32px] hover:bg-[#1f669d] transition-colors"
       >
-        <ArrowRight
-          className="h-[0.875rem] w-[0.875rem] lg:h-4 lg:w-4 text-[var(--brand-500)]"
-          strokeWidth={2}
-        />
+        <span className="font-['Plus_Jakarta_Sans'] text-[14px] font-bold leading-[20px] text-[#FFFFFF]">
+          Start Verification
+        </span>
+        <div className="w-[16px] h-[16px] flex items-center justify-center">
+          <ArrowRight className="w-[14px] h-[14px] text-[#FFFFFF]" strokeWidth={2.5} />
+        </div>
       </button>
     </Card>
   );
 }
 
 /* ── InfoField helper ── */
-function InfoField({
-  label,
-  value,
-  accent = false,
-}: {
-  label: string;
-  value: string;
-  accent?: boolean;
-}) {
+function InfoField({ label, value, valueClassName }: { label: string; value: string; valueClassName?: string; }) {
   return (
-    <div className="flex flex-col gap-[3px] lg:gap-1">
-      {/* Label — uppercase, tracking, muted */}
-      <Typography
-        as="span"
-        variant="span"
-        className="
-          font-['Inter'] text-[0.625rem] font-medium
-          uppercase leading-4 tracking-[0.0375rem]
-          text-[rgba(61,73,73,0.6)]
-          lg:text-[0.6875rem]
-          xl:text-[0.75rem]
-        "
-      >
+    <div className="flex flex-col gap-[6px]">
+      <span className="font-['Plus_Jakarta_Sans'] text-[12px] font-medium leading-[16px] tracking-[0.6px] uppercase text-[#3D4949] opacity-60 whitespace-nowrap">
         {label}
-      </Typography>
-
-      {/* Value */}
-      <Typography
-        as="span"
-        variant="span"
-        className={[
-          'font-[\'Inter\'] font-semibold leading-6',
-          'text-[0.875rem] lg:text-[0.9375rem] xl:text-[1rem]',
-          accent ? 'text-[var(--brand-500)]' : 'text-[#1A1C1D]',
-        ].join(' ')}
-      >
+      </span>
+      <span className={`font-['Plus_Jakarta_Sans'] font-semibold leading-[24px] text-[#1A1C1D] break-words ${valueClassName || 'text-[16px]'}`}>
         {value}
-      </Typography>
+      </span>
     </div>
   );
 }

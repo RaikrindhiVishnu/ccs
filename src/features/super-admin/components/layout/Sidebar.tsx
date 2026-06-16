@@ -21,7 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems = [] }) => {
 
         {/* Nav items */}
         <div className="flex flex-col gap-3 items-center w-full">
-          {navItems.map(({ icon, label, path }) => {
+          {navItems.map(({ icon, iconImg, label, path }) => {
             const IconComponent = (Icons as any)[icon] || Icons.HelpCircle;
             return (
               <NavLink
@@ -37,10 +37,19 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems = [] }) => {
                   }`
                 }
               >
-                <IconComponent
-                  size={22}
-                  strokeWidth={1.5}
-                />
+                {iconImg ? (
+                  <img
+                    src={iconImg}
+                    alt={label}
+                    className="w-[22px] h-[22px] opacity-80"
+                    style={{ filter: 'brightness(0) invert(0.7)' }}
+                  />
+                ) : (
+                  <IconComponent
+                    size={22}
+                    strokeWidth={1.5}
+                  />
+                )}
               </NavLink>
             );
           })}
@@ -52,6 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ navItems = [] }) => {
         {/* Logout */}
         <div
           data-logout="true"
+          onClick={() => navigate('/super-admin/login')}
           className="w-12 h-12 rounded-xl flex justify-center items-center cursor-pointer shrink-0 transition-all duration-200 text-[#8E9093] hover:bg-[#252729] hover:text-white"
           title="Logout"
         >

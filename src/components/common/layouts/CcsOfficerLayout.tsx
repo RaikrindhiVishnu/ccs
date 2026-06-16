@@ -1,10 +1,9 @@
-import { NavLink, useNavigate, Outlet } from 'react-router-dom';
-import { LayoutGrid, CircleDashed, MapPin, LogOut, type LucideIcon } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import { logOut } from '@/features/auth/store/authSlice';
+import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
+import { LayoutGrid, CircleDashed, MapPin, type LucideIcon } from 'lucide-react';
 import { useRoleLayout } from '@/core/hooks/useRoleLayout';
 
 import logo from '@/assets/glc-logo.svg';
+import profImg from '@/assets/prof.jpg';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard: LayoutGrid,
@@ -19,45 +18,38 @@ const NavIcon = ({ name }: { name: string }) => {
 
 export const CcsOfficerLayout = () => {
   const { navItems } = useRoleLayout();
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const user = useAppSelector((state) => state.auth.user);
+  const location = useLocation();
 
-  const handleLogout = () => {
-    dispatch(logOut());
-    navigate('/login', { replace: true });
-  };
-
-  const fullName = user
-    ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'CCS Officer'
-    : 'CCS Officer';
+  const fullName = 'Ram Varma';
 
   const initials = fullName
-    ? fullName
-        .split(' ')
-        .map((n: string) => n[0])
-        .join('')
-        .slice(0, 2)
-        .toUpperCase()
-    : 'U';
+    .split(' ')
+    .map((n: string) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+  if (location.pathname === '/ccs/profile') {
+    return <Outlet />;
+  }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[var(--surface-card)] rounded-3xl xl:rounded-[2.5rem]">
+    <div className="flex h-screen w-full overflow-hidden bg-[#FFFFFF] rounded-none">
 
       {/* ───────────────── SIDEBAR ───────────────── */}
-      <aside className="hidden lg:flex flex-col shrink-0 w-48 xl:w-52 2xl:w-60 h-full min-h-0 bg-[var(--surface-card)]">
+      <aside className="hidden lg:flex flex-col shrink-0 w-[291px] h-full min-h-0 bg-[#FFFFFF] pt-[30px]">
 
         {/* Logo */}
-        <div className="shrink-0 px-5 pt-6 pb-7 xl:px-6 xl:pt-7 xl:pb-8">
+        <div className="shrink-0 flex justify-start pl-[38px] pt-[3px] pb-[70px]">
           <img
             src={logo}
             alt="Green Land Capital"
-            className="w-full max-w-[7rem] xl:max-w-[8rem] object-contain"
+            className="w-[140px] h-auto object-contain"
           />
         </div>
 
         {/* Nav Links */}
-        <nav className="flex-1 min-h-0 overflow-y-auto px-2 xl:px-3 space-y-1">
+        <nav className="flex-1 min-h-0 overflow-y-auto px-[24px] space-y-[6px]">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
@@ -65,54 +57,50 @@ export const CcsOfficerLayout = () => {
               end={item.path === '/'}
               className={({ isActive }) =>
                 [
-                  'flex items-center gap-2 xl:gap-3',
-                  'rounded-xl xl:rounded-2xl',
-                  'px-3 py-2.5 xl:px-4 xl:py-3',
-                  'text-xs xl:text-sm',
+                  'flex items-center gap-[12px]',
+                  'rounded-[12.7px]',
+                  'px-[16px] py-[12px]',
+                  'font-[\'Plus_Jakarta_Sans\'] text-[15px]',
                   'transition-all duration-200',
                   isActive
-                    ? 'bg-[var(--brand-tint)] text-[var(--brand-500)] font-semibold shadow-sm'
-                    : 'text-[var(--text-muted-strong)] font-medium hover:bg-[var(--brand-tint)] hover:text-[var(--text-heading)]',
+                    ? 'bg-[#F2F2F2] text-[#2780C4] font-semibold'
+                    : 'text-[#7F8397] font-medium hover:bg-[#F9F9F9] hover:text-[#2780C4]',
                 ].join(' ')
               }
             >
-              <span className="shrink-0">
+              <span className="shrink-0 flex items-center justify-center w-[23.46px] h-[23.46px]">
                 {item.iconImg ? (
                   <img
                     src={item.iconImg}
                     alt={item.label}
-                    className="h-[1.125rem] w-[1.125rem] object-contain"
+                    className="h-[18px] w-[18px] object-contain"
                   />
                 ) : (
                   <NavIcon name={item.icon} />
                 )}
               </span>
-              <span className="truncate">{item.label}</span>
+              <span className="whitespace-nowrap">{item.label}</span>
             </NavLink>
           ))}
         </nav>
 
         {/* User Section */}
-        <div className="shrink-0 px-3 py-4 xl:px-4 xl:py-5 flex flex-col items-center gap-2">
-          <div className="flex items-center justify-center h-12 w-12 xl:h-14 xl:w-14 rounded-full bg-[var(--brand-500)] text-white text-sm xl:text-base font-bold">
-            {initials}
-          </div>
-          <p className="text-center leading-tight text-xs xl:text-sm font-semibold text-[var(--text-heading)]">
-            {fullName}
-          </p>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-1.5 text-xs text-[var(--text-muted-strong)] transition-colors hover:text-[var(--status-danger)]"
-          >
-            <LogOut className="h-3 w-3 xl:h-3.5 xl:w-3.5" strokeWidth={1.8} />
-            <span>Sign out</span>
-          </button>
+        <div className="shrink-0 flex flex-col items-center gap-[14.66px] mt-auto pb-[40px]">
+          <Link to="/ccs/profile" className="flex flex-col items-center gap-[14.66px] hover:opacity-80 transition-opacity">
+            <img src={profImg} alt="Profile" className="h-[76.25px] w-[76.25px] rounded-full object-cover border-[1.95px] border-[#FFFFFF]" onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+            <div className="hidden items-center justify-center h-[76.25px] w-[76.25px] rounded-full bg-[var(--brand-500)] text-white text-base font-bold">
+              {initials}
+            </div>
+            <p className="text-center leading-[20px] text-[16.6px] font-semibold text-[#000000]">
+              {fullName}
+            </p>
+          </Link>
         </div>
       </aside>
 
       {/* ───────────────── MAIN ───────────────── */}
-      <section className="flex-1 min-h-0 h-full p-3 lg:p-4 xl:p-5 lg:pl-0">
-        <div className="h-full w-full overflow-y-auto rounded-3xl xl:rounded-[2.5rem] bg-[var(--surface-page)] shadow-[var(--shadow-card)]">
+      <section className="flex-1 min-h-0 h-full py-[30px] pr-[30px] pl-0">
+        <div className="h-full w-full overflow-y-auto rounded-[43px] bg-[#F2F2F2] shadow-sm">
           <Outlet />
         </div>
       </section>

@@ -12,10 +12,7 @@ interface Props {
   subtitle?: string;
 }
 
-const AgentOnboardingVelocity: React.FC<Props> = ({
-  title = "Agent Onboarding Velocity",
-  subtitle = "Weekly overview of Onboarding of Agents",
-}) => {
+const AgentOnboardingVelocity: React.FC<Props> = ({ }) => {
   const [dateRange, setDateRange] = React.useState<{
     from: Date;
     to: Date;
@@ -26,6 +23,7 @@ const AgentOnboardingVelocity: React.FC<Props> = ({
 
     return { from, to };
   });
+
 
   const {
     data: apiData,
@@ -44,7 +42,7 @@ const AgentOnboardingVelocity: React.FC<Props> = ({
     currentDate.setHours(0, 0, 0, 0);
     const endDate = new Date(end);
     endDate.setHours(23, 59, 59, 999);
-    
+
     while (currentDate <= endDate) {
       dates.push(new Date(currentDate));
       currentDate.setDate(currentDate.getDate() + 1);
@@ -59,23 +57,25 @@ const AgentOnboardingVelocity: React.FC<Props> = ({
       return item.onboardingDate.startsWith(dateStr);
     });
 
+    const value = matchingItem ? matchingItem.totalAgents : 0;
+
     return {
       label: date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       }),
-      value: matchingItem ? matchingItem.totalAgents : 0,
+      value: value,
     };
   });
-const maxValue =
-  chartData.length > 0
-    ? Math.max(...chartData.map((item) => item.value))
-    : 0;
+  const maxValue =
+    chartData.length > 0
+      ? Math.max(...chartData.map((item) => item.value))
+      : 0;
 
-const dynamicYMax =
-  maxValue > 10
-    ? Math.ceil(maxValue * 1.2)
-    : 10;
+  const dynamicYMax =
+    maxValue > 10
+      ? Math.ceil(maxValue * 1.2)
+      : 10;
   return (
     <Card
       className={cn(
@@ -91,7 +91,7 @@ const dynamicYMax =
             variant="p"
             className="m-0 font-medium text-[clamp(0.875rem,1.5vw,1.25rem)] leading-[110%] text-[var(--text-primary)]"
           >
-            {title}
+            Agent Onboarding Velocity
           </Typography>
 
           <Typography
@@ -99,14 +99,16 @@ const dynamicYMax =
             variant="p"
             className="m-0 font-normal text-[clamp(0.6875rem,1vw,0.875rem)] leading-[110%] text-[var(--text-primary)] opacity-60"
           >
-            {subtitle}
+            Overview of onboarding stats for Agents
           </Typography>
         </div>
 
-        <div className="shrink-0">
+        <div className="shrink-0 flex items-center gap-2">
+
           <DateRangePicker
             from={dateRange.from}
             to={dateRange.to}
+            maxDays={7}
             onRangeChange={(range) => {
               if (range) setDateRange(range);
             }}
@@ -115,15 +117,15 @@ const dynamicYMax =
       </div>
 
       {/* Content */}
-    <div
-  className="
+      <div
+        className="
     relative
     w-full
     h-full
     min-h-0
     overflow-hidden
   "
->
+      >
         {isLoading ? (
           <div className="flex h-full items-center justify-center text-sm text-[var(--text-muted)]">
             Loading...
@@ -145,7 +147,7 @@ const dynamicYMax =
                 chartData[0],
               )?.label
             }
-           yMax={dynamicYMax}
+            yMax={dynamicYMax}
             tooltipLabel="Agents"
           />
         )}

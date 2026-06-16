@@ -1,33 +1,45 @@
 import { Card } from '@/components/ui/card';
 import { Typography } from '@/components/ui/typography';
 
-type Props = { title: string; value: string; icon: string };
+type Props = { title: string; value: string; icon: string; large?: boolean };
 
-export default function StatsCard({ title, value, icon }: Props) {
+export default function StatsCard({ title, value, icon, large }: Props) {
   return (
     <Card
       className="
-        flex w-full flex-col justify-between rounded-[2rem]
-        border border-[var(--border)] bg-[var(--surface-card)]
-        px-5 pb-5 pt-[0.4375rem] shadow-[var(--shadow-card-sm)]
-        h-[7.5rem] lg:h-[8rem] xl:h-[8.75rem] xl:px-8 xl:pb-8 2xl:h-[9.5rem]
+        flex w-full flex-col justify-between rounded-[32px]
+        border border-[rgba(255,255,255,0.5)] bg-[#FFFFFF]
+        px-[32px] pt-[20px] pb-[32px] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]
+        h-[140px]
       "
     >
-      <div className="flex items-start justify-between gap-2 pt-5">
-        <Typography
-          variant="span"
-          className="text-[0.5625rem] font-bold uppercase leading-[0.9375rem] tracking-[0.0625rem] text-[var(--text-secondary)] xl:text-[0.625rem]"
+      <div className="flex items-start justify-between w-full h-[40px]">
+        <div className="flex flex-col pt-1">
+          <Typography
+            variant="span"
+            className="font-['Plus_Jakarta_Sans'] font-bold text-[10px] leading-[15px] uppercase tracking-[1px] text-[#45474C]"
+          >
+            {title}
+          </Typography>
+        </div>
+        <div 
+          className={`flex shrink-0 items-center justify-center rounded-[32px] bg-[#F3F4F5] ${
+            large ? 'h-[50px] w-[50px] mt-[-4px]' : 'h-[40px] w-[40px]'
+          }`}
         >
-          {title}
-        </Typography>
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--input)] xl:h-10 xl:w-10">
-          <img src={icon} alt={title} className="h-[1.1rem] w-[1.1rem] object-contain xl:h-5 xl:w-5" />
+          <img 
+            src={icon} 
+            alt={title} 
+            className={`object-contain ${large ? 'h-[30px] w-[30px]' : 'h-[24px] w-[24px]'}`} 
+          />
         </div>
       </div>
 
       <Typography
         variant="h2"
-        className="text-[1.25rem] font-extrabold leading-[1.875rem] tracking-[-0.03125rem] text-[var(--text-heading)] lg:text-[1.375rem] xl:text-[1.5rem] xl:leading-[2.25rem] 2xl:text-[1.75rem]"
+        className={`font-['Plus_Jakarta_Sans'] font-extrabold text-[#131600] mt-auto ${
+          large ? 'text-[36px] leading-[45px]' : 'text-[24px] leading-[36px]'
+        }`}
       >
         {value}
       </Typography>

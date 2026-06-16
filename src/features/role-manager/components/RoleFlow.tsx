@@ -163,7 +163,7 @@ export const RoleFlow: React.FC<RoleFlowProps> = ({
     setSelectedFieldOfficerIndex(index);
 
     try {
-      const targetId = officer.originalId || officer.id;
+      // const targetId = officer.originalId || officer.id;
 
       const response = await getAgentDetails({
         area_id: officer.area_id || 0,

@@ -11,13 +11,12 @@ import { UserRole, ROLE_CODES } from "@/features/auth/types";
 
 // ─── Dev Mock Users ───────────────────────────────────────────────────────────
 const MOCK_USERS = [
-  { login_id: "manager@glc.com",      password: "manager@123",      role_id: UserRole.ROLEMNGR, first_name: "Harish",        last_name: "Kumar",    id: 102 },
-  { login_id: "ccs@glc.com",          password: "ccs@123456",       role_id: UserRole.CCS,      first_name: "CCS",           last_name: "Officer",  id: 103 },
-  { login_id: "field.officer@glc.com",password: "field.officer@123",role_id: UserRole.FO,       first_name: "Field",         last_name: "Officer",  id: 104 },
-  { login_id: "io@glc.com",           password: "io@123456",        role_id: UserRole.IO,       first_name: "Intelligence",  last_name: "Officer",  id: 105 },
-  { login_id: "regional@glc.com",     password: "regional@123",     role_id: UserRole.RO,       first_name: "Edward",        last_name: "Janowski", id: 106 },
-  { login_id: "vo1@glc.com",          password: "vo1@123",          role_id: UserRole.VO1,      first_name: "Verification",  last_name: "Officer 1",id: 108 },
-  { login_id: "vo2@glc.com",          password: "vo2@123",          role_id: UserRole.VO2,      first_name: "Verification",  last_name: "Officer 2",id: 107 },
+  { login_id: "manager@glc.com", password: "manager@123", role_id: UserRole.ROLEMNGR, first_name: "Harish", last_name: "Kumar", id: 102 },
+  { login_id: "ccs@glc.com", password: "ccs@123456", role_id: UserRole.CCS, first_name: "CCS", last_name: "Officer", id: 103 },
+  { login_id: "field.officer@glc.com", password: "field.officer@123", role_id: UserRole.FO, first_name: "Field", last_name: "Officer", id: 104 },
+  { login_id: "io@glc.com", password: "io@123456", role_id: UserRole.IO, first_name: "Intelligence", last_name: "Officer", id: 105 },
+  { login_id: "regional@glc.com", password: "regional@123", role_id: UserRole.RO, first_name: "Edward", last_name: "Janowski", id: 106 },
+  { login_id: "vo2@glc.com", password: "vo2@123", role_id: UserRole.VO2, first_name: "Verification", last_name: "Officer 2", id: 107 },
 ];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -139,7 +138,6 @@ function PrimaryButton({
 function CardLogo({ className = "" }: { className?: string }) {
   return (
     <div className={`flex flex-col mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 shrink-0 ${className}`}>
-
       <img
         src={GlcLogo}
         alt="Green Land Capital"
@@ -190,6 +188,7 @@ function LoginScreen({
   onForgotPassword: () => void;
 }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [login] = useLoginMutation();
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
@@ -199,7 +198,7 @@ function LoginScreen({
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!loginId.trim()) e.loginId = "Login ID is required";
+    if (!loginId.trim()) e.loginId = "Email address required";
     else if (!/\S+@\S+\.\S+/.test(loginId)) e.loginId = "Enter a valid email";
     if (!password) e.password = "Password is required";
     else if (password.length < 6) e.password = "Password must be at least 6 characters";
@@ -286,7 +285,7 @@ function LoginScreen({
           Role Manager Login
         </h1>
         <p className="font-sans font-normal text-[var(--text-secondary)] text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] lg:leading-[1.81vw] leading-normal m-0">
-          Secure access for authorised role managers.
+          Secure access for authorized Role Managers.
           <br />
           Please authenticate to continue.
         </p>
@@ -298,8 +297,8 @@ function LoginScreen({
       >
         <InputField
           id="login-id"
-          label="Login ID"
-          placeholder="Enter your assigned ID"
+          label="Email Address"
+          placeholder="Enter your registered Email address"
           type="text"
           value={loginId}
           onChange={(e) => setLoginId(e.target.value)}
@@ -350,8 +349,18 @@ function LoginScreen({
 
         <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:mt-[1.67vw]">
           <PrimaryButton type="submit" disabled={loading} className=" lg:rounded-full lg:text-[1.11vw]">
-            {loading ? "Signing in…" : "LOGIN"}
+            {loading ? "Signing In..." : "Sign In"}
           </PrimaryButton>
+        </div>
+
+        <div className="mt-4 flex justify-center">
+          <button
+            type="button"
+            onClick={() => navigate('/ccs/login')}
+            className="border-none bg-transparent cursor-pointer font-sans text-[var(--brand-500)] hover:underline font-semibold text-sm"
+          >
+            Go to CCS Login
+          </button>
         </div>
       </form>
 

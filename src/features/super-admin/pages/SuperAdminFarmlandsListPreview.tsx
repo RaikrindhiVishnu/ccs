@@ -9,10 +9,10 @@ import VisitorSalesCard from "@/features/super-admin/components/VisitorSalesCard
 import FarmlandStatsCard from "@/features/super-admin/components/FarmlandStatsCard";
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 
-const SuperAdminFarmlandsListPreview: React.FC = () => {
-  const navigate = useNavigate();
-  const data = mockDashboardData;
-  const previewCards = data.farmlandsList?.slice(0, 4) || [];
+const SuperAdminFarmlandsListPreview: React.FC=() => {
+  const navigate=useNavigate();
+  const data=mockDashboardData;
+  const previewCards=data.farmlandsList?.slice(0, 4) || [];
 
   return (
     <div className="box-border flex min-h-full flex-col gap-[clamp(12px,0.5vw,16px)] p-[clamp(6px,0.83vw,12px)] py-[clamp(16px,1.5vw,32px)]">
@@ -83,11 +83,15 @@ const SuperAdminFarmlandsListPreview: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {previewCards.map((farmland) => (
             <SuperAdminFarmlandsListCard
-              key={farmland.id}
-              data={farmland}
-              onViewDetails={(id) => console.log("View Details:", id)}
-              onEditTag={(id) => console.log("Edit Tag:", id)}
-            />
+  key={farmland.id}
+  data={farmland}
+  onViewDetails={(id) =>
+    navigate(`/super-admin/farmlands-list/${id}`)
+  }
+  onEditTag={(id) =>
+    navigate(`/super-admin/edit-farmland-tag/${id}`)
+  }
+/>
           ))}
         </div>
       </div>

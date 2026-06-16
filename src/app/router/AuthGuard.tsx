@@ -1,12 +1,13 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { selectIsAuthenticated } from '../../features/auth/store/authSlice';
+import { selectIsAuthenticated, selectCurrentUser } from '../../features/auth/store/authSlice';
 
 const AuthGuard = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const user = useSelector(selectCurrentUser);
   const location = useLocation();
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !user) {
     let redirectPath = "/login";
     if (location.pathname.startsWith("/verification-officer-1")) {
       redirectPath = "/verification-officer-1/login";

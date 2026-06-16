@@ -213,8 +213,8 @@ export default function ProcessingFeeScreen() {
                                 src={item.image}
                                 alt={item.label}
                                 className="
-                                    w-[0.95rem]
-                                    h-[0.95rem]
+                                    w-[13px]
+                                    h-[13px]
                                     object-contain
                                 "
                               />
@@ -372,21 +372,21 @@ export default function ProcessingFeeScreen() {
                     <div
                       className="
                         flex items-center justify-center
-                        w-[4rem]
-                        h-[4rem]
+                        w-[4.5rem]
+                        h-[4.5rem]
                         rounded-full
-                        border-[0.2rem]
+                        border-[0.3rem]
                         border-white
-                        bg-[var(--surface-sidebar)]
-                        shadow-[0_0_2rem_rgba(39,128,196,0.4)]
+                        bg-[#0B1421]
+                        shadow-[0_0_0_0.4rem_#B8D4E9,0_0_2rem_rgba(39,128,196,0.3)]
                       "
                     >
                       <img
                         src={walletImage}
-                        alt="Wallet"
+                        alt="Processing Fee"
                         className="
-                            w-[1.7rem]
-                            h-[1.7rem]
+                            w-[2rem]
+                            h-[2rem]
                             object-contain
                         "
                         />

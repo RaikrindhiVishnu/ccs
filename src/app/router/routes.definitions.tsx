@@ -5,17 +5,29 @@ import {DashboardRedirect} from './DashboardRedirect';
 import {VerificationOfficer2Layout} from '@/components/common/layouts/VerificationOfficer2Layout';
 import CreateRegionsAndAreas from '@/features/role-manager/pages/Createregionsandareas';
 import CreateRoles from '@/features/role-manager/pages/Createroles';
+import CcsProfile from '@/features/ccs/pages/CcsProfile';
 import {
     CcsDashboard,
     RoleManagerDetails,
     AgentApprovals,
     Agentdetailpage,
     FarmlandRequest,
+    FarmlandRequestMap,
+    FarmlandRequestAnalysis,
+    FarmlandRequestGateway,
+    FarmlandRequestGatewayApproved,
+    FarmlandRequestPayment,
     FarmlandList,
+    FarmlandListMap,
     RoleManagerDashboard,
     UserDirectory,
     DesignSystem,
     Login,
+    CcsLogin,
+    UpdateDefaultPassword,
+    ChangePassword,
+    ForgotPassword,
+    PasswordSent,
     Home,
     AgentCreate,
     AgentEdit,
@@ -31,6 +43,12 @@ import {
     Assignedfarmland,
     AssignedFarmlandList,
     Farmlanddocument,
+    IORequestedInfo,
+    IORequestedInfoList,
+    IOFarmlandsList,
+    IOFarmlandsListFull,
+    IOFarmlandsListDetailView,
+    IOProfile,
     CreateFieldOfficer,
     CreateintellegenceOfficer,
     CreateregionalOfficer,
@@ -59,15 +77,18 @@ import {
     VerificationOfficerCompletedFarmlands,
     VerificationOfficerCompletedFarmlandDetails,
     VerificationOfficerAssignedFarmlandsOwnerDetails,
+    VerificationOfficerAssignedFarmlandsLandBoundaries,
+    VerificationOfficerAssignedFarmlandsValuation,
+    VerificationOfficerAssignedFarmlandsAgriculture,
 
-  // Verification Officer 1 (VO1)
-  VerificationOfficer1Dashboard,
-  VerificationOfficer1AssignedFarmlands,
-  VerificationOfficer1InProgressFarmlands,
-  VerificationOfficer1CompletedFarmlands,
-  VerificationOfficer1CompletedFarmlandDetails,
-  VerificationOfficer1AssignedFarmlandsOwnerDetails,
-  VerificationOfficer1Layout,
+    // Verification Officer 1 imports
+    VerificationOfficer1Dashboard,
+    VerificationOfficer1AssignedFarmlands,
+    VerificationOfficer1InProgressFarmlands,
+    VerificationOfficer1CompletedFarmlands,
+    VerificationOfficer1CompletedFarmlandDetails,
+    VerificationOfficer1AssignedFarmlandsOwnerDetails,
+    VerificationOfficer1Layout,
   VerificationOfficer1Profile,
   VerificationOfficer1Login,
 
@@ -97,8 +118,21 @@ import {
     SuperAdminFarmlandsListPreview,
     SuperAdminFarmlandsListFull,
     SuperAdminUsersListFull,
+    SuperAdminUsersListAll,
     SuperAdminAssignedFarmlandDetails,
-    SuperAdminCustomerInformation
+    SuperAdminCustomerInformation,
+    SuperAdminEditFarmlandTag,
+    SuperAdminUserProfile,
+    SuperAdminTopPerformers,
+    SuperAdminFarmlandDetails,
+    SuperAdminAgentProfile,
+    SuperAdminProfile,
+    SuperAdminPoolBuying,
+    SuperAdminPoolBuyingAll,
+    SuperAdminPoolCreate,
+    SuperAdminPoolCreated,
+    SuperAdminPoolDetails,
+    SuperAdminPoolInvestorDetails
 } from './routes.config';
 
 
@@ -112,6 +146,21 @@ export const guestRoutes: RouteObject[] = [
     }, {
         path: '/verification-officer-1/login',
         element: <VerificationOfficer1Login />
+    }, {
+        path: '/ccs/login',
+        element: <CcsLogin />
+    }, {
+        path: '/ccs/update-default-password',
+        element: <UpdateDefaultPassword />
+    }, {
+        path: '/ccs/change-password',
+        element: <ChangePassword />
+    }, {
+        path: '/ccs/forgot-password',
+        element: <ForgotPassword />
+    }, {
+        path: '/ccs/password-sent',
+        element: <PasswordSent />
     },
 ];
 
@@ -128,6 +177,10 @@ export const authRoutes: RouteObject[] = [
                 element: <CcsDashboard />
             },
             {
+                path: '/ccs/profile',
+                element: <CcsProfile />
+            },
+            {
                 path: '/home',
                 element: <Home />
             },
@@ -141,8 +194,26 @@ export const authRoutes: RouteObject[] = [
                 path: '/farmland-request',
                 element: <FarmlandRequest />
             }, {
+                path: '/farmland-request/map/:id',
+                element: <FarmlandRequestMap />
+            }, {
+                path: '/farmland-request/analysis/:id',
+                element: <FarmlandRequestAnalysis />
+            }, {
+                path: '/farmland-request/gateway/:id',
+                element: <FarmlandRequestGateway />
+            }, {
+                path: '/farmland-request/gateway-approved/:id',
+                element: <FarmlandRequestGatewayApproved />
+            }, {
+                path: '/farmland-request/payment/:id',
+                element: <FarmlandRequestPayment />
+            }, {
                 path: '/farmland-list',
                 element: <FarmlandList />
+            }, {
+                path: '/farmland-list/map/:id',
+                element: <FarmlandListMap />
             }, {
                 path: '/send-payment-link',
                 element: <SendPaymentLink />
@@ -183,8 +254,17 @@ export const authRoutes: RouteObject[] = [
                 path: '/io/assigned-farmland/list',
                 element: <AssignedFarmlandList />
             }, {
-                path: '/io/farmland-document/:id',
-                element: <Farmlanddocument />
+                path: '/io/requested-info',
+                element: <IORequestedInfo />
+            }, {
+                path: '/io/requested-info/list',
+                element: <IORequestedInfoList />
+            }, {
+                path: '/io/farmlands-list',
+                element: <IOFarmlandsList />
+            }, {
+                path: '/io/farmlands-list/list',
+                element: <IOFarmlandsListFull />
             }, {
                 path: '/role-manager/agent-create',
                 element: <AgentCreate />
@@ -251,186 +331,252 @@ export const authRoutes: RouteObject[] = [
                 path: '/super-admin/users-list',
                 element: <SuperAdminUsersListFull />
             }, {
+                path: '/super-admin/users-list/all',
+                element: <SuperAdminUsersListAll />
+            }, {
+                path: '/super-admin/edit-farmland-tag/:id',
+                element: <SuperAdminEditFarmlandTag />
+            }, {
                 path: '/super-admin/assigned-farmlands/:id',
                 element: <SuperAdminAssignedFarmlandDetails />
             }, {
                 path: '/super-admin/assigned-farmlands/:id/customer-information',
                 element: <SuperAdminCustomerInformation />
+            }, {
+                path: '/super-admin/user-profile/:id',
+                element: <SuperAdminUserProfile />
+            }, {
+                path: '/super-admin/top-performers',
+                element: <SuperAdminTopPerformers />
+            }, {
+                path: '/super-admin/farmlands-list/:id',
+                element: <SuperAdminFarmlandDetails />
+            }, {
+                path: '/super-admin/agent-profile/:id',
+                element: <SuperAdminAgentProfile />
+            }, {
+                path: '/super-admin/profile',
+                element: <SuperAdminProfile />
+            }, {
+                path: '/super-admin/pool-buying',
+                element: <SuperAdminPoolBuying />
+            }, {
+                path: '/super-admin/pool-buying/create',
+                element: <SuperAdminPoolCreate />
+            }, {
+                path: '/super-admin/pool-buying/created',
+                element: <SuperAdminPoolCreated />
+            }, {
+                path: '/super-admin/pool-buying/all',
+                element: <SuperAdminPoolBuyingAll />
+            }, {
+                path: '/super-admin/pool-buying/:id',
+                element: <SuperAdminPoolDetails />
+            }, {
+                path: '/super-admin/pool-buying/:id/investor/:investorId',
+                element: <SuperAdminPoolInvestorDetails />
             },
         ]
 
-  },
-  {
-    element: <RegionalOfficerLayout />,
-    children: [
-      { path: '/regional-officer/dashboard',          element: <RegionalOfficerDashboard /> },
-      { path: '/regional-officer/assigned-farmlands', element: <AssignedFarmlands /> },
-      { path: '/regional-officer/requested-info',     element: <RequestedInfo /> },
-      { path: '/regional-officer/drafts',             element: <Drafts /> },
-      { path: '/regional-officer/farmlands-list',     element: <FarmlandsList /> },
-    ],
-  },
-  {
-    path: "verification-officer-2",
-    element: <VerificationOfficer2Layout />,
-    children: [
-      {
-        index: true,
-        element: <VerificationOfficerDashboard />,
-      },
-      {
-        path: "dashboard",
-        element: <VerificationOfficerDashboard />,
-      },
-      {
-        path: "assigned-farmlands",
-        element: <VerificationOfficerAssignedFarmlands />,
-      },
-      {
-        path: "in-progress-farmlands",
-        element: <VerificationOfficerInProgressFarmlands />,
-      },
-      {
-        path: "completed-farmland",
-        element: <VerificationOfficerCompletedFarmlands />,
-      },
-    ],
-  },
-  {
-    path: '/verification-officer-2/completed-farmland/:id',
-    element: <VerificationOfficerCompletedFarmlandDetails />,
-  },
-  {
-    path: '/verification-officer-2/assigned-farmlands-owner-details/:id',
-    element: <VerificationOfficerAssignedFarmlandsOwnerDetails />,
-  },
-  {
-    path: "verification-officer-1",
-    element: <VerificationOfficer1Layout />,
-    children: [
-      {
-        index: true,
-        element: <VerificationOfficer1Dashboard />,
-      },
-      {
-        path: "dashboard",
-        element: <VerificationOfficer1Dashboard />,
-      },
-      {
-        path: "assigned-farmlands",
-        element: <VerificationOfficer1AssignedFarmlands />,
-      },
-      {
-        path: "in-progress-farmlands",
-        element: <VerificationOfficer1InProgressFarmlands />,
-      },
-      {
-        path: "completed-farmland",
-        element: <VerificationOfficer1CompletedFarmlands />,
-      },
-      {
+    },
+    {
+        path: '/io/farmland-document/:id',
+        element: <Farmlanddocument />
+    },
+    {
+        path: '/io/farmlands-list/detail/:id',
+        element: <IOFarmlandsListDetailView />
+    },
+    {
+        path: '/io/requested-info-reason/:id',
+        element: <RequestedInfoReason />
+    },
+    {
+        path: '/io/profile',
+        element: <IOProfile />
+    },
+    {
+        element: <RegionalOfficerLayout />,
+        children: [
+            { path: '/regional-officer/dashboard',          element: <RegionalOfficerDashboard /> },
+            { path: '/regional-officer/assigned-farmlands', element: <AssignedFarmlands /> },
+            { path: '/regional-officer/requested-info',     element: <RequestedInfo /> },
+            { path: '/regional-officer/drafts',             element: <Drafts /> },
+            { path: '/regional-officer/farmlands-list',     element: <FarmlandsList /> },
+        ],
+    },
+    {
+        path: "verification-officer-2",
+        element: <VerificationOfficer2Layout />,
+        children: [
+            {
+                index: true,
+                element: <VerificationOfficerDashboard />,
+            },
+            {
+                path: "dashboard",
+                element: <VerificationOfficerDashboard />,
+            },
+            {
+                path: "assigned-farmlands",
+                element: <VerificationOfficerAssignedFarmlands />,
+            },
+            {
+                path: "in-progress-farmlands",
+                element: <VerificationOfficerInProgressFarmlands />,
+            },
+            {
+                path: "completed-farmland",
+                element: <VerificationOfficerCompletedFarmlands />,
+            },
+        ],
+    },
+    {
+        path: '/verification-officer-2/completed-farmland/:id',
+        element: <VerificationOfficerCompletedFarmlandDetails />,
+    },
+    {
+        path: '/verification-officer-2/assigned-farmlands-owner-details/:id',
+        element: <VerificationOfficerAssignedFarmlandsOwnerDetails />,
+    },
+    {
+        path: '/verification-officer-2/assigned-farmlands-land-boundaries/:id',
+        element: <VerificationOfficerAssignedFarmlandsLandBoundaries />,
+    },
+    {
+        path: '/verification-officer-2/assigned-farmlands-valuation/:id',
+        element: <VerificationOfficerAssignedFarmlandsValuation />,
+    },
+    {
+        path: '/verification-officer-2/assigned-farmlands-agriculture/:id',
+        element: <VerificationOfficerAssignedFarmlandsAgriculture />,
+    },
+    {
+        path: "verification-officer-1",
+        element: <VerificationOfficer1Layout />,
+        children: [
+            {
+                index: true,
+                element: <VerificationOfficer1Dashboard />,
+            },
+            {
+                path: "dashboard",
+                element: <VerificationOfficer1Dashboard />,
+            },
+            {
+                path: "assigned-farmlands",
+                element: <VerificationOfficer1AssignedFarmlands />,
+            },
+            {
+                path: "in-progress-farmlands",
+                element: <VerificationOfficer1InProgressFarmlands />,
+            },
+            {
+                path: "completed-farmland",
+                element: <VerificationOfficer1CompletedFarmlands />,
+            },
+          {
         path: "profile",
         element: <VerificationOfficer1Profile />,
       },
     ],
-  },
-  {
-    path: '/verification-officer-1/completed-farmland/:id',
-    element: <VerificationOfficer1CompletedFarmlandDetails />,
-  },
-  {
-    path: '/verification-officer-1/assigned-farmlands-owner-details/:id',
-    element: <VerificationOfficer1AssignedFarmlandsOwnerDetails />,
-  },
-  {
-    path: '/regional-officer/requested-info-details/:id',
-    element: <RequestedInfoDetails />,
-  },
-  {
-    path: '/regional-officer/requested-info-reason/:id',
-    element: <RequestedInfoReason />,
-  },
-  {
-    path: '/regional-officer/farmlands-list-details/:id',
-    element: <FarmlandDetails />,
-  },
-  {
-    path: '/regional-officer/assigned-farmlands-details/:id',
-    element: <FarmlandDetails />,
-  },
-  {
-    path: '/regional-officer/assigned-farmlands-upload/:id',
-    element: <LandDocument />,
-  },
-  {
-    path: '/regional-officer/assigned-farmlands-family-tree/:id',
-    element: <FamilyTree />,
-  },
-  {
-    path: '/regional-officer/assigned-farmlands-land-details/:id',
-    element: <CustomerLandDetails />,
-  },
-  {
-    path: '/regional-officer/assigned-farmlands-valuation/:id',
-    element: <LandDetails />,
-  },
-  {
-    path: '/regional-officer/submit-form/:id',
-    element: <SubmitForm />,
-  },
-  {
-    path: '/regional-officer/assigned-farmlands-land-boundaries/:id',
-    element: <LandBoundaries />,
-  },
-
-  {
-    path: "/role-manager/region-creation",
-    element: <RegionSelection />,
-  },
-  {
-    path: "/role-manager/assign-officers",
-    element: <AssignOfficersPage />,
-  },
-  {
-    path: "/role-manager/assign-field-officer",
-    element: <AssignFieldOfficerPage />,
-  },
-  {
-    path: "/role-manager/region-edit/:regionId",
-    element: <RegionAreaEdit />,
-  },
-  {
-    // Full-screen map for viewing/editing regions — no sidebar layout
-    path: "/role-manager/region-area-edit",
-    element: <RegionAreaEdit />,
-  },
-  {
-    // Full-screen details view for a specific region
-    path: "/role-manager/region-details/:regionId",
-    element: <RegionDetailsView />,
-  },
-  {
-    // Full-screen details view for a specific area
-    path: "/role-manager/area-details/:areaId",
-    element: <AreaDetailsView />,
-  },
-  {
-    element: <FieldOfficerLayout />,
-    children: [
-      { path: '/field-officer/dashboard',       element: <FieldOfficerDashboard /> },
-      { path: '/field-officer/drafts',          element: <DraftsPage /> },
-      { path: '/field-officer/request-info',    element: <RequestInfoPage /> },
-      { path: '/field-officer/alerts',          element: <FarmlandAlertsPage /> },
-      { path: '/field-officer/alerts/:id',      element: <FarmlandAlertDetailsPage /> },
-      { path: '/field-officer/top-performer/:id', element: <TopPerformerDetailsPage /> },
-      { path: '/field-officer/agent-details/:id', element: <AgentDetailsPage /> },
-      { path: '/field-officer/assigned-farmland/:id', element: <AssignedFarmlandPage /> },
-      { path: '/field-officer/farmland-workflow/:id', element: <FarmlandWorkflowPage /> },
-      { path: '/field-officer/draft-details/:id', element: <DraftsDetailPage /> },
-      { path: '/field-officer/request-info/:id', element: <RequestInfoDetailsPage /> },
-      { path: '/field-officer/land-documents/:id', element: <LandDocumentsPage /> },
-    ],
-  },
+    },
+    {
+        path: '/verification-officer-1/completed-farmland/:id',
+        element: <VerificationOfficer1CompletedFarmlandDetails />,
+    },
+    {
+        path: '/verification-officer-1/assigned-farmlands-owner-details/:id',
+        element: <VerificationOfficer1AssignedFarmlandsOwnerDetails />,
+    },
+    {
+        path: '/regional-officer/requested-info-details/:id',
+        element: <RequestedInfoDetails />,
+    },
+    {
+        path: '/regional-officer/requested-info-reason/:id',
+        element: <RequestedInfoReason />,
+    },
+    {
+        path: '/regional-officer/farmlands-list-details/:id',
+        element: <FarmlandDetails />,
+    },
+    {
+        path: '/regional-officer/assigned-farmlands-details/:id',
+        element: <FarmlandDetails />,
+    },
+    {
+        path: '/regional-officer/assigned-farmlands-upload/:id',
+        element: <LandDocument />,
+    },
+    {
+        path: '/regional-officer/assigned-farmlands-family-tree/:id',
+        element: <FamilyTree />,
+    },
+    {
+        path: '/regional-officer/assigned-farmlands-land-details/:id',
+        element: <CustomerLandDetails />,
+    },
+    {
+        path: '/regional-officer/assigned-farmlands-valuation/:id',
+        element: <LandDetails />,
+    },
+    {
+        path: '/regional-officer/submit-form/:id',
+        element: <SubmitForm />,
+    },
+    {
+        path: '/regional-officer/assigned-farmlands-land-boundaries/:id',
+        element: <LandBoundaries />,
+    },
+    {
+        path: "/role-manager/region-creation",
+        element: <RegionSelection />,
+    },
+    {
+        path: "/role-manager/assign-officers",
+        element: <AssignOfficersPage />,
+    },
+    {
+        path: "/role-manager/assign-field-officer",
+        element: <AssignFieldOfficerPage />,
+    },
+    {
+        path: "/role-manager/region-edit/:regionId",
+        element: <RegionAreaEdit />,
+    },
+    {
+        // Full-screen map for viewing/editing regions — no sidebar layout
+        path: "/role-manager/region-area-edit",
+        element: <RegionAreaEdit />,
+    },
+    {
+        // Full-screen details view for a specific region
+        path: "/role-manager/region-details/:regionId",
+        element: <RegionDetailsView />,
+    },
+    {
+        // Full-screen details view for a specific area
+        path: "/role-manager/area-details/:areaId",
+        element: <AreaDetailsView />,
+    },
+    {
+        element: <FieldOfficerLayout />,
+        children: [
+            { path: '/field-officer/dashboard',       element: <FieldOfficerDashboard /> },
+            { path: '/field-officer/drafts',          element: <DraftsPage /> },
+            { path: '/field-officer/request-info',    element: <RequestInfoPage /> },
+            { path: '/field-officer/alerts',          element: <FarmlandAlertsPage /> },
+            { path: '/field-officer/alerts/:id',      element: <FarmlandAlertDetailsPage /> },
+            { path: '/field-officer/top-performer/:id', element: <TopPerformerDetailsPage /> },
+            { path: '/field-officer/agent-details/:id', element: <AgentDetailsPage /> },
+            { path: '/field-officer/assigned-farmland/:id', element: <AssignedFarmlandPage /> },
+            { path: '/field-officer/farmland-workflow/:id', element: <FarmlandWorkflowPage /> },
+            { path: '/field-officer/draft-details/:id', element: <DraftsDetailPage /> },
+            { path: '/field-officer/request-info/:id', element: <RequestInfoDetailsPage /> },
+            { path: '/field-officer/land-documents/:id', element: <LandDocumentsPage /> },
+        ],
+    },
 ];
 
 export const publicRoutes: RouteObject[] = [

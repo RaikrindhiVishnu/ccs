@@ -11,7 +11,7 @@ import { UserRole, ROLE_CODES } from "@/features/auth/types";
 
 // ─── Dev Mock Users ───────────────────────────────────────────────────────────
 const MOCK_USERS = [
-  { login_id: "superadmin@glc.com", password: "superadmin@123", role_id: UserRole.SUPERADMIN, first_name: "Super", last_name: "Admin", id: 999 },
+  { login_id: "superadmin@glc.com", password: "superadmin@123", role_id: UserRole.SADMIN, first_name: "Super", last_name: "Admin", id: 999 },
 ];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -32,7 +32,7 @@ interface InputFieldProps {
 function InputField({
   label,
   placeholder,
-  type = "text",
+  type="text",
   value,
   onChange,
   icon: Icon,
@@ -40,7 +40,7 @@ function InputField({
   labelRight,
   error,
   id,
-  className = "",
+  className="",
 }: InputFieldProps) {
   return (
     <div className={`flex flex-col w-full gap-[clamp(0.375rem,0.4vw,0.5rem)] ${className}`}>
@@ -103,9 +103,9 @@ function PrimaryButton({
   children,
   onClick,
   disabled,
-  type = "button",
-  variant = "primary",
-  className = "",
+  type="button",
+  variant="primary",
+  className="",
 }: {
   children: React.ReactNode;
   onClick?: () => void;
@@ -114,8 +114,7 @@ function PrimaryButton({
   variant?: "primary" | "secondary";
   className?: string;
 }) {
-  const bgClass =
-    variant === "primary"
+  const bgClass=variant === "primary"
       ? "bg-[var(--brand-500)] hover:bg-[var(--brand-600)] shadow-[0_4px_20px_rgba(39,128,196,0.18)]"
       : "bg-[#3B75C3] hover:bg-[#2F5EA0] shadow-[0_12px_48px_rgba(0,0,0,0.06)]";
   return (
@@ -130,7 +129,7 @@ function PrimaryButton({
   );
 }
 
-function CardLogo({ className = "" }: { className?: string }) {
+function CardLogo({ className="" }: { className?: string }) {
   return (
     <div className={`flex flex-col mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 shrink-0 ${className}`}>
 
@@ -142,7 +141,7 @@ function CardLogo({ className = "" }: { className?: string }) {
     </div>
   );
 }
-function SecureFooter({ className = "" }: { className?: string }) {
+function SecureFooter({ className="" }: { className?: string }) {
   return (
     <div className={`flex items-center justify-center gap-4 -pt-[clamp(0.5rem,1.5vh,1rem)] ${className}`}>
 
@@ -159,7 +158,7 @@ function SecureFooter({ className = "" }: { className?: string }) {
 
 function LoginCard({
   children,
-  className = "",
+  className="",
 }: {
   children: React.ReactNode;
   className?: string;
@@ -183,7 +182,7 @@ function LoginScreen({
   onSuccess: (d: { is_first_login: number; passwordUsed: string }) => void;
   onForgotPassword: () => void;
 }) {
-  const dispatch = useDispatch();
+  const dispatch=useDispatch();
   const [login] = useLoginMutation();
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
@@ -191,26 +190,26 @@ function LoginScreen({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
-  const validate = () => {
+  const validate=() => {
     const e: Record<string, string> = {};
-    if (!loginId.trim()) e.loginId = "Login ID is required";
-    else if (!/\S+@\S+\.\S+/.test(loginId)) e.loginId = "Enter a valid email";
-    if (!password) e.password = "Password is required";
-    else if (password.length < 6) e.password = "Password must be at least 6 characters";
+    if (!loginId.trim()) e.loginId="Login ID is required";
+    else if (!/\S+@\S+\.\S+/.test(loginId)) e.loginId="Enter a valid email";
+    if (!password) e.password="Password is required";
+    else if (password.length < 6) e.password="Password must be at least 6 characters";
     return e;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit=async (e: React.FormEvent) => {
     e.preventDefault();
-    const errs = validate();
+    const errs=validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setErrors({});
 
-    const mockUser = MOCK_USERS.find(
+    const mockUser=MOCK_USERS.find(
       (u) => u.login_id === loginId && u.password === password
     );
     if (mockUser) {
-      const roleCode = ROLE_CODES[mockUser.role_id] || "SUPERADMIN";
+      const roleCode = ROLE_CODES[mockUser.role_id as UserRole] || "SUPERADMIN";
       dispatch(
         setCredentials({
           user: {
@@ -232,7 +231,7 @@ function LoginScreen({
 
     try {
       setLoading(true);
-      const response = await login({ login_id: loginId, password }).unwrap();
+      const response=await login({ login_id: loginId, password }).unwrap();
       dispatch(
         setCredentials({
           user: {
@@ -256,7 +255,7 @@ function LoginScreen({
     }
   };
 
-  const EyeBtn = () => (
+  const EyeBtn=() => (
     <button
       type="button"
       onClick={() => setShowPw((v) => !v)}
@@ -356,23 +355,22 @@ function LoginScreen({
 
 // ─── SCREEN 2 · Forgot Password ───────────────────────────────────────────────
 function ForgotPasswordScreen({
-  onBack,
   onSuccess,
 }: {
-  onBack: () => void;
+  
   onSuccess: (maskedEmail: string) => void;
 }) {
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
 
-  const maskEmail = (raw: string) => {
+  const maskEmail=(raw: string) => {
     const [local, domain] = raw.split("@");
-    const visible = local.slice(0, Math.min(3, local.length));
+    const visible=local.slice(0, Math.min(3, local.length));
     return `${visible}${"X".repeat(Math.max(0, local.length - visible.length))}@${domain}`;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit=async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) { setError("Email is required"); return; }
     if (!/\S+@\S+\.\S+/.test(email)) { setError("Enter a valid email address"); return; }
@@ -560,18 +558,18 @@ function ChangePasswordScreen({ onDone, oldPassword }: { onDone: () => void; old
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
 
-  const validate = () => {
+  const validate=() => {
     const e: Record<string, string> = {};
-    if (!newPw) e.newPw = "New password is required";
-    else if (newPw.length < 8) e.newPw = "Password must be at least 8 characters";
-    if (!confirmPw) e.confirmPw = "Please confirm your password";
-    else if (newPw !== confirmPw) e.confirmPw = "Passwords do not match";
+    if (!newPw) e.newPw="New password is required";
+    else if (newPw.length < 8) e.newPw="Password must be at least 8 characters";
+    if (!confirmPw) e.confirmPw="Please confirm your password";
+    else if (newPw !== confirmPw) e.confirmPw="Passwords do not match";
     return e;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit=async (e: React.FormEvent) => {
     e.preventDefault();
-    const errs = validate();
+    const errs=validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setErrors({});
     try {
@@ -583,7 +581,7 @@ function ChangePasswordScreen({ onDone, oldPassword }: { onDone: () => void; old
     }
   };
 
-  const EyeToggle = ({ show, toggle }: { show: boolean; toggle: () => void }) => (
+  const EyeToggle=({ show, toggle }: { show: boolean; toggle: () => void }) => (
     <button
       type="button"
       onClick={toggle}
@@ -688,13 +686,13 @@ function Background() {
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
 export default function SuperAdminLogin() {
-  const navigate = useNavigate();
-  type Screen = "login" | "update-default" | "change-password" | "forgot-password" | "forgot-success";
+  const navigate=useNavigate();
+  type Screen="login" | "update-default" | "change-password" | "forgot-password" | "forgot-success";
   const [screen, setScreen] = useState<Screen>("login");
   const [oldPassword, setOldPassword] = useState("");
   const [maskedEmail, setMaskedEmail] = useState("");
 
-  const handleLoginSuccess = ({
+  const handleLoginSuccess=({
     is_first_login,
     passwordUsed,
   }: {
@@ -722,7 +720,6 @@ export default function SuperAdminLogin() {
 
       {screen === "forgot-password" && (
         <ForgotPasswordScreen
-          onBack={() => setScreen("login")}
           onSuccess={(masked) => { setMaskedEmail(masked); setScreen("forgot-success"); }}
         />
       )}

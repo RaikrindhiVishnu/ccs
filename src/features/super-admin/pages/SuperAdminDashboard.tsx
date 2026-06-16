@@ -9,8 +9,8 @@ import SubscriberGrowthChart from "@/features/super-admin/components/SubscriberG
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 
 // ─── Super Admin Dashboard Page ─────────────────────────────────────────────
-const SuperAdminDashboard: React.FC = () => {
-  const data = mockDashboardData;
+const SuperAdminDashboard: React.FC=() => {
+  const data=mockDashboardData;
 
   return (
     <div className="box-border flex min-h-full flex-col gap-[clamp(12px,0.5vw,16px)] p-[clamp(6px,0.83vw,12px)] py-[clamp(16px,1.5vw,32px)]">

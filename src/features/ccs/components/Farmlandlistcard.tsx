@@ -1,22 +1,24 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
+import { Map, IndianRupee, Compass, Crop } from "lucide-react";
 
 import UserIcon from "@/assets/farm-user.svg";
-import MapPinIcon from "@/assets/map-pin.svg";
-import totalAreaIcon from "@/assets/total-area.svg";
-import priceIcon from "@/assets/price.svg";
-import listedOnIcon from "@/assets/listed-on.svg";
-import costPerAcIcon from "@/assets/cost-per-ac.svg";
+import moneyStackIcon from "@/assets/cost-per-ac.svg";
+import radarIcon from "@/assets/sat2.svg";
 
 export type FarmlandListItem = {
   id: string;
   farmlandId: string;
   agentName: string;
   location: string;
+  state: string;
+  region: string;
+  area: string;
   image: string;
   totalArea: string;
-  price: string;
+  valuation: string;
+  assetValue: string;
   listedOn: string;
   costPerAc: string;
   status: "COMPLETED" | "PENDING" | "ACTIVE" | "REJECTED";
@@ -33,9 +35,9 @@ const STATUS_STYLES: Record<
   { bg: string; dot: string; text: string }
 > = {
   COMPLETED: {
-    bg: "bg-[var(--status-success-soft)]",
-    dot: "bg-[var(--status-success)]",
-    text: "text-[var(--status-success)]",
+    bg: "bg-[#F2F2F2]",
+    dot: "bg-[#131600]",
+    text: "text-[#131600]",
   },
   PENDING: {
     bg: "bg-[var(--surface-page)]",
@@ -81,7 +83,7 @@ export default function FarmlandListCard({ item, onViewDetails }: Props) {
             </div>
           </div>
 
-          {/* Farmland ID + agent + location */}
+          {/* Farmland ID + agent */}
           <div className="flex flex-col gap-[0.25rem]">
             <Typography
               variant="h4"
@@ -103,42 +105,42 @@ export default function FarmlandListCard({ item, onViewDetails }: Props) {
                 {item.agentName}
               </Typography>
             </div>
-
-            <div className="flex items-center gap-2">
-              <img
-                src={MapPinIcon}
-                alt=""
-                className="h-[0.625rem] w-[0.625rem] shrink-0 lg:h-[0.6875rem] lg:w-[0.6875rem]"
-              />
-              <Typography
-                variant="span"
-                className="text-[#45474C] text-[0.75rem] font-normal leading-[1.25rem] lg:text-[0.8125rem] xl:text-[0.875rem]"
-              >
-                {item.location}
-              </Typography>
-            </div>
           </div>
         </div>
 
         {/* ── RIGHT: bento grid + status & action ── */}
         <div className="flex flex-1 flex-col justify-between gap-4 xl:gap-5">
-          {/* BENTO GRID 2×2 */}
+          {/* BENTO GRID 2 COLUMNS x 3 ROWS */}
           <div className="grid grid-cols-2 gap-2 lg:gap-3 2xl:gap-4">
             <BentoBox
-              icon={totalAreaIcon}
-              label="Total Area"
+              icon={<Map className="w-[1.125rem] h-[1.125rem] xl:w-[1.375rem] xl:h-[1.375rem] text-[#2780C4]" strokeWidth={2} />}
+              label="State"
+              value={item.state}
+            />
+            <BentoBox
+              icon={<IndianRupee className="w-[1.125rem] h-[1.125rem] xl:w-[1.375rem] xl:h-[1.375rem] text-[#2780C4]" strokeWidth={2} />}
+              label="Valuation"
+              value={item.valuation}
+            />
+            <BentoBox
+              icon={<Compass className="w-[1.125rem] h-[1.125rem] xl:w-[1.375rem] xl:h-[1.375rem] text-[#2780C4]" strokeWidth={2} />}
+              label="Region"
+              value={item.region}
+            />
+            <BentoBox
+              icon={moneyStackIcon}
+              label="Asset Value"
+              value={item.assetValue}
+            />
+            <BentoBox
+              icon={radarIcon}
+              label="Area"
+              value={item.area}
+            />
+            <BentoBox
+              icon={<Crop className="w-[1.125rem] h-[1.125rem] xl:w-[1.375rem] xl:h-[1.375rem] text-[#2780C4]" strokeWidth={2} />}
+              label="Total Acres"
               value={item.totalArea}
-            />
-            <BentoBox icon={priceIcon} label="Price" value={item.price} />
-            <BentoBox
-              icon={listedOnIcon}
-              label="Listed On"
-              value={item.listedOn}
-            />
-            <BentoBox
-              icon={costPerAcIcon}
-              label="Cost / AC"
-              value={item.costPerAc}
             />
           </div>
 
@@ -199,7 +201,7 @@ function BentoBox({
   label,
   value,
 }: {
-  icon: string;
+  icon: string | React.ReactNode;
   label: string;
   value: string;
 }) {
@@ -214,11 +216,15 @@ function BentoBox({
       "
     >
       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white lg:h-9 lg:w-9 xl:h-10 xl:w-10">
-        <img
-          src={icon}
-          alt={label}
-          className="h-[1.125rem] w-[1.125rem] object-contain xl:h-[1.375rem] xl:w-[1.375rem]"
-        />
+        {typeof icon === "string" ? (
+          <img
+            src={icon}
+            alt={label}
+            className="h-[1.125rem] w-[1.125rem] object-contain xl:h-[1.375rem] xl:w-[1.375rem]"
+          />
+        ) : (
+          icon
+        )}
       </div>
 
       <div className="flex flex-col gap-[0.125rem] xl:gap-1">

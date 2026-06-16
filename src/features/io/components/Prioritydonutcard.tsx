@@ -12,24 +12,22 @@ interface LegendRowProps {
 }
 
 const LegendRow = ({ label, value, color }: LegendRowProps) => (
-  <div className="flex items-center w-full min-w-0">
+  <div className="flex items-center w-full min-w-0 justify-between">
     {/* LEFT */}
     <div
       className="
         flex items-center
         min-w-0
         shrink-0
-        gap-[0.5rem]
-        xl:gap-[0.66rem]
+        gap-[clamp(0.375rem,0.73vw,0.657rem)]
       "
     >
       {/* DOT */}
       <span
         className="
           rounded-full shrink-0
-          w-[0.6rem] h-[0.6rem]
-          sm:w-[0.7rem] sm:h-[0.7rem]
-          xl:w-[0.75rem] xl:h-[0.75rem]
+          w-[clamp(0.5rem,0.83vw,0.751rem)]
+          h-[clamp(0.5rem,0.83vw,0.751rem)]
         "
         style={{ backgroundColor: color }}
       />
@@ -42,13 +40,8 @@ const LegendRow = ({ label, value, color }: LegendRowProps) => (
           font-medium
           font-[var(--font-sans)]
           text-[var(--text-primary)]
-          leading-[1.2rem]
-
-          text-[0.72rem]
-          sm:text-[0.78rem]
-          lg:text-[0.82rem]
-          xl:text-[0.96rem]
-          2xl:text-[1rem]
+          leading-normal
+          text-[clamp(0.6875rem,1.04vw,0.938rem)]
         "
       >
         {label}
@@ -59,11 +52,10 @@ const LegendRow = ({ label, value, color }: LegendRowProps) => (
     <span
       className="
         flex-1
-        mx-[0.5rem]
-        xl:mx-[0.85rem]
-        border-t border-dashed
+        mx-[clamp(0.5rem,1.5vw,1.5625rem)]
+        border-t-[0.09375rem] border-dashed
         border-[var(--priority-dashed-border)]
-        min-w-[1rem]
+        min-w-[0.5rem]
       "
     />
 
@@ -76,12 +68,7 @@ const LegendRow = ({ label, value, color }: LegendRowProps) => (
         font-[var(--font-sans)]
         text-[var(--text-primary)]
         leading-none
-
-        text-[0.9rem]
-        sm:text-[1rem]
-        lg:text-[1.05rem]
-        xl:text-[1.28rem]
-        2xl:text-[1.38rem]
+        text-[clamp(0.9375rem,1.46vw,1.314rem)]
       "
     >
       {value}
@@ -108,8 +95,8 @@ const DonutChart = () => (
           dataKey="value"
           cx="50%"
           cy="50%"
-          innerRadius="58%"
-          outerRadius="84%"
+          innerRadius="50%"
+          outerRadius="93.27%"
           paddingAngle={4}
           startAngle={90}
           endAngle={-270}
@@ -123,14 +110,14 @@ const DonutChart = () => (
     </ResponsiveContainer>
 
     {/* CENTER OVERLAY */}
-    <div className="absolute inset-0 flex items-center justify-center">
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
       {/* OUTER RING */}
       <div
         className="
           rounded-full
-          border border-[var(--priority-ring-border)]
+          border-[0.07375rem] border-[var(--priority-ring-border)]
           flex items-center justify-center
-          w-[56%] aspect-square
+          w-full aspect-square
         "
       >
         {/* INNER */}
@@ -139,7 +126,6 @@ const DonutChart = () => (
             rounded-full
             bg-[var(--priority-center-bg)]
             flex flex-col items-center justify-center
-            gap-[0.15rem] xl:gap-[0.2rem]
             w-[50%] aspect-square
           "
         >
@@ -151,11 +137,8 @@ const DonutChart = () => (
               font-medium
               font-[var(--font-sans)]
               text-[var(--text-primary)]
-
-              text-[0.55rem]
-              sm:text-[0.6rem]
-              lg:text-[0.65rem]
-              xl:text-[0.76rem]
+              text-[clamp(0.5625rem,0.82vw,0.739rem)]
+              mb-[clamp(0.125rem,0.2vw,0.25rem)]
             "
           >
             Total
@@ -168,14 +151,8 @@ const DonutChart = () => (
               leading-none
               font-semibold
               font-[var(--font-sans)]
-              text-[var(--text-primary)]
-              opacity-80
-
-              text-[0.95rem]
-              sm:text-[1.05rem]
-              lg:text-[1.1rem]
-              xl:text-[1.4rem]
-              2xl:text-[1.55rem]
+              text-[var(--text-primary)]/80
+              text-[clamp(0.9375rem,1.48vw,1.331rem)]
             "
           >
             {TOTAL}
@@ -194,48 +171,40 @@ export const PriorityDonutCard = () => (
   <Card
     className="
       flex flex-col
+      justify-between
       h-full
-      rounded-[1.25rem]
-      xl:rounded-[1.75rem]
+      rounded-[clamp(1.25rem,1.94vw,1.75rem)]
       bg-[var(--priority-card-bg)]
       shadow-[var(--shadow-card)]
       border-0
       w-full
 
-      p-[1rem]
-      sm:p-[1.1rem]
-      xl:p-[1.55rem]
-      2xl:p-[1.75rem]
-
-      gap-[1rem]
-      sm:gap-[1.1rem]
-      xl:gap-[1.4rem]
-      2xl:gap-[1.55rem]
+      pt-[clamp(1rem,1.67vw,1.5rem)]
+      pb-[clamp(1.5rem,2.59vw,2.3325rem)]
+      px-[clamp(1rem,2vw,1.5rem)]
     "
   >
-    {/* CHART */}
+    {/* CHART CONTAINER */}
     <div
       className="
         self-center
-        w-[9rem]
-        sm:w-[10.5rem]
-        lg:w-[11.5rem]
-        xl:w-[14rem]
-        2xl:w-[15.375rem]
+        w-[clamp(10.9375rem,17.08vw,15.375rem)]
+        aspect-square
+        relative
       "
     >
       <DonutChart />
     </div>
 
-    {/* LEGEND */}
+    {/* LEGEND CONTAINER */}
     <div
       className="
+        w-full
+        max-w-[15.48125rem]
+        mx-auto
         flex flex-col
-        gap-[0.75rem]
-        sm:gap-[0.85rem]
-        xl:gap-[1.2rem]
-        2xl:gap-[1.35rem]
-        px-[0.25rem]
+        gap-[clamp(1rem,2.38vw,2.146rem)]
+        mt-[clamp(1rem,2.57vw,2.3125rem)]
       "
     >
       {PRIORITY_DATA.map((item) => (

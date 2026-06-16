@@ -1,0 +1,952 @@
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import IODashboardHeader from "@/features/io/components/IODashboardHeader";
+import { cn } from "@/lib/utils";
+
+interface FarmlandRow {
+  id: string;
+  agentName: string;
+  agentRole: string;
+  agentAvatar?: string;
+  farmlandId: string;
+  location: string;
+  state: string;
+  landExtend: number;
+  landUnit: string;
+  totalAmount: string;
+  status: "Completed" | "Rejected" | "Pending";
+  statusReason: string;
+  createdDate: string;
+  createdTime: string;
+  publishedDate: string;
+  publishedTime?: string;
+}
+
+const DUMMY_FARMLANDS: FarmlandRow[] = [
+  {
+    id: "1",
+    agentName: "Ravi Kumar",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 01",
+    location: "West Godavari",
+    state: "Andhra Pradesh",
+    landExtend: 100,
+    landUnit: "Acres",
+    totalAmount: "₹ 25L",
+    status: "Completed",
+    statusReason: "Live in Website",
+    createdDate: "6th Oct, 2023",
+    createdTime: "12:53 PM",
+    publishedDate: "9th Oct, 2023",
+    publishedTime: "2:03 PM",
+  },
+  {
+    id: "2",
+    agentName: "Aananthu",
+    agentRole: "Senior Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 01",
+    location: "West Godavari",
+    state: "Andhra Pradesh",
+    landExtend: 100,
+    landUnit: "Acres",
+    totalAmount: "₹ 25L",
+    status: "Rejected",
+    statusReason: "Documentation Issue",
+    createdDate: "6th Oct, 2023",
+    createdTime: "12:53 PM",
+    publishedDate: "NA",
+  },
+  {
+    id: "3",
+    agentName: "Srikanth",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 01",
+    location: "West Godavari",
+    state: "Andhra Pradesh",
+    landExtend: 100,
+    landUnit: "Acres",
+    totalAmount: "₹ 25L",
+    status: "Pending",
+    statusReason: "Under Review",
+    createdDate: "6th Oct, 2023",
+    createdTime: "12:53 PM",
+    publishedDate: "NA",
+  },
+  {
+    id: "4",
+    agentName: "Yakoob",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 01",
+    location: "West Godavari",
+    state: "Andhra Pradesh",
+    landExtend: 100,
+    landUnit: "Acres",
+    totalAmount: "₹ 25L",
+    status: "Pending",
+    statusReason: "Under Review",
+    createdDate: "6th Oct, 2023",
+    createdTime: "12:53 PM",
+    publishedDate: "NA",
+  },
+  {
+    id: "5",
+    agentName: "Rama Krishna",
+    agentRole: "Senior Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 01",
+    location: "West Godavari",
+    state: "Andhra Pradesh",
+    landExtend: 100,
+    landUnit: "Acres",
+    totalAmount: "₹ 25L",
+    status: "Pending",
+    statusReason: "Under Review",
+    createdDate: "6th Oct, 2023",
+    createdTime: "12:53 PM",
+    publishedDate: "NA",
+  },
+  {
+    id: "6",
+    agentName: "Shiva Reddy",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 01",
+    location: "West Godavari",
+    state: "Andhra Pradesh",
+    landExtend: 100,
+    landUnit: "Acres",
+    totalAmount: "₹ 25L",
+    status: "Rejected",
+    statusReason: "Documentation Issue",
+    createdDate: "6th Oct, 2023",
+    createdTime: "12:53 PM",
+    publishedDate: "NA",
+  },
+  {
+    id: "7",
+    agentName: "Ravi Kumar",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 01",
+    location: "West Godavari",
+    state: "Andhra Pradesh",
+    landExtend: 100,
+    landUnit: "Acres",
+    totalAmount: "₹ 25L",
+    status: "Completed",
+    statusReason: "Live in Website",
+    createdDate: "6th Oct, 2023",
+    createdTime: "12:53 PM",
+    publishedDate: "9th Oct, 2023",
+    publishedTime: "2:03 PM",
+  },
+  {
+    id: "8",
+    agentName: "Sunil Varma",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 02",
+    location: "Krishna",
+    state: "Andhra Pradesh",
+    landExtend: 75,
+    landUnit: "Acres",
+    totalAmount: "₹ 18L",
+    status: "Completed",
+    statusReason: "Live in Website",
+    createdDate: "8th Oct, 2023",
+    createdTime: "10:20 AM",
+    publishedDate: "11th Oct, 2023",
+    publishedTime: "1:15 PM",
+  },
+  {
+    id: "9",
+    agentName: "Sravan Yadav",
+    agentRole: "Senior Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 03",
+    location: "Guntur",
+    state: "Andhra Pradesh",
+    landExtend: 120,
+    landUnit: "Acres",
+    totalAmount: "₹ 32L",
+    status: "Pending",
+    statusReason: "Under Review",
+    createdDate: "10th Oct, 2023",
+    createdTime: "9:45 AM",
+    publishedDate: "NA",
+  },
+  {
+    id: "10",
+    agentName: "Mahesh Babu",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 04",
+    location: "Kurnool",
+    state: "Andhra Pradesh",
+    landExtend: 90,
+    landUnit: "Acres",
+    totalAmount: "₹ 22L",
+    status: "Rejected",
+    statusReason: "Boundary Dispute",
+    createdDate: "15th Oct, 2023",
+    createdTime: "2:00 PM",
+    publishedDate: "NA",
+  },
+  {
+    id: "11",
+    agentName: "Kalyan Ram",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 05",
+    location: "Nellore",
+    state: "Andhra Pradesh",
+    landExtend: 110,
+    landUnit: "Acres",
+    totalAmount: "₹ 28L",
+    status: "Completed",
+    statusReason: "Live in Website",
+    createdDate: "18th Oct, 2023",
+    createdTime: "11:30 AM",
+    publishedDate: "20th Oct, 2023",
+    publishedTime: "4:00 PM",
+  },
+  {
+    id: "12",
+    agentName: "NTR Rao",
+    agentRole: "Senior Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 06",
+    location: "Chittoor",
+    state: "Andhra Pradesh",
+    landExtend: 150,
+    landUnit: "Acres",
+    totalAmount: "₹ 40L",
+    status: "Pending",
+    statusReason: "Under Review",
+    createdDate: "22nd Oct, 2023",
+    createdTime: "4:15 PM",
+    publishedDate: "NA",
+  },
+  {
+    id: "13",
+    agentName: "Ravi Kumar",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 07",
+    location: "West Godavari",
+    state: "Andhra Pradesh",
+    landExtend: 100,
+    landUnit: "Acres",
+    totalAmount: "₹ 25L",
+    status: "Completed",
+    statusReason: "Live in Website",
+    createdDate: "6th Oct, 2023",
+    createdTime: "12:53 PM",
+    publishedDate: "9th Oct, 2023",
+    publishedTime: "2:03 PM",
+  },
+  {
+    id: "14",
+    agentName: "Sunil Varma",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 08",
+    location: "Krishna",
+    state: "Andhra Pradesh",
+    landExtend: 75,
+    landUnit: "Acres",
+    totalAmount: "₹ 18L",
+    status: "Completed",
+    statusReason: "Live in Website",
+    createdDate: "8th Oct, 2023",
+    createdTime: "10:20 AM",
+    publishedDate: "11th Oct, 2023",
+    publishedTime: "1:15 PM",
+  },
+  {
+    id: "15",
+    agentName: "Sravan Yadav",
+    agentRole: "Senior Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 09",
+    location: "Guntur",
+    state: "Andhra Pradesh",
+    landExtend: 120,
+    landUnit: "Acres",
+    totalAmount: "₹ 32L",
+    status: "Pending",
+    statusReason: "Under Review",
+    createdDate: "10th Oct, 2023",
+    createdTime: "9:45 AM",
+    publishedDate: "NA",
+  },
+  {
+    id: "16",
+    agentName: "Mahesh Babu",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 10",
+    location: "Kurnool",
+    state: "Andhra Pradesh",
+    landExtend: 90,
+    landUnit: "Acres",
+    totalAmount: "₹ 22L",
+    status: "Rejected",
+    statusReason: "Boundary Dispute",
+    createdDate: "15th Oct, 2023",
+    createdTime: "2:00 PM",
+    publishedDate: "NA",
+  },
+  {
+    id: "17",
+    agentName: "Kalyan Ram",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 11",
+    location: "Nellore",
+    state: "Andhra Pradesh",
+    landExtend: 110,
+    landUnit: "Acres",
+    totalAmount: "₹ 28L",
+    status: "Completed",
+    statusReason: "Live in Website",
+    createdDate: "18th Oct, 2023",
+    createdTime: "11:30 AM",
+    publishedDate: "20th Oct, 2023",
+    publishedTime: "4:00 PM",
+  },
+  {
+    id: "18",
+    agentName: "NTR Rao",
+    agentRole: "Senior Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 12",
+    location: "Chittoor",
+    state: "Andhra Pradesh",
+    landExtend: 150,
+    landUnit: "Acres",
+    totalAmount: "₹ 40L",
+    status: "Pending",
+    statusReason: "Under Review",
+    createdDate: "22nd Oct, 2023",
+    createdTime: "4:15 PM",
+    publishedDate: "NA",
+  },
+  {
+    id: "19",
+    agentName: "Kalyan Ram",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 13",
+    location: "Nellore",
+    state: "Andhra Pradesh",
+    landExtend: 110,
+    landUnit: "Acres",
+    totalAmount: "₹ 28L",
+    status: "Completed",
+    statusReason: "Live in Website",
+    createdDate: "18th Oct, 2023",
+    createdTime: "11:30 AM",
+    publishedDate: "20th Oct, 2023",
+    publishedTime: "4:00 PM",
+  },
+  {
+    id: "20",
+    agentName: "NTR Rao",
+    agentRole: "Senior Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 14",
+    location: "Chittoor",
+    state: "Andhra Pradesh",
+    landExtend: 150,
+    landUnit: "Acres",
+    totalAmount: "₹ 40L",
+    status: "Pending",
+    statusReason: "Under Review",
+    createdDate: "22nd Oct, 2023",
+    createdTime: "4:15 PM",
+    publishedDate: "NA",
+  },
+  {
+    id: "21",
+    agentName: "Kalyan Ram",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 15",
+    location: "Nellore",
+    state: "Andhra Pradesh",
+    landExtend: 110,
+    landUnit: "Acres",
+    totalAmount: "₹ 28L",
+    status: "Completed",
+    statusReason: "Live in Website",
+    createdDate: "18th Oct, 2023",
+    createdTime: "11:30 AM",
+    publishedDate: "20th Oct, 2023",
+    publishedTime: "4:00 PM",
+  },
+  {
+    id: "22",
+    agentName: "NTR Rao",
+    agentRole: "Senior Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 16",
+    location: "Chittoor",
+    state: "Andhra Pradesh",
+    landExtend: 150,
+    landUnit: "Acres",
+    totalAmount: "₹ 40L",
+    status: "Pending",
+    statusReason: "Under Review",
+    createdDate: "22nd Oct, 2023",
+    createdTime: "4:15 PM",
+    publishedDate: "NA",
+  },
+  {
+    id: "23",
+    agentName: "Kalyan Ram",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 17",
+    location: "Nellore",
+    state: "Andhra Pradesh",
+    landExtend: 110,
+    landUnit: "Acres",
+    totalAmount: "₹ 28L",
+    status: "Completed",
+    statusReason: "Live in Website",
+    createdDate: "18th Oct, 2023",
+    createdTime: "11:30 AM",
+    publishedDate: "20th Oct, 2023",
+    publishedTime: "4:00 PM",
+  },
+  {
+    id: "24",
+    agentName: "NTR Rao",
+    agentRole: "Senior Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 18",
+    location: "Chittoor",
+    state: "Andhra Pradesh",
+    landExtend: 150,
+    landUnit: "Acres",
+    totalAmount: "₹ 40L",
+    status: "Pending",
+    statusReason: "Under Review",
+    createdDate: "22nd Oct, 2023",
+    createdTime: "4:15 PM",
+    publishedDate: "NA",
+  },
+  {
+    id: "25",
+    agentName: "Kalyan Ram",
+    agentRole: "Field Agent",
+    agentAvatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=100&h=100&q=80",
+    farmlandId: "GLCSOS 19",
+    location: "Nellore",
+    state: "Andhra Pradesh",
+    landExtend: 110,
+    landUnit: "Acres",
+    totalAmount: "₹ 28L",
+    status: "Completed",
+    statusReason: "Live in Website",
+    createdDate: "18th Oct, 2023",
+    createdTime: "11:30 AM",
+    publishedDate: "20th Oct, 2023",
+    publishedTime: "4:00 PM",
+  }
+];
+
+const FarmlandsListFull = () => {
+  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 7;
+
+  const filteredData = useMemo(() => {
+    return DUMMY_FARMLANDS.filter((item) =>
+      item.agentName.toLowerCase().includes(search.toLowerCase()) ||
+      item.farmlandId.toLowerCase().includes(search.toLowerCase()) ||
+      item.location.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search]);
+
+  const visibleData = useMemo(() => {
+    const startIndex = (page - 1) * ITEMS_PER_PAGE;
+    return filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredData, page]);
+
+  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
+  return (
+    <main
+      className="
+        relative
+        w-full
+        h-fit
+        overflow-hidden
+        bg-[var(--chart-bg)]
+
+        pt-[0.9rem]
+        sm:pt-[1rem]
+        lg:pt-[1.2rem]
+        xl:pt-[1.5rem]
+        2xl:pt-[1.75rem]
+
+        px-[0.75rem]
+        sm:px-[1rem]
+        lg:px-[1.25rem]
+        xl:px-[1.8rem]
+        2xl:px-[2.3rem]
+
+        pb-[0.75rem]
+        sm:pb-[0.9rem]
+        lg:pb-[1rem]
+        xl:pb-[1.25rem]
+      "
+    >
+      {/* OUTER FLOW WRAPPER */}
+      <div className="relative z-[1] flex flex-col gap-[12px] w-full animate-fadeIn">
+        {/* ONE SINGLE LARGE BACKGROUND CARD CONTAINER */}
+        <div
+          className="
+            flex
+            w-full
+            flex-col
+            bg-[var(--surface-card)]
+            rounded-[32px]
+            border border-[var(--border-soft)]
+            shadow-[0px_20px_40px_rgba(0,49,50,0.02)]
+            pt-[1.5rem] md:pt-[2rem]
+            px-[1.5rem] md:px-[2rem]
+            pb-[clamp(2px,0.28vw,6px)]
+            gap-[1.5rem]
+            md:gap-[2rem]
+            relative
+            overflow-hidden
+          "
+        >
+          {/* Ellipse Gradient glow background from Figma */}
+          <div
+            className="
+              absolute
+              w-[899px]
+              height-[213px]
+              left-[520px]
+              top-[94px]
+              bg-[var(--priority-card-bg)]
+              opacity-66
+              blur-[200.75px]
+              pointer-events-none
+              rounded-full
+            "
+            style={{ height: "213px" }}
+          />
+
+          {/* Content layer */}
+          <div className="relative z-10 flex flex-col gap-[1.5rem] md:gap-[2rem] w-full">
+            <IODashboardHeader
+              title="Farmlands List"
+              description=""
+              searchPlaceholder="Search Agents..."
+              searchValue={search}
+              onSearchChange={setSearch}
+              titleClassName="
+                font-[family-name:var(--font-heading)]
+                font-semibold
+                leading-[110%]
+                tracking-[-0.9px]
+                text-[clamp(1.5rem,2.361vw,2.8rem)]
+                text-[var(--text-heading)]
+              "
+              searchWrapperClassName="!bg-[var(--chart-bg)]"
+            />
+
+            {/* TABLE CONTAINER */}
+            <div className="w-full overflow-x-auto pb-6 custom-scrollbar">
+              <div className="w-full min-w-[1100px] flex flex-col gap-[16px] pb-4">
+                {/* TABLE HEADER (VISUAL ONLY) */}
+                <div
+                  className="
+                    flex
+                    w-full
+                    border-b border-[var(--border-default)]
+                    pb-4
+                    px-[32px]
+                    items-center
+                    justify-between
+                  "
+                >
+                  <div className="w-[22%] text-xs font-[family-name:var(--font-inter)] font-semibold tracking-[1.2px] text-[var(--text-secondary)] uppercase">
+                    Agent & ID
+                  </div>
+                  <div className="w-[15%] text-xs font-[family-name:var(--font-inter)] font-semibold tracking-[1.2px] text-[var(--text-secondary)] uppercase">
+                    Location
+                  </div>
+                  <div className="w-[12%] text-xs font-[family-name:var(--font-inter)] font-semibold tracking-[1.2px] text-[var(--text-secondary)] uppercase">
+                    Details
+                  </div>
+                  <div className="w-[16%] text-xs font-[family-name:var(--font-inter)] font-semibold tracking-[1.2px] text-[var(--text-secondary)] uppercase">
+                    Status
+                  </div>
+                  <div className="w-[15%] text-xs font-[family-name:var(--font-inter)] font-semibold tracking-[1.2px] text-[var(--text-secondary)] uppercase">
+                    Created On
+                  </div>
+                  <div className="w-[12%] text-xs font-[family-name:var(--font-sans)] font-semibold tracking-[1.2px] text-[var(--text-secondary)] uppercase">
+                    Published On
+                  </div>
+                  <div className="w-[8%] text-right text-xs font-[family-name:var(--font-sans)] font-semibold tracking-[1.2px] text-[var(--text-secondary)] uppercase">
+                    Action
+                  </div>
+                </div>
+
+                {/* LIST CONTAINER (ROWS) */}
+                <div className="flex flex-col w-full gap-[clamp(8px,1.11vw,22px)]">
+                  {visibleData.map((row) => (
+                    <div
+                      key={row.id}
+                      className="
+                        group
+                        flex
+                        w-full
+                        h-[clamp(76px,7.014vw,135px)]
+                        bg-[var(--surface-card)]
+                        shadow-[0px_8px_24px_rgba(0,49,50,0.03)]
+                        border border-[var(--border-soft)]
+                        rounded-[24px] md:rounded-[32px]
+                        px-[clamp(16px,2.22vw,43px)]
+                        items-center
+                        justify-between
+                        relative
+                        transition-all
+                        duration-200
+                        hover:shadow-[0px_12px_28px_rgba(0,49,50,0.05)]
+                      "
+                    >
+                      {/* Decorative subtle left accent */}
+                      <div
+                        className="
+                          absolute left-[1px] top-[1px] bottom-[1.5px] w-1
+                          bg-[var(--brand-500)] opacity-0 group-hover:opacity-100
+                          rounded-[32px_0px_0px_32px]
+                          transition-opacity duration-200
+                        "
+                      />
+
+                      {/* Agent & ID */}
+                      <div className="w-[22%] flex items-center gap-[clamp(8px,1.11vw,22px)]">
+                        {row.agentAvatar ? (
+                          <img
+                            src={row.agentAvatar}
+                            alt={row.agentName}
+                            className="w-[clamp(36px,3.33vw,64px)] h-[clamp(36px,3.33vw,64px)] rounded-full object-cover shrink-0"
+                          />
+                        ) : (
+                          <div className="w-[clamp(36px,3.33vw,64px)] h-[clamp(36px,3.33vw,64px)] rounded-full bg-[var(--surface-page)] flex items-center justify-center font-bold text-[var(--text-primary)] text-[clamp(11px,0.97vw,19px)] shrink-0">
+                            {row.agentName.slice(0, 2).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="flex flex-col gap-[clamp(2px,0.28vw,6px)] min-w-0">
+                          <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(13px,1.11vw,22px)] text-[var(--text-primary)] leading-none truncate">
+                            {row.agentName}
+                          </span>
+                          <span
+                            className="
+                              inline-block
+                              w-fit
+                              text-[clamp(8px,0.69vw,14px)]
+                              font-[family-name:var(--font-inter)]
+                              font-normal
+                              tracking-[0.5px]
+                              text-[var(--text-secondary)]
+                              bg-[var(--surface-page)]
+                              px-[clamp(6px,0.56vw,11px)]
+                              py-[clamp(1px,0.14vw,3px)]
+                              rounded-[9999px]
+                              uppercase
+                              leading-[1.5]
+                            "
+                          >
+                            {row.farmlandId}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Location */}
+                      <div className="w-[15%] flex flex-col gap-[clamp(2px,0.28vw,6px)]">
+                        <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(12px,0.97vw,19px)] text-[var(--text-primary)] leading-none">
+                          {row.location}
+                        </span>
+                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(10px,0.83vw,16px)] text-[var(--text-secondary)] leading-none">
+                          {row.state}
+                        </span>
+                      </div>
+
+                      {/* Details */}
+                      <div className="w-[12%] flex flex-col gap-[clamp(1px,0.14vw,4px)]">
+                        <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(14px,1.25vw,24px)] text-[var(--brand-600)] leading-none">
+                          {row.totalAmount}
+                        </span>
+                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(10px,0.83vw,16px)] text-[var(--text-secondary)] leading-none">
+                          {row.landExtend} {row.landUnit}
+                        </span>
+                      </div>
+
+                      {/* Status badge + dot context */}
+                      <div className="w-[16%] flex flex-col items-start gap-[clamp(4px,0.42vw,8px)]">
+                        <span
+                          className={cn(
+                            "inline-flex items-center justify-center px-[clamp(8px,1.11vw,22px)] py-[clamp(1px,0.14vw,3px)] rounded-full text-[clamp(10px,0.83vw,16px)] font-semibold font-[family-name:var(--font-sans)] h-[clamp(20px,1.8vw,35px)]",
+                            row.status === "Completed" && "bg-[var(--status-success-soft)] border border-[rgba(22,163,74,0.1)] text-[var(--status-success)]",
+                            row.status === "Rejected" && "bg-[var(--status-danger-soft)] border border-[rgba(220,38,38,0.1)] text-[var(--status-danger)]",
+                            row.status === "Pending" && "bg-[var(--brand-tint)] border border-[rgba(39,128,196,0.1)] text-[var(--status-pending)]"
+                          )}
+                        >
+                          {row.status}
+                        </span>
+                        <div className="flex items-center gap-[clamp(4px,0.42vw,8px)] pl-[clamp(4px,0.42vw,8px)]">
+                          <span
+                            className={cn(
+                              "w-[clamp(4px,0.42vw,8px)] h-[clamp(4px,0.42vw,8px)] rounded-full",
+                              row.status === "Completed" && "bg-[var(--status-success)]",
+                              row.status === "Rejected" && "bg-[var(--status-danger)]",
+                              row.status === "Pending" && "bg-[var(--status-pending)]"
+                            )}
+                          />
+                          <span className="font-[family-name:var(--font-inter)] font-normal text-[clamp(9px,0.76vw,15px)] text-[var(--text-secondary)] leading-none">
+                            {row.statusReason}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Created On */}
+                      <div className="w-[15%] flex flex-col gap-[clamp(2px,0.28vw,6px)]">
+                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(12px,0.97vw,19px)] text-[var(--text-primary)] leading-none">
+                          {row.createdDate}
+                        </span>
+                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(10px,0.83vw,16px)] text-[var(--text-secondary)] leading-none">
+                          {row.createdTime}
+                        </span>
+                      </div>
+
+                      {/* Published On */}
+                      <div className="w-[12%] flex flex-col gap-[clamp(2px,0.28vw,6px)]">
+                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(12px,0.97vw,19px)] text-[var(--text-primary)] leading-none">
+                          {row.publishedDate}
+                        </span>
+                        {row.publishedTime && (
+                          <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(10px,0.83vw,16px)] text-[var(--text-secondary)] leading-none">
+                            {row.publishedTime}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Action */}
+                      <div className="w-[8%] flex justify-end">
+                        <button
+                          onClick={() => navigate(`/io/farmlands-list/detail/${row.id}`)}
+                          className="
+                            flex items-center justify-center
+                            bg-[var(--btn-secondary)]
+                            hover:opacity-90
+                            text-[var(--text-strong)]
+                            font-[family-name:var(--font-sans)] font-bold text-[clamp(10px,0.83vw,16px)] uppercase tracking-[0.6px]
+                            rounded-[9999px]
+                            h-[clamp(24px,1.94vw,38px)]
+                            w-[clamp(52px,4.51vw,87px)]
+                            transition-opacity duration-150
+                          "
+                        >
+                          View
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* PAGINATION FOOTER */}
+        <div
+          className="
+            flex
+            flex-col
+            gap-[1rem]
+            rounded-[1.5rem]
+            border
+            border-[var(--border-default)]
+            bg-[var(--surface-card)]
+            px-[1rem]
+            py-[1rem]
+            sm:px-[1.25rem]
+            lg:min-h-[4.75rem]
+            lg:flex-row
+            lg:items-center
+            lg:justify-between
+            lg:px-[1.5rem]
+            xl:px-[2rem]
+            2xl:min-h-[5rem]
+            mt-2
+          "
+        >
+          {/* LEFT TEXT */}
+          <span
+            className="
+              text-[0.8125rem]
+              font-medium
+              text-[var(--text-secondary)]
+              sm:text-[0.875rem]
+              xl:text-[1rem]
+            "
+          >
+            Showing {(page - 1) * ITEMS_PER_PAGE + 1}–
+            {Math.min(page * ITEMS_PER_PAGE, filteredData.length)} of{" "}
+            {filteredData.length.toLocaleString()}
+          </span>
+
+          {/* PAGINATION */}
+          <div
+            className="
+              flex
+              flex-wrap
+              items-center
+              gap-[0.375rem]
+              sm:justify-end
+              xl:gap-[0.5rem]
+            "
+          >
+            {/* PREVIOUS */}
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((prev) => prev - 1)}
+              className="
+                flex
+                items-center
+                justify-center
+                gap-[0.5rem]
+                rounded-[0.5rem]
+                border
+                border-[var(--border-default)]
+                bg-[var(--surface-card)]
+                px-[0.875rem]
+                h-[1.875rem]
+                text-[0.75rem]
+                font-semibold
+                text-[var(--text-primary)]
+                transition-all
+                duration-200
+                hover:bg-[var(--chart-bg)]
+                disabled:cursor-not-allowed
+                disabled:opacity-50
+              "
+            >
+              <span>‹</span>
+              Previous
+            </button>
+
+            {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((num) => (
+              <button
+                key={num}
+                onClick={() => setPage(num)}
+                className={`
+                  flex
+                  h-[2rem]
+                  w-[2rem]
+                  items-center
+                  justify-center
+                  rounded-[0.4375rem]
+                  text-[0.75rem]
+                  font-semibold
+                  transition-all
+                  duration-200
+                  ${
+                    page === num
+                      ? "bg-[var(--btn-secondary)] text-[var(--text-primary)]"
+                      : "text-[var(--text-secondary)] hover:bg-[var(--chart-bg)]"
+                  }
+                `}
+              >
+                {num}
+              </button>
+            ))}
+
+            {totalPages > 3 && (
+              <>
+                <div
+                  className="
+                    px-[0.25rem]
+                    text-[0.75rem]
+                    text-[var(--text-secondary)]
+                  "
+                >
+                  ...
+                </div>
+
+                <button
+                  onClick={() => setPage(totalPages)}
+                  className="
+                    flex
+                    h-[2rem]
+                    min-w-[2rem]
+                    items-center
+                    justify-center
+                    rounded-[0.4375rem]
+                    px-[0.375rem]
+                    text-[0.75rem]
+                    font-semibold
+                    text-[var(--text-secondary)]
+                    hover:bg-[var(--chart-bg)]
+                  "
+                >
+                  {totalPages}
+                </button>
+              </>
+            )}
+
+            {/* NEXT */}
+            <button
+              disabled={page === totalPages || totalPages === 0}
+              onClick={() => setPage((prev) => prev + 1)}
+              className="
+                flex
+                items-center
+                justify-center
+                gap-[0.5rem]
+                rounded-[0.5rem]
+                border
+                border-[var(--border-default)]
+                bg-[var(--surface-card)]
+                px-[0.875rem]
+                h-[1.875rem]
+                text-[0.75rem]
+                font-semibold
+                text-[var(--text-primary)]
+                transition-all
+                duration-200
+                hover:bg-[var(--chart-bg)]
+                disabled:cursor-not-allowed
+                disabled:opacity-50
+              "
+            >
+              Next
+              <span>›</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+};
+
+export default FarmlandsListFull;

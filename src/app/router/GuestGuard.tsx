@@ -16,11 +16,8 @@ const GuestGuard = () => {
     if (user.role === 'SUPERADMIN') return <Navigate to="/super-admin/dashboard" replace />;
     if (user.role === 'VO1') return <Navigate to="/verification-officer-1/dashboard" replace />;
     if (user.role === 'VO2') return <Navigate to="/verification-officer-2/dashboard" replace />;
+    if (user.role === 'VO1') return <Navigate to="/verification-officer-1/dashboard" replace />;
     return <Navigate to="/role-manager/dashboard" replace />;
-  }
-
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
   }
 
   return <Outlet />;
