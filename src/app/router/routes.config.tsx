@@ -176,3 +176,7 @@ export const SuperAdminAgricultureReport = lazy(() => import('../../features/sup
 export const SuperAdminLandBoundaries = lazy(() => import('../../features/super-admin/legal-docs/VerificationFlow'));
 export const SuperAdminValuation = lazy(() => import('../../features/super-admin/legal-docs/VerificationFlow'));
 export const SuperAdminLocalIntelligence = lazy(() => import('../../features/super-admin/legal-docs/VerificationFlow'));
+export const SuperAdminUploadLandDetails = lazy(() => import("../../features/super-admin/pages/SuperAdminUploadLandDetails"),);
+export const SuperAdminUploadViewMaps = lazy(() => import("../../features/super-admin/pages/SuperAdminUploadViewMaps"),);
+
+

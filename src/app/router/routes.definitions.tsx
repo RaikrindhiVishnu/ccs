@@ -144,7 +144,9 @@ import {
     SuperAdminAgricultureReport,
     SuperAdminLandBoundaries,
     SuperAdminValuation,
-    SuperAdminLocalIntelligence
+    SuperAdminLocalIntelligence,
+    SuperAdminUploadLandDetails,
+    SuperAdminUploadViewMaps
 } from './routes.config';
 
 
@@ -354,6 +356,12 @@ export const authRoutes: RouteObject[] = [
             }, {
                 path: '/super-admin/assigned-farmlands/:id/customer-information',
                 element: <SuperAdminCustomerInformation />
+            }, {
+                path: '/super-admin/upload/land-details/:id',
+                element: <SuperAdminUploadLandDetails />
+            }, {
+                path: '/super-admin/upload/view-maps/:id',
+                element: <SuperAdminUploadViewMaps />
             }, {
                 path: '/super-admin/user-profile/:id',
                 element: <SuperAdminUserProfile />

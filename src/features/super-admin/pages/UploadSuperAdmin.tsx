@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import SuperAdminHeader from "@/features/super-admin/components/SuperAdminHeader";
 import VisitorSalesCard from "@/features/super-admin/components/VisitorSalesCard";
 import FarmlandStatsCard from "@/features/super-admin/components/FarmlandStatsCard";
@@ -34,6 +35,7 @@ interface UploadFileItem {
 }
 
 const UploadSuperAdmin: React.FC = () => {
+  const navigate = useNavigate();
   const data = mockDashboardData;
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -432,7 +434,7 @@ const UploadSuperAdmin: React.FC = () => {
         </>
       )}
 
-      {/* ── Reused Drag & Drop File Upload Modal ── */}
+      {/* ── Onboarding Pipeline Upload Modal ── */}
       {isUploadModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-[1rem]">
           {/* Backdrop */}
@@ -442,213 +444,123 @@ const UploadSuperAdmin: React.FC = () => {
           />
 
           {/* Modal Container */}
-          <div className="relative bg-[#191B1C] border border-[#2D3032] rounded-[clamp(1.25rem,2.5vw,2rem)] w-full max-w-[clamp(45rem,75vw,68rem)] max-h-[90vh] overflow-y-auto z-10 shadow-2xl p-[clamp(1.25rem,2.5vw,2rem)] flex flex-col gap-[clamp(1rem,2vw,1.5rem)] text-white animate-in fade-in zoom-in duration-200">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-white/10 pb-[1rem]">
-              <div className="flex items-center gap-[0.625rem]">
-                <CloudUpload className="text-[var(--brand-500)]" size={24} />
-                <div>
-                  <h3 className="font-bold text-[clamp(1rem,1.8vw,2.25rem)] text-white">Upload Documents & Mappings</h3>
-                  <p className="text-[clamp(0.65rem,1.1vw,1.35rem)] text-gray-400">Import structured farm data into the secure server.</p>
-                </div>
+          <div 
+            className="relative bg-white shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] w-[42rem] h-[41rem] max-w-[95vw] max-h-[95vh] overflow-hidden z-10 flex flex-col md:flex-row animate-in fade-in zoom-in duration-200"
+            style={{
+              width: "clamp(32rem, 46.67vw, 48rem)",
+              height: "clamp(30rem, 45.56vw, 46rem)",
+              borderRadius: "clamp(1.5rem, 2.22vw, 2.5rem)",
+            }}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setIsUploadModalOpen(false)}
+              className="absolute right-[clamp(1rem,1.67vw,2rem)] top-[clamp(1rem,1.5vw,1.8rem)] text-[#000000] opacity-60 hover:opacity-100 p-1 hover:bg-black/5 rounded-full transition-all z-20 cursor-pointer"
+            >
+              <XIcon size={20} />
+            </button>
+
+            {/* Left Side: Header & Info */}
+            <div className="flex-1 flex flex-col justify-between p-[clamp(1.5rem,2.78vw,3rem)] border-r border-[#C6C8BA]/30 h-full relative">
+              <div className="flex flex-col gap-[clamp(0.5rem,0.83vw,1rem)]">
+                {/* Heading 2 */}
+                <h2 className="font-['Plus_Jakarta_Sans'] font-bold text-[clamp(1.5rem,2.22vw,2.5rem)] leading-[clamp(2rem,2.78vw,3rem)] tracking-[-0.01em] text-[#191C1B]">
+                  Upload a new farmland
+                </h2>
+                {/* Description */}
+                <p className="font-['Plus_Jakarta_Sans'] font-normal text-[clamp(0.75rem,0.97vw,1.1rem)] leading-[clamp(1.05rem,1.25vw,1.4rem)] text-[#45483E]">
+                  Complete the following onboarding pipeline to successfully list a farmland.
+                </p>
               </div>
-              <button 
-                onClick={() => setIsUploadModalOpen(false)}
-                className="text-gray-400 hover:text-white p-[0.375rem] rounded-lg hover:bg-white/10 transition-colors"
-              >
-                <XIcon size={20} />
-              </button>
-            </div>
 
-            {/* Modal Body */}
-            <div className="flex flex-row flex-wrap gap-[clamp(1rem,2vw,1.5rem)] w-full">
-              {/* Left Column - Configuration & Drag/Drop */}
-              <div className="bg-[#212325] rounded-[clamp(1rem,2vw,1.5rem)] border border-white/5 p-[clamp(1rem,2vw,1.5rem)] flex-1 min-w-[clamp(18rem,45%,32rem)] flex flex-col gap-[clamp(1rem,2vw,1.5rem)]">
-                <div>
-                  <Typography variant="h3" className="text-[clamp(0.875rem,1.4vw,1.75rem)] font-bold text-white mb-[0.25rem]">
-                    File Configuration
-                  </Typography>
-                  <Typography variant="p" className="text-[clamp(0.65rem,1.1vw,1.35rem)] text-gray-400">
-                    Select dataset classification category before uploading.
-                  </Typography>
-                </div>
+              {/* Steps timeline container */}
+              <div className="flex-1 flex flex-col justify-center relative pl-[clamp(1rem,2.2vw,2.5rem)] my-[clamp(1rem,2vw,2.5rem)]">
+                {/* Vertical Timeline line - placed perfectly centered behind the 9px dots */}
+                <div 
+                  className="absolute w-[1px] bg-[#2C2C2C]/25"
+                  style={{
+                    left: "calc(clamp(1rem, 2.2vw, 2.5rem) + 4px)",
+                    top: "clamp(0.5rem, 1vw, 1.25rem)",
+                    bottom: "clamp(0.5rem, 1vw, 1.25rem)"
+                  }}
+                />
 
-                {/* Categories Selector */}
-                <div className="flex flex-col gap-[0.75rem]">
-                  {categories.map((cat) => {
-                    const Icon = cat.icon;
-                    const isSelected = selectedCategory === cat.id;
-                    return (
-                      <button
-                        key={cat.id}
-                        onClick={() => setSelectedCategory(cat.id)}
-                        className={`flex items-start gap-[1rem] p-[1rem] rounded-[1rem] border text-left transition-all ${
-                          isSelected
-                            ? "border-[var(--brand-500)] bg-[var(--brand-500)]/10"
-                            : "border-white/5 bg-transparent hover:bg-white/5"
+                <div className="flex flex-col gap-[clamp(1.5rem,2.8vw,3.5rem)]">
+                  {[
+                    { name: "Customer Information", active: true },
+                    { name: "Legal Documents", active: false },
+                    { name: "Agriculture Report", active: false },
+                    { name: "Land & Boundaries", active: false },
+                    { name: "Valuation", active: false },
+                    { name: "Local Intelligence", active: false },
+                  ].map((step, idx) => (
+                    <div key={idx} className="relative flex items-center gap-[clamp(0.75rem,1.25vw,1.5rem)] z-10">
+                      {/* Step Dot Container to keep it perfectly centered with the line */}
+                      <div className="w-[9px] h-[9px] shrink-0 flex items-center justify-center">
+                        <div 
+                          className={`w-[9px] h-[9px] rounded-full transition-all ${
+                            step.active 
+                              ? "bg-[#CED2B4] border-[1.5px] border-[#CCDB99]/80 shadow-[0_0_0_3px_rgba(189,211,39,0.38)]" 
+                              : "bg-[#C0C2B7] border-[1.5px] border-[#CCDB99]/80"
+                          }`}
+                        />
+                      </div>
+                      {/* Step Text */}
+                      <span 
+                        className={`font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.65rem,0.83vw,0.75rem)] uppercase tracking-[0.6px] leading-none transition-colors ${
+                          step.active ? "text-[#2A3008] font-bold" : "text-[#808277]"
                         }`}
                       >
-                        <div className={`p-[0.5rem] rounded-[0.75rem] shrink-0 ${isSelected ? "bg-[var(--brand-500)] text-white" : "bg-white/5 text-gray-400"}`}>
-                          <Icon size={18} />
-                        </div>
-                        <div>
-                          <span className="block font-semibold text-[clamp(0.75rem,1.1vw,1.35rem)] text-white">{cat.label}</span>
-                          <span className="block text-[clamp(0.625rem,0.9vw,1.15rem)] text-gray-400 mt-0.5">{cat.desc}</span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Drag & Drop Area */}
-                <div
-                  onDragEnter={handleDrag}
-                  onDragOver={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDrop={handleDrop}
-                  onClick={onButtonClick}
-                  className={`border-2 border-dashed rounded-[1.25rem] p-[1.5rem] flex flex-col items-center justify-center text-center cursor-pointer transition-all ${
-                    dragActive
-                      ? "border-[var(--brand-500)] bg-[var(--brand-500)]/10 scale-[0.99]"
-                      : "border-white/10 hover:border-white/30 hover:bg-white/5"
-                  }`}
-                >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    className="hidden"
-                    onChange={handleFileChange}
-                  />
-                  <div className="w-[3rem] h-[3rem] bg-white/5 rounded-full flex items-center justify-center text-[var(--brand-500)] mb-[0.75rem]">
-                    <CloudUpload size={24} className="animate-bounce" />
-                  </div>
-                  <Typography variant="h4" className="text-[clamp(0.875rem,1.3vw,1.6rem)] font-semibold text-white mb-[0.25rem]">
-                    Drag & Drop your file here
-                  </Typography>
-                  <Typography variant="p" className="text-[clamp(0.625rem,0.9vw,1.15rem)] text-gray-400 mb-[0.75rem]">
-                    Supports CSV, JSON, GeoJSON, XLSX up to 50MB
-                  </Typography>
-                  <button
-                    type="button"
-                    className="px-[1rem] h-[2.25rem] rounded-full bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white font-medium text-[clamp(0.75rem,1.1vw,1.35rem)] transition-colors shadow-sm"
-                  >
-                    Browse Files
-                  </button>
-                </div>
-              </div>
-
-              {/* Right Column - Live Monitor / Upload Status */}
-              <div className="bg-[#212325] rounded-[clamp(1rem,2vw,1.5rem)] border border-white/5 p-[clamp(1rem,2vw,1.5rem)] flex-1 min-w-[clamp(18rem,45%,32rem)] flex flex-col gap-[clamp(1rem,2vw,1.5rem)]">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Typography variant="h3" className="text-[clamp(0.875rem,1.4vw,1.75rem)] font-bold text-white mb-[0.25rem]">
-                      Active Upload Monitor
-                    </Typography>
-                    <Typography variant="p" className="text-[clamp(0.65rem,1.1vw,1.35rem)] text-gray-400">
-                      Track live integration progress and validation results.
-                    </Typography>
-                  </div>
-                  <span className="px-[0.625rem] py-[0.125rem] rounded-full bg-white/5 text-[clamp(0.625rem,0.9vw,1.15rem)] font-semibold text-gray-300 flex items-center gap-[0.375rem]">
-                    <Clock size={10} />
-                    {files.filter(f => f.status === "uploading").length} active
-                  </span>
-                </div>
-
-                {/* Files List */}
-                <div className="flex flex-col gap-[0.75rem] overflow-y-auto max-h-[23.75rem] pr-[0.25rem]">
-                  {files.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-[4rem] text-center">
-                      <FileSpreadsheet size={40} className="text-white/20 mb-[0.5rem]" />
-                      <Typography variant="p" className="text-[clamp(0.75rem,1.1vw,1.35rem)] text-gray-400">
-                        No uploads tracked in this session yet.
-                      </Typography>
+                        {step.name}
+                      </span>
                     </div>
-                  ) : (
-                    files.map((file) => (
-                      <div
-                        key={file.id}
-                        className="flex flex-col gap-[0.5rem] p-[0.75rem] rounded-[0.75rem] border border-white/5 bg-[#191B1C] hover:border-white/10 transition-colors"
-                      >
-                        <div className="flex items-center justify-between gap-[0.75rem]">
-                          <div className="flex items-center gap-[0.5rem] min-w-0">
-                            <div className="p-[0.5rem] rounded-lg bg-white/5 text-gray-400 shrink-0">
-                              {file.name.endsWith(".geojson") ? <Layers size={16} /> : <FileSpreadsheet size={16} />}
-                            </div>
-                            <div className="min-w-0">
-                              <span className="block font-semibold text-[clamp(0.75rem,1.1vw,1.35rem)] text-white truncate">
-                                {file.name}
-                              </span>
-                              <div className="flex items-center gap-[0.375rem] mt-0.5">
-                                <span className="text-[clamp(0.625rem,0.9vw,1.15rem)] text-gray-400">{file.size}</span>
-                                <span className="text-[clamp(0.5rem,0.7vw,0.95rem)] px-[0.375rem] py-[0.125rem] rounded-full bg-white/5 text-gray-300">
-                                  {file.type}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Action buttons & status indicator */}
-                          <div className="flex items-center gap-[0.5rem] shrink-0">
-                            {file.status === "completed" && (
-                              <span className="flex items-center gap-[0.25rem] text-[clamp(0.625rem,0.9vw,1.15rem)] font-semibold text-[#8B9A46]">
-                                <CheckCircle size={12} />
-                                Ready
-                              </span>
-                            )}
-                            {file.status === "failed" && (
-                              <span className="flex items-center gap-[0.25rem] text-[clamp(0.625rem,0.9vw,1.15rem)] font-semibold text-red-400">
-                                <XCircle size={12} />
-                                Failed
-                              </span>
-                            )}
-                            {file.status === "uploading" && (
-                              <span className="flex items-center gap-[0.25rem] text-[clamp(0.625rem,0.9vw,1.15rem)] font-semibold text-[var(--brand-500)] animate-pulse">
-                                <Play size={10} className="animate-spin" />
-                                Uploading {file.progress}%
-                              </span>
-                            )}
-                            {file.status === "pending" && (
-                              <span className="flex items-center gap-[0.25rem] text-[clamp(0.625rem,0.9vw,1.15rem)] font-semibold text-yellow-500">
-                                <Clock size={10} />
-                                Queued
-                              </span>
-                            )}
-
-                            <button
-                              onClick={() => removeFile(file.id)}
-                              className="text-gray-400 hover:text-red-400 p-[0.25rem] rounded hover:bg-white/5 transition-colors"
-                              title="Remove"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Progress bar */}
-                        {file.status === "uploading" && (
-                          <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                            <div
-                              className="bg-[var(--brand-500)] h-full transition-all duration-300"
-                              style={{ width: `${file.progress}%` }}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  )}
+                  ))}
                 </div>
               </div>
             </div>
 
-            {/* Modal Footer */}
-            <div className="flex justify-end gap-[0.75rem] border-t border-white/10 pt-[1rem] mt-[0.5rem]">
-              <button
-                type="button"
-                onClick={() => setIsUploadModalOpen(false)}
-                className="px-[1.25rem] h-[2.5rem] rounded-full border border-white/10 hover:bg-white/5 text-white font-medium text-[clamp(0.75rem,1.1vw,1.35rem)] transition-all"
+            {/* Right Side: Content Area / Preview */}
+            <div className="w-full md:w-[clamp(15rem,22.22vw,22rem)] bg-[#F3F4F1] h-full flex flex-col justify-between items-center p-[clamp(1.5rem,2.78vw,3rem)] pt-[clamp(2.5rem,4vw,5rem)] pb-[clamp(1.5rem,2.78vw,3rem)] shrink-0">
+              
+              {/* Floating Rotated Card Illustration */}
+              <div 
+                className="bg-white border border-[#C6C8BA]/20 shadow-[0px_4px_16px_rgba(0,0,0,0.06)] rounded-[clamp(1rem,1.67vw,1.8rem)] p-[clamp(1rem,1.3vw,1.5rem)] flex flex-col gap-[clamp(0.5rem,0.6vw,0.8rem)] w-[clamp(11rem,16.67vw,17rem)] h-[clamp(10rem,15.59vw,16rem)] transition-transform duration-300 hover:scale-[1.03] select-none"
+                style={{ transform: "rotate(2deg)" }}
               >
-                Close Portal
+                {/* Document Preview Image */}
+                <div className="w-full aspect-[4/3] rounded-[clamp(0.5rem,0.83vw,1rem)] overflow-hidden shrink-0">
+                  <img 
+                    src="/super-admin/images/document_preview_mockup.png" 
+                    alt="Document Mockup Preview" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {/* Skeleton Lines */}
+                <div className="w-[60%] h-[clamp(0.35rem,0.5vw,0.6rem)] bg-[#EDEEEB] rounded-full mt-1" />
+                <div className="w-[40%] h-[clamp(0.35rem,0.5vw,0.6rem)] bg-[#EDEEEB] rounded-full" />
+              </div>
+
+              {/* Text description */}
+              <p 
+                className="font-['Plus_Jakarta_Sans'] font-semibold text-[12px] leading-[16px] text-[#45483E] text-center tracking-[0.6px] my-[clamp(0.75rem,1vw,1.5rem)]"
+                style={{ width: "212px" }}
+              >
+                Upload high-resolution scans of your land titles and documents in PDF format.
+              </p>
+
+              {/* Button */}
+              <button
+                onClick={() => {
+                  setIsUploadModalOpen(false);
+                  navigate("/super-admin/upload/land-details/GLCSOS-05");
+                }}
+                className="hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-[0px_4px_12px_rgba(42,48,8,0.2)] text-white font-['Plus_Jakarta_Sans'] font-medium text-[clamp(0.75rem,0.9vw,1.1rem)] w-[clamp(12rem,15.95vw,17rem)] h-[clamp(2.25rem,2.76vw,3.25rem)] rounded-[35px]"
+                style={{
+                  background: "radial-gradient(50% 50% at 50% 50%, #3D4A0D 0%, #2A3008 100%)",
+                }}
+              >
+                <span>Start Uploading Documents</span>
+                <ArrowUpRight size={14} className="text-white shrink-0" />
               </button>
             </div>
           </div>
