@@ -19,18 +19,18 @@ export const MOCK_DASHBOARD_STATS: DashboardStats = {
 };
 
 export const MOCK_VOLUME_DATA: VolumeDataPoint[] = [
-  { month: "Jan", approved: 200, target: 500 },
-  { month: "Feb", approved: 200, target: 500 },
-  { month: "Mar", approved: 320, target: 500 },
-  { month: "Apr", approved: 430, target: 500 },
-  { month: "May", approved: 280, target: 500 },
-  { month: "Jun", approved: 200, target: 500 },
-  { month: "Jul", approved: 200, target: 500 },
-  { month: "Aug", approved: 430, target: 500 },
-  { month: "Sep", approved: 320, target: 500 },
-  { month: "Oct", approved: 200, target: 500 },
-  { month: "Nov", approved: 430, target: 500 },
-  { month: "Dec", approved: 320, target: 500 },
+  { month: "Jan", approved: 200, target: 600 },
+  { month: "Feb", approved: 200, target: 600 },
+  { month: "Mar", approved: 320, target: 600 },
+  { month: "Apr", approved: 430, target: 600 },
+  { month: "May", approved: 280, target: 600 },
+  { month: "Jun", approved: 200, target: 600 },
+  { month: "Jul", approved: 200, target: 600 },
+  { month: "Aug", approved: 430, target: 600 },
+  { month: "Sep", approved: 320, target: 600 },
+  { month: "Oct", approved: 200, target: 600 },
+  { month: "Nov", approved: 430, target: 600 },
+  { month: "Dec", approved: 320, target: 600 },
 ];
 
 export const dashboardMockData = {

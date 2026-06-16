@@ -12,7 +12,7 @@ export interface FarmlandDetail {
   agentName: string;
   agentAvatar?: string;
   status: "Approved" | "Pending" | "In Review" | "Completed" | "Returned to RO" | "Escalated to IO";
-  badge: "HIGH VALUE" | "LARGE ACREAGE" | "URGENT" | "STANDARD";
+  badge: "HIGH VALUE" | "LARGE ACREAGE" | "URGENT" | "STANDARD" | "MEDIUM";
   location: string;
   totalArea: string;
   amount: string;
@@ -35,8 +35,8 @@ export const MOCK_FARMLANDS: FarmlandDetail[] = [
     id: "GLC SOS 01",
     code: "#FL-8402",
     agentName: "Kishore Moore",
-    status: "Approved",
-    badge: "HIGH VALUE",
+    status: "Pending",
+    badge: "URGENT",
     location: "Kurnool, AP",
     totalArea: "450 acres",
     amount: "₹2.4 Cr",
@@ -69,9 +69,9 @@ export const MOCK_FARMLANDS: FarmlandDetail[] = [
     code: "#FL-8411",
     agentName: "Ram Varma",
     status: "Pending",
-    badge: "LARGE ACREAGE",
+    badge: "URGENT",
     location: "Anantapur, AP",
-    totalArea: "1,200 acres",
+    totalArea: "1,20 acres",
     amount: "₹4.8 Cr",
     costPerAcre: "₹4.0k",
     submissionDate: "28 May 2026",
@@ -101,7 +101,7 @@ export const MOCK_FARMLANDS: FarmlandDetail[] = [
     code: "#FL-8415",
     agentName: "Arjun Vardhan",
     status: "In Review",
-    badge: "URGENT",
+    badge: "MEDIUM",
     location: "Chittoor, AP",
     totalArea: "210 acres",
     amount: "₹8.5 Cr",
@@ -134,7 +134,7 @@ export const MOCK_FARMLANDS: FarmlandDetail[] = [
     code: "#FL-8416",
     agentName: "Raju Oberoi",
     status: "In Review",
-    badge: "URGENT",
+    badge: "MEDIUM",
     location: "Guntur, AP",
     totalArea: "210 acres",
     amount: "₹5.5 Cr",

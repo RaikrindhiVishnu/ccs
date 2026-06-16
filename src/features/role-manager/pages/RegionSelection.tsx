@@ -551,6 +551,11 @@ const RegionSelection: React.FC = () => {
       setSelectedMandals([]);
       setAreaName("");
       setAreaCode("");
+      if (map.current) {
+        try {
+          map.current.removeFeatureState({ source: "mandals-source" });
+        } catch (e) {}
+      }
     }
   }, [selectedRegion, mode]);
 
@@ -984,6 +989,15 @@ const RegionSelection: React.FC = () => {
     setDistrictSearchQuery("");
     setDistrictDropdownOpen(false);
 
+    if (map.current) {
+      try {
+        map.current.removeFeatureState({ source: "districts-source" });
+      } catch (e) {}
+      try {
+        map.current.removeFeatureState({ source: "mandals-source" });
+      } catch (e) {}
+    }
+
     // Clear district data from map
     if (map.current?.getSource("districts-source")) {
       const source = map.current.getSource(
@@ -1150,7 +1164,16 @@ const RegionSelection: React.FC = () => {
             if (e.defaultPrevented) return;
             const currentSearchParams = new URLSearchParams(window.location.search);
             const currentMode = currentSearchParams.get("mode") || "region";
-            if (currentMode === "area") return; // Block selection in Area Mode
+            if (currentMode === "area") {
+              if (e.features && e.features.length > 0) {
+                const districtFeature = e.features[0];
+                const isAssigned = districtFeature.properties?.isAssigned;
+                if (!isAssigned) {
+                  toast.error("This district is not part of any region. Please select a created region or create a new region first.");
+                }
+              }
+              return; // Block selection in Area Mode
+            }
             if (e.features && e.features.length > 0) {
               const districtFeature = e.features[0];
               const districtData = districtFeature.properties;
@@ -2631,6 +2654,11 @@ const RegionSelection: React.FC = () => {
         selectedDistricts: [...selectedDistricts],
       });
 
+      if (map.current) {
+        try {
+          map.current.removeFeatureState({ source: "districts-source" });
+        } catch (e) {}
+      }
       setSelectedDistricts([]);
       setIsModalOpen(false);
       setRegionName("");
@@ -2695,15 +2723,11 @@ const RegionSelection: React.FC = () => {
         console.warn("Failed to trigger areas query refetch:", refetchErr);
       }
 
-      selectedMandals.forEach((m) => {
-        const featId = m.featureId !== undefined ? m.featureId : m.id;
-        if (featId !== undefined) {
-          map.current?.setFeatureState(
-            { source: "mandals-source", id: featId },
-            { selected: false },
-          );
-        }
-      });
+      if (map.current) {
+        try {
+          map.current.removeFeatureState({ source: "mandals-source" });
+        } catch (e) {}
+      }
 
       const now = new Date();
       const createdAreaId =
@@ -2916,6 +2940,11 @@ const RegionSelection: React.FC = () => {
               } else if ((mode === "region" || mode === "area") && selectedRegion) {
                 setSelectedRegion(null);
                 setSelectedMandals([]);
+                if (map.current) {
+                  try {
+                    map.current.removeFeatureState({ source: "mandals-source" });
+                  } catch (e) {}
+                }
                 if (selectedState) {
                   const bounds = getFeatureBounds(selectedState);
                   map.current?.fitBounds(bounds, {
@@ -3218,15 +3247,11 @@ const RegionSelection: React.FC = () => {
                 </div>
                 <button
                   onClick={() => {
-                    selectedDistricts.forEach((d) => {
-                      const featId = d.featureId !== undefined ? d.featureId : d.id;
-                      if (featId !== undefined && map.current) {
-                        map.current.setFeatureState(
-                          { source: "districts-source", id: featId },
-                          { selected: false },
-                        );
-                      }
-                    });
+                    if (map.current) {
+                      try {
+                        map.current.removeFeatureState({ source: "districts-source" });
+                      } catch (e) {}
+                    }
                     setSelectedDistricts([]);
                   }}
                   className="p-1.5 rounded-full hover:bg-slate-100 transition-colors border border-transparent shadow-sm cursor-pointer"
@@ -3458,15 +3483,11 @@ const RegionSelection: React.FC = () => {
                 </div>
                 <button
                   onClick={() => {
-                    selectedMandals.forEach((m) => {
-                      const featId = m.featureId !== undefined ? m.featureId : m.id;
-                      if (featId !== undefined && map.current) {
-                        map.current.setFeatureState(
-                          { source: "mandals-source", id: featId },
-                          { selected: false },
-                        );
-                      }
-                    });
+                    if (map.current) {
+                      try {
+                        map.current.removeFeatureState({ source: "mandals-source" });
+                      } catch (e) {}
+                    }
                     setSelectedMandals([]);
                   }}
                   className="p-1.5 rounded-full hover:bg-slate-100 transition-colors border border-transparent shadow-sm cursor-pointer"

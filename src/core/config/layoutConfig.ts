@@ -92,6 +92,7 @@ export const MOCK_USERS: Record<
 // ─── Master Layout Config ─────────────────────────────────────────────────────
 export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
   SADMIN: {
+  SUPERADMIN: {
   layoutVariant: "sidebar-super-admin",
   roleLabel: "Super Admin",
   navItems: [

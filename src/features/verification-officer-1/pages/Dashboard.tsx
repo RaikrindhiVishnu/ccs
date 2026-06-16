@@ -183,7 +183,7 @@ export const Dashboard = () => {
       {/* 5. Case Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
         {filteredFarmlands.length > 0 ? (
-          filteredFarmlands.map((farmland) => (
+          filteredFarmlands.slice(0, 4).map((farmland) => (
             <FarmlandCard key={farmland.id} farmland={farmland} />
           ))
         ) : (

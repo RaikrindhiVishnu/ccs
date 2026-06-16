@@ -88,6 +88,12 @@ export const VerificationOfficer1AssignedFarmlandsOwnerDetails = lazy(
 export const VerificationOfficer1Layout = lazy(
   () => import("../../components/common/layouts/VerificationOfficer1Layout"),
 );
+export const VerificationOfficer1Login = lazy(
+  () => import("../../features/verification-officer-1/pages/Login"),
+);
+export const VerificationOfficer1Profile = lazy(
+  () => import("../../features/verification-officer-1/pages/Profile"),
+);
 
 // Verification Officer 3 (VO3)
 export const VerificationOfficer3Dashboard = lazy(
@@ -181,3 +187,10 @@ export const SuperAdminUploadViewMaps = lazy(() => import("../../features/super-
 export const SuperAdminUploadCustomerInformation = lazy(() => import("../../features/super-admin/pages/SuperAdminUploadCustomerInformation"),);
 
 
+export const SuperAdminPoolBuying = lazy(() => import ("../../features/super-admin/pages/SuperAdminPoolBuying"),);
+export const SuperAdminPoolCreate = lazy(() => import ("../../features/super-admin/pages/SuperAdminPoolCreate"),);
+export const SuperAdminPoolBuyingAll = lazy(() => import("../../features/super-admin/pages/SuperAdminPoolBuyingAll"),);
+export const SuperAdminPoolDetails = lazy(() => import ("../../features/super-admin/pages/SuperAdminPoolDetails"),);
+export const SuperAdminPoolInvestorDetails = lazy(() => import ("../../features/super-admin/pages/SuperAdminPoolInvestorDetails"),);
+export const SuperAdminPoolPublished = lazy(() => import("../../features/super-admin/pages/SuperAdminPoolPublished"));
+export const SuperAdminPoolCreated = lazy(() => import("../../features/super-admin/pages/SuperAdminPoolCreated"));

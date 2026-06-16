@@ -14,7 +14,7 @@ export const VerificationOfficer1Layout = () => {
     <div className="min-h-screen bg-[#EBEBEB] flex flex-col font-plus-jakarta pb-12 layout-container-zoom">
 
       {/* Top Header Bar */}
-      <header 
+      <header
         className="w-full h-auto min-h-[83px] py-4 mx-auto mt-4 md:mt-6 px-4 md:px-8 flex flex-col md:flex-row items-center justify-between relative z-10 gap-4 md:gap-0"
         style={{ maxWidth: '1327px' }}
       >
@@ -40,8 +40,8 @@ export const VerificationOfficer1Layout = () => {
                 key={item.id}
                 onClick={() => navigate(item.path)}
                 className={`transition-all duration-300 h-[40px] flex items-center justify-center whitespace-nowrap cursor-pointer border-none bg-transparent ${isActive
-                    ? 'text-[#1A1C1D] font-extrabold text-[16px] leading-[20px]'
-                    : 'text-[#5D6B6B] font-semibold text-[16px] leading-[20px] hover:opacity-75'
+                  ? 'text-[#1A1C1D] font-extrabold text-[16px] leading-[20px]'
+                  : 'text-[#5D6B6B] font-semibold text-[16px] leading-[20px] hover:opacity-75'
                   }`}
               >
                 {item.label}
@@ -74,14 +74,17 @@ export const VerificationOfficer1Layout = () => {
             <span className="absolute top-[10px] right-[10px] w-[8px] h-[8px] bg-[#EF4646] rounded-full border-[1.5px] border-white" />
           </button>
 
-          <button className="w-[52px] h-[52px] rounded-full overflow-hidden border border-gray-100 shadow-sm cursor-pointer hover:opacity-90 transition-opacity border-none bg-transparent p-0">
+          <button 
+            onClick={() => navigate("/verification-officer-1/profile")}
+            className="w-[52px] h-[52px] rounded-full overflow-hidden border border-gray-100 shadow-sm cursor-pointer hover:opacity-90 transition-opacity border-none bg-transparent p-0"
+          >
             <img src={profileImg} alt="Profile" className="w-full h-full object-cover" />
           </button>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main 
+      <main
         className="w-full mx-auto mt-8 px-4 md:px-0"
         style={{ maxWidth: '1327px' }}
       >
