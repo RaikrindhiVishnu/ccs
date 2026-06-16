@@ -25,7 +25,7 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
 
   const handleNext = () => {
     if (isBoundaryConfirmed) {
-      navigate(`/super-admin/assigned-farmlands/${targetId}/customer-information`);
+      navigate(`/super-admin/upload/customer-information/${targetId}`);
     } else {
       navigate(`/super-admin/upload/view-maps/${targetId}`);
     }

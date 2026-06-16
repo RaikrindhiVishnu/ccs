@@ -146,7 +146,8 @@ import {
     SuperAdminValuation,
     SuperAdminLocalIntelligence,
     SuperAdminUploadLandDetails,
-    SuperAdminUploadViewMaps
+    SuperAdminUploadViewMaps,
+    SuperAdminUploadCustomerInformation
 } from './routes.config';
 
 
@@ -362,6 +363,9 @@ export const authRoutes: RouteObject[] = [
             }, {
                 path: '/super-admin/upload/view-maps/:id',
                 element: <SuperAdminUploadViewMaps />
+            }, {
+                path: '/super-admin/upload/customer-information/:id',
+                element: <SuperAdminUploadCustomerInformation />
             }, {
                 path: '/super-admin/user-profile/:id',
                 element: <SuperAdminUserProfile />
