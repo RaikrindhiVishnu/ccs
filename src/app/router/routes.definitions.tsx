@@ -131,7 +131,19 @@ import {
     SuperAdminTopPerformers,
     SuperAdminFarmlandDetails,
     SuperAdminAgentProfile,
-    SuperAdminProfile
+    SuperAdminProfile,
+    SuperAdminPoolBuying,
+    SuperAdminPoolBuyingAll,
+    SuperAdminPoolCreate,
+    SuperAdminPoolCreated,
+    SuperAdminPoolPublished,
+    SuperAdminPoolDetails,
+    SuperAdminPoolInvestorDetails,
+    SuperAdminLegalDocuments,
+    SuperAdminAgricultureReport,
+    SuperAdminLandBoundaries,
+    SuperAdminValuation,
+    SuperAdminLocalIntelligence
 } from './routes.config';
 
 
@@ -353,7 +365,49 @@ export const authRoutes: RouteObject[] = [
             }, {
                 path: '/super-admin/profile',
                 element: <SuperAdminProfile />
+            }, {
+                path: '/super-admin/pool-buying',
+                element: <SuperAdminPoolBuying />
+            }, {
+                path: '/super-admin/pool-buying/create',
+                element: <SuperAdminPoolCreate />
+            }, {
+                path: '/super-admin/pool-buying/created',
+                element: <SuperAdminPoolCreated />
+            }, {
+                path: '/super-admin/pool-buying/published',
+                element: <SuperAdminPoolPublished />
+            }, {
+                path: '/super-admin/pool-buying/all',
+                element: <SuperAdminPoolBuyingAll />
+            }, {
+                path: '/super-admin/pool-buying/:id',
+                element: <SuperAdminPoolDetails />
+            }, {
+                path: '/super-admin/pool-buying/:id/investor/:investorId',
+                element: <SuperAdminPoolInvestorDetails />
             },
+
+            {
+  path: '/super-admin/Documents/legal-documents/:id',
+  element: <SuperAdminLegalDocuments />,
+},
+{
+  path: '/super-admin/Documents/agriculture-report/:id',
+  element: <SuperAdminAgricultureReport />,
+},
+{
+  path: '/super-admin/Documents/land-boundaries/:id',
+  element: <SuperAdminLandBoundaries />,
+},
+{
+  path: '/super-admin/Documents/valuation/:id',
+  element: <SuperAdminValuation />,
+},
+{
+  path: '/super-admin/Documents/local-intelligence/:id',
+  element: <SuperAdminLocalIntelligence />,
+},
         ]
 
     },

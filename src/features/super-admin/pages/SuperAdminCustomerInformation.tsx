@@ -149,7 +149,7 @@ export const SuperAdminCustomerInformation: React.FC = () => {
 
   const handleProceed = () => {
     setIsModalOpen(false);
-    navigate('/super-admin/dashboard');
+    navigate(`/super-admin/Documents/legal-documents/${targetId}`);
   };
 
   return (
@@ -204,53 +204,31 @@ export const SuperAdminCustomerInformation: React.FC = () => {
             {/* Vertical Line */}
             <div className="absolute left-[27px] top-[10px] bottom-[10px] w-px bg-gray-200" />
             
-            {/* Step 1 */}
-            <div className="relative flex items-center gap-4">
-              <div className="w-6 h-6 rounded-full bg-white border border-[#A3C33D] flex items-center justify-center relative z-10">
-                <div className="w-3 h-3 rounded-full bg-[#A3C33D]" />
-              </div>
-              <span className="font-bold text-[#A3C33D] tracking-wider text-sm">CUSTOMER INFORMATION</span>
-            </div>
-
-            {/* Step 2 */}
-            <div className="relative flex items-center gap-4">
-              <div className="w-6 h-6 rounded-full bg-white border border-[#A3C33D] flex items-center justify-center relative z-10">
-                <div className="w-3 h-3 rounded-full bg-[#A3C33D]" />
-              </div>
-              <span className="font-bold text-gray-500 tracking-wider text-sm">LEGAL DOCUMENTS</span>
-            </div>
-
-            {/* Step 3 */}
-            <div className="relative flex items-center gap-4">
-              <div className="w-6 h-6 rounded-full bg-white border border-[#A3C33D] flex items-center justify-center relative z-10">
-                <div className="w-3 h-3 rounded-full bg-[#A3C33D]" />
-              </div>
-              <span className="font-bold text-gray-500 tracking-wider text-sm">AGRICULTURE REPORT</span>
-            </div>
-
-            {/* Step 4 */}
-            <div className="relative flex items-center gap-4">
-              <div className="w-6 h-6 rounded-full bg-white border border-[#A3C33D] flex items-center justify-center relative z-10">
-                <div className="w-3 h-3 rounded-full bg-[#A3C33D]" />
-              </div>
-              <span className="font-bold text-gray-500 tracking-wider text-sm">LAND & BOUNDARIES</span>
-            </div>
-
-            {/* Step 5 */}
-            <div className="relative flex items-center gap-4">
-              <div className="w-6 h-6 rounded-full bg-white border border-[#A3C33D] flex items-center justify-center relative z-10">
-                <div className="w-3 h-3 rounded-full bg-[#A3C33D]" />
-              </div>
-              <span className="font-bold text-gray-500 tracking-wider text-sm">VALUATION</span>
-            </div>
-
-            {/* Step 6 */}
-            <div className="relative flex items-center gap-4">
-              <div className="w-6 h-6 rounded-full bg-white border border-[#A3C33D] flex items-center justify-center relative z-10">
-                <div className="w-3 h-3 rounded-full bg-[#A3C33D]" />
-              </div>
-              <span className="font-bold text-gray-500 tracking-wider text-sm">LOCAL INTELLIGENCE</span>
-            </div>
+            {
+              [
+                { name: 'CUSTOMER INFORMATION', route: `/super-admin/assigned-farmlands/${targetId}/customer-information` },
+                { name: 'LEGAL DOCUMENTS', route: `/super-admin/Documents/legal-documents/${targetId}` },
+                { name: 'AGRICULTURE REPORT', route: `/super-admin/Documents/agriculture-report/${targetId}` },
+                { name: 'LAND & BOUNDARIES', route: `/super-admin/Documents/land-boundaries/${targetId}` },
+                { name: 'VALUATION', route: `/super-admin/Documents/valuation/${targetId}` },
+                { name: 'LOCAL INTELLIGENCE', route: `/super-admin/Documents/local-intelligence/${targetId}` },
+              ].map((step) => {
+              const isCurrent = step.name === 'CUSTOMER INFORMATION';
+              return (
+                <div 
+                  key={step.name} 
+                  className={`relative flex items-center gap-6 cursor-pointer hover:opacity-80 transition-opacity`}
+                  onClick={() => navigate(step.route)}
+                >
+                  <div className="w-6 h-6 rounded-full bg-white border border-[#A3C33D] flex items-center justify-center relative z-10 shadow-sm">
+                    <div className="w-3 h-3 rounded-full bg-[#A3C33D]" />
+                  </div>
+                  <span className={`font-bold tracking-wider text-[13px] ${isCurrent ? 'text-[#A3C33D]' : 'text-gray-500'}`}>
+                    {step.name}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
 

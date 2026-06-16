@@ -4,15 +4,15 @@ import { Search, ChevronDown, ArrowUpRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import SuperAdminHeader from "@/features/super-admin/components/SuperAdminHeader";
-import SuperAdminFarmlandsListCard from "@/features/super-admin/components/SuperAdminFarmlandsListCard";
 import VisitorSalesCard from "@/features/super-admin/components/VisitorSalesCard";
 import FarmlandStatsCard from "@/features/super-admin/components/FarmlandStatsCard";
+import PoolBuyingCard from "@/features/super-admin/components/PoolBuyingCard";
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 
-const SuperAdminFarmlandsListPreview: React.FC=() => {
-  const navigate=useNavigate();
-  const data=mockDashboardData;
-  const previewCards=data.farmlandsList?.slice(0, 4) || [];
+const SuperAdminPoolBuying: React.FC = () => {
+  const navigate = useNavigate();
+  const data = mockDashboardData;
+  const previewPools = data.poolBuyingPools?.slice(0, 2) || [];
 
   return (
     <div className="box-border flex min-h-full flex-col gap-[clamp(12px,0.5vw,16px)] p-[clamp(6px,0.83vw,12px)] py-[clamp(16px,1.5vw,32px)]">
@@ -20,7 +20,7 @@ const SuperAdminFarmlandsListPreview: React.FC=() => {
       <div className="shrink-0">
         <SuperAdminHeader
           title="SUPER ADMIN"
-          breadcrumb=""
+          breadcrumb="Assigned Farmlands"
         >
           {/* Visitor + Sales cards overlaid inside the header area */}
           <div className="flex items-start justify-between gap-4 mt-4 w-full h-full relative z-10">
@@ -37,26 +37,38 @@ const SuperAdminFarmlandsListPreview: React.FC=() => {
         </SuperAdminHeader>
       </div>
 
-      {/* ── Farmlands List Section ── */}
+      {/* ── Pool Buying Section ── */}
       <div className="mt-6 flex flex-col gap-6">
+        {/* Title Row */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="flex flex-col">
             <h2 className="text-[1.5rem] font-bold text-[var(--text-primary)] tracking-tight">
-              Farmlands List
+              Pool Buying
             </h2>
             <p className="text-[0.875rem] text-[var(--text-muted)] font-medium">
-              Managed dossiers from premium agents
+              Manage collective farmland investment pools
             </p>
           </div>
-          <Button
-            onClick={() => navigate("/super-admin/farmlands-list/all")}
-            className="rounded-full px-6 bg-[#2D3032] hover:bg-black text-white font-medium self-start md:self-auto flex items-center gap-2"
-          >
-            View all
-            <ArrowUpRight size={16} />
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => navigate("/super-admin/pool-buying/create")}
+              
+              className="flex-1 rounded-full px-6 bg-[#2D3032] hover:bg-black text-white font-medium flex items-center justify-center gap-2"
+            >
+              Create Pool
+              <ArrowUpRight size={16} />
+            </Button>
+            <Button
+              onClick={() => navigate("/super-admin/pool-buying/all")}
+              className="flex-1 rounded-full px-6 bg-[#2D3032] hover:bg-black text-white font-medium flex items-center justify-center gap-2"
+            >
+              View all
+              <ArrowUpRight size={16} />
+            </Button>
+          </div>
         </div>
 
+        {/* Search + Filters */}
         <div className="flex flex-col xl:flex-row gap-4 justify-between xl:items-center">
           <div className="w-full xl:w-[320px]">
             <Input
@@ -66,7 +78,7 @@ const SuperAdminFarmlandsListPreview: React.FC=() => {
               wrapperClassName="h-10"
             />
           </div>
-          
+
           <div className="flex flex-wrap gap-3">
             {["Area", "Region", "State", "Status"].map((filter) => (
               <button
@@ -80,18 +92,14 @@ const SuperAdminFarmlandsListPreview: React.FC=() => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {previewCards.map((farmland) => (
-            <SuperAdminFarmlandsListCard
-  key={farmland.id}
-  data={farmland}
-  onViewDetails={(id) =>
-    navigate(`/super-admin/farmlands-list/${id}`)
-  }
-  onEditTag={(id) =>
-    navigate(`/super-admin/edit-farmland-tag/${id}`)
-  }
-/>
+        {/* Pool Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {previewPools.map((pool) => (
+            <PoolBuyingCard
+              key={pool.id}
+              data={pool}
+              onViewDetails={(id) => navigate(`/super-admin/pool-buying/${id}`)}
+            />
           ))}
         </div>
       </div>
@@ -99,4 +107,4 @@ const SuperAdminFarmlandsListPreview: React.FC=() => {
   );
 };
 
-export default SuperAdminFarmlandsListPreview;
+export default SuperAdminPoolBuying;

@@ -416,7 +416,7 @@ export const mockDashboardData: DashboardData = {
         query: "3rd Oct - 4:13",
         actions: "Requested an enquiry",
         comments: "Lorem ipsum dolor...",
-        commentsHighlight: "Lorem ipsum dolor...",
+        commentsHighlight: "Active Deal",
         subscriptions: "Subscribed"
       },
       {
@@ -428,7 +428,7 @@ export const mockDashboardData: DashboardData = {
         phone: "+91 912 345 6789",
         query: "3rd Oct - 4:13",
         actions: "Visited",
-        comments: "N/A",
+        commentsHighlight: "Awaiting Response",
         subscriptions: "Subscribed"
       },
       {
@@ -441,7 +441,7 @@ export const mockDashboardData: DashboardData = {
         query: "3rd Oct - 4:13",
         actions: "Documents Unlocked",
         comments: "Lorem ipsum dolor...",
-        commentsHighlight: "Lorem ipsum dolor...",
+        commentsHighlight: "Follow-up Scheduled",
         subscriptions: "Subscribed"
       },
       {
@@ -454,7 +454,7 @@ export const mockDashboardData: DashboardData = {
         query: "3rd Oct - 4:13",
         actions: "Requested an enquiry",
         comments: "Lorem ipsum dolor...",
-        commentsHighlight: "Lorem ipsum dolor...",
+        commentsHighlight: "Interested",
         subscriptions: "N/A"
       },
       {
@@ -541,5 +541,181 @@ export const mockDashboardData: DashboardData = {
         status: "Cleared"
       }
     ]
+  },
+
+  poolBuyingPools: [
+    {
+      id: "POOL-001",
+      location: "Hyderabad, Telangana",
+      farmlandId: "GLCSOS 043",
+      investors: 45,
+      status: "Active" as const,
+      raisedAmount: 750000,
+      targetAmount: 1000000,
+      image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=500&auto=format&fit=crop&q=60"
+    },
+    {
+      id: "POOL-002",
+      location: "Hyderabad, Telangana",
+      farmlandId: "GLCSOS 043",
+      investors: 45,
+      status: "Active" as const,
+      raisedAmount: 750000,
+      targetAmount: 1000000,
+      image: "https://images.unsplash.com/photo-1590682680695-43b964a3ae17?w=500&auto=format&fit=crop&q=60"
+    },
+    {
+      id: "POOL-003",
+      location: "Hyderabad, Telangana",
+      farmlandId: "GLCSOS 043",
+      investors: 45,
+      status: "Active" as const,
+      raisedAmount: 750000,
+      targetAmount: 1000000,
+      image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=500&auto=format&fit=crop&q=60"
+    },
+    {
+      id: "POOL-004",
+      location: "Hyderabad, Telangana",
+      farmlandId: "GLCSOS 043",
+      investors: 45,
+      status: "Active" as const,
+      raisedAmount: 750000,
+      targetAmount: 1000000,
+      image: "https://images.unsplash.com/photo-1590682680695-43b964a3ae17?w=500&auto=format&fit=crop&q=60"
+    },
+    {
+      id: "POOL-005",
+      location: "Hyderabad, Telangana",
+      farmlandId: "GLCSOS 043",
+      investors: 45,
+      status: "Active" as const,
+      raisedAmount: 750000,
+      targetAmount: 1000000,
+      image: "https://images.unsplash.com/photo-1589923188900-85dae523342b?w=500&auto=format&fit=crop&q=60"
+    },
+    {
+      id: "POOL-006",
+      location: "Hyderabad, Telangana",
+      farmlandId: "GLCSOS 043",
+      investors: 45,
+      status: "Active" as const,
+      raisedAmount: 750000,
+      targetAmount: 1000000,
+      image: "https://images.unsplash.com/photo-1621508678036-7c08a91ec552?w=500&auto=format&fit=crop&q=60"
+    }
+  ],
+
+  poolDetails: {
+    "POOL-001": {
+      id: "POOL-001",
+      farmlandId: "GLCSOS 043",
+      totalLandArea: "3.00 Acres",
+      raisedAmount: "₹7.50 Cr",
+      targetAmount: "₹10.00 Cr",
+      totalInvestment: "₹25,00,000",
+      totalInvestors: 32,
+      mapImage: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&auto=format&fit=crop&q=80",
+      investors: [
+        {
+          id: "INV-1024",
+          name: "Rajesh Kumar",
+          avatar: "https://i.pravatar.cc/150?u=rajesh",
+          investedAmount: "5,00,000",
+          landAllocated: "0.33 Acres",
+          ownershipPercent: "10.00%",
+          location: "Hyderabad, Telangana",
+          investedOn: "12 May 2026",
+          plotId: "A-01",
+          poolName: "GLC SOS 01",
+          status: "Active" as const,
+          tenure: "36 Months"
+        },
+        {
+          id: "INV-1025",
+          name: "Vishnu",
+          avatar: "https://i.pravatar.cc/150?u=vishnu",
+          investedAmount: "5,00,000",
+          landAllocated: "0.33 Acres",
+          ownershipPercent: "10.00%",
+          location: "Hyderabad, Telangana",
+          investedOn: "12 May 2026",
+          plotId: "A-02",
+          poolName: "GLC SOS 01",
+          status: "Active" as const,
+          tenure: "36 Months"
+        },
+        {
+          id: "INV-1026",
+          name: "Tamim",
+          avatar: "https://i.pravatar.cc/150?u=tamim",
+          investedAmount: "5,00,000",
+          landAllocated: "0.33 Acres",
+          ownershipPercent: "10.00%",
+          location: "Hyderabad, Telangana",
+          investedOn: "12 May 2026",
+          plotId: "A-03",
+          poolName: "GLC SOS 01",
+          status: "Active" as const,
+          tenure: "36 Months"
+        },
+        {
+          id: "INV-1027",
+          name: "Lakshman Rao",
+          avatar: "https://i.pravatar.cc/150?u=lakshman",
+          investedAmount: "5,00,000",
+          landAllocated: "0.20 Acres",
+          ownershipPercent: "6.67%",
+          location: "Hyderabad, Telangana",
+          investedOn: "12 May 2026",
+          plotId: "B-01",
+          poolName: "GLC SOS 01",
+          status: "Active" as const,
+          tenure: "36 Months"
+        },
+        {
+          id: "INV-1028",
+          name: "Ram Gopal",
+          avatar: "https://i.pravatar.cc/150?u=ramgopal",
+          investedAmount: "7,50,000",
+          landAllocated: "1.5 Acres",
+          ownershipPercent: "15.00%",
+          location: "Hyderabad, Telangana",
+          investedOn: "12 May 2026",
+          plotId: "C-01",
+          poolName: "GLC SOS 01",
+          status: "Active" as const,
+          tenure: "36 Months"
+        },
+        {
+          id: "INV-1029",
+          name: "Rajesh Kumar",
+          avatar: "https://i.pravatar.cc/150?u=rajesh2",
+          investedAmount: "3,00,000",
+          landAllocated: "0.50 Acres",
+          ownershipPercent: "5.00%",
+          location: "Hyderabad, Telangana",
+          investedOn: "12 May 2026",
+          plotId: "D-01",
+          poolName: "GLC SOS 01",
+          status: "Active" as const,
+          tenure: "24 Months"
+        },
+        {
+          id: "INV-1030",
+          name: "Arjun Kumar",
+          avatar: "https://i.pravatar.cc/150?u=arjunkumar",
+          investedAmount: "4,00,000",
+          landAllocated: "1.02 Acres",
+          ownershipPercent: "8.00%",
+          location: "Hyderabad, Telangana",
+          investedOn: "12 May 2026",
+          plotId: "E-01",
+          poolName: "GLC SOS 01",
+          status: "Active" as const,
+          tenure: "36 Months"
+        }
+      ]
+    }
   }
 };

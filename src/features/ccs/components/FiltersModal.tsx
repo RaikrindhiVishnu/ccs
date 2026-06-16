@@ -193,7 +193,7 @@ export default function FiltersModal({
           {/* ── Header ── */}
           <div className="flex items-start justify-between">
             <h2 className="font-['Plus_Jakarta_Sans'] font-semibold text-[32px] leading-[38px] tracking-[-0.32px] text-[#0F172A]">
-              Filter Location
+              Filters
             </h2>
             <button
               onClick={onClose}
@@ -230,9 +230,9 @@ export default function FiltersModal({
             />
 
             <CustomSelect
-              label="Select Status"
-              placeholder="Choose status"
-              options={["ACTIVE", "COMPLETED", "PENDING", "REJECTED"]}
+              label="Priority"
+              placeholder="Choose priority"
+              options={["High", "Medium", "Low"]}
               value={priority}
               onChange={setPriority}
             />
@@ -240,10 +240,10 @@ export default function FiltersModal({
             {/* Date row */}
             <div className="relative z-[50]">
               <div className="grid grid-cols-2 gap-[20px]">
-                {/* From Date */}
+                {/* Form Date */}
                 <div className="flex flex-col gap-[8px]" ref={fromDateRef}>
                   <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[21px] text-[#0F172A]">
-                    From Date
+                    Form Date
                   </label>
                   <div
                     onClick={() => {
@@ -258,7 +258,7 @@ export default function FiltersModal({
                     <Calendar className="w-[22px] h-[22px] text-[#2880C4]" strokeWidth={2} />
                   </div>
 
-                  {/* From Date Calendar */}
+                  {/* Form Date Calendar */}
                   {showFromCalendar && (
                     <div className="absolute left-0 top-[calc(100%+8px)] z-[70]">
                       <CalendarPopover
@@ -271,10 +271,10 @@ export default function FiltersModal({
                   )}
                 </div>
 
-                {/* To Date */}
+                {/* Too Date */}
                 <div className="flex flex-col gap-[8px]" ref={toDateRef}>
                   <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[21px] text-[#0F172A]">
-                    To Date
+                    Too Date
                   </label>
                   <div
                     onClick={() => {
@@ -330,7 +330,7 @@ export default function FiltersModal({
         </div>
 
         {/* ── Footer — sticky at bottom ── */}
-        <div className="flex items-center justify-between px-[31px] py-[20px] border-t border-[#F1F5F9] bg-white shrink-0">
+        <div className="flex items-center justify-between px-[31px] py-[20px] border-t border-[#F1F5F9] bg-white rounded-b-[24px] shrink-0">
           <button
             onClick={handleReset}
             className="font-['Plus_Jakarta_Sans'] font-semibold text-[16px] leading-[24px] text-[#2880C4] px-[16px] py-[8px] hover:underline"

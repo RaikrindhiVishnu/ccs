@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Download, X } from "lucide-react";
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
+import { FollowUpModal } from "../components/FollowUpModal";
 
 const SuperAdminFarmlandDetails: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"Agent" | "Website">("Website");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [saleReason, setSaleReason] = useState("");
+  const [selectedFollowUpUser, setSelectedFollowUpUser] = useState<any>(null);
   
   // Use mock data
   const data = mockDashboardData.farmlandSpecificDetails;
@@ -246,23 +248,22 @@ const SuperAdminFarmlandDetails: React.FC = () => {
             <table className="w-full min-w-[800px] border-collapse">
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">User</th>
-                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">Stage</th>
-                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">Phone</th>
-                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">Query</th>
-                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">Actions</th>
-                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">Comments</th>
-                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">Subscriptions</th>
+                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">USER</th>
+                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">STAGE</th>
+                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">PHONE</th>
+                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">QUERY</th>
+                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">ACTIONS</th>
+                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">FOLLOW UPS</th>
+                  <th className="text-left text-[10px] font-bold text-[#78909C] uppercase tracking-wider pb-3">SUBBSCRIPTIONS</th>
                 </tr>
               </thead>
               <tbody>
                 {data.conversionCommandUsers.map((user) => (
                   <tr 
                     key={user.id} 
-                    className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors cursor-pointer group"
-                    onClick={() => navigate(`/super-admin/user-profile/${user.id}`)}
+                    className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors group"
                   >
-                    <td className="py-4 pr-4">
+                    <td className="py-4 pr-4 cursor-pointer" onClick={() => navigate(`/super-admin/user-profile/${user.id}`)}>
                       <div className="flex items-center gap-3">
                         <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover" />
                         <span className="text-[13px] font-semibold text-[#2D3032] group-hover:text-[#8BC34A] transition-colors">{user.name}</span>
@@ -276,11 +277,11 @@ const SuperAdminFarmlandDetails: React.FC = () => {
                     <td className="py-4 pr-4 text-[12px] font-medium text-gray-500">{user.phone}</td>
                     <td className="py-4 pr-4 text-[12px] font-medium text-gray-500">{user.query}</td>
                     <td className="py-4 pr-4 text-[12px] font-medium text-gray-500">{user.actions}</td>
-                    <td className="py-4 pr-4 text-[12px] font-medium">
+                    <td className="py-4 pr-4 text-[12px] font-medium cursor-pointer" onClick={() => setSelectedFollowUpUser(user)}>
                       {user.commentsHighlight ? (
-                        <span className="text-[#8BC34A]">{user.commentsHighlight}</span>
+                        <span className="text-[#8BC34A] underline decoration-[#8BC34A] underline-offset-4">{user.commentsHighlight}</span>
                       ) : (
-                        <span className="text-gray-500">{user.comments}</span>
+                        <span className="text-[#8BC34A] underline decoration-[#8BC34A] underline-offset-4">{user.comments || user.comment || "Active Deal"}</span>
                       )}
                     </td>
                     <td className="py-4 text-[12px] font-medium text-gray-500">{user.subscriptions}</td>
@@ -292,6 +293,12 @@ const SuperAdminFarmlandDetails: React.FC = () => {
         </div>
 
       </div>
+      {/* Follow Up Modal */}
+      <FollowUpModal 
+        isOpen={!!selectedFollowUpUser} 
+        onClose={() => setSelectedFollowUpUser(null)} 
+        user={selectedFollowUpUser} 
+      />
     </div>
   );
 };

@@ -1,8 +1,11 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, XCircle, Clock } from "lucide-react";
 import { formatNumber } from "../utils/formatters";
 import type { StatusCardItem } from "../types/dashboard";
+import rightIcon from "/public/super-admin/icons/right.svg";
+import crossIcon from "/public/super-admin/icons/cross.svg";
+import coneIcon from "/public/super-admin/icons/cone.svg";
+
 
 interface Props {
   cards: StatusCardItem[];
@@ -10,19 +13,16 @@ interface Props {
 
 const iconMap = {
   approved: {
-    Icon: CheckCircle2,
-    bg: "bg-[#E8F5E9]",
-    iconColor: "text-[#4CAF50]",
+    icon: rightIcon,
+    bg: "bg-[#F3F4F6]",
   },
   rejected: {
-    Icon: XCircle,
-    bg: "bg-[#FFEBEE]",
-    iconColor: "text-[#E53935]",
+    icon: crossIcon,
+    bg: "bg-[#F3F4F6]",
   },
   "in-progress": {
-    Icon: Clock,
-    bg: "bg-[#FFF8E1]",
-    iconColor: "text-[#F9A825]",
+    icon: coneIcon,
+    bg: "bg-[#F3F4F6]",
   },
 };
 
@@ -31,7 +31,6 @@ const StatusCards: React.FC<Props> = ({ cards }) => {
     <div className="flex gap-3 lg:gap-4">
       {cards.map((card) => {
         const config = iconMap[card.type];
-        const { Icon } = config;
 
         return (
           <div
@@ -45,19 +44,19 @@ const StatusCards: React.FC<Props> = ({ cards }) => {
           >
             {/* Icon circle */}
             <div
-              className={cn(
-                "flex items-center justify-center shrink-0",
-                "w-10 h-10 lg:w-11 lg:h-11 xl:w-12 xl:h-12",
-                "rounded-full",
-                config.bg,
-              )}
-            >
-              <Icon
-                size={20}
-                strokeWidth={2}
-                className={config.iconColor}
-              />
-            </div>
+  className={cn(
+    "flex items-center justify-center shrink-0",
+    "w-10 h-10 lg:w-11 lg:h-11 xl:w-12 xl:h-12",
+    "rounded-full",
+    config.bg,
+  )}
+>
+  <img
+    src={config.icon}
+    alt={card.label}
+    className="w-5 h-5 lg:w-6 lg:h-6"
+  />
+</div>
 
             {/* Value + Label */}
             <div className="flex flex-col gap-0">
