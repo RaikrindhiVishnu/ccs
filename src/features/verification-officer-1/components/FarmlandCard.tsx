@@ -17,10 +17,14 @@ export const FarmlandCard: React.FC<FarmlandCardProps> = ({ farmland }) => {
     statusDot = "bg-[#10B981]";
     statusBg = "bg-[#ECFDF5]";
     statusText = "text-[#065F46]";
-  } else if (farmland.status === "Pending" || farmland.status === "In Review") {
+  } else if (farmland.status === "Pending") {
     statusDot = "bg-[#F59E0B]";
     statusBg = "bg-[#FFFBEB]";
     statusText = "text-[#92400E]";
+  } else if (farmland.status === "In Review") {
+    statusDot = "bg-[#718096]";
+    statusBg = "bg-[#F1F5F9]";
+    statusText = "text-[#475569]";
   } else {
     statusDot = "bg-[#EF4646]";
     statusBg = "bg-[#FFF5F5]";
@@ -39,6 +43,9 @@ export const FarmlandCard: React.FC<FarmlandCardProps> = ({ farmland }) => {
   } else if (farmland.badge === "URGENT") {
     badgeBg = "bg-[#FFF5F5]";
     badgeText = "text-[#C53030]";
+  } else if (farmland.badge === "MEDIUM") {
+    badgeBg = "bg-[#EEF2FF]";
+    badgeText = "text-[#4F46E5]";
   } else {
     badgeBg = "bg-[#F7FAFC]";
     badgeText = "text-[#4A5568]";
@@ -89,9 +96,9 @@ export const FarmlandCard: React.FC<FarmlandCardProps> = ({ farmland }) => {
       {/* Card Button */}
       <button 
         onClick={() => navigate(`/verification-officer-1/assigned-farmlands-owner-details/${encodeURIComponent(farmland.id)}`)}
-        className="w-full h-11 border-2 border-[#2780C4] text-[#2780C4] hover:bg-[#2780C4]/5 rounded-full font-plus-jakarta font-bold text-xs transition-colors mt-6 cursor-pointer bg-white"
+        className="w-full h-11 bg-[#2780C4] hover:bg-[#1f6aaa] text-white rounded-full font-plus-jakarta font-bold text-xs tracking-wider transition-colors mt-6 cursor-pointer border-none flex items-center justify-center"
       >
-        View Details
+        ENTER AUDIT ROOM
       </button>
     </div>
   );

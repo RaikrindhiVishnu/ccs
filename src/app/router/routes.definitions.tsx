@@ -89,6 +89,8 @@ import {
     VerificationOfficer1CompletedFarmlandDetails,
     VerificationOfficer1AssignedFarmlandsOwnerDetails,
     VerificationOfficer1Layout,
+  VerificationOfficer1Profile,
+  VerificationOfficer1Login,
 
     // Verification Officer 3 imports
     VerificationOfficer3Dashboard,
@@ -148,6 +150,9 @@ export const guestRoutes: RouteObject[] = [
     }, {
         path: '/super-admin/login',
         element: <SuperAdminLogin />
+    }, {
+        path: '/verification-officer-1/login',
+        element: <VerificationOfficer1Login />
     }, {
         path: '/ccs/login',
         element: <CcsLogin />
@@ -481,7 +486,11 @@ export const authRoutes: RouteObject[] = [
                 path: "completed-farmland",
                 element: <VerificationOfficer1CompletedFarmlands />,
             },
-        ],
+          {
+        path: "profile",
+        element: <VerificationOfficer1Profile />,
+      },
+    ],
     },
     {
         path: "verification-officer-3",

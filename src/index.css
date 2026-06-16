@@ -275,6 +275,17 @@ h1 {
   background: rgba(0, 0, 0, 0.3);
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 /* ─── REGIONAL OFFICER NAVIGATION ──────────────────────────────── */
 .nav-container {
   width: 98%;
@@ -3715,6 +3726,17 @@ h1 {
 
 .region-hover-popup .maplibregl-popup-tip {
   display: none;
+}
+
+
+/* Hide scrollbar utility */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 

@@ -89,6 +89,12 @@ export const VerificationOfficer1AssignedFarmlandsOwnerDetails = lazy(
 export const VerificationOfficer1Layout = lazy(
   () => import("../../components/common/layouts/VerificationOfficer1Layout"),
 );
+export const VerificationOfficer1Login = lazy(
+  () => import("../../features/verification-officer-1/pages/Login"),
+);
+export const VerificationOfficer1Profile = lazy(
+  () => import("../../features/verification-officer-1/pages/Profile"),
+);
 
 // Verification Officer 3 (VO3)
 export const VerificationOfficer3Dashboard = lazy(
