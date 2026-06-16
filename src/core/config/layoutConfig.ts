@@ -16,6 +16,7 @@ import assignedIcon from "/public/super-admin/icons/assignedicon.svg";
 import farmlandListIcon from "/public/super-admin/icons/farmlisticon.svg";
 import userIcon from "/public/super-admin/icons/usericon.svg";
 import poolIcon from "/public/super-admin/icons/poolicon.svg";
+import uploadIcon from "@/assets/uploadicon.svg";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 export type LayoutVariant =
@@ -118,6 +119,11 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
       label: "Pool Buying",
       path: "/super-admin/pool-buying",
       iconImg: poolIcon,
+    },
+    {
+      label: "Upload",
+      path: "/super-admin/upload",
+      iconImg: uploadIcon,
     },
   ],
 },

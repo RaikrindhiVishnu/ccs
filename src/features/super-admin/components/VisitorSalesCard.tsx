@@ -7,16 +7,18 @@ import { formatCurrency, formatPercent } from "../utils/formatters";
 interface Props {
   visitors: VisitorStats;
   totalSales: TotalSales;
+  bgClass?: string;
 }
 
-const VisitorSalesCard: React.FC<Props> = ({ visitors, totalSales }) => {
+const VisitorSalesCard: React.FC<Props> = ({ visitors, totalSales, bgClass }) => {
   return (
     <div className="flex gap-3 lg:gap-4 shrink-0">
       {/* ── Visitors Card ── */}
       <div
         className={cn(
           "flex flex-col gap-2 p-4 lg:p-5 justify-center",
-          "bg-white/20 backdrop-blur-md rounded-2xl shadow-sm border border-white/30",
+          bgClass || "bg-white/20 backdrop-blur-md border border-white/30",
+          "rounded-2xl shadow-sm",
           "w-[206px] h-[147px]",
         )}
       >
@@ -66,7 +68,8 @@ const VisitorSalesCard: React.FC<Props> = ({ visitors, totalSales }) => {
       <div
         className={cn(
           "flex flex-col gap-2 p-4 lg:p-5 justify-center",
-          "bg-white/20 backdrop-blur-md rounded-2xl shadow-sm border border-white/30",
+          bgClass || "bg-white/20 backdrop-blur-md border border-white/30",
+          "rounded-2xl shadow-sm",
           "w-[206px] h-[147px]",
         )}
       >

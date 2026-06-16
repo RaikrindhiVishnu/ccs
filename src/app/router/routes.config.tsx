@@ -150,6 +150,7 @@ export const RegionAreaEdit = lazy(() => import ("../../features/role-manager/pa
 export const SuperAdminDashboard = lazy(() => import ("../../features/super-admin/pages/SuperAdminDashboard"),);
 export const SuperAdminLogin = lazy(() => import ("../../features/super-admin/pages/SuperAdminLogin"),);
 export const SuperAdminFarmlands = lazy(() => import ("../../features/super-admin/pages/SuperAdminFarmlands"),);
+export const UploadSuperAdmin = lazy(() => import ("../../features/super-admin/pages/UploadSuperAdmin"),);
 export const SuperAdminFarmlandsListPreview = lazy(() => import ("../../features/super-admin/pages/SuperAdminFarmlandsListPreview"),);
 export const SuperAdminFarmlandsListFull = lazy(() => import ("../../features/super-admin/pages/SuperAdminFarmlandsListFull"),);
 export const SuperAdminUsersListFull = lazy(() => import ("../../features/super-admin/pages/SuperAdminUsersListFull"),);

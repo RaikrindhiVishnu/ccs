@@ -119,6 +119,7 @@ import {
     SuperAdminDashboard,
     SuperAdminLogin,
     SuperAdminFarmlands,
+    UploadSuperAdmin,
     SuperAdminAssignedFarmlandsList,
     SuperAdminFarmlandsListPreview,
     SuperAdminFarmlandsListFull,
@@ -323,6 +324,9 @@ export const authRoutes: RouteObject[] = [
             {
                 path: '/super-admin/dashboard',
                 element: <SuperAdminDashboard />
+            }, {
+                path: '/super-admin/upload',
+                element: <UploadSuperAdmin />
             }, {
                 path: '/super-admin/farmlands',
                 element: <SuperAdminFarmlands />
