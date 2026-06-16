@@ -407,7 +407,7 @@ const AssignOfficers: React.FC = () => {
               {/* Intelligence Officer Selector */}
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">
-                  Enter Intelligence Officer Name
+                  Enter Intelligence Officer Name<span className="text-red-500">*</span>
                 </label>
                 <div className="relative flex items-center h-12 bg-slate-50 border border-slate-200 rounded-xl focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
                   <select
