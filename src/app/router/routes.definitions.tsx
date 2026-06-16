@@ -90,6 +90,13 @@ import {
     VerificationOfficer1AssignedFarmlandsOwnerDetails,
     VerificationOfficer1Layout,
 
+    // Verification Officer 3 imports
+    VerificationOfficer3Dashboard,
+    VerificationOfficer3AssignedFarmlands,
+    VerificationOfficer3InProgressFarmlands,
+    VerificationOfficer3CompletedFarmlands,
+    VerificationOfficer3Layout,
+
     // Dev imports
     DraftsPage,
     FieldOfficerLayout,
@@ -391,6 +398,10 @@ export const authRoutes: RouteObject[] = [
         element: <IOProfile />
     },
     {
+        path: '/verification-officer-3/profile',
+        element: <IOProfile />
+    },
+    {
         element: <RegionalOfficerLayout />,
         children: [
             { path: '/regional-officer/dashboard',          element: <RegionalOfficerDashboard /> },
@@ -471,6 +482,40 @@ export const authRoutes: RouteObject[] = [
                 element: <VerificationOfficer1CompletedFarmlands />,
             },
         ],
+    },
+    {
+        path: "verification-officer-3",
+        element: <VerificationOfficer3Layout />,
+        children: [
+            {
+                index: true,
+                element: <VerificationOfficer3Dashboard />,
+            },
+            {
+                path: "dashboard",
+                element: <VerificationOfficer3Dashboard />,
+            },
+            {
+                path: "assigned-farmlands",
+                element: <VerificationOfficer3AssignedFarmlands />,
+            },
+            {
+                path: "in-progress-farmlands",
+                element: <VerificationOfficer3InProgressFarmlands />,
+            },
+            {
+                path: "completed-farmland",
+                element: <VerificationOfficer3CompletedFarmlands />,
+            },
+        ],
+    },
+    {
+        path: '/verification-officer-3/completed-farmland/:id',
+        element: <Farmlanddocument />,
+    },
+    {
+        path: '/verification-officer-3/assigned-farmland/:id',
+        element: <Farmlanddocument />,
     },
     {
         path: '/verification-officer-1/completed-farmland/:id',

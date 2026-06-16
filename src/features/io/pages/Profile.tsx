@@ -187,7 +187,7 @@ const Profile = () => {
                       {fullName}
                     </h2>
                     <span className="text-[clamp(0.875rem,1.11vw,1.25rem)] font-medium text-[var(--text-strong)] font-[family-name:var(--font-sans)] leading-[clamp(0.93rem,1.39vw,2rem)] opacity-[0.6] mt-[clamp(0.18rem,0.28vw,0.4rem)]">
-                      Intelligence Officer
+                      {user?.role === "VO3" ? "Verification Officer 3" : "Intelligence Officer"}
                     </span>
                   </div>
                 </div>

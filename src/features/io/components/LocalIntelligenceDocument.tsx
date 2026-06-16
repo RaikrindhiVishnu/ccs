@@ -2,17 +2,19 @@ import * as React from "react";
 import { BackButton } from "@/components/ui/BackButton";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
-import { Bell, Mic } from "lucide-react";
+import { Bell, Mic, Paperclip, Star, X } from "lucide-react";
 import successIcon from "@/assets/sucess.svg";
 import { useAppSelector } from "@/core/hooks";
 import { useNavigate } from "react-router-dom";
 
 interface LocalIntelligenceDocumentProps {
   onBack: () => void;
+  onGoBackDashboard?: () => void;
   onNext: () => void;
   onStepChange?: (step: "customer" | "local") => void;
   farmlandId?: string;
   isFromRejection?: boolean;
+  isVO3?: boolean;
 }
 
 const subTabs = [
@@ -123,10 +125,12 @@ const BlueCheckIcon: React.FC = () => (
 
 export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps> = ({
   onBack,
+  onGoBackDashboard,
   onNext,
   onStepChange,
   farmlandId = "GLCSOS 01",
-  isFromRejection = false
+  isFromRejection = false,
+  isVO3 = false,
 }) => {
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
@@ -189,6 +193,11 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
   const [transactionLastPrice, setTransactionLastPrice] = React.useState("1,00,000.00");
   const [toastMessage, setToastMessage] = React.useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+  const [showCustomerPopup, setShowCustomerPopup] = React.useState(true);
+  const [showApproveCommentsModal, setShowApproveCommentsModal] = React.useState(false);
+  const [approveReason, setApproveReason] = React.useState("");
+  const [landRating, setLandRating] = React.useState(0);
+  const [audioFileName, setAudioFileName] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (toastMessage) {
@@ -202,25 +211,35 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
   const handleNextClick = () => {
     const currentIndex = subTabs.findIndex((tab) => tab.id === activeSubTab);
     const currentTab = subTabs[currentIndex] || subTabs[0];
-    
+
     const isSourceTab = activeSubTab === "source";
     const currentValue = isSourceTab ? sourcePersonType : selections[activeSubTab];
 
-    if (!currentValue) {
+    if (!isVO3 && !currentValue) {
       setToastMessage(`Please make a selection for ${currentTab.label}`);
       return;
     }
 
     if (currentIndex < subTabs.length - 1) {
       const nextTab = subTabs[currentIndex + 1];
-      setToastMessage(`${currentTab.label} "Files" has been saved`);
+      if (!isVO3) {
+        setToastMessage(`${currentTab.label} "Files" has been saved`);
+      }
       setActiveSubTab(nextTab.id);
     } else {
-      setShowSuccessModal(true);
+      if (isVO3) {
+        setShowApproveCommentsModal(true);
+      } else {
+        setShowSuccessModal(true);
+      }
     }
   };
 
   const handleBackClick = () => {
+    if (isVO3) {
+      onBack();
+      return;
+    }
     const currentIndex = subTabs.findIndex((tab) => tab.id === activeSubTab);
     if (currentIndex > 0) {
       setActiveSubTab(subTabs[currentIndex - 1].id);
@@ -233,16 +252,16 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
 
   const fullName = user
     ? `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
-      "Intelligence Officer"
+    "Intelligence Officer"
     : "Intelligence Officer";
 
   const initials = fullName
     ? fullName
-        .split(" ")
-        .map((n: string) => n[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
+      .split(" ")
+      .map((n: string) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase()
     : "IO";
 
   const currentTab = subTabs.find(tab => tab.id === activeSubTab) || subTabs[0];
@@ -264,7 +283,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
           label="Go Back to Dashboard"
           variant="light"
           size="default"
-          onClick={onBack}
+          onClick={onGoBackDashboard || onBack}
           className="
             w-[clamp(15.5rem,16.67vw,20rem)]
             h-[clamp(2.31rem,3.61vw,4.3rem)]
@@ -356,10 +375,10 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
 
       {/* Main Layout Area */}
       <div className="flex flex-col gap-[clamp(1rem,1.53vw,1.375rem)] w-full">
-        
+
         {/* Row 1: Left Steps Card + Right Tabs Card */}
         <div className="flex flex-col lg:flex-row gap-[clamp(1rem,1.11vw,1.625rem)] w-full items-stretch">
-          
+
           {/* Left Side: ID & Steps Card */}
           <Card
             className="
@@ -406,7 +425,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
             >
               {/* Frame 2147239964 */}
               <div className="absolute w-full h-full left-0 top-0">
-                
+
                 {/* Line 495 */}
                 <div
                   className="
@@ -431,7 +450,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                       bg-[#3D93D1] shadow-[0_0_0_clamp(0.26rem,0.29vw,0.415rem)_#FFFFFF,0_0_0_clamp(0.39rem,0.43vw,0.622rem)_rgba(37,99,235,0.1)]
                     "
                   />
-                  
+
                   {/* Customer Information text */}
                   <span
                     className="
@@ -529,18 +548,17 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                         rounded-[5rem]
                         transition-all duration-200 cursor-pointer
                         shadow-[0_42px_17px_rgba(0,0,0,0.01)]
-                        ${
-                          isDisabled
-                            ? "opacity-40 cursor-not-allowed bg-[#F9F9F9] text-[rgba(90,92,94,0.4)] border border-transparent"
-                            : isActive
+                        ${isDisabled
+                          ? "opacity-40 cursor-not-allowed bg-[#F9F9F9] text-[rgba(90,92,94,0.4)] border border-transparent"
+                          : isActive
                             ? "bg-[#F9F9F9] border-[0.725581px] border-[#2780C4] text-[rgba(90,92,94,0.74)]"
                             : isFromRejection && !isResolved
-                            ? "bg-[#F9F9F9] border-[0.725581px] border-[#F2994A] text-[rgba(90,92,94,0.74)]"
-                            : isFromRejection && isResolved
-                            ? "bg-[#F9F9F9] border-[0.725581px] border-[#27AE60] text-[rgba(90,92,94,0.74)]"
-                            : isSelected
-                            ? "bg-[#F9F9F9] border-[0.725581px] border-[#A5B767] text-[rgba(90,92,94,0.74)]"
-                            : "bg-[#F9F9F9] border border-transparent hover:border-[#2780C4] text-[rgba(90,92,94,0.74)]"
+                              ? "bg-[#F9F9F9] border-[0.725581px] border-[#F2994A] text-[rgba(90,92,94,0.74)]"
+                              : isFromRejection && isResolved
+                                ? "bg-[#F9F9F9] border-[0.725581px] border-[#27AE60] text-[rgba(90,92,94,0.74)]"
+                                : isSelected
+                                  ? "bg-[#F9F9F9] border-[0.725581px] border-[#A5B767] text-[rgba(90,92,94,0.74)]"
+                                  : "bg-[#F9F9F9] border border-transparent hover:border-[#2780C4] text-[rgba(90,92,94,0.74)]"
                         }
                       `}
                     >
@@ -613,18 +631,17 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                         rounded-[5rem]
                         transition-all duration-200 cursor-pointer
                         shadow-[0_42px_17px_rgba(0,0,0,0.01)]
-                        ${
-                          isDisabled
-                            ? "opacity-40 cursor-not-allowed bg-[#F9F9F9] text-[rgba(90,92,94,0.4)] border border-transparent"
-                            : isActive
+                        ${isDisabled
+                          ? "opacity-40 cursor-not-allowed bg-[#F9F9F9] text-[rgba(90,92,94,0.4)] border border-transparent"
+                          : isActive
                             ? "bg-[#F9F9F9] border-[0.725581px] border-[#2780C4] text-[rgba(90,92,94,0.74)]"
                             : isFromRejection && !isResolved
-                            ? "bg-[#F9F9F9] border-[0.725581px] border-[#F2994A] text-[rgba(90,92,94,0.74)]"
-                            : isFromRejection && isResolved
-                            ? "bg-[#F9F9F9] border-[0.725581px] border-[#27AE60] text-[rgba(90,92,94,0.74)]"
-                            : isSelected
-                            ? "bg-[#F9F9F9] border-[0.725581px] border-[#A5B767] text-[rgba(90,92,94,0.74)]"
-                            : "bg-[#F9F9F9] border border-transparent hover:border-[#2780C4] text-[rgba(90,92,94,0.74)]"
+                              ? "bg-[#F9F9F9] border-[0.725581px] border-[#F2994A] text-[rgba(90,92,94,0.74)]"
+                              : isFromRejection && isResolved
+                                ? "bg-[#F9F9F9] border-[0.725581px] border-[#27AE60] text-[rgba(90,92,94,0.74)]"
+                                : isSelected
+                                  ? "bg-[#F9F9F9] border-[0.725581px] border-[#A5B767] text-[rgba(90,92,94,0.74)]"
+                                  : "bg-[#F9F9F9] border border-transparent hover:border-[#2780C4] text-[rgba(90,92,94,0.74)]"
                         }
                       `}
                     >
@@ -704,10 +721,9 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                     className={`
                       flex flex-row justify-center items-center px-[clamp(0.75rem,1.25vw,1.8rem)] py-[clamp(0.4rem,0.69vw,1.1rem)] gap-[clamp(0.4rem,0.69vw,1rem)]
                       w-[clamp(6rem,7.91vw,10.5rem)] h-[clamp(2rem,2.64vw,4rem)] rounded-[var(--btn-radius-pill-sm)] cursor-pointer transition-all duration-200
-                      ${
-                        rejectionSubView === "timeline"
-                          ? "bg-[var(--btn-dark)] border border-black text-white"
-                          : "bg-white border border-[var(--btn-outline-dark-border)] text-[var(--text-primary)] hover:bg-slate-50"
+                      ${rejectionSubView === "timeline"
+                        ? "bg-[var(--btn-dark)] border border-black text-white"
+                        : "bg-white border border-[var(--btn-outline-dark-border)] text-[var(--text-primary)] hover:bg-slate-50"
                       }
                     `}
                   >
@@ -716,10 +732,9 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                       <div
                         className={`
                           w-[clamp(0.5rem,0.83vw,1.25rem)] h-[clamp(0.5rem,0.83vw,1.25rem)] rounded-full transition-all duration-200
-                          ${
-                            rejectionSubView === "timeline"
-                              ? "bg-[var(--brand-400)] border-[2px] border-[var(--performance-area-start)]"
-                              : "bg-white border-[2px] border-[var(--performance-area-start)]"
+                          ${rejectionSubView === "timeline"
+                            ? "bg-[var(--brand-400)] border-[2px] border-[var(--performance-area-start)]"
+                            : "bg-white border-[2px] border-[var(--performance-area-start)]"
                           }
                         `}
                       />
@@ -735,10 +750,9 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                     className={`
                       flex flex-row justify-center items-center px-[clamp(0.75rem,1.25vw,1.8rem)] py-[clamp(0.4rem,0.69vw,1.1rem)] gap-[clamp(0.4rem,0.69vw,1rem)]
                       w-[clamp(6.5rem,8.68vw,11.5rem)] h-[clamp(2rem,2.64vw,4rem)] rounded-[var(--btn-radius-pill-sm)] cursor-pointer transition-all duration-200
-                      ${
-                        rejectionSubView === "fileview"
-                          ? "bg-[var(--btn-dark)] border border-black text-white"
-                          : "bg-white border border-[var(--btn-outline-dark-border)] text-[var(--text-primary)] hover:bg-slate-50"
+                      ${rejectionSubView === "fileview"
+                        ? "bg-[var(--btn-dark)] border border-black text-white"
+                        : "bg-white border border-[var(--btn-outline-dark-border)] text-[var(--text-primary)] hover:bg-slate-50"
                       }
                     `}
                   >
@@ -747,10 +761,9 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                       <div
                         className={`
                           w-[clamp(0.5rem,0.83vw,1.25rem)] h-[clamp(0.5rem,0.83vw,1.25rem)] rounded-full transition-all duration-200
-                          ${
-                            rejectionSubView === "fileview"
-                              ? "bg-[var(--brand-400)] border-[2px] border-[var(--performance-area-start)]"
-                              : "bg-white border-[2px] border-[var(--performance-area-start)]"
+                          ${rejectionSubView === "fileview"
+                            ? "bg-[var(--brand-400)] border-[2px] border-[var(--performance-area-start)]"
+                            : "bg-white border-[2px] border-[var(--performance-area-start)]"
                           }
                         `}
                       />
@@ -783,17 +796,17 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                       <p className="font-[family-name:var(--font-sans)] font-normal text-[clamp(0.68rem,0.83vw,1.1rem)] leading-[clamp(1rem,1.39vw,1.8rem)] text-[#383838]">
                         Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, consectetur adipiscing elit, sed do eiusmod. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                       </p>
-                      
+
                       <div className="flex flex-row flex-wrap items-center justify-between gap-[clamp(0.8rem,1.11vw,1.8rem)] mt-2">
                         {/* File Pills */}
                         <div className="flex flex-row items-center gap-[clamp(0.8rem,1.39vw,2.2rem)]">
                           {/* Pill 1 */}
                           <div className="flex flex-row items-center bg-white rounded-[16px] h-[clamp(2rem,2.7vw,3.5rem)] px-[clamp(0.8rem,1.11vw,1.8rem)] gap-[clamp(0.4rem,0.55vw,1rem)] border border-transparent shadow-sm">
                             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 w-[clamp(0.85rem,1.18vw,1.6rem)] h-[clamp(0.85rem,1.18vw,1.6rem)]">
-                              <path d="M3 1.5H11L14.5 5V15.5H3V1.5Z" fill="#E2E5E7"/>
-                              <path d="M11 1.5V5H14.5L11 1.5Z" fill="#B0B7BD"/>
-                              <path d="M14.5 5H11V1.5L14.5 5Z" fill="#CAD1D8"/>
-                              <path d="M1.5 8.5H12V13.5H1.5V8.5Z" fill="#F15642"/>
+                              <path d="M3 1.5H11L14.5 5V15.5H3V1.5Z" fill="#E2E5E7" />
+                              <path d="M11 1.5V5H14.5L11 1.5Z" fill="#B0B7BD" />
+                              <path d="M14.5 5H11V1.5L14.5 5Z" fill="#CAD1D8" />
+                              <path d="M1.5 8.5H12V13.5H1.5V8.5Z" fill="#F15642" />
                               <text x="3" y="12" fill="white" fontSize="7" fontWeight="bold" fontFamily="sans-serif">PDF</text>
                             </svg>
                             <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(0.75rem,0.97vw,1.25rem)] leading-none text-[var(--text-primary)]">
@@ -804,10 +817,10 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                           {/* Pill 2 */}
                           <div className="flex flex-row items-center bg-white rounded-[16px] h-[clamp(2rem,2.7vw,3.5rem)] px-[clamp(0.8rem,1.11vw,1.8rem)] gap-[clamp(0.4rem,0.55vw,1rem)] border border-transparent shadow-sm">
                             <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0 w-[clamp(0.85rem,1.18vw,1.6rem)] h-[clamp(0.85rem,1.18vw,1.6rem)]">
-                              <path d="M3 1.5H11L14.5 5V15.5H3V1.5Z" fill="#E2E5E7"/>
-                              <path d="M11 1.5V5H14.5L11 1.5Z" fill="#B0B7BD"/>
-                              <path d="M14.5 5H11V1.5L14.5 5Z" fill="#CAD1D8"/>
-                              <path d="M1.5 8.5H12V13.5H1.5V8.5Z" fill="#F15642"/>
+                              <path d="M3 1.5H11L14.5 5V15.5H3V1.5Z" fill="#E2E5E7" />
+                              <path d="M11 1.5V5H14.5L11 1.5Z" fill="#B0B7BD" />
+                              <path d="M14.5 5H11V1.5L14.5 5Z" fill="#CAD1D8" />
+                              <path d="M1.5 8.5H12V13.5H1.5V8.5Z" fill="#F15642" />
                               <text x="3" y="12" fill="white" fontSize="7" fontWeight="bold" fontFamily="sans-serif">PDF</text>
                             </svg>
                             <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(0.75rem,0.97vw,1.25rem)] leading-none text-[var(--text-primary)]">
@@ -928,7 +941,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                     <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(1rem,1.39vw,1.65rem)] leading-tight text-[var(--text-primary)]">
                       Uploaded Files
                     </span>
-                    
+
                     <div className="flex flex-col gap-[clamp(0.5rem,0.69vw,0.9rem)] max-h-[clamp(15rem,20.83vw,25rem)] overflow-y-auto custom-scrollbar">
                       {(rejectionFiles[activeSubTab] || []).length === 0 ? (
                         <span className="font-[family-name:var(--font-sans)] text-[clamp(0.75rem,0.97vw,1.2rem)] text-[var(--text-secondary)] italic">No files uploaded.</span>
@@ -944,14 +957,14 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                             <div className="flex items-center gap-[clamp(0.4rem,0.69vw,1rem)] min-w-0">
                               <div className="w-[clamp(1.5rem,2.01vw,3rem)] h-[clamp(1.5rem,2.01vw,3rem)] bg-white rounded-[4px] flex items-center justify-center shrink-0">
                                 <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[clamp(0.85rem,1.18vw,1.6rem)] h-[clamp(0.85rem,1.18vw,1.6rem)]">
-                                  <path d="M3 1.5H11L14.5 5V15.5H3V1.5Z" fill="#E2E5E7"/>
-                                  <path d="M11 1.5V5H14.5L11 1.5Z" fill="#B0B7BD"/>
-                                  <path d="M14.5 5H11V1.5L14.5 5Z" fill="#CAD1D8"/>
-                                  <path d="M1.5 8.5H12V13.5H1.5V8.5Z" fill="#F15642"/>
+                                  <path d="M3 1.5H11L14.5 5V15.5H3V1.5Z" fill="#E2E5E7" />
+                                  <path d="M11 1.5V5H14.5L11 1.5Z" fill="#B0B7BD" />
+                                  <path d="M14.5 5H11V1.5L14.5 5Z" fill="#CAD1D8" />
+                                  <path d="M1.5 8.5H12V13.5H1.5V8.5Z" fill="#F15642" />
                                   <text x="3" y="12" fill="white" fontSize="7" fontWeight="bold" fontFamily="sans-serif">PDF</text>
                                 </svg>
                               </div>
-                              
+
                               <div className="flex flex-col min-w-0">
                                 <span className="font-[family-name:var(--font-inter)] font-normal text-[clamp(0.75rem,0.97vw,1.25rem)] leading-tight text-[var(--text-primary)] truncate pr-2">
                                   {file.name}
@@ -992,7 +1005,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                     <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(1.1rem,1.53vw,1.8rem)] leading-tight text-[var(--text-primary)]">
                       Updated Comments:
                     </span>
-                    
+
                     <div className="relative w-full max-w-[clamp(30rem,44.2vw,48rem)] h-[clamp(10rem,12.78vw,15rem)] bg-[rgba(187,219,240,0.38)] border border-[var(--btn-secondary)] rounded-[5px]">
                       <textarea
                         value={updatedComments[activeSubTab]}
@@ -1133,7 +1146,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                       </select>
                       <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
                         <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M1 1L6 6L11 1" stroke="#363434" strokeWidth="1.5" strokeLinecap="round"/>
+                          <path d="M1 1L6 6L11 1" stroke="#363434" strokeWidth="1.5" strokeLinecap="round" />
                         </svg>
                       </div>
                     </div>
@@ -1159,7 +1172,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                         </select>
                         <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
                           <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1 1L6 6L11 1" stroke="#363434" strokeWidth="1.5" strokeLinecap="round"/>
+                            <path d="M1 1L6 6L11 1" stroke="#363434" strokeWidth="1.5" strokeLinecap="round" />
                           </svg>
                         </div>
                       </div>
@@ -1169,7 +1182,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                       <span className="font-sans font-semibold text-[clamp(1.1rem,1.53vw,1.65rem)] leading-[clamp(1.4rem,1.94vw,2.1rem)] text-black">
                         Person Contact Details
                       </span>
-                      
+
                       <div className="flex flex-col gap-2 mt-2">
                         <label className="font-sans font-semibold text-[clamp(0.9rem,1.25vw,1.35rem)] leading-[clamp(1.15rem,1.6vw,1.725rem)] text-black">
                           Name
@@ -1224,10 +1237,9 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                               px-[1.125rem] py-[0.625rem] gap-[0.625rem]
                               border rounded-[2.0625rem]
                               transition-all duration-200 cursor-pointer
-                              ${
-                                isOptionSelected
-                                  ? "bg-[#2B2D2F] border-[#000000]"
-                                  : "bg-white border-[rgba(0,0,0,0.26)] hover:border-[#2B2D2F]"
+                              ${isOptionSelected
+                                ? "bg-[#2B2D2F] border-[#000000]"
+                                : "bg-white border-[rgba(0,0,0,0.26)] hover:border-[#2B2D2F]"
                               }
                             `}
                           >
@@ -1236,10 +1248,9 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                               <div
                                 className={`
                                   w-[0.75rem] h-[0.75rem] rounded-full transition-all duration-200
-                                  ${
-                                    isOptionSelected
-                                      ? "bg-[#3D93D1] border-[2px] border-[#85BFE5]"
-                                      : "bg-[#FFFFFF] border-[2px] border-[#85BFE5]"
+                                  ${isOptionSelected
+                                    ? "bg-[#3D93D1] border-[2px] border-[#85BFE5]"
+                                    : "bg-[#FFFFFF] border-[2px] border-[#85BFE5]"
                                   }
                                 `}
                               />
@@ -1281,7 +1292,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                           <span className="font-sans font-semibold text-[clamp(1rem,1.39vw,1.5rem)] leading-[clamp(1.25rem,1.74vw,1.875rem)] text-black">
                             Agreement Type
                           </span>
-                          
+
                           <div className="flex items-center gap-[clamp(1rem,1.875vw,2.5rem)]">
                             {["Legal", "Verbal"].map((type) => {
                               const isTypeSelected = agreementType === type;
@@ -1298,10 +1309,9 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                                     px-[1.125rem] py-[0.625rem] gap-[0.625rem]
                                     border rounded-[2.0625rem]
                                     transition-all duration-200 cursor-pointer
-                                    ${
-                                      isTypeSelected
-                                        ? "bg-[#2B2D2F] border-[#000000]"
-                                        : "bg-white border-[rgba(0,0,0,0.26)] hover:border-[#2B2D2F]"
+                                    ${isTypeSelected
+                                      ? "bg-[#2B2D2F] border-[#000000]"
+                                      : "bg-white border-[rgba(0,0,0,0.26)] hover:border-[#2B2D2F]"
                                     }
                                   `}
                                 >
@@ -1309,10 +1319,9 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                                     <div
                                       className={`
                                         w-[0.75rem] h-[0.75rem] rounded-full transition-all duration-200
-                                        ${
-                                          isTypeSelected
-                                            ? "bg-[#3D93D1] border-[2px] border-[#85BFE5]"
-                                            : "bg-[#FFFFFF] border-[2px] border-[#85BFE5]"
+                                        ${isTypeSelected
+                                          ? "bg-[#3D93D1] border-[2px] border-[#85BFE5]"
+                                          : "bg-[#FFFFFF] border-[2px] border-[#85BFE5]"
                                         }
                                       `}
                                     />
@@ -1421,7 +1430,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 "
               >
                 <span className="font-sans font-medium text-[0.875rem] leading-[1.125rem] text-[rgba(39,128,196,0.8)] text-center">
-                  Back
+                  {isVO3 ? "Turn Back" : "Back"}
                 </span>
               </button>
 
@@ -1436,7 +1445,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 "
               >
                 <span className="font-sans font-semibold text-[0.875rem] leading-[1.125rem] text-white text-center">
-                  {activeSubTab === "issues" ? "Next" : "Save"}
+                  {isVO3 ? "Approve" : (activeSubTab === "issues" ? "Next" : "Save")}
                 </span>
               </button>
             </div>
@@ -1529,12 +1538,12 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
               p-8 py-[clamp(1.5rem,2.77vw,3.5rem)]
             "
           >
-            {/* Header: Documents Submitted */}
+            {/* Header: Verification Completed or Documents Submitted */}
             <h3 className="font-sans font-semibold text-[clamp(1.2rem,1.67vw,1.8rem)] leading-[clamp(1.5rem,2.08vw,2.25rem)] text-[#000000] text-center mt-2">
-              Documents Submitted
+              {isVO3 ? "Verification Completed" : "Documents Submitted"}
             </h3>
 
-            {/* Checkmark Icon Container (Frame 2147239820) */}
+            {/* Checkmark Icon Container */}
             <div className="relative w-[clamp(8rem,12.5vw,13rem)] h-[clamp(8rem,12.5vw,13rem)] flex items-center justify-center">
               <img
                 src={successIcon}
@@ -1545,7 +1554,17 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
 
             {/* Success Text */}
             <p className="font-sans font-bold text-[clamp(1rem,1.39vw,1.5rem)] leading-[clamp(1.25rem,1.74vw,1.875rem)] text-[#3D4949] text-center px-4 max-w-[450px]">
-              Farmland ID: {farmlandId} has been successfully Approved
+              {isVO3 ? (
+                <>
+                  Farmland ID: <span style={{ color: '#1C75BC', fontWeight: 700 }}>{farmlandId}</span> has been<br />
+                  successfully verified!
+                </>
+              ) : (
+                <>
+                  Farmland ID: <span style={{ color: '#1C75BC', fontWeight: 700 }}>{farmlandId}</span> has been<br />
+                  successfully Submitted
+                </>
+              )}
             </p>
 
             {/* Done Button */}
@@ -1571,6 +1590,214 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
           </div>
         </div>
       )}
+
+      {/* Customer Information Transition Modal */}
+      {showCustomerPopup && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div
+            className="
+              box-sizing-border-box
+              relative w-full max-w-[610px] min-h-[clamp(24rem,33.47vw,36rem)]
+              bg-[#FFFFFF] border border-[rgba(0,0,0,0.2)]
+              shadow-[0px_0px_12.5px_rgba(0,0,0,0.15)]
+              rounded-[24px]
+              flex flex-col items-center justify-between gap-[clamp(1.5rem,2.2vw,3rem)]
+              p-8 py-[clamp(1.5rem,2.77vw,3.5rem)]
+            "
+          >
+            {/* Header: Customer Information */}
+            <h3 className="font-sans font-semibold text-[clamp(1.2rem,1.67vw,1.8rem)] leading-[clamp(1.5rem,2.08vw,2.25rem)] text-[#000000] text-center mt-2">
+              Customer Information
+            </h3>
+
+            {/* Checkmark Icon Container */}
+            <div className="relative w-[clamp(8rem,12.5vw,13rem)] h-[clamp(8rem,12.5vw,13rem)] flex items-center justify-center">
+              <img
+                src={successIcon}
+                alt="Success"
+                className="w-full h-full object-contain"
+              />
+            </div>
+
+            {/* Description Text */}
+            <p className="font-sans font-medium text-[clamp(1rem,1.2vw,1.4rem)] leading-[clamp(1.35rem,1.74vw,2rem)] text-[#3D4949] text-center px-4 max-w-[480px]">
+              {isVO3 ? (
+                <>
+                  Proceed With <span style={{ color: '#1C75BC', fontWeight: 700 }}>'Local Intelligence'</span> Approval<br />
+                  For The Farmland ID: <span style={{ color: '#1C75BC', fontWeight: 700 }}>{farmlandId}</span> to<br />
+                  Complete The Verification.
+                </>
+              ) : (
+                <>
+                  Proceed With <span style={{ color: '#1C75BC', fontWeight: 700 }}>'Local Intelligence'</span> Upload<br />
+                  For The Farmland ID: <span style={{ color: '#1C75BC', fontWeight: 700 }}>{farmlandId}</span> to<br />
+                  Complete The Verification.
+                </>
+              )}
+            </p>
+
+            {/* Proceed Button */}
+            <button
+              onClick={() => {
+                setShowCustomerPopup(false);
+              }}
+              className="
+                flex flex-row justify-center items-center
+                px-[17px] py-[17px] gap-[17px]
+                w-[clamp(10rem,14.17vw,16rem)] h-[clamp(3.5rem,4.44vw,5rem)]
+                bg-[#2780C4] hover:bg-[#1f6da9]
+                rounded-[56.1383px]
+                transition-all duration-200 cursor-pointer
+                shadow-md hover:shadow-lg
+              "
+            >
+              <span className="font-sans font-semibold text-[clamp(1.1rem,1.65vw,1.8rem)] leading-[clamp(1.5rem,2.08vw,2.25rem)] text-white text-center">
+                Proceed
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
+      {/* Approve Comments Modal (Verification Officer 3) */}
+      {showApproveCommentsModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div
+            className="
+              relative w-full max-w-[clamp(30rem,46.67vw,42rem)] min-h-[clamp(20rem,28.4vw,28rem)] bg-white rounded-[clamp(1.5rem,2.2vw,2.5rem)]
+              p-[clamp(1.5rem,2.22vw,2.5rem)] flex flex-col gap-[clamp(1rem,1.67vw,2rem)] shadow-[0px_20px_40px_rgba(0,49,50,0.06)]
+            "
+          >
+            {/* Header: Title and Close Button */}
+            <div className="flex flex-row justify-between items-center w-full">
+              <h3 className="font-sans font-semibold text-[clamp(1.25rem,1.67vw,1.75rem)] leading-[clamp(1.65rem,2.22vw,2.5rem)] tracking-[-0.6px] text-[#1A1C1D]">
+                Approve
+              </h3>
+              <button
+                onClick={() => setShowApproveCommentsModal(false)}
+                className="w-[clamp(1.5rem,2.08vw,2.5rem)] h-[clamp(1.5rem,2.08vw,2.5rem)] rounded-full flex items-center justify-center bg-transparent border-none hover:bg-gray-100 transition-colors cursor-pointer"
+                aria-label="Close"
+              >
+                <X className="w-[clamp(1rem,1.39vw,1.5rem)] h-[clamp(1rem,1.39vw,1.5rem)] text-black" />
+              </button>
+            </div>
+
+            {/* Provide reason for approval */}
+            <div className="flex flex-col gap-[clamp(0.4rem,0.6vw,0.8rem)] w-full">
+              <span className="font-sans font-normal text-[clamp(0.8rem,0.97vw,1.1rem)] leading-[clamp(1rem,1.39vw,1.5rem)] text-[#3D4949]">
+                Provide the reason for approval:
+              </span>
+
+              {/* Textarea container */}
+              <div className="relative w-full h-[clamp(7.5rem,9.58vw,10rem)] bg-[#F3F3F5] border border-[#BCC9C9] rounded-[clamp(0.75rem,1.11vw,1.25rem)]">
+                <textarea
+                  value={approveReason}
+                  onChange={(e) => setApproveReason(e.target.value)}
+                  placeholder="Start write here..."
+                  className="
+                    w-full h-full bg-transparent outline-none border-none resize-none
+                    p-[clamp(1rem,1.39vw,1.75rem)] pr-[clamp(2.5rem,3.47vw,4rem)]
+                    font-sans font-normal text-[clamp(0.9rem,1.11vw,1.25rem)] leading-[clamp(1.25rem,1.8vw,2rem)] text-[#1A1C1D]
+                    placeholder:text-[rgba(26,28,29,0.3)]
+                  "
+                />
+                
+                {/* Voice Record Button */}
+                <button
+                  className="
+                    absolute right-[clamp(0.75rem,1.11vw,1.25rem)] bottom-[clamp(0.75rem,1.11vw,1.25rem)]
+                    w-[clamp(1.75rem,2.22vw,2.5rem)] h-[clamp(1.75rem,2.22vw,2.5rem)] rounded-full bg-[#2680C4] hover:bg-[#1f6da9]
+                    flex items-center justify-center cursor-pointer transition-colors shadow-sm
+                  "
+                  aria-label="Voice input"
+                >
+                  <Mic className="w-[clamp(0.9rem,1.25vw,1.5rem)] h-[clamp(0.9rem,1.25vw,1.5rem)] text-white" />
+                </button>
+              </div>
+            </div>
+
+            {/* Attach Audio & Rate This Land */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-[clamp(1rem,1.67vw,2rem)] w-full">
+              <div className="flex flex-row items-center gap-[clamp(1.2rem,2vw,3rem)]">
+                {/* Attach audio column */}
+                <div className="flex flex-col gap-[clamp(0.3rem,0.56vw,0.75rem)]">
+                  <span className="font-sans font-normal text-[clamp(0.8rem,0.97vw,1.1rem)] leading-[clamp(1rem,1.39vw,1.5rem)] text-[#3D4949]">
+                    Attach audio file
+                  </span>
+                  
+                  {/* File Input and Button */}
+                  <label
+                    className="
+                      box-sizing-border-box flex flex-row items-center justify-center px-[clamp(0.75rem,1.11vw,1.5rem)] py-[clamp(0.375rem,0.56vw,0.75rem)] gap-[clamp(0.3rem,0.56vw,0.75rem)]
+                      w-auto h-[clamp(2rem,2.5vw,3rem)] border border-[rgba(0,0,0,0.12)] rounded-[clamp(0.5rem,0.83vw,1.125rem)]
+                      hover:bg-gray-50 transition-colors cursor-pointer select-none
+                    "
+                  >
+                    <input
+                      type="file"
+                      accept="audio/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) setAudioFileName(file.name);
+                      }}
+                    />
+                    <Paperclip className="w-[clamp(0.9rem,1.25vw,1.5rem)] h-[clamp(0.9rem,1.25vw,1.5rem)] text-[rgba(0,0,0,0.5)]" />
+                    <span className="font-sans font-normal text-[clamp(0.8rem,0.97vw,1.1rem)] leading-[clamp(1rem,1.39vw,1.5rem)] text-[rgba(0,0,0,0.6)]">
+                      {audioFileName ? (audioFileName.length > 15 ? audioFileName.slice(0, 12) + "..." : audioFileName) : "Attach"}
+                    </span>
+                  </label>
+                </div>
+
+                {/* Rating column */}
+                <div className="flex flex-col gap-[clamp(0.3rem,0.56vw,0.75rem)]">
+                  <span className="font-sans font-normal text-[clamp(0.8rem,0.97vw,1.1rem)] leading-[clamp(1rem,1.39vw,1.5rem)] text-[#3D4949]">
+                    Rate this land
+                  </span>
+                  <div className="flex flex-row items-center gap-[clamp(0.125rem,0.2vw,0.4rem)]">
+                    {[1, 2, 3, 4, 5].map((starValue) => {
+                      const isActive = landRating >= starValue;
+                      return (
+                        <button
+                          key={starValue}
+                          onClick={() => setLandRating(starValue)}
+                          className="p-0 border-none bg-transparent cursor-pointer transition-transform hover:scale-110"
+                        >
+                          <Star
+                            className={`w-[clamp(1rem,1.39vw,1.75rem)] h-[clamp(1rem,1.39vw,1.75rem)] ${
+                              isActive
+                                ? "fill-[#FFB800] text-[#FFB800]"
+                                : "text-[rgba(0,0,0,0.62)]"
+                            }`}
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                onClick={() => {
+                  setShowApproveCommentsModal(false);
+                  setShowSuccessModal(true);
+                }}
+                className="
+                  flex flex-row justify-center items-center px-[clamp(0.5rem,0.69vw,1rem)] py-[clamp(0.5rem,0.69vw,1rem)] gap-2
+                  w-[clamp(6.5rem,8.4vw,8.5rem)] h-[clamp(2.25rem,2.64vw,2.75rem)] bg-[#2780C4] hover:bg-[#1f6da9] rounded-[clamp(1.5rem,2.2vw,2.5rem)]
+                  cursor-pointer transition-colors shadow-md hover:shadow-lg
+                  self-end sm:self-auto
+                "
+              >
+                <span className="font-sans font-semibold text-[clamp(0.8rem,0.97vw,1.1rem)] leading-[clamp(1rem,1.25vw,1.5rem)] text-white text-center">
+                  Submit
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Rejection Resolved Success Modal */}
       {showRejectionSuccessModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999] flex items-center justify-center p-4 animate-in fade-in duration-300">
