@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import cropFieldBanner from "@/assets/crop-field-banner.png";
 import profileImg from "@/assets/profile.svg";
+import { MOCK_PROFILE } from "../data/profileMockData";
 
 export const Profile: React.FC = () => {
   const navigate = useNavigate();
@@ -52,17 +53,17 @@ export const Profile: React.FC = () => {
               <div className="w-[110px] h-[110px] sm:w-[120px] sm:h-[120px] rounded-full border-[6px] border-[#F59E0B] overflow-hidden shadow-md -mt-[70px] sm:-mt-[80px] bg-white">
                 <img
                   src={profileImg}
-                  alt="Suresh Pashyam"
+                  alt={`${MOCK_PROFILE.firstName} ${MOCK_PROFILE.lastName}`}
                   className="w-full h-full object-cover"
                 />
               </div>
               
               <div className="flex flex-col">
                 <h2 className="font-extrabold text-[22px] md:text-[24px] text-[#1A1C1D]">
-                  Suresh Pashyam
+                  {MOCK_PROFILE.firstName} {MOCK_PROFILE.lastName}
                 </h2>
                 <p className="font-semibold text-sm text-[#5D6B6B]">
-                  Verification Officer
+                  {MOCK_PROFILE.roleName}
                 </p>
               </div>
             </div>
@@ -97,7 +98,7 @@ export const Profile: React.FC = () => {
               </label>
               <input
                 type="text"
-                value="Suresh"
+                value={MOCK_PROFILE.firstName}
                 readOnly
                 className="w-full h-12 bg-white border border-[#EBEBEB] rounded-[16px] px-4 font-semibold text-sm text-[#1A1C1D] outline-none cursor-default"
               />
@@ -110,7 +111,7 @@ export const Profile: React.FC = () => {
               </label>
               <input
                 type="text"
-                value="Pashyam"
+                value={MOCK_PROFILE.lastName}
                 readOnly
                 className="w-full h-12 bg-white border border-[#EBEBEB] rounded-[16px] px-4 font-semibold text-sm text-[#1A1C1D] outline-none cursor-default"
               />
@@ -123,7 +124,7 @@ export const Profile: React.FC = () => {
               </label>
               <input
                 type="text"
-                value="05/05/1994"
+                value={MOCK_PROFILE.dob}
                 readOnly
                 className="w-full h-12 bg-white border border-[#EBEBEB] rounded-[16px] px-4 font-semibold text-sm text-[#1A1C1D] outline-none cursor-default"
               />
@@ -136,7 +137,7 @@ export const Profile: React.FC = () => {
               </label>
               <input
                 type="text"
-                value="+91 887284 2888"
+                value={MOCK_PROFILE.phone}
                 readOnly
                 className="w-full h-12 bg-white border border-[#EBEBEB] rounded-[16px] px-4 font-semibold text-sm text-[#1A1C1D] outline-none cursor-default"
               />
@@ -149,7 +150,7 @@ export const Profile: React.FC = () => {
               </label>
               <input
                 type="email"
-                value="sureshpashyam@gmail.com"
+                value={MOCK_PROFILE.email}
                 readOnly
                 className="w-full h-12 bg-white border border-[#EBEBEB] rounded-[16px] px-4 font-semibold text-sm text-[#1A1C1D] outline-none cursor-default"
               />

@@ -7,12 +7,9 @@ import { useLoginMutation, useUpdatePasswordMutation, useForgotPasswordMutation 
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "@/features/auth/store/authSlice";
-import { UserRole, ROLE_CODES } from "@/features/auth/types";
+import { ROLE_CODES } from "@/features/auth/types";
 
-// ─── Dev Mock Users ───────────────────────────────────────────────────────────
-const MOCK_USERS = [
-  { login_id: "vo1@glc.com", password: "vo1@123", role_id: UserRole.VO1, first_name: "Verification", last_name: "Officer 1", id: 108 },
-];
+import { MOCK_USERS } from "../data/authMockData";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface InputFieldProps {
@@ -360,7 +357,7 @@ function LoginScreen({
 
 // ─── SCREEN 2 · Forgot Password ───────────────────────────────────────────────
 function ForgotPasswordScreen({
-  onBack,
+  onBack: _onBack,
   onSuccess,
 }: {
   onBack: () => void;

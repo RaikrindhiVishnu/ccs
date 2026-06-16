@@ -10,6 +10,13 @@ import {
   Bell
 } from 'lucide-react';
 import { MOCK_FARMLANDS } from '../data/farmlandsMockData';
+import {
+  OWNER_DETAILS,
+  FAMILY_TREE_NODES,
+  LAND_DETAILS,
+  DEFAULT_LEGAL_CHECKS,
+  UPLOADED_FILES
+} from '../data/auditMockData';
 
 export const AuditRoom: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,19 +42,7 @@ export const AuditRoom: React.FC = () => {
 
   // Legal Step custom interactive states
   const [selectedDoc, setSelectedDoc] = useState<string>("Land Document");
-  const [legalChecks, setLegalChecks] = useState<Record<string, boolean>>({
-    "Land Document": true,
-    "Pattadhar Passbook": true,
-    "Link Document": true,
-    "Kasara Pahani & Proceeding Copies": true,
-    "Revenue Record": true,
-    "Lease Agreement": true,
-    "Death Certificate": true,
-    "Partition Deed": true,
-    "Encumbrance Certificate": true,
-    "Land Coordinates": true,
-    "Owner KYC Video": true,
-  });
+  const [legalChecks, setLegalChecks] = useState<Record<string, boolean>>(DEFAULT_LEGAL_CHECKS);
 
   const handleBack = () => {
     navigate('/verification-officer-1/assigned-farmlands');
@@ -1035,14 +1030,14 @@ export const AuditRoom: React.FC = () => {
                           <div className="flex items-center gap-4">
                             <div className="w-[72px] h-[72px] rounded-full overflow-hidden border-2 border-white shadow-md">
                               <img
-                                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
+                                src={OWNER_DETAILS.avatar}
                                 alt="Owner avatar"
                                 className="w-full h-full object-cover"
                               />
                             </div>
                             <div className="flex flex-col">
                               <h3 className="text-title font-plus-jakarta font-extrabold text-[22px] text-[#1A1C1D] leading-none">
-                                Arjun Mehta
+                                {OWNER_DETAILS.name}
                               </h3>
                             </div>
                           </div>
@@ -1051,14 +1046,14 @@ export const AuditRoom: React.FC = () => {
                             <div className="info-field-group">
                               <label className="text-label font-plus-jakarta font-bold text-xs text-[#3D4949] uppercase tracking-wider">First Name</label>
                               <div className="info-field-value text-value font-plus-jakarta text-[15px] font-medium">
-                                Arjun
+                                {OWNER_DETAILS.firstName}
                               </div>
                             </div>
 
                             <div className="info-field-group">
                               <label className="text-label font-plus-jakarta font-bold text-xs text-[#3D4949] uppercase tracking-wider">Last Name</label>
                               <div className="info-field-value text-value font-plus-jakarta text-[15px] font-medium">
-                                Mehta
+                                {OWNER_DETAILS.lastName}
                               </div>
                             </div>
 
@@ -1066,7 +1061,7 @@ export const AuditRoom: React.FC = () => {
                               <label className="text-label font-plus-jakarta font-bold text-xs text-[#3D4949] uppercase tracking-wider">Phone Number</label>
                               <div className="info-field-value text-value font-plus-jakarta text-[15px] font-medium gap-3">
                                 <Phone className="w-4 h-4 text-[#8E9D9D] shrink-0" />
-                                <span>+91-9123456789</span>
+                                <span>{OWNER_DETAILS.phone}</span>
                               </div>
                             </div>
 
@@ -1074,7 +1069,7 @@ export const AuditRoom: React.FC = () => {
                               <label className="text-label font-plus-jakarta font-bold text-xs text-[#3D4949] uppercase tracking-wider">Email</label>
                               <div className="info-field-value text-value font-plus-jakarta text-[15px] font-medium gap-3">
                                 <Mail className="w-4 h-4 text-[#8E9D9D] shrink-0" />
-                                <span>arjunmehta@gmail.com</span>
+                                <span>{OWNER_DETAILS.email}</span>
                               </div>
                             </div>
 
@@ -1082,21 +1077,21 @@ export const AuditRoom: React.FC = () => {
                               <label className="text-label font-plus-jakarta font-bold text-xs text-[#3D4949] uppercase tracking-wider">Date of Birth</label>
                               <div className="info-field-value text-value font-plus-jakarta text-[15px] font-medium gap-3">
                                 <CalendarDays className="w-4 h-4 text-[#8E9D9D] shrink-0" />
-                                <span>13/01/1984</span>
+                                <span>{OWNER_DETAILS.dob}</span>
                               </div>
                             </div>
 
                             <div className="info-field-group">
                               <label className="text-label font-plus-jakarta font-bold text-xs text-[#3D4949] uppercase tracking-wider">Religion</label>
                               <div className="info-field-value text-value font-plus-jakarta text-[15px] font-medium">
-                                Hindu
+                                {OWNER_DETAILS.religion}
                               </div>
                             </div>
 
                             <div className="info-field-group">
                               <label className="text-label font-plus-jakarta font-bold text-xs text-[#3D4949] uppercase tracking-wider">Gender</label>
                               <div className="info-field-value text-value font-plus-jakarta text-[15px] font-medium">
-                                Male
+                                {OWNER_DETAILS.gender}
                               </div>
                             </div>
                           </div>
@@ -1104,12 +1099,12 @@ export const AuditRoom: React.FC = () => {
                           <div className="flex items-center gap-2 mt-4">
                             <span className="font-plus-jakarta font-bold text-sm text-[#1A1C1D]">Google Location of Land</span>
                             <a
-                              href={`https://maps.google.com/?q=${encodeURIComponent('17.4835850,78.3805050')}`}
+                              href={`https://maps.google.com/?q=${encodeURIComponent(OWNER_DETAILS.googleLocation)}`}
                               target="_blank"
                               rel="noreferrer"
                               className="font-plus-jakarta font-bold text-sm text-[#2780C4] underline hover:text-[#2069A1] transition-colors ml-1"
                             >
-                              17.4835850, 78.3805050
+                              {OWNER_DETAILS.googleLocation}
                             </a>
                           </div>
                         </div>
@@ -1145,7 +1140,7 @@ export const AuditRoom: React.FC = () => {
                               <div className="absolute left-[280px] top-[15px] w-[200px] border-2 border-[#DBE9F6] bg-[#F5F9FD] rounded-[24px] p-4 text-center flex flex-col items-center justify-center gap-1.5 shadow-sm">
                                 <div className="relative w-14 h-14 rounded-full overflow-hidden">
                                   <img 
-                                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80" 
+                                    src={FAMILY_TREE_NODES.owner.avatar} 
                                     alt="Owner avatar" 
                                     className="w-full h-full object-cover" 
                                   />
@@ -1153,63 +1148,63 @@ export const AuditRoom: React.FC = () => {
                                 <span className="bg-[#3D93D1] text-white text-[9px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider leading-none">
                                   OWNER
                                 </span>
-                                <h4 className="font-plus-jakarta font-bold text-sm text-[#1A1C1D] mt-0.5 leading-none">Arjun Mehta</h4>
-                                <span className="text-xs text-[#2780C4] font-medium leading-none">Male, 42 yrs</span>
+                                <h4 className="font-plus-jakarta font-bold text-sm text-[#1A1C1D] mt-0.5 leading-none">{FAMILY_TREE_NODES.owner.name}</h4>
+                                <span className="text-xs text-[#2780C4] font-medium leading-none">{FAMILY_TREE_NODES.owner.details}</span>
                               </div>
 
                               <div className="absolute left-[20px] top-[245px] w-[200px] bg-white border border-[#E5EAEB] rounded-[20px] p-3 flex items-center gap-3 shadow-xs">
                                 <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
                                   <img 
-                                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80" 
+                                    src={FAMILY_TREE_NODES.father.avatar} 
                                     alt="" 
                                     className="w-full h-full object-cover" 
                                   />
                                 </div>
                                 <div className="flex flex-col">
-                                  <h4 className="font-plus-jakarta font-bold text-sm text-[#1A1C1D] leading-tight">Vikram Mehta</h4>
-                                  <span className="text-xs text-[#8E9D9D] leading-tight">Male, 72 yrs</span>
+                                  <h4 className="font-plus-jakarta font-bold text-sm text-[#1A1C1D] leading-tight">{FAMILY_TREE_NODES.father.name}</h4>
+                                  <span className="text-xs text-[#8E9D9D] leading-tight">{FAMILY_TREE_NODES.father.details}</span>
                                 </div>
                               </div>
 
                               <div className="absolute left-[280px] top-[245px] w-[200px] bg-white border border-[#E5EAEB] rounded-[20px] p-3 flex items-center gap-3 shadow-xs">
                                 <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
                                   <img 
-                                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80" 
+                                    src={FAMILY_TREE_NODES.spouse.avatar} 
                                     alt="" 
                                     className="w-full h-full object-cover" 
                                   />
                                 </div>
                                 <div className="flex flex-col">
-                                  <h4 className="font-plus-jakarta font-bold text-sm text-[#1A1C1D] leading-tight">Priya Mehta</h4>
-                                  <span className="text-xs text-[#8E9D9D] leading-tight">Female, 40 yrs</span>
+                                  <h4 className="font-plus-jakarta font-bold text-sm text-[#1A1C1D] leading-tight">{FAMILY_TREE_NODES.spouse.name}</h4>
+                                  <span className="text-xs text-[#8E9D9D] leading-tight">{FAMILY_TREE_NODES.spouse.details}</span>
                                 </div>
                               </div>
 
                               <div className="absolute left-[540px] top-[245px] w-[200px] bg-white border border-[#E5EAEB] rounded-[20px] p-3 flex items-center gap-3 shadow-xs">
                                 <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
                                   <img 
-                                    src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=100&auto=format&fit=crop&q=80" 
+                                    src={FAMILY_TREE_NODES.mother.avatar} 
                                     alt="" 
                                     className="w-full h-full object-cover" 
                                   />
                                 </div>
                                 <div className="flex flex-col">
-                                  <h4 className="font-plus-jakarta font-bold text-sm text-[#1A1C1D] leading-tight">Sushila Mehta</h4>
-                                  <span className="text-xs text-[#8E9D9D] leading-tight">Female, 68 yrs</span>
+                                  <h4 className="font-plus-jakarta font-bold text-sm text-[#1A1C1D] leading-tight">{FAMILY_TREE_NODES.mother.name}</h4>
+                                  <span className="text-xs text-[#8E9D9D] leading-tight">{FAMILY_TREE_NODES.mother.details}</span>
                                 </div>
                               </div>
 
                               <div className="absolute left-[280px] top-[395px] w-[200px] bg-white border border-[#E5EAEB] rounded-[20px] p-3 flex items-center gap-3 shadow-xs">
                                 <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
                                   <img 
-                                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80" 
+                                    src={FAMILY_TREE_NODES.daughter.avatar} 
                                     alt="" 
                                     className="w-full h-full object-cover" 
                                   />
                                 </div>
                                 <div className="flex flex-col">
-                                  <h4 className="font-plus-jakarta font-bold text-sm text-[#1A1C1D] leading-tight">Ananya Mehta</h4>
-                                  <span className="text-xs text-[#8E9D9D] leading-tight">Female, 12 yrs</span>
+                                  <h4 className="font-plus-jakarta font-bold text-sm text-[#1A1C1D] leading-tight">{FAMILY_TREE_NODES.daughter.name}</h4>
+                                  <span className="text-xs text-[#8E9D9D] leading-tight">{FAMILY_TREE_NODES.daughter.details}</span>
                                 </div>
                               </div>
                             </div>
@@ -1226,26 +1221,26 @@ export const AuditRoom: React.FC = () => {
                             <div className="flex flex-col gap-5 text-right w-full md:w-[200px]">
                               <div className="flex flex-col gap-1">
                                 <span className="text-label font-plus-jakarta text-[10px] text-[#8E9D9D] font-extrabold uppercase tracking-wider">State</span>
-                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">Andhra Pradesh</span>
+                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">{LAND_DETAILS.state}</span>
                               </div>
                               <div className="flex flex-col gap-1">
                                 <span className="text-label font-plus-jakarta text-[10px] text-[#8E9D9D] font-extrabold uppercase tracking-wider">District</span>
-                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">West Godavari</span>
+                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">{LAND_DETAILS.district}</span>
                               </div>
                               <div className="flex flex-col gap-1">
                                 <span className="text-label font-plus-jakarta text-[10px] text-[#8E9D9D] font-extrabold uppercase tracking-wider">Area/City/Town</span>
-                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">Thanuku</span>
+                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">{LAND_DETAILS.area}</span>
                               </div>
                               <div className="flex flex-col gap-1">
                                 <span className="text-label font-plus-jakarta text-[10px] text-[#8E9D9D] font-extrabold uppercase tracking-wider">Acquisition Category</span>
-                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">Ancestral Property</span>
+                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">{LAND_DETAILS.acquisitionCategory}</span>
                               </div>
                             </div>
 
                             <div className="flex-1 flex justify-center">
                               <div className="w-[300px] h-[190px] rounded-[24px] overflow-hidden shadow-xs border border-[#ECECEC]">
                                 <img
-                                  src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&auto=format&fit=crop&q=80"
+                                  src={LAND_DETAILS.image}
                                   alt="Farmland Aerial View"
                                   className="w-full h-full object-cover"
                                 />
@@ -1255,19 +1250,19 @@ export const AuditRoom: React.FC = () => {
                             <div className="flex flex-col gap-5 text-left w-full md:w-[200px]">
                               <div className="flex flex-col gap-1">
                                 <span className="text-label font-plus-jakarta text-[10px] text-[#8E9D9D] font-extrabold uppercase tracking-wider">Agent</span>
-                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">Agent Vinod</span>
+                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">{LAND_DETAILS.agent}</span>
                               </div>
                               <div className="flex flex-col gap-1">
                                 <span className="text-label font-plus-jakarta text-[10px] text-[#8E9D9D] font-extrabold uppercase tracking-wider">Land Conversion</span>
-                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">Acres</span>
+                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">{LAND_DETAILS.conversion}</span>
                               </div>
                               <div className="flex flex-col gap-1">
                                 <span className="text-label font-plus-jakarta text-[10px] text-[#8E9D9D] font-extrabold uppercase tracking-wider">Value for Area</span>
-                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">1,00,000.00</span>
+                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">{LAND_DETAILS.value}</span>
                               </div>
                               <div className="flex flex-col gap-1">
                                 <span className="text-label font-plus-jakarta text-[10px] text-[#8E9D9D] font-extrabold uppercase tracking-wider">Agent Referral Location</span>
-                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">Another Location</span>
+                                <span className="text-value font-plus-jakarta text-sm font-bold text-[#2780C4]">{LAND_DETAILS.referralLocation}</span>
                               </div>
                             </div>
                           </div>
@@ -1275,12 +1270,12 @@ export const AuditRoom: React.FC = () => {
                           <div className="flex justify-between items-center border-t border-[#F1F3F4]/80 pt-6 mt-4 px-2">
                             <div className="flex flex-col">
                               <span className="text-label font-plus-jakarta text-[10px] text-[#8E9D9D] font-extrabold uppercase tracking-wider">Geo Reference</span>
-                              <h4 className="text-title font-plus-jakarta text-xl font-bold text-[#2780C4] mt-1 leading-none">N 38.2975° W 122.2869°</h4>
-                              <span className="text-label font-plus-jakarta text-[10px] text-[#8E9D9D] mt-2 leading-none">GRID: 84T-QK • ELEV: 12m</span>
+                              <h4 className="text-title font-plus-jakarta text-xl font-bold text-[#2780C4] mt-1 leading-none">{LAND_DETAILS.geoReference}</h4>
+                              <span className="text-label font-plus-jakarta text-[10px] text-[#8E9D9D] mt-2 leading-none">{LAND_DETAILS.grid}</span>
                             </div>
                             <div className="w-[160px] h-[80px] rounded-[16px] overflow-hidden border border-[#ECECEC] shadow-xs">
                               <img
-                                src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=200&auto=format&fit=crop&q=80"
+                                src={LAND_DETAILS.satelliteMapImage}
                                 alt="Satellite Map View"
                                 className="w-full h-full object-cover"
                               />
@@ -1405,39 +1400,24 @@ export const AuditRoom: React.FC = () => {
                         Uploaded Files
                       </h3>
                       <div className="files-inner-container flex flex-col gap-4">
-                        <div className="file-row">
-                          <div className="flex items-center gap-3">
-                            <div className="file-icon-box">
-                              <span className="font-bold text-[9px] text-red-500 font-plus-jakarta">PDF</span>
+                        {UPLOADED_FILES.map((file, idx) => (
+                          <div key={idx} className="file-row">
+                            <div className="flex items-center gap-3">
+                              <div className="file-icon-box">
+                                <span className="font-bold text-[9px] text-red-500 font-plus-jakarta">PDF</span>
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="font-plus-jakarta font-bold text-xs text-[#1A1C1D]">{file.name}</span>
+                                <span className="font-plus-jakarta text-[10px] text-[#8E9D9D] font-bold">{file.size}</span>
+                              </div>
                             </div>
-                            <div className="flex flex-col">
-                              <span className="font-plus-jakarta font-bold text-xs text-[#1A1C1D]">File_name.pdf</span>
-                              <span className="font-plus-jakarta text-[10px] text-[#8E9D9D] font-bold">6MB</span>
-                            </div>
+                            <button className="text-[#3D4949] hover:text-[#2780C4] cursor-pointer bg-transparent border-none">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                              </svg>
+                            </button>
                           </div>
-                          <button className="text-[#3D4949] hover:text-[#2780C4] cursor-pointer bg-transparent border-none">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                          </button>
-                        </div>
-
-                        <div className="file-row">
-                          <div className="flex items-center gap-3">
-                            <div className="file-icon-box">
-                              <span className="font-bold text-[9px] text-red-500 font-plus-jakarta">PDF</span>
-                            </div>
-                            <div className="flex flex-col">
-                              <span className="font-plus-jakarta font-bold text-xs text-[#1A1C1D]">File_name_1.pdf</span>
-                              <span className="font-plus-jakarta text-[10px] text-[#8E9D9D] font-bold">8MB</span>
-                            </div>
-                          </div>
-                          <button className="text-[#3D4949] hover:text-[#2780C4] cursor-pointer bg-transparent border-none">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                          </button>
-                        </div>
+                        ))}
                       </div>
                     </div>
 

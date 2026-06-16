@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, User, ArrowRight } from 'lucide-react';
+import { MapPin, User } from 'lucide-react';
 import type { Farmland } from '../data/farmlandsMockData';
 
 interface InProgressFarmlandCardProps {
