@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SuperAdminHeader from "@/features/super-admin/components/SuperAdminHeader";
 import VisitorSalesCard from "@/features/super-admin/components/VisitorSalesCard";
@@ -7,32 +7,12 @@ import UploadFarmlandCard, { type UploadFarmlandData } from "@/features/super-ad
 import UploadFarmlandDetails from "@/features/super-admin/components/upload-components/UploadFarmlandDetails";
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 import { 
-  CloudUpload, 
-  FileSpreadsheet, 
-  FileText, 
-  CheckCircle, 
-  XCircle, 
-  Trash2, 
-  Play, 
-  Clock, 
-  Database,
-  Layers,
   ChevronDown,
   Search as SearchIcon,
   ArrowUpRight,
-  X as XIcon,
-  SlidersHorizontal
+  X as XIcon
 } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
-
-interface UploadFileItem {
-  id: string;
-  name: string;
-  size: string;
-  progress: number;
-  status: "pending" | "uploading" | "completed" | "failed";
-  type: string;
-}
 
 const UploadSuperAdmin: React.FC = () => {
   const navigate = useNavigate();
@@ -98,146 +78,8 @@ const UploadSuperAdmin: React.FC = () => {
     },
   ]);
 
-  // Upload Monitor State
-  const [dragActive, setDragActive] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("farmlands");
-  const [files, setFiles] = useState<UploadFileItem[]>([
-    {
-      id: "1",
-      name: "mandal_boundaries_june.geojson",
-      size: "4.2 MB",
-      progress: 100,
-      status: "completed",
-      type: "GIS Mappings",
-    },
-    {
-      id: "2",
-      name: "regional_officers_audit_logs.csv",
-      size: "820 KB",
-      progress: 100,
-      status: "completed",
-      type: "User Logs",
-    },
-  ]);
+  // Upload Monitor State (Removed unused handlers/states to fix build check)
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const categories = [
-    { id: "farmlands", label: "Farmlands Data", desc: "Upload farm documents, plots & details", icon: Database },
-    { id: "gis", label: "GIS Mappings", desc: "Upload GeoJSON boundaries & mandals", icon: Layers },
-    { id: "users", label: "User Directory", desc: "Upload officers, agents & user accounts", icon: FileText },
-  ];
-
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      addFiles(e.dataTransfer.files);
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      addFiles(e.target.files);
-    }
-  };
-
-  const addFiles = (fileList: FileList) => {
-    const newFiles: UploadFileItem[] = [];
-    for (let i = 0; i < fileList.length; i++) {
-      const file = fileList[i];
-      const sizeStr = 
-        file.size > 1024 * 1024 
-          ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` 
-          : `${(file.size / 1024).toFixed(0)} KB`;
-          
-      const categoryLabel = categories.find(c => c.id === selectedCategory)?.label || "Other Data";
-
-      newFiles.push({
-        id: Date.now().toString() + i,
-        name: file.name,
-        size: sizeStr,
-        progress: 0,
-        status: "pending",
-        type: categoryLabel,
-      });
-    }
-    setFiles((prev) => [...newFiles, ...prev]);
-
-    // Start simulation for the newly added files
-    newFiles.forEach((file) => {
-      simulateUpload(file.id, file.name);
-    });
-  };
-
-  const simulateUpload = (id: string, name: string) => {
-    setFiles((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, status: "uploading", progress: 5 } : f))
-    );
-
-    let progressVal = 5;
-    const interval = setInterval(() => {
-      progressVal += Math.floor(Math.random() * 20) + 15;
-      if (progressVal >= 100) {
-        progressVal = 100;
-        clearInterval(interval);
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.id === id ? { ...f, progress: 100, status: "completed" } : f
-          )
-        );
-
-        // Prepend a new Farmland card when a farmland file upload is finished!
-        if (selectedCategory === "farmlands") {
-          const cleanName = name.replace(/\.[^/.]+$/, "").substring(0, 12).toUpperCase();
-          const randomAcres = Math.floor(Math.random() * 15) + 2;
-          const today = new Date().toLocaleDateString("en-GB", {
-            year: "2-digit",
-            month: "2-digit",
-            day: "2-digit",
-          });
-
-          const newCard: UploadFarmlandData = {
-            id: Date.now().toString(),
-            title: cleanName.startsWith("GLC") ? cleanName : `GLC ${cleanName}`,
-            acres: `${randomAcres} Acres`,
-            uploadedAt: today,
-            image: `/super-admin/images/farmland${Math.floor(Math.random() * 4) + 1}.png`,
-            status: "draft",
-            uploader: {
-              name: "Super Admin",
-              avatar: "",
-            },
-          };
-          setFarmlands((prev) => [newCard, ...prev]);
-        }
-      } else {
-        setFiles((prev) =>
-          prev.map((f) => (f.id === id ? { ...f, progress: progressVal } : f))
-        );
-      }
-    }, 450);
-  };
-
-  const removeFile = (id: string) => {
-    setFiles((prev) => prev.filter((f) => f.id !== id));
-  };
-
-  const onButtonClick = () => {
-    fileInputRef.current?.click();
-  };
 
   // Filter Logic
   const filteredFarmlands = farmlands.filter((farm) => {

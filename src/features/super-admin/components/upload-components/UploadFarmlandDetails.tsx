@@ -7,7 +7,7 @@ export interface UploadFarmlandDetailsProps {
     id: string;
     title: string;
     acres: string;
-    uploadedAt: string;
+    uploadedAt?: string;
     image: string;
     status: "draft" | "completed";
     uploader: {
