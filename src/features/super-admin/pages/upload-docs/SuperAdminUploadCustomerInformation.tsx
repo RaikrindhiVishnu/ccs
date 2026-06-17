@@ -1,8 +1,8 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import UploadTimelineSidebar from "../components/UploadTimelineSidebar";
-import UploadCustomerInformationCard from "../components/UploadCustomerInformationCard";
-import UploadGoBack from "../components/UploadGoBack";
+import UploadTimelineSidebar from "../../components/upload-components/UploadTimelineSidebar";
+import UploadCustomerInformationCard from "../../components/upload-components/UploadCustomerInformationCard";
+import UploadGoBack from "../../components/upload-components/UploadGoBack";
 
 export const SuperAdminUploadCustomerInformation: React.FC = () => {
   const { id } = useParams<{ id: string }>();

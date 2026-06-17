@@ -149,9 +149,8 @@ import {
     SuperAdminLocalIntelligence,
     SuperAdminUploadLandDetails,
     SuperAdminUploadViewMaps,
-    SuperAdminUploadCustomerInformation
-    SuperAdminPoolDetails,
-    SuperAdminPoolInvestorDetails
+    SuperAdminUploadCustomerInformation,
+    LegalUploadDocument
 } from './routes.config';
 
 
@@ -373,6 +372,9 @@ export const authRoutes: RouteObject[] = [
             }, {
                 path: '/super-admin/upload/customer-information/:id',
                 element: <SuperAdminUploadCustomerInformation />
+            }, {
+                path: '/super-admin/upload/documents/:step/:id',
+                element: <LegalUploadDocument />
             }, {
                 path: '/super-admin/user-profile/:id',
                 element: <SuperAdminUserProfile />

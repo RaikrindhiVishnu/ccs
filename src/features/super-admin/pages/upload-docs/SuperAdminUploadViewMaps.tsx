@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import UploadGoBack from "../components/UploadGoBack";
+import UploadGoBack from "../../components/upload-components/UploadGoBack";
 import { Search } from "lucide-react";
 
 export const SuperAdminUploadViewMaps: React.FC = () => {
@@ -34,7 +34,7 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] flex flex-col justify-start items-center p-[clamp(1.77rem,2.78vw,3.33rem)] font-sans">
-      <div 
+      <div
         className="w-full max-w-[clamp(64rem,90vw,120rem)] flex flex-col gap-[clamp(1rem,2vw,2.5rem)]"
       >
         {/* ── Top Header ── */}
@@ -44,9 +44,9 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
 
         {/* ── Central Card ── */}
         <div className="w-full bg-white shadow-[0px_20px_40px_rgba(0,49,50,0.06)] rounded-[clamp(1.5rem,2.22vw,2rem)] p-[clamp(1rem,1.53vw,1.83rem)] relative flex flex-col gap-[clamp(1rem,1.53vw,1.83rem)]">
-          
+
           {/* Map Container inside Card */}
-          <div 
+          <div
             className="relative w-full bg-[#FFFFFF] border border-[rgba(0,0,0,0.12)] rounded-[18px] overflow-hidden flex items-center justify-center select-none"
             style={{
               height: "clamp(33.6rem, 52.5vw, 63.0rem)"
@@ -62,9 +62,9 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
                 filter: "brightness(0.9)"
               }}
             />
-            
+
             {/* HUD Float Search bar input */}
-            <div 
+            <div
               className="absolute flex flex-row items-center bg-white px-[clamp(1rem,1.38vw,1.66rem)] gap-2 shadow-[0px_4px_12px_rgba(0,0,0,0.15)] border-none z-10"
               style={{
                 top: "clamp(1rem, 2.08vw, 2.08rem)",
@@ -83,12 +83,12 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
                 className="w-full bg-transparent outline-none font-['Inter'] font-normal text-[clamp(0.71rem,1.11vw,1.33rem)] text-[#191C1E] placeholder-[#5C5C5C]/30"
               />
             </div>
-            
+
             {/* Ambient Map Grid Layer Overlay */}
             <div className="absolute inset-0 bg-black/10 pointer-events-none" />
 
             {/* Float HUD Zoom Controls (Bottom Right) */}
-            <div 
+            <div
               className="absolute flex flex-col items-center justify-around bg-[rgba(6,6,6,0.5)] border border-white/10 shadow-lg select-none z-10"
               style={{
                 right: "clamp(1rem, 1.8vw, 2.5rem)",
@@ -99,7 +99,7 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
               }}
             >
               {/* Zoom In Button */}
-              <button 
+              <button
                 type="button"
                 onClick={handleZoomIn}
                 className="w-full h-1/2 flex items-center justify-center font-['Outfit'] font-normal text-white hover:bg-white/10 active:bg-white/20 transition-colors border-b border-white/10 cursor-pointer"
@@ -110,7 +110,7 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
                 +
               </button>
               {/* Zoom Out Button */}
-              <button 
+              <button
                 type="button"
                 onClick={handleZoomOut}
                 className="w-full h-1/2 flex items-center justify-center font-['Outfit'] font-normal text-white hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer"
@@ -134,17 +134,17 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
                 height: "clamp(1.422rem, 2.222vw, 2.667rem)"
               }}
             >
-              <svg 
-                viewBox="0 0 24 24" 
-                fill="none" 
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
                 className="text-white"
                 style={{
                   width: "clamp(0.889rem, 1.389vw, 1.667rem)",
                   height: "clamp(0.889rem, 1.389vw, 1.667rem)"
                 }}
               >
-                <path 
-                  d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1c0-.55-.45-1-1-1s-1 .45-1 1v2.06C6.83 3.52 3.52 6.83 3.06 11H1c-.55 0-1 .45-1 1s.45 1 1 1h2.06c.46 4.17 3.77 7.48 7.94 7.94V23c0 .55.45 1 1 1s1-.45 1-1v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23c.55 0 1-.45 1-1s-.45-1-1-1h-2.06zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" 
+                <path
+                  d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1c0-.55-.45-1-1-1s-1 .45-1 1v2.06C6.83 3.52 3.52 6.83 3.06 11H1c-.55 0-1 .45-1 1s.45 1 1 1h2.06c.46 4.17 3.77 7.48 7.94 7.94V23c0 .55.45 1 1 1s1-.45 1-1v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23c.55 0 1-.45 1-1s-.45-1-1-1h-2.06zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
                   fill="currentColor"
                 />
               </svg>

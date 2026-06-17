@@ -43,7 +43,7 @@ const UploadFarmlandDetails: React.FC<UploadFarmlandDetailsProps> = ({
       {/* ── Top Header Navigation Bar ── */}
       <div className="flex items-center justify-between w-full">
         <UploadGoBack onClick={onBack} />
-        
+
         {/* Right Notification & Profile Controls */}
         <div className="flex items-center gap-[clamp(0.5rem,0.8vw,0.75rem)]">
           {/* Notification Bell */}
@@ -89,7 +89,7 @@ const UploadFarmlandDetails: React.FC<UploadFarmlandDetailsProps> = ({
 
           {/* Bottom Left Badge & Title */}
           <div className="absolute bottom-[clamp(1rem,2vw,2.25rem)] left-[clamp(1rem,2vw,2.25rem)] flex flex-col gap-[clamp(0.4rem,0.6vw,0.6rem)]">
-            <div 
+            <div
               className="self-start px-[clamp(0.5rem,0.69vw,1rem)] py-[clamp(0.25rem,0.375vw,0.5rem)] rounded-full bg-white/20 border border-white/10 backdrop-blur-md flex items-center justify-center"
               style={{ width: isDraft ? "clamp(5.5rem,7.85vw,9rem)" : "clamp(7rem,9.44vw,11rem)" }}
             >
@@ -178,7 +178,7 @@ const UploadFarmlandDetails: React.FC<UploadFarmlandDetailsProps> = ({
             <div className="flex items-center h-[clamp(2rem,3.06vw,3.5rem)]">
               <div className="flex flex-row items-center gap-[clamp(0.1875rem,0.3vw,0.375rem)]">
                 <svg width="12" height="15" viewBox="0 0 12 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-                  <path fillRule="evenodd" clipRule="evenodd" d="M6 15C6 15 12 10.5 12 6C12 2.68629 9.31371 0 6 0C2.68629 0 0 2.68629 0 6C0 10.5 6 15 6 15ZM6 8C7.10457 8 8 7.10457 8 6C8 4.89543 7.10457 4 6 4C4.89543 4 4 4.89543 4 6C4 7.10457 4.89543 8 6 8Z" fill="#000000"/>
+                  <path fillRule="evenodd" clipRule="evenodd" d="M6 15C6 15 12 10.5 12 6C12 2.68629 9.31371 0 6 0C2.68629 0 0 2.68629 0 6C0 10.5 6 15 6 15ZM6 8C7.10457 8 8 7.10457 8 6C8 4.89543 7.10457 4 6 4C4.89543 4 4 4.89543 4 6C4 7.10457 4.89543 8 6 8Z" fill="#000000" />
                 </svg>
                 <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.8125rem,1.11vw,1.375rem)] leading-[clamp(1.125rem,1.67vw,2rem)] text-black">
                   West Godvari, AP

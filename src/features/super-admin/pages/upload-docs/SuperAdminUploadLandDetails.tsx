@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import UploadGoBack from "../components/UploadGoBack";
+import UploadGoBack from "../../components/upload-components/UploadGoBack";
 import { ChevronDown } from "lucide-react";
 
 export const SuperAdminUploadLandDetails: React.FC = () => {
@@ -33,7 +33,7 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] flex flex-col justify-start items-center p-[clamp(1.77rem,2.78vw,3.33rem)] font-sans">
-      <div 
+      <div
         className="w-full max-w-[clamp(64rem,90vw,120rem)] flex flex-col gap-[clamp(1rem,2vw,2.5rem)]"
       >
         {/* ── Top Header - Reuses UploadGoBack ── */}
@@ -52,34 +52,32 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
 
           {/* ── Body: Form Controls ── */}
           <div className="flex flex-col gap-[clamp(2.3rem,3.6vw,4.3rem)] w-full">
-            
+
             {/* Row 1: Acquisition Category & Agent Referral stacked vertically */}
             <div className="flex flex-col gap-[clamp(1.5rem,2vw,2.5rem)]">
-              
+
               {/* Acquisition Category Question */}
               <div className="flex flex-col gap-[clamp(0.75rem,1.1vw,1.25rem)]">
                 <span className="font-['Plus_Jakarta_Sans'] font-medium text-[clamp(0.8rem,1.25vw,1.5rem)] leading-tight text-black">
                   Please indicate the acquisition category for the land.
                 </span>
-                
+
                 <div className="flex flex-row items-center gap-[clamp(0.75rem,1.8vw,2rem)]">
                   {/* Self Purchase Button */}
                   <button
                     type="button"
                     onClick={() => setAcquisitionCategory("purchase")}
-                    className={`flex flex-row justify-center items-center gap-2.5 h-[clamp(2.09rem,2.64vw,3.17rem)] rounded-[33px] border transition-all cursor-pointer select-none ${
-                      acquisitionCategory === "purchase"
-                        ? "bg-[#2B2D2F] border-[#000000] text-white"
-                        : "bg-white border-[rgba(0,0,0,0.26)] text-black hover:bg-gray-50"
-                    }`}
+                    className={`flex flex-row justify-center items-center gap-2.5 h-[clamp(2.09rem,2.64vw,3.17rem)] rounded-[33px] border transition-all cursor-pointer select-none ${acquisitionCategory === "purchase"
+                      ? "bg-[#2B2D2F] border-[#000000] text-white"
+                      : "bg-white border-[rgba(0,0,0,0.26)] text-black hover:bg-gray-50"
+                      }`}
                     style={{ width: "clamp(6.6875rem, 10.486vw, 12.5625rem)" }}
                   >
-                    <div 
-                      className={`w-3 h-3 rounded-full border-2 transition-colors ${
-                        acquisitionCategory === "purchase"
-                          ? "bg-[#BDD327] border-white"
-                          : "bg-white border-[#BDD327]"
-                      }`}
+                    <div
+                      className={`w-3 h-3 rounded-full border-2 transition-colors ${acquisitionCategory === "purchase"
+                        ? "bg-[#BDD327] border-white"
+                        : "bg-white border-[#BDD327]"
+                        }`}
                     />
                     <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.62rem,0.97vw,1.16rem)] leading-none whitespace-nowrap">
                       Self Purchase
@@ -90,19 +88,17 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setAcquisitionCategory("ancestral")}
-                    className={`flex flex-row justify-center items-center gap-2.5 h-[clamp(2.09rem,2.64vw,3.17rem)] rounded-[33px] border transition-all cursor-pointer select-none ${
-                      acquisitionCategory === "ancestral"
-                        ? "bg-[#2B2D2F] border-[#000000] text-white"
-                        : "bg-white border-[rgba(0,0,0,0.26)] text-black hover:bg-gray-50"
-                    }`}
+                    className={`flex flex-row justify-center items-center gap-2.5 h-[clamp(2.09rem,2.64vw,3.17rem)] rounded-[33px] border transition-all cursor-pointer select-none ${acquisitionCategory === "ancestral"
+                      ? "bg-[#2B2D2F] border-[#000000] text-white"
+                      : "bg-white border-[rgba(0,0,0,0.26)] text-black hover:bg-gray-50"
+                      }`}
                     style={{ width: "clamp(8.1875rem, 12.847vw, 15.416rem)" }}
                   >
-                    <div 
-                      className={`w-3 h-3 rounded-full border-2 transition-colors ${
-                        acquisitionCategory === "ancestral"
-                          ? "bg-[#BDD327] border-white"
-                          : "bg-white border-[#BDD327]"
-                      }`}
+                    <div
+                      className={`w-3 h-3 rounded-full border-2 transition-colors ${acquisitionCategory === "ancestral"
+                        ? "bg-[#BDD327] border-white"
+                        : "bg-white border-[#BDD327]"
+                        }`}
                     />
                     <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.62rem,0.97vw,1.16rem)] leading-none whitespace-nowrap">
                       Ancestral Property
@@ -122,19 +118,17 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setReferredAgent("default")}
-                    className={`flex flex-row justify-center items-center gap-2.5 h-[clamp(2.09rem,2.64vw,3.17rem)] rounded-[33px] border transition-all cursor-pointer select-none ${
-                      referredAgent === "default"
-                        ? "bg-[#2B2D2F] border-[#000000] text-white"
-                        : "bg-white border-[rgba(0,0,0,0.26)] text-black hover:bg-gray-50"
-                    }`}
+                    className={`flex flex-row justify-center items-center gap-2.5 h-[clamp(2.09rem,2.64vw,3.17rem)] rounded-[33px] border transition-all cursor-pointer select-none ${referredAgent === "default"
+                      ? "bg-[#2B2D2F] border-[#000000] text-white"
+                      : "bg-white border-[rgba(0,0,0,0.26)] text-black hover:bg-gray-50"
+                      }`}
                     style={{ width: "clamp(7.55rem, 11.806vw, 14.167rem)" }}
                   >
-                    <div 
-                      className={`w-3 h-3 rounded-full border-2 transition-colors ${
-                        referredAgent === "default"
-                          ? "bg-[#BDD327] border-white"
-                          : "bg-white border-[#BDD327]"
-                      }`}
+                    <div
+                      className={`w-3 h-3 rounded-full border-2 transition-colors ${referredAgent === "default"
+                        ? "bg-[#BDD327] border-white"
+                        : "bg-white border-[#BDD327]"
+                        }`}
                     />
                     <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.62rem,0.97vw,1.16rem)] leading-none whitespace-nowrap">
                       Default Location
@@ -145,19 +139,17 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setReferredAgent("other")}
-                    className={`flex flex-row justify-center items-center gap-2.5 h-[clamp(2.09rem,2.64vw,3.17rem)] rounded-[33px] border transition-all cursor-pointer select-none ${
-                      referredAgent === "other"
-                        ? "bg-[#2B2D2F] border-[#000000] text-white"
-                        : "bg-white border-[rgba(0,0,0,0.26)] text-black hover:bg-gray-50"
-                    }`}
+                    className={`flex flex-row justify-center items-center gap-2.5 h-[clamp(2.09rem,2.64vw,3.17rem)] rounded-[33px] border transition-all cursor-pointer select-none ${referredAgent === "other"
+                      ? "bg-[#2B2D2F] border-[#000000] text-white"
+                      : "bg-white border-[rgba(0,0,0,0.26)] text-black hover:bg-gray-50"
+                      }`}
                     style={{ width: "clamp(10.486rem, 16.389vw, 19.667rem)" }}
                   >
-                    <div 
-                      className={`w-3 h-3 rounded-full border-2 transition-colors ${
-                        referredAgent === "other"
-                          ? "bg-[#BDD327] border-white"
-                          : "bg-white border-[#BDD327]"
-                      }`}
+                    <div
+                      className={`w-3 h-3 rounded-full border-2 transition-colors ${referredAgent === "other"
+                        ? "bg-[#BDD327] border-white"
+                        : "bg-white border-[#BDD327]"
+                        }`}
                     />
                     <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.62rem,0.97vw,1.16rem)] leading-none whitespace-nowrap">
                       Agent from other Location
@@ -170,17 +162,17 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
 
             {/* Row 2: State, District, Area Dropdowns (Grid 3 Columns) */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[clamp(1rem,2.7vw,2.5rem)] w-full">
-              
+
               {/* State Dropdown */}
               <div className="flex flex-col gap-2.5">
                 <label className="font-['Plus_Jakarta_Sans'] font-medium text-[clamp(0.71rem,1.11vw,1.33rem)] text-[#3E4A3D]">
                   State
                 </label>
-                <div 
+                <div
                   className="relative w-full bg-white border border-[#E1E5EF] rounded-xl flex items-center px-3.5 justify-between"
-                  style={{ 
+                  style={{
                     maxWidth: "clamp(17.556rem, 27.43vw, 32.917rem)",
-                    height: "clamp(1.778rem, 2.778vw, 3.333rem)" 
+                    height: "clamp(1.778rem, 2.778vw, 3.333rem)"
                   }}
                 >
                   <select
@@ -204,11 +196,11 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
                 <label className="font-['Plus_Jakarta_Sans'] font-medium text-[clamp(0.71rem,1.11vw,1.33rem)] text-[#3E4A3D]">
                   District
                 </label>
-                <div 
+                <div
                   className="relative w-full bg-white border border-[#E1E5EF] rounded-xl flex items-center px-3.5 justify-between"
-                  style={{ 
+                  style={{
                     maxWidth: "clamp(17.556rem, 27.43vw, 32.917rem)",
-                    height: "clamp(1.778rem, 2.778vw, 3.333rem)" 
+                    height: "clamp(1.778rem, 2.778vw, 3.333rem)"
                   }}
                 >
                   <select
@@ -232,11 +224,11 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
                 <label className="font-['Plus_Jakarta_Sans'] font-medium text-[clamp(0.71rem,1.11vw,1.33rem)] text-[#3E4A3D]">
                   Area/City/Town
                 </label>
-                <div 
+                <div
                   className="relative w-full bg-white border border-[#E1E5EF] rounded-xl flex items-center px-3.5 justify-between"
-                  style={{ 
+                  style={{
                     maxWidth: "clamp(17.556rem, 27.43vw, 32.917rem)",
-                    height: "clamp(1.778rem, 2.778vw, 3.333rem)" 
+                    height: "clamp(1.778rem, 2.778vw, 3.333rem)"
                   }}
                 >
                   <select
@@ -259,17 +251,17 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
 
             {/* Row 3: Land Conversion & Value Per Area (Grid 2 Columns) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-[clamp(1rem,2.7vw,2.5rem)] w-full">
-              
+
               {/* Land Conversion Dropdown */}
               <div className="flex flex-col gap-2.5">
                 <label className="font-['Plus_Jakarta_Sans'] font-medium text-[clamp(0.71rem,1.11vw,1.33rem)] text-[#3E4A3D]">
                   Land Conversion
                 </label>
-                <div 
+                <div
                   className="relative w-full bg-white border border-[#E1E5EF] rounded-xl flex items-center px-3.5 justify-between"
-                  style={{ 
+                  style={{
                     maxWidth: "clamp(17.556rem, 27.43vw, 32.917rem)",
-                    height: "clamp(1.778rem, 2.778vw, 3.333rem)" 
+                    height: "clamp(1.778rem, 2.778vw, 3.333rem)"
                   }}
                 >
                   <select
@@ -298,9 +290,9 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
                   value={valuePerArea}
                   onChange={(e) => setValuePerArea(e.target.value)}
                   className="w-full bg-white border border-[#E1E5EF] rounded-xl px-3.5 font-['Inter'] font-normal text-[clamp(0.62rem,0.97vw,1.16rem)] text-[#191C1E] focus:outline-none focus:border-[#3E4A3D]"
-                  style={{ 
+                  style={{
                     maxWidth: "clamp(17.556rem, 27.43vw, 32.917rem)",
-                    height: "clamp(1.778rem, 2.778vw, 3.333rem)" 
+                    height: "clamp(1.778rem, 2.778vw, 3.333rem)"
                   }}
                 />
               </div>
@@ -312,9 +304,9 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
               <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.71rem,1.11vw,1.33rem)] text-black">
                 Select Location of Land
               </span>
-              
+
               {/* Satellite map mockup card */}
-              <div 
+              <div
                 onClick={() => navigate(`/super-admin/upload/view-maps/${targetId}`)}
                 className="relative w-full bg-white border border-[rgba(0,0,0,0.12)] rounded-[18px] overflow-hidden flex items-center justify-center shadow-sm select-none cursor-pointer hover:border-[#3D4A0D]/50 transition-all"
                 style={{
@@ -326,20 +318,19 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
                 <img
                   src={isBoundaryConfirmed ? "/super-admin/images/map_confirmed_boundary.png" : "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&auto=format&fit=crop"}
                   alt="Satellite Map Background"
-                  className={`absolute inset-0 w-full object-cover transition-all ${
-                    isBoundaryConfirmed ? "h-full top-0" : "-top-[70px] filter blur-[1.2px]"
-                  }`}
+                  className={`absolute inset-0 w-full object-cover transition-all ${isBoundaryConfirmed ? "h-full top-0" : "-top-[70px] filter blur-[1.2px]"
+                    }`}
                   style={{
                     height: isBoundaryConfirmed ? "100%" : "clamp(16.978rem, 26.528vw, 31.833rem)"
                   }}
                 />
-                
+
                 {/* Gradient/Dark Overlay */}
                 {!isBoundaryConfirmed && <div className="absolute inset-0 bg-black/20" />}
 
                 {/* Floating Centered Panel */}
                 {!isBoundaryConfirmed && (
-                  <div 
+                  <div
                     className="relative z-10 flex flex-col items-center gap-3"
                     style={{
                       width: "clamp(7.2rem, 11.25vw, 13.5rem)"
@@ -348,7 +339,7 @@ export const SuperAdminUploadLandDetails: React.FC = () => {
                     <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.62rem,0.97vw,1.16rem)] text-white text-center leading-none tracking-wide drop-shadow-sm">
                       Select location on maps
                     </span>
-                    
+
                     {/* View maps button */}
                     <button
                       type="button"

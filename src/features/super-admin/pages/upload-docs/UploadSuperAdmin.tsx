@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import SuperAdminHeader from "@/features/super-admin/components/SuperAdminHeader";
 import VisitorSalesCard from "@/features/super-admin/components/VisitorSalesCard";
 import FarmlandStatsCard from "@/features/super-admin/components/FarmlandStatsCard";
-import UploadFarmlandCard, { type UploadFarmlandData } from "@/features/super-admin/components/UploadFarmlandCard";
-import UploadFarmlandDetails from "@/features/super-admin/components/UploadFarmlandDetails";
+import UploadFarmlandCard, { type UploadFarmlandData } from "@/features/super-admin/components/upload-components/UploadFarmlandCard";
+import UploadFarmlandDetails from "@/features/super-admin/components/upload-components/UploadFarmlandDetails";
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 import { 
   CloudUpload, 

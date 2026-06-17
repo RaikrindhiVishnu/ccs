@@ -173,7 +173,7 @@ export const UploadCustomerInformationCard: React.FC<UploadCustomerInformationCa
         ownerName,
       });
     }
-    navigate(`/super-admin/Documents/legal-documents/${farmlandId}`);
+    navigate(`/super-admin/upload/documents/legal-documents/${farmlandId}`);
   };
 
   return (
@@ -409,7 +409,7 @@ export const UploadCustomerInformationCard: React.FC<UploadCustomerInformationCa
           onProceed={handleFinalSubmit}
           onDismiss={() => {
             setShowSubmittedModal(false);
-            navigate(`/super-admin/Documents/legal-documents/${farmlandId}`);
+            navigate(`/super-admin/upload/documents/legal-documents/${farmlandId}`);
           }}
         />
       )}
