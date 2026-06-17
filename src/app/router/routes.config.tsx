@@ -188,10 +188,3 @@ export const SuperAdminUploadCustomerInformation = lazy(() => import("../../feat
 export const LegalUploadDocument = lazy(() => import("../../features/super-admin/pages/upload-docs/LegalUploadDocument"),);
 
 
-export const SuperAdminPoolBuying = lazy(() => import ("../../features/super-admin/pages/SuperAdminPoolBuying"),);
-export const SuperAdminPoolCreate = lazy(() => import ("../../features/super-admin/pages/SuperAdminPoolCreate"),);
-export const SuperAdminPoolBuyingAll = lazy(() => import("../../features/super-admin/pages/SuperAdminPoolBuyingAll"),);
-export const SuperAdminPoolDetails = lazy(() => import ("../../features/super-admin/pages/SuperAdminPoolDetails"),);
-export const SuperAdminPoolInvestorDetails = lazy(() => import ("../../features/super-admin/pages/SuperAdminPoolInvestorDetails"),);
-export const SuperAdminPoolPublished = lazy(() => import("../../features/super-admin/pages/SuperAdminPoolPublished"));
-export const SuperAdminPoolCreated = lazy(() => import("../../features/super-admin/pages/SuperAdminPoolCreated"));
