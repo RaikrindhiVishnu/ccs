@@ -14,6 +14,7 @@ interface UploadedFileItem {
   size: string;
   progress: number;
   status: "uploading" | "completed";
+  imageType?: "cover" | "land";
 }
 
 // Sub-tabs configuration per pipeline step
@@ -56,8 +57,17 @@ const STEP_TABS_CONFIG: Record<
   "land-boundaries": {
     label: "Land & Boundaries",
     tabs: [
-      { id: "survey-map", label: "Survey Map" },
-      { id: "fencing-details", label: "Fencing Details" },
+      { id: "land-images", label: "Land Images" },
+      { id: "landscape-view", label: "Landscape View of Farmlands" },
+      { id: "shape-land", label: "Shape of the Land" },
+      { id: "water-electricity", label: "Water and Electricity Facility" },
+      { id: "existing-trees", label: "Any Existing Trees" },
+      { id: "master-plan", label: "Master Plan" },
+      { id: "survey-report", label: "Survey Report" },
+      { id: "east-boundaries", label: "East Boundaries" },
+      { id: "west-boundaries", label: "West Boundaries" },
+      { id: "north-boundaries", label: "North Boundaries" },
+      { id: "south-boundaries", label: "South Boundaries" },
     ],
   },
   "valuation": {
@@ -196,6 +206,91 @@ export const LegalUploadDocument: React.FC = () => {
     Record<string, string>
   >({});
 
+  // Store land shape per farmland ID
+  const [landShapeStore, setLandShapeStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store facility availability per farmland ID
+  const [facilityAvailabilityStore, setFacilityAvailabilityStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store water facility type per farmland ID
+  const [waterFacilityTypeStore, setWaterFacilityTypeStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store electricity facility type per farmland ID
+  const [electricityFacilityTypeStore, setElectricityFacilityTypeStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store tree availability per farmland ID
+  const [treesAvailabilityStore, setTreesAvailabilityStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store tree count per farmland ID
+  const [treesCountStore, setTreesCountStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store survey report type per farmland ID (private, government, both)
+  const [surveyReportTypeStore, setSurveyReportTypeStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store private survey files per farmland ID
+  const [privateSurveyFilesStore, setPrivateSurveyFilesStore] = useState<
+    Record<string, UploadedFileItem[]>
+  >({});
+
+  // Store government survey files per farmland ID
+  const [governmentSurveyFilesStore, setGovernmentSurveyFilesStore] = useState<
+    Record<string, UploadedFileItem[]>
+  >({});
+
+  // Store private survey comments per farmland ID
+  const [privateSurveyCommentStore, setPrivateSurveyCommentStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store government survey comments per farmland ID
+  const [governmentSurveyCommentStore, setGovernmentSurveyCommentStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store boundary type per farmland ID and activeTabId
+  const [boundaryTypeStore, setBoundaryTypeStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store boundary owner name per farmland ID and activeTabId
+  const [boundaryOwnerNameStore, setBoundaryOwnerNameStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store boundary owner age per farmland ID and activeTabId
+  const [boundaryOwnerAgeStore, setBoundaryOwnerAgeStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store boundary road type per farmland ID and activeTabId
+  const [boundaryRoadTypeStore, setBoundaryRoadTypeStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store boundary road width per farmland ID and activeTabId
+  const [boundaryRoadWidthStore, setBoundaryRoadWidthStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store boundary trees count per farmland ID and activeTabId
+  const [boundaryTreesCountStore, setBoundaryTreesCountStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
   // Sync active tab when step changes
   useEffect(() => {
     if (stepConfig && stepConfig.tabs.length > 0) {
@@ -224,8 +319,32 @@ export const LegalUploadDocument: React.FC = () => {
     const isCultivationTab = currentStepId === "agriculture-report" && activeTabId === "current-cultivation";
     const isMaintenanceTab = currentStepId === "agriculture-report" && activeTabId === "maintenance";
     const isNaturalAdvDisadvTab = currentStepId === "agriculture-report" && activeTabId === "natural-advantages-disadvantages";
+    const isShapeLandTab = currentStepId === "land-boundaries" && activeTabId === "shape-land";
+    const isWaterElectricityTab = currentStepId === "land-boundaries" && activeTabId === "water-electricity";
+    const isExistingTreesTab = currentStepId === "land-boundaries" && activeTabId === "existing-trees";
+    const isSurveyReportTab = currentStepId === "land-boundaries" && activeTabId === "survey-report";
 
-    if (hasFiles || hasComment || isSoilTab || isCropTab || isWaterLevelTab || isFutureCropsTab || isYieldCostTab || isCultivationTab || isMaintenanceTab || isNaturalAdvDisadvTab) {
+    let hasSurveyReport = false;
+    if (isSurveyReportTab) {
+      const surveyType = surveyReportTypeStore[targetId] || "private";
+      const privateFiles = privateSurveyFilesStore[targetId] || [];
+      const govtFiles = governmentSurveyFilesStore[targetId] || [];
+      const privateComment = (privateSurveyCommentStore[targetId] || "").trim();
+      const govtComment = (governmentSurveyCommentStore[targetId] || "").trim();
+
+      const hasPrivateData = privateFiles.length > 0 || privateComment !== "";
+      const hasGovtData = govtFiles.length > 0 || govtComment !== "";
+
+      if (surveyType === "private") {
+        hasSurveyReport = hasPrivateData;
+      } else if (surveyType === "government") {
+        hasSurveyReport = hasGovtData;
+      } else if (surveyType === "both") {
+        hasSurveyReport = hasPrivateData && hasGovtData;
+      }
+    }
+
+    if (hasFiles || hasComment || isSoilTab || isCropTab || isWaterLevelTab || isFutureCropsTab || isYieldCostTab || isCultivationTab || isMaintenanceTab || isNaturalAdvDisadvTab || isShapeLandTab || isWaterElectricityTab || isExistingTreesTab || (isSurveyReportTab && hasSurveyReport)) {
       setCompletedTabs((prev) => ({
         ...prev,
         [currentStepId]: {
@@ -237,7 +356,7 @@ export const LegalUploadDocument: React.FC = () => {
     setActiveTabId(newTabId);
   };
 
-  const addFiles = (fileList: FileList) => {
+  const addFiles = (fileList: FileList, imageType?: "cover" | "land") => {
     const newFiles: UploadedFileItem[] = [];
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList[i];
@@ -252,6 +371,7 @@ export const LegalUploadDocument: React.FC = () => {
         size: sizeStr,
         progress: 0,
         status: "uploading",
+        imageType,
       });
     }
 
@@ -326,6 +446,149 @@ export const LegalUploadDocument: React.FC = () => {
     });
   };
 
+  const addPrivateSurveyFiles = (fileList: FileList) => {
+    const newFiles: UploadedFileItem[] = [];
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      const sizeStr =
+        file.size > 1024 * 1024
+          ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+          : `${(file.size / 1024).toFixed(0)} KB`;
+
+      newFiles.push({
+        id: Date.now().toString() + i,
+        name: file.name,
+        size: sizeStr,
+        progress: 0,
+        status: "uploading",
+      });
+    }
+
+    setPrivateSurveyFilesStore((prev) => {
+      const currentFiles = prev[targetId] || [];
+      return {
+        ...prev,
+        [targetId]: [...currentFiles, ...newFiles],
+      };
+    });
+
+    newFiles.forEach((file) => {
+      simulatePrivateSurveyUpload(file.id);
+    });
+  };
+
+  const simulatePrivateSurveyUpload = (fileId: string) => {
+    let progressVal = 0;
+    const interval = setInterval(() => {
+      progressVal += Math.floor(Math.random() * 25) + 15;
+      if (progressVal >= 100) {
+        progressVal = 100;
+        clearInterval(interval);
+        setPrivateSurveyFilesStore((prev) => {
+          const currentFiles = prev[targetId] || [];
+          return {
+            ...prev,
+            [targetId]: currentFiles.map((f) =>
+              f.id === fileId ? { ...f, progress: 100, status: "completed" as const } : f
+            ),
+          };
+        });
+      } else {
+        setPrivateSurveyFilesStore((prev) => {
+          const currentFiles = prev[targetId] || [];
+          return {
+            ...prev,
+            [targetId]: currentFiles.map((f) =>
+              f.id === fileId ? { ...f, progress: progressVal } : f
+            ),
+          };
+        });
+      }
+    }, 300);
+  };
+
+  const deletePrivateSurveyFile = (fileId: string) => {
+    setPrivateSurveyFilesStore((prev) => {
+      const currentFiles = prev[targetId] || [];
+      return {
+        ...prev,
+        [targetId]: currentFiles.filter((f) => f.id !== fileId),
+      };
+    });
+  };
+
+  const addGovtSurveyFiles = (fileList: FileList) => {
+    const newFiles: UploadedFileItem[] = [];
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      const sizeStr =
+        file.size > 1024 * 1024
+          ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+          : `${(file.size / 1024).toFixed(0)} KB`;
+
+      newFiles.push({
+        id: Date.now().toString() + i,
+        name: file.name,
+        size: sizeStr,
+        progress: 0,
+        status: "uploading",
+      });
+    }
+
+    setGovernmentSurveyFilesStore((prev) => {
+      const currentFiles = prev[targetId] || [];
+      return {
+        ...prev,
+        [targetId]: [...currentFiles, ...newFiles],
+      };
+    });
+
+    newFiles.forEach((file) => {
+      simulateGovtSurveyUpload(file.id);
+    });
+  };
+
+  const simulateGovtSurveyUpload = (fileId: string) => {
+    let progressVal = 0;
+    const interval = setInterval(() => {
+      progressVal += Math.floor(Math.random() * 25) + 15;
+      if (progressVal >= 100) {
+        progressVal = 100;
+        clearInterval(interval);
+        setGovernmentSurveyFilesStore((prev) => {
+          const currentFiles = prev[targetId] || [];
+          return {
+            ...prev,
+            [targetId]: currentFiles.map((f) =>
+              f.id === fileId ? { ...f, progress: 100, status: "completed" as const } : f
+            ),
+          };
+        });
+      } else {
+        setGovernmentSurveyFilesStore((prev) => {
+          const currentFiles = prev[targetId] || [];
+          return {
+            ...prev,
+            [targetId]: currentFiles.map((f) =>
+              f.id === fileId ? { ...f, progress: progressVal } : f
+            ),
+          };
+        });
+      }
+    }, 300);
+  };
+
+  const deleteGovtSurveyFile = (fileId: string) => {
+    setGovernmentSurveyFilesStore((prev) => {
+      const currentFiles = prev[targetId] || [];
+      return {
+        ...prev,
+        [targetId]: currentFiles.filter((f) => f.id !== fileId),
+      };
+    });
+  };
+
+
   const handleCommentChange = (val: string) => {
     setCommentsStore((prev) => {
       const stepData = prev[currentStepId] || {};
@@ -391,6 +654,32 @@ export const LegalUploadDocument: React.FC = () => {
     const isCultivationTab = currentStepId === "agriculture-report" && activeTabId === "current-cultivation";
     const isMaintenanceTab = currentStepId === "agriculture-report" && activeTabId === "maintenance";
     const isNaturalAdvDisadvTab = currentStepId === "agriculture-report" && activeTabId === "natural-advantages-disadvantages";
+    const isShapeLandTab = currentStepId === "land-boundaries" && activeTabId === "shape-land";
+    const isWaterElectricityTab = currentStepId === "land-boundaries" && activeTabId === "water-electricity";
+    const isExistingTreesTab = currentStepId === "land-boundaries" && activeTabId === "existing-trees";
+    const isSurveyReportTab = currentStepId === "land-boundaries" && activeTabId === "survey-report";
+    const isBoundaryTab = activeTabId === "east-boundaries" || activeTabId === "west-boundaries" || activeTabId === "north-boundaries" || activeTabId === "south-boundaries";
+    const hasBoundary = isBoundaryTab && !!boundaryTypeStore[targetId]?.[activeTabId];
+
+    let hasSurveyReport = false;
+    if (isSurveyReportTab) {
+      const surveyType = surveyReportTypeStore[targetId] || "private";
+      const privateFiles = privateSurveyFilesStore[targetId] || [];
+      const govtFiles = governmentSurveyFilesStore[targetId] || [];
+      const privateComment = (privateSurveyCommentStore[targetId] || "").trim();
+      const govtComment = (governmentSurveyCommentStore[targetId] || "").trim();
+
+      const hasPrivateData = privateFiles.length > 0 || privateComment !== "";
+      const hasGovtData = govtFiles.length > 0 || govtComment !== "";
+
+      if (surveyType === "private") {
+        hasSurveyReport = hasPrivateData;
+      } else if (surveyType === "government") {
+        hasSurveyReport = hasGovtData;
+      } else if (surveyType === "both") {
+        hasSurveyReport = hasPrivateData && hasGovtData;
+      }
+    }
 
     if (hasFiles) {
       msg = `${activeTabLabel} “Files” has been saved`;
@@ -412,9 +701,19 @@ export const LegalUploadDocument: React.FC = () => {
       msg = `${activeTabLabel} “Maintenance Details” has been saved`;
     } else if (isNaturalAdvDisadvTab) {
       msg = `${activeTabLabel} “Advantages & Disadvantages” has been saved`;
+    } else if (isShapeLandTab) {
+      msg = `${activeTabLabel} “Land Shape” has been saved`;
+    } else if (isWaterElectricityTab) {
+      msg = `${activeTabLabel} “Water & Electricity Facilities” has been saved`;
+    } else if (isExistingTreesTab) {
+      msg = `${activeTabLabel} “Existing Trees” has been saved`;
+    } else if (isSurveyReportTab) {
+      msg = `${activeTabLabel} has been saved`;
+    } else if (isBoundaryTab) {
+      msg = `${activeTabLabel} has been saved`;
     }
 
-    if (hasFiles || hasComment || isSoilTab || isCropTab || isWaterLevelTab || isFutureCropsTab || isYieldCostTab || isCultivationTab || isMaintenanceTab || isNaturalAdvDisadvTab) {
+    if (hasFiles || hasComment || isSoilTab || isCropTab || isWaterLevelTab || isFutureCropsTab || isYieldCostTab || isCultivationTab || isMaintenanceTab || isNaturalAdvDisadvTab || isShapeLandTab || isWaterElectricityTab || isExistingTreesTab || (isSurveyReportTab && hasSurveyReport) || (isBoundaryTab && hasBoundary)) {
       setCompletedTabs((prev) => ({
         ...prev,
         [currentStepId]: {
@@ -511,7 +810,11 @@ export const LegalUploadDocument: React.FC = () => {
       <div
         className="relative bg-[#F2F2F2] rounded-[2rem] overflow-hidden shadow-[0px_20px_40px_rgba(0,0,0,0.02)] w-full max-w-[120rem]"
         style={{
-          height: "clamp(48.125rem, 75.27vw, 90.3rem)", // 1084px base -> 770px min to 1445px max
+          height: activeTabId === "survey-report"
+            ? (surveyReportTypeStore[targetId] === "both"
+                ? "clamp(93rem, 47rem + 71.8vw, 133rem)"
+                : "clamp(72.5rem, 27rem + 71vw, 112.5rem)")
+            : "clamp(48.125rem, 75.27vw, 90.3rem)",
         }}
       >
         {/* Top Header - Back Button (Frame 1171277099) */}
@@ -674,6 +977,135 @@ export const LegalUploadDocument: React.FC = () => {
             setDisadvantagesStore((prev) => ({
               ...prev,
               [targetId]: val,
+            }));
+          }}
+          landShapeValue={landShapeStore[targetId] || ""}
+          onLandShapeChange={(val) => {
+            setLandShapeStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          facilityAvailabilityValue={facilityAvailabilityStore[targetId] || ""}
+          onFacilityAvailabilityChange={(val) => {
+            setFacilityAvailabilityStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          waterFacilityValue={waterFacilityTypeStore[targetId] || ""}
+          onWaterFacilityChange={(val) => {
+            setWaterFacilityTypeStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          electricityFacilityValue={electricityFacilityTypeStore[targetId] || ""}
+          onElectricityFacilityChange={(val) => {
+            setElectricityFacilityTypeStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          treesAvailabilityValue={treesAvailabilityStore[targetId] || ""}
+          onTreesAvailabilityChange={(val) => {
+            setTreesAvailabilityStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          treesCountValue={treesCountStore[targetId] || ""}
+          onTreesCountChange={(val) => {
+            setTreesCountStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          surveyReportTypeValue={surveyReportTypeStore[targetId] || "private"}
+          onSurveyReportTypeChange={(val) => {
+            setSurveyReportTypeStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          privateSurveyFiles={privateSurveyFilesStore[targetId] || []}
+          onPrivateSurveyFileUpload={addPrivateSurveyFiles}
+          onPrivateSurveyFileDelete={deletePrivateSurveyFile}
+          governmentSurveyFiles={governmentSurveyFilesStore[targetId] || []}
+          onGovernmentSurveyFileUpload={addGovtSurveyFiles}
+          onGovernmentSurveyFileDelete={deleteGovtSurveyFile}
+          privateSurveyCommentValue={privateSurveyCommentStore[targetId] || ""}
+          onPrivateSurveyCommentChange={(val) => {
+            setPrivateSurveyCommentStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          governmentSurveyCommentValue={governmentSurveyCommentStore[targetId] || ""}
+          onGovernmentSurveyCommentChange={(val) => {
+            setGovernmentSurveyCommentStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          boundaryTypeValue={boundaryTypeStore[targetId]?.[activeTabId] || ""}
+          onBoundaryTypeChange={(val) => {
+            setBoundaryTypeStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          boundaryOwnerNameValue={boundaryOwnerNameStore[targetId]?.[activeTabId] || ""}
+          onBoundaryOwnerNameChange={(val) => {
+            setBoundaryOwnerNameStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          boundaryOwnerAgeValue={boundaryOwnerAgeStore[targetId]?.[activeTabId] || ""}
+          onBoundaryOwnerAgeChange={(val) => {
+            setBoundaryOwnerAgeStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          boundaryRoadTypeValue={boundaryRoadTypeStore[targetId]?.[activeTabId] || ""}
+          onBoundaryRoadTypeChange={(val) => {
+            setBoundaryRoadTypeStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          boundaryRoadWidthValue={boundaryRoadWidthStore[targetId]?.[activeTabId] || ""}
+          onBoundaryRoadWidthChange={(val) => {
+            setBoundaryRoadWidthStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          boundaryTreesCountValue={boundaryTreesCountStore[targetId]?.[activeTabId] || ""}
+          onBoundaryTreesCountChange={(val) => {
+            setBoundaryTreesCountStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
             }));
           }}
         />
