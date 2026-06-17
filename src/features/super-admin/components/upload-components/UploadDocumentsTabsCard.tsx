@@ -69,17 +69,40 @@ export const UploadDocumentsTabsCard: React.FC<UploadDocumentsTabsCardProps> = (
                   : "0px 42px 17px rgba(0, 0, 0, 0.01)",
               }}
             >
-              {/* Indicator Dot (checklist 2 & 3) */}
-              <div
-                className="rounded-full shrink-0 transition-colors duration-200"
-                style={{
-                  boxSizing: "border-box",
-                  width: "clamp(0.6rem, 1.25vw, 1.5rem)",
-                  height: "clamp(0.6rem, 1.25vw, 1.5rem)",
-                  backgroundColor: isActive ? "#2D3409" : (isUploaded ? "#5A6C0B" : "#C0C2B7"),
-                  border: "clamp(2px, 0.28vw, 5px) solid #E6EEAD",
-                }}
-              />
+              {/* Indicator Dot / Checkmark Badge */}
+              {isUploaded ? (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  style={{
+                    width: "clamp(0.8rem, 1.25vw, 1.5rem)", // 18px-24px
+                    height: "clamp(0.8rem, 1.25vw, 1.5rem)",
+                    color: "#BDD327",
+                    flexShrink: 0,
+                  }}
+                >
+                  <path d="M23 12l-2.44-2.78.34-3.68-3.61-.82-1.89-3.18L12 3 8.6 1.54 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.69 3.61.82 1.89 3.18L12 21l3.4 1.46 1.89-3.18 3.61-.82-.34-3.68L23 12zm-13 5l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
+                </svg>
+              ) : (
+                <div
+                  className="rounded-full shrink-0 flex items-center justify-center"
+                  style={{
+                    boxSizing: "border-box",
+                    width: "clamp(0.8rem, 1.25vw, 1.5rem)",
+                    height: "clamp(0.8rem, 1.25vw, 1.5rem)",
+                    backgroundColor: isActive ? "#E6EEAD" : "#E1E5EF",
+                  }}
+                >
+                  <div
+                    className="rounded-full"
+                    style={{
+                      width: "40%",
+                      height: "40%",
+                      backgroundColor: isActive ? "#2D3409" : "#C0C2B7",
+                    }}
+                  />
+                </div>
+              )}
 
               {/* Tab Label (Amount) */}
               <span

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { CloudUpload, FileText, Trash2, Mic, ChevronLeft, ChevronRight } from "lucide-react";
+import { Mic } from "lucide-react";
 
 interface UploadedFileItem {
   id: string;
@@ -69,11 +69,10 @@ export const UploadFilesDocument: React.FC<UploadFilesDocumentProps> = ({
     fileInputRef.current?.click();
   };
 
-  // Mock voice input dictation
   const handleVoiceInput = () => {
     if (!isListening) {
       setIsListening(true);
-      const mockDictation = " This is a voice-dictated reference comment for the uploaded " + activeTabLabel + ".";
+      const mockDictation = " This is a voice-dictated comment for " + activeTabLabel + ".";
       setTimeout(() => {
         onCommentChange(commentValue + mockDictation);
         setIsListening(false);
@@ -83,292 +82,589 @@ export const UploadFilesDocument: React.FC<UploadFilesDocumentProps> = ({
 
   return (
     <div
-      className={`bg-white rounded-[clamp(1rem,1.67vw,2rem)] shadow-[0px_20px_40px_rgba(0,49,50,0.06)] flex flex-col justify-start w-full select-none shrink-0 relative overflow-hidden ${className}`}
+      className={`bg-white select-none ${className}`}
       style={{
-        height: "clamp(24rem, 30.76vw, 36rem)",
-        padding: "clamp(1.25rem, 2.08vw, 2.5rem)",
+        position: "absolute",
+        left: "clamp(1.77rem, 2.78vw, 3.33rem)", // left: 40px
+        right: "clamp(1.77rem, 2.78vw, 3.33rem)", // right: 40px
+        top: "clamp(26rem, 40.63vw, 48.75rem)", // top: 585px
+        height: "clamp(19.68rem, 30.76vw, 36.91rem)", // height: 443px
+        borderRadius: "24px",
         boxSizing: "border-box",
+        background: "#FFFFFF",
         ...style,
       }}
     >
-      {/* ── Headers ── */}
-      <div className="flex flex-row justify-between items-center w-full mb-[clamp(0.8rem, 1.6vw, 2rem)]">
-        <h3 
-          className="font-['Plus_Jakarta_Sans'] font-semibold leading-tight text-black"
-          style={{ fontSize: "clamp(1.1rem, 1.67vw, 1.8rem)" }}
-        >
-          Upload File
-        </h3>
-        <h3 
-          className="font-['Plus_Jakarta_Sans'] font-semibold leading-tight text-black w-full max-w-[clamp(20rem, 42.9vw, 45rem)]"
-          style={{ fontSize: "clamp(1.1rem, 1.67vw, 1.8rem)" }}
-        >
-          Add Comments
-        </h3>
-      </div>
+      {/* Upload File Title */}
+      <h3
+        className="text-black font-semibold whitespace-nowrap"
+        style={{
+          position: "absolute",
+          width: "9.56%", // width: 130px relative to parent 1360px
+          height: "clamp(1.33rem, 2.08vw, 2.5rem)", // height: 30px
+          left: "2.21%", // left: 30px relative to parent 1360px
+          top: "clamp(1.33rem, 2.08vw, 2.5rem)", // top: 30px
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          fontWeight: 600,
+          fontSize: "clamp(1.07rem, 1.67vw, 2rem)", // 24px
+          lineHeight: "clamp(1.33rem, 2.08vw, 2.5rem)", // 30px
+          margin: 0,
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        Upload File
+      </h3>
 
-      {/* ── Main content grid (Upload Zone / Uploaded List vs Comments) ── */}
-      <div className="flex flex-row gap-[clamp(1rem, 2vw, 3rem)] items-start justify-between w-full flex-1">
-        
-        {/* Left Column: Upload Box Frame (Frame 2147239867) */}
-        <div 
-          className="bg-white rounded-[clamp(1rem, 1.67vw, 1.8rem)] shadow-[0px_0px_4px_rgba(0,0,0,0.25)] flex flex-row items-center justify-between p-[clamp(0.6rem, 0.97vw, 1.2rem)] relative"
+      {/* Add Comments Title */}
+      <h3
+        className="text-black font-semibold whitespace-nowrap"
+        style={{
+          position: "absolute",
+          width: "13.38%", // width: 182px relative to parent 1360px
+          height: "clamp(1.33rem, 2.08vw, 2.5rem)", // height: 30px
+          left: "52.65%", // left: 716px relative to parent 1360px
+          top: "clamp(1.33rem, 2.08vw, 2.5rem)", // top: 30px
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          fontWeight: 600,
+          fontSize: "clamp(1.07rem, 1.67vw, 2rem)", // 24px
+          lineHeight: "clamp(1.33rem, 2.08vw, 2.5rem)", // 30px
+          margin: 0,
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        Add Comments
+      </h3>
+
+      {/* Left Card: Frame 2147239867 */}
+      <div
+        className="bg-white"
+        style={{
+          position: "absolute",
+          width: "50.15%", // width: 682px relative to parent 1360px
+          height: "clamp(15.78rem, 24.65vw, 29.58rem)", // height: 355px
+          left: "1.32%", // left: 18px relative to parent 1360px
+          top: "clamp(3.24rem, 5.07vw, 6.08rem)", // top: 73px
+          boxShadow: "0px 0px 4px rgba(0, 0, 0, 0.25)",
+          borderRadius: "24px",
+          boxSizing: "border-box",
+        }}
+      >
+        {/* Dashed Upload Box: Overlay+Border */}
+        <div
+          onDragEnter={handleDrag}
+          onDragOver={handleDrag}
+          onDragLeave={handleDrag}
+          onDrop={handleDrop}
+          onClick={triggerUploadClick}
+          className={`transition-all cursor-pointer ${
+            dragActive ? "bg-[#F3F4F1]/60" : "bg-[rgba(242,244,246,0.5)]"
+          }`}
           style={{
-            width: "clamp(28rem, 47.36vw, 52rem)",
-            height: "clamp(16rem, 24.65vw, 28rem)",
+            boxSizing: "border-box",
+            position: "absolute",
+            width: "41.2%", // width: 281px relative to left card 682px
+            height: "clamp(14.53rem, 22.71vw, 27.25rem)", // height: 327px
+            left: "1.76%", // left: 12px relative to left card 682px
+            top: "clamp(0.62rem, 0.97vw, 1.17rem)", // top: 14px
+            border: "2px dashed rgba(225, 229, 239, 0.6)",
+            borderRadius: "12px",
           }}
         >
-          {/* Dashed Border Drag/Drop overlay (Overlay+Border) */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            onChange={handleFileChange}
+            className="hidden"
+            accept=".pdf,.png,.jpg,.jpeg"
+          />
+
+          {/* Icon Stack */}
           <div
-            onDragEnter={handleDrag}
-            onDragOver={handleDrag}
-            onDragLeave={handleDrag}
-            onDrop={handleDrop}
-            onClick={triggerUploadClick}
-            className={`rounded-[12px] flex flex-col items-center justify-start relative transition-all cursor-pointer ${
-              dragActive ? "bg-[#F3F4F1]/60" : "bg-[rgba(242,244,246,0.5)]"
-            }`}
+            className="flex items-center justify-center bg-[#E6EEAD]"
             style={{
-              width: "clamp(12rem, 19.51vw, 22rem)",
-              height: "clamp(13rem, 22.7vw, 24.5rem)",
-              border: "2px dashed rgba(225, 229, 239, 0.6)",
+              position: "absolute",
+              width: "clamp(2.14rem, 3.35vw, 4.02rem)", // width: 48.25px
+              height: "clamp(2.14rem, 3.35vw, 4.02rem)",
+              left: "calc(50% - clamp(2.14rem, 3.35vw, 4.02rem)/2 - 0.38px)",
+              top: "clamp(2.58rem, 4.03vw, 4.83rem)", // top: 58px
+              borderRadius: "6030.65px",
             }}
           >
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              onChange={handleFileChange}
-              className="hidden"
-              accept=".pdf,.png,.jpg,.jpeg"
-            />
-
-            {/* Icon Stack */}
-            <div 
-              className="flex items-center justify-center bg-[#E6EEAD] rounded-full shrink-0 relative"
+            {/* Background & Overlay+Shadow */}
+            <div
+              className="flex items-center justify-center relative"
               style={{
-                width: "clamp(2rem, 3.35vw, 4rem)",
-                height: "clamp(2rem, 3.35vw, 4rem)",
-                marginTop: "clamp(1.5rem, 4.02vw, 5.5rem)",
+                position: "absolute",
+                width: "clamp(1.72rem, 2.68vw, 3.22rem)", // width: 38.6px
+                height: "clamp(1.72rem, 2.68vw, 3.22rem)",
+                left: "calc(50% - clamp(1.72rem, 2.68vw, 3.22rem)/2)",
+                top: "calc(50% - clamp(1.72rem, 2.68vw, 3.22rem)/2)",
+                background: "radial-gradient(circle at 50% 50%, rgba(61, 74, 13, 0.7812) 0%, rgba(42, 48, 8, 0.84) 100%)",
+                boxShadow: "0px 6px 9px -1.8px rgba(0, 88, 188, 0.2), 0px 2.4px 3.6px -2.4px rgba(0, 88, 188, 0.2)",
+                borderRadius: "6030.65px",
               }}
             >
-              <div 
-                className="flex items-center justify-center rounded-full shrink-0 absolute inset-0 m-auto"
+              {/* material-symbols:upload-rounded / Vector */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 style={{
-                  width: "clamp(1.6rem, 2.68vw, 3rem)",
-                  height: "clamp(1.6rem, 2.68vw, 3rem)",
-                  background: "radial-gradient(50% 50% at 50% 50%, rgba(61, 74, 13, 0.7812) 0%, rgba(42, 48, 8, 0.84) 100%)",
-                  boxShadow: "0px 6px 9px -1.8px rgba(0, 88, 188, 0.2)",
+                  position: "absolute",
+                  width: "clamp(0.89rem, 1.39vw, 1.67rem)", // 20px
+                  height: "clamp(0.89rem, 1.39vw, 1.67rem)",
+                  color: "#FFFFFF",
                 }}
               >
-                <CloudUpload className="text-white" style={{ width: "clamp(1rem, 1.39vw, 1.8rem)", height: "clamp(1rem, 1.39vw, 1.8rem)" }} />
-              </div>
+                <line x1="12" y1="15" x2="12" y2="3" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="5" y1="21" x2="19" y2="21" />
+              </svg>
             </div>
+          </div>
 
-            {/* Texts */}
-            <span 
-              className="font-['Plus_Jakarta_Sans'] font-bold text-black text-center mt-[clamp(0.8rem, 1.25vw, 1.8rem)] leading-none"
-              style={{ fontSize: "clamp(0.85rem, 1.25vw, 1.3rem)" }}
-            >
-              Upload
-            </span>
-            <span 
-              className="font-['Inter'] font-normal text-[#414755] text-center w-[85%] mt-[clamp(0.4rem, 0.69vw, 1rem)]"
-              style={{ fontSize: "clamp(0.65rem, 0.83vw, 1rem)", lineHeight: "1.3" }}
-            >
-              Drag and drop your files here or click to browse your computer.
-            </span>
+          {/* Upload Text */}
+          <span
+            className="font-['Plus_Jakarta_Sans',_sans-serif] font-bold text-[#1A1C1D] text-center"
+            style={{
+              position: "absolute",
+              width: "clamp(2.84rem, 4.44vw, 5.33rem)", // width: 64px
+              height: "clamp(1.02rem, 1.6vw, 1.92rem)", // height: 23px
+              left: "calc(50% - clamp(2.84rem, 4.44vw, 5.33rem)/2)",
+              top: "clamp(5.39rem, 8.42vw, 10.1rem)", // top: 121.25px
+              fontSize: "clamp(0.8rem, 1.25vw, 1.5rem)", // 18px
+              lineHeight: "clamp(1.02rem, 1.6vw, 1.92rem)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            Upload
+          </span>
 
-            {/* Choose File Button */}
-            <button
-              type="button"
-              className="flex items-center justify-center font-['Plus_Jakarta_Sans'] font-semibold text-white cursor-pointer hover:scale-105 active:scale-95 transition-all shadow-[0px_4px_27.1px_rgba(0,0,0,0.12)] shrink-0"
+          {/* Drag and drop hint */}
+          <span
+            className="font-['Inter',_sans-serif] font-normal text-[#414755] text-center"
+            style={{
+              position: "absolute",
+              width: "80%", // make width responsive to prevent box overflow
+              height: "clamp(1.33rem, 2.08vw, 2.5rem)", // height: 30px
+              left: "10%",
+              top: "clamp(6.72rem, 10.5vw, 12.6rem)", // top: 151.25px
+              fontSize: "clamp(0.53rem, 0.83vw, 1.0rem)", // 12px
+              lineHeight: "clamp(0.67rem, 1.04vw, 1.25rem)", // 15px
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            Drag and drop your files here or click to browse your computer.
+          </span>
+
+          {/* Choose File Button */}
+          <button
+            type="button"
+            className="flex items-center justify-center font-['Plus_Jakarta_Sans',_sans-serif] font-medium text-white cursor-pointer hover:scale-105 active:scale-95 transition-all"
+            style={{
+              position: "absolute",
+              width: "clamp(4.44rem, 6.94vw, 8.33rem)", // width: 100px
+              height: "clamp(1.69rem, 2.64vw, 3.17rem)", // height: 38px
+              left: "calc(50% - clamp(4.44rem, 6.94vw, 8.33rem)/2 + 0.5px)",
+              top: "clamp(9.33rem, 14.58vw, 17.5rem)", // top: 210px
+              background: "radial-gradient(circle at 50% 50%, #3D4A0D 0%, #2A3008 100%)",
+              boxShadow: "0px 4px 27.1px rgba(0, 0, 0, 0.12)",
+              borderRadius: "57px",
+              border: "none",
+            }}
+          >
+            {/* Choose File Label */}
+            <span
               style={{
-                width: "clamp(5rem, 6.94vw, 8rem)",
-                height: "clamp(1.8rem, 2.64vw, 3.5rem)",
-                borderRadius: "57px",
-                background: "radial-gradient(50% 50% at 50% 50%, #3D4A0D 0%, #2A3008 100%)",
-                fontSize: "clamp(0.65rem, 0.83vw, 1rem)",
-                marginTop: "clamp(0.8rem, 1.25vw, 2.25rem)",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontWeight: 500,
+                fontSize: "clamp(0.53rem, 0.83vw, 1.0rem)", // 12px
+                lineHeight: "clamp(0.67rem, 1.04vw, 1.25rem)", // 15px
+                color: "#FFFFFF",
               }}
             >
               Choose File
-            </button>
+            </span>
+          </button>
 
-            {/* Bottom Formats Hint */}
-            <div 
-              className="absolute flex items-center gap-1"
-              style={{
-                left: "clamp(0.5rem, 1.39vw, 2rem)",
-                bottom: "clamp(0.4rem, 0.83vw, 1.25rem)",
-              }}
-            >
-              <FileText style={{ width: "clamp(0.6rem, 0.694vw, 1rem)", height: "clamp(0.6rem, 0.694vw, 1rem)" }} />
-              <span className="font-['Inter'] text-black" style={{ fontSize: "clamp(0.55rem, 0.694vw, 0.85rem)" }}>
-                Format: <strong className="font-medium">PDF</strong>
-              </span>
-            </div>
-
-            {/* Bottom Max Size Hint */}
-            <div 
-              className="absolute flex items-center gap-1"
-              style={{
-                right: "clamp(0.5rem, 1.04vw, 1.8rem)",
-                bottom: "clamp(0.4rem, 0.83vw, 1.25rem)",
-              }}
-            >
-              <span className="font-['Inter'] text-black" style={{ fontSize: "clamp(0.55rem, 0.694vw, 0.85rem)" }}>
-                Max File Size: <strong className="font-semibold">10MB</strong>
-              </span>
-            </div>
-          </div>
-
-          {/* Right Part: Uploaded Files List (Frame 2147239865) */}
-          <div 
-            className="flex-1 flex flex-col items-start justify-start overflow-y-auto px-4"
+          {/* Frame 2147239850 (Format PDF) */}
+          <div
+            className="flex items-center gap-1"
             style={{
-              height: "clamp(13rem, 22.7vw, 24.5rem)",
+              position: "absolute",
+              width: "clamp(3.29rem, 5.14vw, 6.17rem)", // width: 74px
+              height: "clamp(0.53rem, 0.83vw, 1.0rem)", // height: 12px
+              left: "clamp(0.89rem, 1.39vw, 1.67rem)", // left: 20px
+              top: "clamp(13.29rem, 20.76vw, 24.92rem)", // top: 299px
             }}
           >
-            <h4 
-              className="font-['Plus_Jakarta_Sans'] font-medium text-black mb-[clamp(0.5rem, 1.18vw, 1.5rem)] leading-none mt-2"
-              style={{ fontSize: "clamp(0.9rem, 1.39vw, 1.5rem)" }}
+            {/* teenyicons:pdf-outline */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 15 15"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.2"
+              style={{
+                width: "clamp(0.44rem, 0.63vw, 0.83rem)", // 10px
+                height: "clamp(0.44rem, 0.63vw, 0.83rem)",
+                color: "#000000",
+              }}
             >
-              Uploaded Files
-            </h4>
+              <path d="M3.5 1.5h5l3 3v9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-11a1 1 0 0 1 1-1z" />
+              <path d="M8.5 1.5v3h3" />
+            </svg>
+            <span
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 400,
+                fontSize: "clamp(0.44rem, 0.63vw, 0.83rem)", // 10px
+                lineHeight: "clamp(0.53rem, 0.83vw, 1.0rem)", // 12px
+                color: "#000000",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              Format:&nbsp;
+              <strong style={{ fontWeight: 500 }}>PDF</strong>
+            </span>
+          </div>
 
-            {/* Files List Wrapper (Frame 2147239864) */}
-            <div className="w-full flex flex-col gap-2">
-              {uploadedFiles.length === 0 ? (
-                <span className="text-gray-400 font-['Inter'] text-xs mt-2">No files uploaded yet.</span>
-              ) : (
-                uploadedFiles.map((file) => (
+          {/* Frame 2147239851 (Max File Size) */}
+          <div
+            className="flex items-center gap-1 justify-end"
+            style={{
+              position: "absolute",
+              width: "clamp(4.18rem, 6.53vw, 7.83rem)", // width: 94px
+              height: "clamp(0.53rem, 0.83vw, 1.0rem)", // height: 12px
+              right: "clamp(0.67rem, 1.04vw, 1.25rem)", // right: 15px
+              top: "clamp(13.2rem, 20.63vw, 24.75rem)", // top: 297px
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 400,
+                fontSize: "clamp(0.44rem, 0.63vw, 0.83rem)", // 10px
+                lineHeight: "clamp(0.53rem, 0.83vw, 1.0rem)", // 12px
+                color: "#000000",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              Max File Size:&nbsp;
+              <strong style={{ fontWeight: 500 }}>10MB</strong>
+            </span>
+          </div>
+        </div>
+
+        {/* Uploaded Files Section: Frame 2147239865 */}
+        <div
+          style={{
+            position: "absolute",
+            width: "41.06%", // width: 280px relative to left card 682px
+            height: "clamp(7.56rem, 11.81vw, 14.17rem)", // height: 170px
+            left: "45.75%", // left: 312px relative to left card 682px
+            top: "clamp(0.62rem, 0.97vw, 1.17rem)", // top: 14px
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: "clamp(0.76rem, 1.18vw, 1.42rem)", // gap: 17px
+          }}
+        >
+          {/* Uploaded Files Header */}
+          <h4
+            style={{
+              width: "100%",
+              height: "clamp(1.11rem, 1.74vw, 2.08rem)", // height: 25px
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              fontWeight: 500,
+              fontSize: "clamp(0.89rem, 1.39vw, 1.67rem)", // 20px
+              lineHeight: "clamp(1.11rem, 1.74vw, 2.08rem)", // 25px
+              color: "#000000",
+              margin: 0,
+            }}
+          >
+            Uploaded Files
+          </h4>
+
+          {/* Files List Frame: Frame 2147239864 */}
+          <div
+            className="flex flex-col items-start overflow-y-auto w-full custom-scrollbar"
+            style={{
+              height: "clamp(5.69rem, 8.89vw, 10.67rem)", // height: 128px
+              gap: "clamp(0.44rem, 0.69vw, 0.83rem)", // gap: 10px
+            }}
+          >
+            {uploadedFiles.length === 0 ? (
+              <span className="text-gray-400 font-['Inter',_sans-serif] text-xs">No files uploaded yet.</span>
+            ) : (
+              uploadedFiles.map((file) => (
+                <div
+                  key={file.id}
+                  className="relative w-full shrink-0"
+                  style={{
+                    height: "clamp(2.62rem, 4.1vw, 4.92rem)", // 59px height
+                    background: "#F6F9E2",
+                    borderRadius: "12px",
+                  }}
+                >
+                  {/* Rectangle 27663 (White Icon Box) */}
                   <div
-                    key={file.id}
-                    className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl p-2.5 w-full shrink-0"
+                    className="flex items-center justify-center bg-white"
+                    style={{
+                      position: "absolute",
+                      width: "clamp(1.29rem, 2.01vw, 2.42rem)", // 29px
+                      height: "clamp(1.29rem, 2.01vw, 2.42rem)",
+                      left: "clamp(0.4rem, 0.63vw, 0.75rem)", // 9px
+                      top: "clamp(0.62rem, 0.97vw, 1.17rem)", // 14px
+                      borderRadius: "4px",
+                    }}
                   >
-                    <FileText className="text-red-500 shrink-0" style={{ width: "clamp(1.2rem, 1.67vw, 2.5rem)", height: "clamp(1.2rem, 1.67vw, 2.5rem)" }} />
-                    <div className="flex-1 flex flex-col min-w-0">
-                      <span className="font-['Plus_Jakarta_Sans'] font-semibold text-xs text-[#1A1C1D] truncate leading-tight">
-                        {file.name}
-                      </span>
-                      <span className="font-['Plus_Jakarta_Sans'] text-[10px] text-gray-400 mt-0.5">
-                        {file.size}
-                      </span>
-                      {file.status === "uploading" && (
-                        <div className="w-full bg-gray-200 rounded-full h-1 mt-1.5">
-                          <div
-                            className="bg-[#2D3409] h-1 rounded-full transition-all duration-300"
-                            style={{ width: `${file.progress}%` }}
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    {file.status === "completed" ? (
-                      <button
-                        type="button"
-                        onClick={() => onFileDelete(file.id)}
-                        className="p-1 hover:bg-red-50 hover:text-red-500 rounded-full text-gray-400 transition-colors cursor-pointer shrink-0"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    ) : (
-                      <span className="text-[10px] font-semibold text-[#2D3409] shrink-0">
-                        {file.progress}%
-                      </span>
-                    )}
+                    {/* fi_337946 PDF icon (Vector layers matching red/gray styles) */}
+                    <svg
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{
+                        width: "clamp(0.76rem, 1.18vw, 1.42rem)", // 17px
+                        height: "clamp(0.76rem, 1.18vw, 1.42rem)",
+                      }}
+                    >
+                      <path d="M3 0h7.5L14 3.5V16H3V0z" fill="#E2E5E7" />
+                      <path d="M10.5 0V3.5H14L10.5 0z" fill="#B0B7BD" />
+                      <path d="M11 5h-6v1h6V5z" fill="#CAD1D8" />
+                      <path d="M11 7h-6v1h6V7z" fill="#CAD1D8" />
+                      <path d="M1 10h14v5H1v-5z" fill="#F15642" />
+                      <text x="3.5" y="13.8" fill="#FFFFFF" fontSize="3.5" fontWeight="bold" fontFamily="sans-serif">PDF</text>
+                    </svg>
                   </div>
-                ))
-              )}
-            </div>
+
+                  {/* Frame 2147239852 / Frame 2147239853 (Name & Size wrapper) */}
+                  <div
+                    className="flex flex-col justify-center"
+                    style={{
+                      position: "absolute",
+                      left: "clamp(2.04rem, 3.19vw, 3.83rem)", // 46px
+                      top: "clamp(0.62rem, 0.97vw, 1.17rem)", // 14px
+                      width: "50%", // responsive width inside container
+                      height: "clamp(1.33rem, 2.08vw, 2.5rem)", // 30px
+                    }}
+                  >
+                    <span
+                      className="truncate text-black"
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontWeight: 400,
+                        fontSize: "clamp(0.62rem, 0.97vw, 1.17rem)", // 14px
+                        lineHeight: "clamp(0.76rem, 1.18vw, 1.42rem)", // 17px
+                        display: "block",
+                      }}
+                    >
+                      {file.name}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontWeight: 400,
+                        fontSize: "clamp(0.36rem, 0.56vw, 0.67rem)", // 8px
+                        lineHeight: "clamp(0.44rem, 0.69vw, 0.83rem)", // 10px
+                        color: "rgba(0, 0, 0, 0.7)",
+                      }}
+                    >
+                      {file.size}
+                    </span>
+                  </div>
+
+                  {/* Rectangle 27664 (White Delete Button Box) */}
+                  <button
+                    type="button"
+                    onClick={() => onFileDelete(file.id)}
+                    className="flex items-center justify-center bg-white cursor-pointer hover:bg-red-50 hover:text-red-500 rounded transition-colors"
+                    style={{
+                      position: "absolute",
+                      width: "clamp(1.11rem, 1.74vw, 2.08rem)", // 25px
+                      height: "clamp(1.11rem, 1.74vw, 2.08rem)",
+                      right: "clamp(0.67rem, 1.04vw, 1.25rem)", // 15px
+                      top: "clamp(0.67rem, 1.04vw, 1.25rem)", // 15px
+                      borderRadius: "2px",
+                      border: "none",
+                    }}
+                  >
+                    {/* material-symbols:delete / Vector */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      style={{
+                        width: "clamp(0.8rem, 1.25vw, 1.5rem)", // 18px
+                        height: "clamp(0.8rem, 1.25vw, 1.5rem)",
+                        color: "rgba(0, 0, 0, 0.82)",
+                      }}
+                    >
+                      <polyline points="3 6 5 6 21 6" />
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    </svg>
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </div>
+      </div>
 
-        {/* Right Column: Comments Box Section (Frame 2147239870) */}
-        <div className="flex-1 flex flex-col items-end justify-between relative h-full w-full max-w-[clamp(20rem, 42.9vw, 45rem)]">
-          
-          {/* Comment Box Container (Rectangle 27625) */}
-          <div 
-            className="w-full relative flex flex-col justify-between"
+      {/* Right Card: Frame 2147239870 */}
+      <div
+        style={{
+          position: "absolute",
+          width: "45.44%", // width: 618px relative to parent 1360px
+          height: "clamp(8.04rem, 12.57vw, 15.08rem)", // height: 181px
+          left: "52.65%", // left: 716px relative to parent 1360px
+          top: "clamp(3.24rem, 5.07vw, 6.08rem)", // top: 73px
+        }}
+      >
+        {/* Rectangle 27625 (Green background card) */}
+        <div
+          style={{
+            boxSizing: "border-box",
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            left: 0,
+            top: 0,
+            background: "rgba(230, 238, 173, 0.3)",
+            border: "1px solid #E6EEAD",
+            borderRadius: "18px",
+            zIndex: 0,
+          }}
+        />
+
+        {/* Text Area (Write a comment - Poppins style when active/written) */}
+        <textarea
+          value={commentValue}
+          onChange={(e) => onCommentChange(e.target.value)}
+          placeholder="Write a comment"
+          className="bg-transparent resize-none border-none outline-none text-black placeholder-[rgba(0,0,0,0.4)]"
+          style={{
+            position: "absolute",
+            width: "91.59%", // width: 566px relative to comments box 618px
+            height: "clamp(3.73rem, 5.83vw, 7.0rem)", // height: 84px
+            left: "4.21%", // left: 26px relative to comments box 618px
+            top: "clamp(1.07rem, 1.67vw, 2.0rem)", // top: 24px
+            fontFamily: "'Poppins', sans-serif",
+            fontWeight: 400,
+            fontSize: "clamp(0.62rem, 0.97vw, 1.17rem)", // 14px
+            lineHeight: "clamp(0.93rem, 1.46vw, 1.75rem)", // 21px
+            zIndex: 1,
+          }}
+        />
+
+        {/* Mic Button: Frame 2147239972 */}
+        <button
+          type="button"
+          onClick={handleVoiceInput}
+          className={`flex items-center justify-center text-white rounded-full transition-all cursor-pointer ${
+            isListening ? "bg-red-600 animate-pulse" : "bg-[#2D3509] hover:opacity-90"
+          }`}
+          style={{
+            position: "absolute",
+            width: "clamp(1.42rem, 2.22vw, 2.67rem)", // width: 32px
+            height: "clamp(1.42rem, 2.22vw, 2.67rem)",
+            left: "92.56%", // left: 572px relative to comments box 618px
+            top: "clamp(6.0rem, 9.38vw, 11.25rem)", // top: 135px
+            background: "#2D3509",
+            border: "none",
+            zIndex: 1,
+          }}
+        >
+          {/* material-symbols:mic-outline-rounded / Vector */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             style={{
-              height: "clamp(8rem, 12.57vw, 15rem)",
-              background: "rgba(230, 238, 173, 0.3)",
-              border: "1px solid #E6EEAD",
-              borderRadius: "18px",
-              padding: "clamp(0.6rem, 1.67vw, 1.8rem)",
-              boxSizing: "border-box",
+              width: "clamp(0.8rem, 1.25vw, 1.5rem)", // 18px
+              height: "clamp(0.8rem, 1.25vw, 1.5rem)",
+              color: "#FFFFFF",
             }}
           >
-            <textarea
-              value={commentValue}
-              onChange={(e) => onCommentChange(e.target.value)}
-              placeholder="Write a comment"
-              className="w-full bg-transparent resize-none border-none outline-none font-['Inter'] font-normal text-black placeholder-[rgba(0,0,0,0.4)] flex-1"
-              style={{
-                fontSize: "clamp(0.8rem, 0.97vw, 1.1rem)",
-              }}
-            />
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+            <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
+            <line x1="12" y1="19" x2="12" y2="22" />
+          </svg>
+        </button>
+      </div>
 
-            {/* Mic / Dictation Button (Frame 2147239972) */}
-            <button
-              type="button"
-              onClick={handleVoiceInput}
-              className={`absolute flex items-center justify-center text-white rounded-full transition-all cursor-pointer ${
-                isListening ? "bg-red-600 animate-pulse" : "bg-[#2D3509] hover:opacity-90"
-              }`}
-              style={{
-                width: "clamp(1.6rem, 2.22vw, 2.5rem)",
-                height: "clamp(1.6rem, 2.22vw, 2.5rem)",
-                right: "clamp(0.5rem, 1.8vw, 2rem)",
-                bottom: "clamp(0.5rem, 1.8vw, 2rem)",
-              }}
-            >
-              <Mic size={16} />
-            </button>
-          </div>
+      {/* Footer Navigation Buttons: Frame 2147239935 */}
+      <div
+        style={{
+          position: "absolute",
+          width: "15.59%", // width: 212px relative to parent 1360px
+          height: "clamp(1.69rem, 2.64vw, 3.17rem)", // height: 38px
+          right: "1.91%", // align relative to the right to prevent overflow clipping
+          top: "clamp(16.84rem, 26.32vw, 31.58rem)", // top: 379px
+        }}
+      >
+        {/* Back Button: Frame 2147239846 */}
+        <button
+          type="button"
+          onClick={onPrevTab}
+          className="flex items-center justify-center font-['Outfit',_sans-serif] font-medium text-[rgba(0,0,0,0.8)] border border-[rgba(205,0,0,0.27)] cursor-pointer hover:bg-red-50/20 active:scale-95 transition-all"
+          style={{
+            boxSizing: "border-box",
+            position: "absolute",
+            width: "47.17%", // 100px relative to buttons wrapper 212px
+            height: "100%",
+            left: 0,
+            top: 0,
+            borderRadius: "33px",
+            fontSize: "clamp(0.62rem, 0.97vw, 1.17rem)", // 14px
+            lineHeight: "clamp(0.8rem, 1.25vw, 1.5rem)", // 18px
+            background: "transparent",
+          }}
+        >
+          Back
+        </button>
 
-          {/* Footer Buttons container (Frame 2147239935) */}
-          <div 
-            className="flex flex-row justify-end items-center gap-[clamp(0.5rem, 0.78vw, 1rem)] mt-auto"
-            style={{
-              height: "clamp(1.8rem, 2.64vw, 3.5rem)",
-            }}
-          >
-            {/* Back Button */}
-            <button
-              type="button"
-              onClick={onPrevTab}
-              className="flex items-center justify-center font-['Outfit'] font-medium text-[rgba(0,0,0,0.8)] border border-[rgba(205,0,0,0.27)] cursor-pointer hover:bg-red-50/20 active:scale-95 transition-all shrink-0"
-              style={{
-                width: "clamp(5rem, 6.94vw, 8rem)",
-                height: "clamp(1.8rem, 2.64vw, 3.5rem)",
-                borderRadius: "33px",
-                fontSize: "clamp(0.75rem, 0.97vw, 1.1rem)",
-              }}
-            >
-              <ChevronLeft size={16} />
-              <span>Back</span>
-            </button>
-
-            {/* Next Button */}
-            <button
-              type="button"
-              onClick={onNextTab}
-              className="flex items-center justify-center font-['Outfit'] font-normal text-white cursor-pointer hover:scale-105 active:scale-95 transition-all shrink-0"
-              style={{
-                width: "clamp(5rem, 6.94vw, 8rem)",
-                height: "clamp(1.8rem, 2.64vw, 3.5rem)",
-                borderRadius: "57px",
-                background: "radial-gradient(50% 50% at 50% 50%, #3D4A0D 0%, #2A3008 100%)",
-                fontSize: "clamp(0.75rem, 0.9vw, 1rem)",
-              }}
-            >
-              <span>{isFinishStep ? "Finish" : "Next"}</span>
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        </div>
+        {/* Next Button */}
+        <button
+          type="button"
+          onClick={onNextTab}
+          className="flex items-center justify-center font-['Outfit',_sans-serif] font-normal text-white cursor-pointer hover:scale-105 active:scale-95 transition-all"
+          style={{
+            position: "absolute",
+            width: "47.17%", // 100px relative to buttons wrapper 212px
+            height: "100%",
+            left: "52.83%", // 112px relative to buttons wrapper 212px
+            top: 0,
+            background: "radial-gradient(circle at 50% 50%, #3D4A0D 0%, #2A3008 100%)",
+            borderRadius: "57px",
+            fontSize: "clamp(0.58rem, 0.9vw, 1.08rem)", // 13px
+            lineHeight: "clamp(0.71rem, 1.11vw, 1.33rem)", // 16px
+            border: "none",
+          }}
+        >
+          {isFinishStep ? "Finish" : "Next"}
+        </button>
       </div>
     </div>
   );

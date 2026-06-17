@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import UploadGoBack from "../../components/upload-components/UploadGoBack";
+import { ArrowLeft } from "lucide-react";
+import { BackButton } from "@/components/ui/BackButton";
+import UploadProfileAvatar from "../../components/upload-components/UploadProfileAvatar";
 import UploadShortTimelineSidebar, { type UploadStepId } from "../../components/upload-components/UploadShortTimelineSidebar";
 import UploadDocumentsTabsCard from "../../components/upload-components/UploadDocumentsTabsCard";
 import UploadFilesDocument from "../../components/upload-components/UploadFilesDocument";
+import { UploadSubmittedModal } from "../../components/upload-components/UploadSubmittedModal";
 
 interface UploadedFileItem {
   id: string;
@@ -95,6 +98,22 @@ export const LegalUploadDocument: React.FC = () => {
   // State
   const [activeTabId, setActiveTabId] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [showSubmittedModal, setShowSubmittedModal] = useState(false);
+
+  // Track completed tabs explicitly (so checkmark only appears when we transition tabs)
+  const [completedTabs, setCompletedTabs] = useState<Record<string, Record<string, boolean>>>({});
+
+  // Auto-dismiss toast after 4 seconds
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
 
   // Store uploaded files per step and tab ID
   // Structure: { [stepId]: { [tabId]: UploadedFileItem[] } }
@@ -120,10 +139,25 @@ export const LegalUploadDocument: React.FC = () => {
   const currentTabFiles = uploadedStore[currentStepId]?.[activeTabId] || [];
   const currentTabComment = commentsStore[currentStepId]?.[activeTabId] || "";
 
-  // Check if a tab is complete (has at least one uploaded file)
+  // Check if a tab is complete
   const isTabComplete = (tabId: string) => {
-    const files = uploadedStore[currentStepId]?.[tabId];
-    return files && files.length > 0;
+    return !!completedTabs[currentStepId]?.[tabId];
+  };
+
+  const handleTabSelect = (newTabId: string) => {
+    const hasFiles = currentTabFiles.length > 0;
+    const hasComment = currentTabComment.trim() !== "";
+
+    if (hasFiles || hasComment) {
+      setCompletedTabs((prev) => ({
+        ...prev,
+        [currentStepId]: {
+          ...(prev[currentStepId] || {}),
+          [activeTabId]: true,
+        },
+      }));
+    }
+    setActiveTabId(newTabId);
   };
 
   const addFiles = (fileList: FileList) => {
@@ -268,17 +302,66 @@ export const LegalUploadDocument: React.FC = () => {
   };
 
   const handleNextTab = () => {
+    // Determine the toast message based on current inputs before we transition tabs
+    let msg = "";
+    const hasFiles = currentTabFiles.length > 0;
+    const hasComment = currentTabComment.trim() !== "";
+
+    if (hasFiles) {
+      msg = `${activeTabLabel} “Files” has been saved`;
+    } else if (hasComment) {
+      msg = `${activeTabLabel} “Comment” has been saved`;
+    }
+
+    if (hasFiles || hasComment) {
+      setCompletedTabs((prev) => ({
+        ...prev,
+        [currentStepId]: {
+          ...(prev[currentStepId] || {}),
+          [activeTabId]: true,
+        },
+      }));
+    }
+
+    if (msg) {
+      setToastMessage(msg);
+      setShowToast(true);
+    }
+
     const currentTabIdx = stepConfig.tabs.findIndex((t) => t.id === activeTabId);
     if (currentTabIdx < stepConfig.tabs.length - 1) {
       setActiveTabId(stepConfig.tabs[currentTabIdx + 1].id);
     } else {
-      // Completed all tabs of this step, go to next overall step
-      handleNextStep();
+      // Completed all tabs of this step, show submit/proceed modal if intermediate, otherwise finish
+      const stepIndex = STEP_ORDER.indexOf(currentStepId);
+      if (stepIndex < STEP_ORDER.length - 1) {
+        setShowSubmittedModal(true);
+      } else {
+        handleNextStep();
+      }
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F2F2] flex flex-col justify-start items-center p-[clamp(1.5rem,2.78vw,3.33rem)] font-sans">
+    <div className="min-h-screen bg-[#F2F2F2] flex justify-center items-center font-sans p-4">
+
+      {/* ── Submission Success Modal ── */}
+      {showSubmittedModal && (
+        <UploadSubmittedModal
+          farmlandId={targetId}
+          title={`${STEP_TABS_CONFIG[currentStepId]?.label || ""} Submitted`}
+          description={
+            <>
+              Proceed With <span className="text-[#0052cc] hover:underline cursor-pointer" onClick={() => setShowSubmittedModal(false)}>{`'${STEP_TABS_CONFIG[STEP_ORDER[STEP_ORDER.indexOf(currentStepId) + 1]]?.label || ""}'`}</span> for further uploading
+            </>
+          }
+          onProceed={() => {
+            setShowSubmittedModal(false);
+            handleNextStep();
+          }}
+          onDismiss={() => setShowSubmittedModal(false)}
+        />
+      )}
 
       {/* ── Success Modal ── */}
       {showSuccessModal && (
@@ -323,49 +406,197 @@ export const LegalUploadDocument: React.FC = () => {
         </div>
       )}
 
-      <div className="w-full max-w-[clamp(64rem,90vw,120rem)] flex flex-col gap-[clamp(1.5rem,2vw,2.5rem)]">
+      {/* Main Canvas Container (matches Figma design canvas scaled fluidly using clamp all the way to 1920px) */}
+      <div
+        className="relative bg-[#F2F2F2] rounded-[2rem] overflow-hidden shadow-[0px_20px_40px_rgba(0,0,0,0.02)] w-full max-w-[120rem]"
+        style={{
+          height: "clamp(48.125rem, 75.27vw, 90.3rem)", // 1084px base -> 770px min to 1445px max
+        }}
+      >
+        {/* Top Header - Back Button (Frame 1171277099) */}
+        <BackButton
+          onClick={handleGoBack}
+          label="Go back to dashboard"
+          style={{
+            position: "absolute",
+            left: "clamp(1.775rem, 2.78vw, 3.33rem)", // 40px base -> 28.4px min to 53.3px max
+            top: "clamp(1.42rem, 2.22vw, 2.67rem)", // 32px base -> 22.7px min to 42.7px max
+            zIndex: 10,
+          }}
+        />
 
-        {/* ── Top Header ── */}
-        <div className="flex justify-start w-full">
-          <UploadGoBack onClick={handleGoBack} />
-        </div>
+        {/* Top Header - Bell & Avatar (Frame 2147239620) */}
+        <UploadProfileAvatar
+          style={{
+            position: "absolute",
+            right: "clamp(1.775rem, 2.78vw, 3.33rem)", // 40px base -> 28.4px min to 53.3px max
+            top: "clamp(1.51rem, 2.36vw, 2.83rem)", // 34px base -> 24.2px min to 45.3px max
+          }}
+        />
 
-        {/* ── Main Layout ── */}
-        <div className="w-full flex flex-col lg:flex-row gap-[clamp(1.5rem,2vw,2.5rem)] items-start">
+        {/* Left Column: Short Timeline Sidebar (Table) */}
+        <UploadShortTimelineSidebar
+          farmlandId={targetId}
+          activeStep={currentStepId}
+          onPrevious={handlePreviousStep}
+          onNext={handleNextStep}
+          style={{
+            position: "absolute",
+            left: "clamp(1.775rem, 2.78vw, 3.33rem)", // 40px base -> 28.4px min to 53.3px max
+            top: "clamp(5.33rem, 8.33vw, 10rem)", // 120px base -> 85.3px min to 160px max
+            width: "clamp(18.2rem, 28.47vw, 34.16rem)", // 410px base -> 291.5px min to 546.6px max
+            height: "clamp(19.7rem, 30.76vw, 36.9rem)", // 443px base -> 315px min to 590.6px max
+            background: "#FFFFFF",
+            borderRadius: "24px",
+            boxShadow: "none",
+            border: "none",
+          }}
+        />
 
-          {/* Left Column: Short Timeline Sidebar */}
-          <UploadShortTimelineSidebar
-            farmlandId={targetId}
-            activeStep={currentStepId}
-            onPrevious={handlePreviousStep}
-            onNext={handleNextStep}
-          />
+        {/* Right Column: Sub-Tabs Selector Card (Table) */}
+        <UploadDocumentsTabsCard
+          tabs={stepConfig?.tabs || []}
+          activeTabId={activeTabId}
+          onTabSelect={handleTabSelect}
+          isTabComplete={isTabComplete}
+          style={{
+            position: "absolute",
+            left: "clamp(20.7rem, 32.36vw, 38.8rem)", // 466px base -> 331.4px min to 621.3px max
+            right: "clamp(1.775rem, 2.78vw, 3.33rem)", // 40px base -> 28.4px min to 53.3px max
+            width: "auto",
+            top: "clamp(5.06rem, 7.92vw, 9.5rem)", // 114px base -> 81px min to 152px max
+            height: "clamp(19.7rem, 30.76vw, 36.9rem)", // 443px base -> 315px min to 590.6px max
+            background: "#FFFFFF",
+            borderRadius: "24px",
+            boxShadow: "none",
+          }}
+        />
 
-          {/* Right Column: Cards Stack */}
-          <div className="flex-1 flex flex-col gap-[clamp(1rem,1.875vw,2.5rem)] w-full">
-            {/* Sub-Tabs Selector Card */}
-            <UploadDocumentsTabsCard
-              tabs={stepConfig?.tabs || []}
-              activeTabId={activeTabId}
-              onTabSelect={setActiveTabId}
-              isTabComplete={isTabComplete}
-            />
+        {/* Bottom Section: Upload & Comments Card (Table) */}
+        <UploadFilesDocument
+          className="upload-files-card"
+          activeTabLabel={activeTabLabel}
+          uploadedFiles={currentTabFiles}
+          commentValue={currentTabComment}
+          onCommentChange={handleCommentChange}
+          onFileUpload={addFiles}
+          onFileDelete={deleteFile}
+          onPrevTab={handlePrevTab}
+          onNextTab={handleNextTab}
+          isFinishStep={currentStepId === "local-intelligence" && activeTabId === stepConfig?.tabs[stepConfig.tabs.length - 1]?.id}
+        />
 
-            {/* Upload Container Card */}
-            <UploadFilesDocument
-              activeTabLabel={activeTabLabel}
-              uploadedFiles={currentTabFiles}
-              commentValue={currentTabComment}
-              onCommentChange={handleCommentChange}
-              onFileUpload={addFiles}
-              onFileDelete={deleteFile}
-              onPrevTab={handlePrevTab}
-              onNextTab={handleNextTab}
-              isFinishStep={activeTabId === stepConfig?.tabs[stepConfig.tabs.length - 1]?.id}
-            />
+        {/* Toast Notification: Frame 2147239854 */}
+        {showToast && toastMessage && (
+          <div
+            className="animate-in fade-in slide-in-from-bottom-5 duration-300 select-none"
+            style={{
+              boxSizing: "border-box",
+              position: "absolute",
+              width: "clamp(19.73rem, 30.83vw, 37.0rem)", // 444px
+              height: "clamp(3.56rem, 5.56vw, 6.67rem)", // 80px
+              right: "clamp(1.78rem, 2.78vw, 3.33rem)", // 40px
+              bottom: "clamp(1.33rem, 2.08vw, 2.5rem)", // 30px
+              background: "#FFFFFF",
+              border: "1px solid #CBDBAF",
+              borderRadius: "24px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "0 clamp(1.07rem, 1.67vw, 2.0rem)", // 24px
+              zIndex: 100,
+              boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.05)",
+            }}
+          >
+            {/* Frame 2147239855 (Logo + Message) */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: "clamp(0.44rem, 0.69vw, 0.83rem)", // 10px
+              }}
+            >
+              {/* Green checkmark badge */}
+              <div
+                style={{
+                  width: "clamp(1.42rem, 2.22vw, 2.67rem)", // 32px
+                  height: "clamp(1.42rem, 2.22vw, 2.67rem)",
+                  borderRadius: "50%",
+                  background: "#2D3509",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{
+                    width: "clamp(0.71rem, 1.11vw, 1.33rem)", // 16px
+                    height: "clamp(0.71rem, 1.11vw, 1.33rem)",
+                    color: "#FFFFFF",
+                  }}
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+
+              {/* Toast Message Text */}
+              <span
+                style={{
+                  fontFamily: "'Poppins', sans-serif",
+                  fontWeight: 400,
+                  fontSize: "clamp(0.71rem, 1.11vw, 1.33rem)", // 16px
+                  lineHeight: "clamp(1.07rem, 1.67vw, 2.0rem)", // 24px
+                  color: "#000000",
+                }}
+              >
+                {toastMessage}
+              </span>
+            </div>
+
+            {/* Close Button: basil:cross-solid */}
+            <button
+              type="button"
+              onClick={() => setShowToast(false)}
+              style={{
+                width: "clamp(1.33rem, 2.08vw, 2.5rem)", // 30px
+                height: "clamp(1.33rem, 2.08vw, 2.5rem)",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 0,
+                flexShrink: 0,
+              }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{
+                  width: "clamp(0.67rem, 1.04vw, 1.25rem)", // 15px
+                  height: "clamp(0.67rem, 1.04vw, 1.25rem)",
+                  color: "#000000",
+                }}
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
           </div>
-
-        </div>
+        )}
 
       </div>
     </div>
@@ -373,3 +604,5 @@ export const LegalUploadDocument: React.FC = () => {
 };
 
 export default LegalUploadDocument;
+
+

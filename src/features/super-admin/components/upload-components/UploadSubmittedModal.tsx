@@ -4,12 +4,16 @@ interface UploadSubmittedModalProps {
   farmlandId: string;
   onProceed: () => void;
   onDismiss: () => void;
+  title?: string;
+  description?: React.ReactNode;
 }
 
 export const UploadSubmittedModal: React.FC<UploadSubmittedModalProps> = ({
   farmlandId,
   onProceed,
   onDismiss,
+  title,
+  description,
 }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-[100] bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
@@ -23,7 +27,7 @@ export const UploadSubmittedModal: React.FC<UploadSubmittedModalProps> = ({
       >
         {/* Title */}
         <h3 className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(1.15rem,1.67vw,1.5rem)] text-black text-center mt-2">
-          Customer Information Submitted
+          {title || "Customer Information Submitted"}
         </h3>
 
         {/* Icon Group */}
@@ -36,9 +40,15 @@ export const UploadSubmittedModal: React.FC<UploadSubmittedModalProps> = ({
         </div>
 
         {/* Description */}
-        <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.85rem,1.39vw,1.25rem)] leading-snug text-[#3D4949] text-center max-w-[319px]">
-          Proceed With <span className="text-[#0052cc] hover:underline cursor-pointer" onClick={onDismiss}>'Legal Documents'</span> for further uploading
-        </span>
+        {description ? (
+          <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.85rem,1.39vw,1.25rem)] leading-snug text-[#3D4949] text-center max-w-[319px]">
+            {description}
+          </span>
+        ) : (
+          <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.85rem,1.39vw,1.25rem)] leading-snug text-[#3D4949] text-center max-w-[319px]">
+            Proceed With <span className="text-[#0052cc] hover:underline cursor-pointer" onClick={onDismiss}>'Legal Documents'</span> for further uploading
+          </span>
+        )}
 
         {/* Button */}
         <button
