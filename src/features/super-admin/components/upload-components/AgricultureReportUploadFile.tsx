@@ -1203,6 +1203,8 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
                         color: "#363434",
                         width: "clamp(0.5rem, 0.78vw, 0.94rem)",
                         height: "auto",
+                        transition: "transform 0.2s ease",
+                        transform: isSoilDropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
                       }}
                     >
                       <path d="M1 1L6 6L11 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -1286,6 +1288,8 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
                         color: "#363434",
                         width: "clamp(0.5rem, 0.78vw, 0.94rem)",
                         height: "auto",
+                        transition: "transform 0.2s ease",
+                        transform: isCropDropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
                       }}
                     >
                       <path d="M1 1L6 6L11 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -1438,7 +1442,9 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
                 />
               )}
 
-              {activeTabLabel !== "Ground Water Level" && (
+              {activeTabLabel !== "Ground Water Level" &&
+              activeTabLabel !== "Soil Report" &&
+              activeTabLabel !== "Type of Crop" && (
                 <div
                   style={{
                     position: "absolute",
