@@ -11,11 +11,11 @@ import io4 from '@/assets/io4.svg';
 
 //for superadmin side bar//
 
-import widgetIcon from "/public/super-admin/icons/Widget.svg";
-import assignedIcon from "/public/super-admin/icons/assignedicon.svg";
-import farmlandListIcon from "/public/super-admin/icons/farmlisticon.svg";
-import userIcon from "/public/super-admin/icons/usericon.svg";
-import poolIcon from "/public/super-admin/icons/poolicon.svg";
+import widgetIcon from "/super-admin/icons/Widget.svg";
+import assignedIcon from "/super-admin/icons/assignedicon.svg";
+import farmlandListIcon from "/super-admin/icons/farmlisticon.svg";
+import userIcon from "/super-admin/icons/usericon.svg";
+import poolIcon from "/super-admin/icons/poolicon.svg";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 export type LayoutVariant =
@@ -78,7 +78,7 @@ export const MOCK_USERS: Record<
     email: 'superadmin@glc.com',
     password: 'superadmin@123',
     name: 'Super Admin',
-    role: 'SUPERADMIN',
+    role: 'SADMIN',
   },
   VO3_OFFICER: {
     email: 'vo3@glc.com',
@@ -90,7 +90,7 @@ export const MOCK_USERS: Record<
 
 // ─── Master Layout Config ─────────────────────────────────────────────────────
 export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
-  SUPERADMIN: {
+  SADMIN: {
   layoutVariant: "sidebar-super-admin",
   roleLabel: "Super Admin",
   navItems: [

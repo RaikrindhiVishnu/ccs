@@ -427,21 +427,20 @@ export default function SuperAdminPoolCreate() {
   const areaSqFt = Math.round(totalArea * 43560).toLocaleString();
 
   return (
-    <div style={s.page}>
-    
-
-      <div style={s.content}>
-        <button style={s.goBackBtn} onClick={() => navigate(-1)}>
+    <div className="min-h-screen bg-[#f0f0f0] font-sans">
+      <div className="px-8 py-7 pb-10 max-w-[1320px] mx-auto">
+        <button className="inline-flex items-center gap-1.5 bg-white border border-[#e0e0e0] rounded-[22px] px-4 py-[7px] text-[13px] font-medium text-[#222] cursor-pointer mb-5 hover:bg-gray-50 transition-colors" onClick={() => navigate(-1)}>
           <ArrowLeftIcon />
           Go back
         </button>
-        <h1 style={s.pageTitle}>Create Pool</h1>
+        <h1 className="text-[28px] font-bold text-[#111] m-0 mb-5 tracking-tight">Create Pool</h1>
 
-        <div style={s.mainLayout}>
+        <div className="flex flex-col lg:flex-row gap-5 items-start">
           {/* ── MAP ── */}
-          <div style={s.mapPanel}>
+          <div className="flex-1 min-w-0 rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.12)] w-full">
             <div
-              style={{ ...s.mapBg, background: mapBg, cursor: getCursor() }}
+              className="relative w-full h-[680px] overflow-hidden select-none"
+              style={{ background: mapBg, cursor: getCursor() }}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
@@ -450,7 +449,7 @@ export default function SuperAdminPoolCreate() {
               {/* SVG drawing layer */}
               <svg
                 ref={svgRef}
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+                className="absolute inset-0 w-full h-full pointer-events-none"
               >
                 <g transform={`translate(${pan.x},${pan.y}) scale(${zoom})`}>
                   {/* Map view grid lines */}
@@ -535,43 +534,45 @@ export default function SuperAdminPoolCreate() {
               </svg>
 
               {/* Floating label */}
-              <div style={s.floatingLabel}>
-                <div style={s.floatingLabelTitle}>HYDERABAD – TG</div>
-                <div style={s.floatingLabelSub}>ASSIGNED ID</div>
-                <div style={s.floatingLabelId}>GLCSOS - 045</div>
+              <div className="absolute top-4 right-4 bg-white rounded-xl px-[18px] py-3 shadow-[0_2px_12px_rgba(0,0,0,0.15)] z-10 pointer-events-none">
+                <div className="text-[17px] font-extrabold text-[#111] tracking-[-0.3px]">HYDERABAD – TG</div>
+                <div className="text-[9px] font-semibold text-[#888] tracking-[0.8px] mt-1.5 uppercase">ASSIGNED ID</div>
+                <div className="text-[13px] font-bold text-[#111] mt-0.5">GLCSOS - 045</div>
               </div>
 
               {/* Undo / Redo */}
-              <div style={s.undoRedoBar}>
-                <button style={{ ...s.undoRedoBtn, opacity: history.length <= 1 ? 0.4 : 1 }} onClick={undo}>
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                <button 
+                  className={`inline-flex items-center gap-1.5 bg-white border-none rounded-lg px-4 py-2 text-[13px] font-medium text-[#333] cursor-pointer shadow-[0_1px_6px_rgba(0,0,0,0.15)] transition-opacity ${history.length <= 1 ? "opacity-40" : "opacity-100 hover:bg-gray-50"}`}
+                  onClick={undo}
+                  disabled={history.length <= 1}
+                >
                   <UndoIcon /> Undo
                 </button>
-                <button style={{ ...s.undoRedoBtn, opacity: redoStack.length === 0 ? 0.4 : 1 }} onClick={redo}>
+                <button 
+                  className={`inline-flex items-center gap-1.5 bg-white border-none rounded-lg px-4 py-2 text-[13px] font-medium text-[#333] cursor-pointer shadow-[0_1px_6px_rgba(0,0,0,0.15)] transition-opacity ${redoStack.length === 0 ? "opacity-40" : "opacity-100 hover:bg-gray-50"}`}
+                  onClick={redo}
+                  disabled={redoStack.length === 0}
+                >
                   <RedoIcon /> Redo
                 </button>
               </div>
 
               {/* Tool panel */}
-              <div style={s.toolPanel}>
-                <div style={s.toolPanelSection}>
-                  <span style={s.toolPanelLabel}>DRAW TOOLS</span>
+              <div className="absolute top-4 left-4 bg-white rounded-xl p-3 shadow-[0_2px_10px_rgba(0,0,0,0.15)] z-10 min-w-[170px]">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[9px] font-bold text-[#888] tracking-[1px] uppercase px-1.5 pt-0.5 pb-1.5">DRAW TOOLS</span>
                   {([
                     { id: "draw", icon: <DrawPolygonIcon />, label: "Draw Polygon" },
                     { id: "edit", icon: <EditPolygonIcon />, label: "Edit Polygon" },
                     { id: "split", icon: <SplitPolygonIcon />, label: "Split Polygon" },
-                    { id: "delete", icon: <DeleteIcon />, label: "Delete Polygon" },
-                    { id: "clear", icon: <ClearAllIcon />, label: "Clear All" }
+                    { id: "delete", icon: <DeleteIcon />, label: "Delete Polygon", danger: true },
                   ] as { id: string; icon: React.ReactNode; label: string; danger?: boolean }[]).map(({ id, icon, label, danger }) => (
                     <button
-                      key={id!}
-                      style={{
-                        ...s.toolBtn,
-                        ...(activeTool === id ? s.toolBtnActive : {}),
-                        ...(danger && activeTool !== id ? s.toolBtnDanger : {}),
-                        ...(danger && activeTool === id ? { background: "#ffeaea", color: "#c00" } : {}),
-                      }}
+                      key={id}
+                      className={`flex items-center gap-2 bg-transparent border-none rounded-md px-2 py-[7px] text-[13px] font-medium cursor-pointer text-left transition-colors w-full ${activeTool === id && !danger ? "bg-[#f0f4ff] text-[#2244cc]" : activeTool === id && danger ? "bg-[#ffeaea] text-[#c00]" : danger ? "text-[#e53535] hover:bg-gray-50" : "text-[#333] hover:bg-gray-50"}`}
                       onClick={() => {
-                        setActiveTool(activeTool === id ? null : id);
+                        setActiveTool(activeTool === id ? null : id as DrawTool);
                         setInProgressPoints([]);
                         setSplitPoints([]);
                       }}
@@ -580,20 +581,20 @@ export default function SuperAdminPoolCreate() {
                       {icon}<span>{label}</span>
                     </button>
                   ))}
-                  <button style={{ ...s.toolBtn, color: "#555" }} onClick={handleClearAll}>
+                  <button className="flex items-center gap-2 bg-transparent border-none rounded-md px-2 py-[7px] text-[13px] font-medium text-[#555] cursor-pointer text-left hover:bg-gray-50 transition-colors w-full" onClick={handleClearAll}>
                     <ClearAllIcon /><span>Clear All</span>
                   </button>
                 </div>
 
-                <div style={{ ...s.toolPanelSection, marginTop: 8, borderTop: "1px solid #f0f0f0", paddingTop: 8 }}>
-                  <span style={s.toolPanelLabel}>VIEW</span>
+                <div className="flex flex-col gap-0.5 mt-2 border-t border-[#f0f0f0] pt-2">
+                  <span className="text-[9px] font-bold text-[#888] tracking-[1px] uppercase px-1.5 pt-0.5 pb-1.5">VIEW</span>
                   {([
                     { id: "map", icon: <MapViewIcon />, label: "Map View" },
                     { id: "satellite", icon: <SatelliteIcon />, label: "Satellite" },
                   ] as { id: ViewMode; icon: React.ReactNode; label: string }[]).map(({ id, icon, label }) => (
                     <button
                       key={id}
-                      style={{ ...s.toolBtn, ...(viewMode === id ? s.toolBtnActiveView : {}) }}
+                      className={`flex items-center gap-2 bg-transparent border-none rounded-md px-2 py-[7px] text-[13px] font-medium cursor-pointer text-left transition-colors w-full ${viewMode === id ? "bg-[#f5f5f5] font-bold text-[#333]" : "text-[#333] hover:bg-gray-50"}`}
                       onClick={() => setViewMode(id)}
                     >
                       {icon}<span>{label}</span>
@@ -604,7 +605,7 @@ export default function SuperAdminPoolCreate() {
 
               {/* Status hint */}
               {activeTool && (
-                <div style={s.statusHint}>
+                <div className="absolute bottom-[60px] left-1/2 -translate-x-1/2 bg-black/75 text-white rounded-lg px-3.5 py-1.5 text-[12px] font-medium whitespace-nowrap pointer-events-none z-10">
                   {activeTool === "draw" && inProgressPoints.length === 0 && "Click to start drawing a polygon"}
                   {activeTool === "draw" && inProgressPoints.length > 0 && inProgressPoints.length < 3 && `${inProgressPoints.length} point(s) — click to add more`}
                   {activeTool === "draw" && inProgressPoints.length >= 3 && "Click first point to close · Double-click to finish"}
@@ -616,114 +617,116 @@ export default function SuperAdminPoolCreate() {
               )}
 
               {/* Zoom controls */}
-              <div style={s.zoomControls}>
-                <button style={s.zoomBtn} onClick={handleZoomIn}><PlusIcon /></button>
-                <button style={{ ...s.zoomBtn, borderTop: "1px solid rgba(255,255,255,0.2)" }} onClick={handleZoomOut}><MinusIcon /></button>
+              <div className="absolute bottom-[64px] right-4 flex flex-col bg-black/85 rounded-lg overflow-hidden z-10">
+                <button className="w-9 h-9 flex items-center justify-center bg-transparent border-none cursor-pointer p-0 hover:bg-black transition-colors" onClick={handleZoomIn}><PlusIcon /></button>
+                <button className="w-9 h-9 flex items-center justify-center bg-transparent border-none border-t border-white/20 cursor-pointer p-0 hover:bg-black transition-colors" onClick={handleZoomOut}><MinusIcon /></button>
               </div>
 
               {/* Location / reset */}
-              <button style={s.locationBtn} onClick={handleResetView} title="Reset view"><LocationPinIcon /></button>
+              <button className="absolute bottom-4 right-4 w-9 h-9 flex items-center justify-center bg-black/85 border-none rounded-lg cursor-pointer text-white z-10 hover:bg-black transition-colors" onClick={handleResetView} title="Reset view"><LocationPinIcon /></button>
             </div>
           </div>
 
           {/* ── SIDEBAR ── */}
-          <div style={s.sidebar}>
-            <div>
-              {/* Pool Details */}
-              <div style={s.card}>
-                <div style={s.cardHeader}>
-                  <span style={s.cardTitle}>Pool Details</span>
-                  <button style={s.closeBtn}><CloseIcon /></button>
-                </div>
-
-                <Field label="Location">
-                  <SelectField value={location} onChange={setLocation} options={["Hyderabad, Telangana", "Mumbai, Maharashtra", "Bengaluru, Karnataka", "Chennai, Tamil Nadu", "Pune, Maharashtra"]} />
-                </Field>
-
-                <Field label="Farmland ID">
-                  <input style={s.input} value={farmlandId} readOnly />
-                </Field>
-
-                <Field label="Selected Pool">
-                  <SelectField value={selectedPool} onChange={setSelectedPool} options={["Pool A", "Pool B", "Pool C", "Pool D"]} />
-                </Field>
-
-                <Field label="Area (Auto Calculated)">
-                  <div style={s.areaField}>
-                    <div>
-                      <div style={s.areaValue}>{areaAcres} Acres</div>
-                      <div style={s.areaSub}>{areaSqFt} Sq.ft</div>
-                    </div>
-                    <span style={s.lockIcon}><LockIcon /></span>
-                  </div>
-                </Field>
+          <div className="w-full lg:w-[290px] shrink-0 flex flex-col gap-4 max-h-[calc(100vh-180px)] overflow-y-auto pr-0.5 custom-scrollbar">
+            {/* Pool Details */}
+            <div className="bg-white rounded-2xl p-5 pb-4 shadow-[0_1px_6px_rgba(0,0,0,0.07)]">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-[15px] font-bold text-[#111]">Pool Details</span>
+                <button className="bg-transparent border-none cursor-pointer text-[#666] p-0.5 flex items-center hover:text-black transition-colors"><CloseIcon /></button>
               </div>
 
-              {/* Investment Information */}
-              <div style={s.card}>
-                <div style={s.cardHeader}>
-                  <span style={s.cardTitle}>Investment Information</span>
-                </div>
+              <Field label="Location">
+                <SelectField value={location} onChange={setLocation} options={["Hyderabad, Telangana", "Mumbai, Maharashtra", "Bengaluru, Karnataka", "Chennai, Tamil Nadu", "Pune, Maharashtra"]} />
+              </Field>
 
-                <Field label="Target Amount (₹)">
-                  <input style={s.input} value={targetAmount} onChange={e => setTargetAmount(e.target.value)} placeholder="e.g. 1,00,00,000" />
-                </Field>
+              <Field label="Farmland ID">
+                <input className="w-full border-[1.5px] border-[#e8e8e8] rounded-lg py-[9px] px-3 text-[13px] font-medium text-[#222] outline-none box-border bg-gray-50 text-gray-500 cursor-not-allowed" value={farmlandId} readOnly />
+              </Field>
 
-                <Field label="Minimum Investment (₹)">
-                  <input style={s.input} value={minInvestment} onChange={e => setMinInvestment(e.target.value)} placeholder="e.g. 50,000" />
-                </Field>
+              <Field label="Selected Pool">
+                <SelectField value={selectedPool} onChange={setSelectedPool} options={["Pool A", "Pool B", "Pool C", "Pool D"]} />
+              </Field>
 
-                <Field label="Lock-in Period">
-                  <SelectField value={lockInPeriod} onChange={setLockInPeriod} options={["12 Months", "24 Months", "36 Months", "48 Months", "60 Months"]} />
-                </Field>
-
-                <button type="button" style={s.saveBtn} onClick={(e) => {
-                  e.preventDefault();
-                  const newPool = {
-                    name: selectedPool,
-                    area: area,
-                    location: location,
-                    active: true,
-                  };
-                  const updatedPools = [...createdPools, newPool];
-                  setCreatedPools(updatedPools);
-                  localStorage.setItem('createdPools', JSON.stringify(updatedPools));
-                  navigate("/super-admin/pool-buying/created", { state: { selectedPool, location, targetAmount, minInvestment, lockInPeriod, farmlandId, createdPools: updatedPools } });
-                }}>Save Pool Details</button>
-                <button style={s.cancelBtn}>Cancel</button>
-              </div>
-
-              {/* Polygon summary */}
-              {polygons.length > 0 && (
-                <div style={s.card}>
-                  <div style={s.cardHeader}>
-                    <span style={s.cardTitle}>Drawn Polygons ({polygons.length})</span>
+              <Field label="Area (Auto Calculated)">
+                <div className="border-[1.5px] border-[#e8e8e8] rounded-lg py-[9px] px-3 flex items-center justify-between bg-gray-50">
+                  <div className="flex flex-col">
+                    <div className="text-[14px] font-bold text-[#111] leading-tight">{areaAcres} Acres</div>
+                    <div className="text-[11px] text-[#888] mt-px">{areaSqFt} Sq.ft</div>
                   </div>
-                  {polygons.map((poly, i) => (
-                    <div
-                      key={poly.id}
-                      style={{
-                        ...s.polyRow,
-                        background: activePolyId === poly.id ? "#f0f4ff" : "transparent",
-                      }}
-                      onClick={() => setActivePolyId(poly.id === activePolyId ? null : poly.id)}
-                    >
-                      <div style={s.polyDot} />
-                      <div>
-                        <div style={s.polyRowName}>Polygon {i + 1}</div>
-                        <div style={s.polyRowSub}>{poly.points.length} pts · {polygonArea(poly.points).toFixed(3)} ac</div>
-                      </div>
-                      <button
-                        style={s.polyDeleteBtn}
-                        onClick={e => { e.stopPropagation(); pushHistory(polygons.filter(p => p.id !== poly.id)); }}
-                      >
-                        <CloseIcon />
-                      </button>
-                    </div>
-                  ))}
+                  <span className="text-[#888] flex items-center"><LockIcon /></span>
                 </div>
-              )}
+              </Field>
             </div>
+
+            {/* Investment Information */}
+            <div className="bg-white rounded-2xl p-5 pb-4 shadow-[0_1px_6px_rgba(0,0,0,0.07)]">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-[15px] font-bold text-[#111]">Investment Information</span>
+              </div>
+
+              <Field label="Target Amount (₹)">
+                <input className="w-full border-[1.5px] border-[#e8e8e8] rounded-lg py-[9px] px-3 text-[13px] font-medium text-[#222] outline-none box-border bg-white focus:border-[#8fbc2a] transition-colors" value={targetAmount} onChange={e => setTargetAmount(e.target.value)} placeholder="e.g. 1,00,00,000" />
+              </Field>
+
+              <Field label="Minimum Investment (₹)">
+                <input className="w-full border-[1.5px] border-[#e8e8e8] rounded-lg py-[9px] px-3 text-[13px] font-medium text-[#222] outline-none box-border bg-white focus:border-[#8fbc2a] transition-colors" value={minInvestment} onChange={e => setMinInvestment(e.target.value)} placeholder="e.g. 50,000" />
+              </Field>
+
+              <Field label="Lock-in Period">
+                <SelectField value={lockInPeriod} onChange={setLockInPeriod} options={["12 Months", "24 Months", "36 Months", "48 Months", "60 Months"]} />
+              </Field>
+
+              <button type="button" className="w-full bg-[#2a2f1e] text-white border-none rounded-lg py-[13px] text-[14px] font-semibold cursor-pointer mt-1.5 mb-2 tracking-[0.1px] hover:bg-black transition-colors" onClick={(e) => {
+                e.preventDefault();
+                const poolId = `POOL-${Date.now()}`;
+                const newPool = {
+                  id: poolId,
+                  name: selectedPool,
+                  area: `${areaAcres} Acres`,
+                  location: location,
+                  farmlandId: farmlandId,
+                  targetAmount: targetAmount,
+                  minInvestment: minInvestment,
+                  lockInPeriod: lockInPeriod,
+                  active: true,
+                  createdAt: new Date().toISOString(),
+                };
+                const updatedPools = [...createdPools, newPool];
+                setCreatedPools(updatedPools);
+                localStorage.setItem('createdPools', JSON.stringify(updatedPools));
+                navigate("/super-admin/pool-buying/created");
+              }}>Save Pool Details</button>
+              <button className="w-full bg-transparent text-[#333] border-none rounded-lg py-2 text-[14px] font-medium cursor-pointer hover:bg-gray-50 transition-colors">Cancel</button>
+            </div>
+
+            {/* Polygon summary */}
+            {polygons.length > 0 && (
+              <div className="bg-white rounded-2xl p-5 pb-4 shadow-[0_1px_6px_rgba(0,0,0,0.07)]">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[15px] font-bold text-[#111]">Drawn Polygons ({polygons.length})</span>
+                </div>
+                {polygons.map((poly, i) => (
+                  <div
+                    key={poly.id}
+                    className={`flex items-center gap-2.5 p-2 px-1.5 rounded-lg cursor-pointer mb-1 transition-colors ${activePolyId === poly.id ? "bg-[#f0f4ff]" : "bg-transparent hover:bg-gray-50"}`}
+                    onClick={() => setActivePolyId(poly.id === activePolyId ? null : poly.id)}
+                  >
+                    <div className="w-2.5 h-2.5 rounded-sm bg-[#a3d628]/90 border-[1.5px] border-[#555] shrink-0" />
+                    <div className="flex flex-col">
+                      <div className="text-[13px] font-semibold text-[#222]">Polygon {i + 1}</div>
+                      <div className="text-[11px] text-[#888]">{poly.points.length} pts · {polygonArea(poly.points).toFixed(3)} ac</div>
+                    </div>
+                    <button
+                      className="ml-auto bg-transparent border-none cursor-pointer text-[#bbb] flex p-0.5 hover:text-black transition-colors"
+                      onClick={e => { e.stopPropagation(); pushHistory(polygons.filter(p => p.id !== poly.id)); }}
+                    >
+                      <CloseIcon />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -735,8 +738,8 @@ export default function SuperAdminPoolCreate() {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={s.fieldGroup}>
-      <label style={s.fieldLabel}>{label}</label>
+    <div className="mb-3.5">
+      <label className="block text-[11.5px] font-medium text-[#666] mb-1.5">{label}</label>
       {children}
     </div>
   );
@@ -744,77 +747,11 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function SelectField({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: string[] }) {
   return (
-    <div style={s.selectWrapper}>
-      <select style={s.select} value={value} onChange={e => onChange(e.target.value)}>
+    <div className="relative">
+      <select className="w-full border-[1.5px] border-[#e8e8e8] rounded-lg py-[9px] pl-3 pr-9 text-[13px] font-medium text-[#222] outline-none appearance-none bg-white cursor-pointer box-border focus:border-[#8fbc2a] transition-colors" value={value} onChange={e => onChange(e.target.value)}>
         {options.map(o => <option key={o}>{o}</option>)}
       </select>
-      <span style={s.selectChevron}><ChevronDownIcon /></span>
+      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-[#555]"><ChevronDownIcon /></span>
     </div>
   );
 }
-
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const s: Record<string, React.CSSProperties> = {
-  page: { minHeight: "100vh", background: "#f0f0f0", fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" },
-  topBar: { background: "#1a1a1a", padding: "10px 24px" },
-  breadcrumb: { color: "#aaa", fontSize: 12 },
-  content: { padding: "28px 32px 40px", maxWidth: 1320, margin: "0 auto" },
-  goBackBtn: { display: "inline-flex", alignItems: "center", gap: 6, background: "white", border: "1px solid #e0e0e0", borderRadius: 22, padding: "7px 16px", fontSize: 13, fontWeight: 500, color: "#222", cursor: "pointer", marginBottom: 20 },
-  pageTitle: { fontSize: 28, fontWeight: 700, color: "#111", margin: "0 0 20px", letterSpacing: -0.3 },
-  mainLayout: { display: "flex", gap: 20, alignItems: "flex-start" },
-
-  mapPanel: { flex: 1, minWidth: 0, borderRadius: 16, overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.12)" },
-  mapBg: { position: "relative", width: "100%", height: 680, overflow: "hidden", userSelect: "none" },
-
-  floatingLabel: { position: "absolute", top: 16, right: 16, background: "white", borderRadius: 12, padding: "12px 18px", boxShadow: "0 2px 12px rgba(0,0,0,0.15)", zIndex: 10, pointerEvents: "none" },
-  floatingLabelTitle: { fontSize: 17, fontWeight: 800, color: "#111", letterSpacing: -0.3 },
-  floatingLabelSub: { fontSize: 9, fontWeight: 600, color: "#888", letterSpacing: 0.8, marginTop: 6, textTransform: "uppercase" },
-  floatingLabelId: { fontSize: 13, fontWeight: 700, color: "#111", marginTop: 2 },
-
-  undoRedoBar: { position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 8, zIndex: 10 },
-  undoRedoBtn: { display: "inline-flex", alignItems: "center", gap: 6, background: "white", border: "none", borderRadius: 8, padding: "8px 16px", fontSize: 13, fontWeight: 500, color: "#333", cursor: "pointer", boxShadow: "0 1px 6px rgba(0,0,0,0.15)", transition: "opacity 0.15s" },
-
-  toolPanel: { position: "absolute", top: 16, left: 16, background: "white", borderRadius: 12, padding: "12px", boxShadow: "0 2px 10px rgba(0,0,0,0.15)", zIndex: 10, minWidth: 170 },
-  toolPanelSection: { display: "flex", flexDirection: "column", gap: 2 },
-  toolPanelLabel: { fontSize: 9, fontWeight: 700, color: "#888", letterSpacing: 1, textTransform: "uppercase", padding: "2px 6px 6px" },
-  toolBtn: { display: "flex", alignItems: "center", gap: 8, background: "transparent", border: "none", borderRadius: 7, padding: "7px 8px", fontSize: 13, fontWeight: 500, color: "#333", cursor: "pointer", textAlign: "left", transition: "background 0.12s", width: "100%" },
-  toolBtnActive: { background: "#f0f4ff", color: "#2244cc" },
-  toolBtnActiveView: { background: "#f5f5f5", fontWeight: 700 },
-  toolBtnDanger: { color: "#e53535" },
-
-  statusHint: { position: "absolute", bottom: 60, left: "50%", transform: "translateX(-50%)", background: "rgba(20,20,20,0.75)", color: "white", borderRadius: 8, padding: "6px 14px", fontSize: 12, fontWeight: 500, whiteSpace: "nowrap", pointerEvents: "none", zIndex: 10 },
-
-  zoomControls: { position: "absolute", bottom: 64, right: 16, display: "flex", flexDirection: "column", background: "rgba(30,30,30,0.85)", borderRadius: 8, overflow: "hidden", zIndex: 10 },
-  zoomBtn: { width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", background: "transparent", border: "none", cursor: "pointer", padding: 0 },
-  locationBtn: { position: "absolute", bottom: 16, right: 16, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(30,30,30,0.85)", border: "none", borderRadius: 8, cursor: "pointer", color: "white", zIndex: 10 },
-
-  sidebar: { width: 290, flexShrink: 0 },
-  sidebarScroll: { display: "flex", flexDirection: "column", gap: 16, maxHeight: "calc(100vh - 180px)", overflowY: "auto", paddingRight: 2 },
-
-  card: { background: "white", borderRadius: 16, padding: "20px 20px 16px", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", marginBottom: 16 },
-  cardHeader: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 },
-  cardTitle: { fontSize: 15, fontWeight: 700, color: "#111" },
-  closeBtn: { background: "transparent", border: "none", cursor: "pointer", color: "#666", padding: 2, display: "flex", alignItems: "center" },
-
-  fieldGroup: { marginBottom: 14 },
-  fieldLabel: { display: "block", fontSize: 11.5, fontWeight: 500, color: "#666", marginBottom: 5 },
-  input: { width: "100%", border: "1.5px solid #e8e8e8", borderRadius: 8, padding: "9px 12px", fontSize: 13, fontWeight: 500, color: "#222", outline: "none", boxSizing: "border-box", background: "white" },
-  selectWrapper: { position: "relative" },
-  select: { width: "100%", border: "1.5px solid #e8e8e8", borderRadius: 8, padding: "9px 36px 9px 12px", fontSize: 13, fontWeight: 500, color: "#222", outline: "none", appearance: "none", background: "white", cursor: "pointer", boxSizing: "border-box" },
-  selectChevron: { position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#555" },
-
-  areaField: { border: "1.5px solid #e8e8e8", borderRadius: 8, padding: "9px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" },
-  areaValue: { fontSize: 14, fontWeight: 700, color: "#111" },
-  areaSub: { fontSize: 11, color: "#888", marginTop: 1 },
-  lockIcon: { color: "#888", display: "flex", alignItems: "center" },
-
-  saveBtn: { width: "100%", background: "#2a2f1e", color: "white", border: "none", borderRadius: 10, padding: "13px 0", fontSize: 14, fontWeight: 600, cursor: "pointer", marginTop: 6, marginBottom: 8, letterSpacing: 0.1 },
-  cancelBtn: { width: "100%", background: "transparent", color: "#333", border: "none", borderRadius: 10, padding: "8px 0", fontSize: 14, fontWeight: 500, cursor: "pointer" },
-
-  polyRow: { display: "flex", alignItems: "center", gap: 10, padding: "8px 6px", borderRadius: 8, cursor: "pointer", marginBottom: 4 },
-  polyDot: { width: 10, height: 10, borderRadius: 2, background: "rgba(163,214,40,0.9)", border: "1.5px solid #555", flexShrink: 0 },
-  polyRowName: { fontSize: 13, fontWeight: 600, color: "#222" },
-  polyRowSub: { fontSize: 11, color: "#888" },
-  polyDeleteBtn: { marginLeft: "auto", background: "transparent", border: "none", cursor: "pointer", color: "#bbb", display: "flex", padding: 2 },
-};

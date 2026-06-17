@@ -138,8 +138,14 @@ import {
     SuperAdminPoolBuyingAll,
     SuperAdminPoolCreate,
     SuperAdminPoolCreated,
+    SuperAdminPoolPublished,
     SuperAdminPoolDetails,
-    SuperAdminPoolInvestorDetails
+    SuperAdminPoolInvestorDetails,
+    SuperAdminLegalDocuments,
+    SuperAdminAgricultureReport,
+    SuperAdminLandBoundaries,
+    SuperAdminValuation,
+    SuperAdminLocalIntelligence
 } from './routes.config';
 
 
@@ -374,6 +380,9 @@ export const authRoutes: RouteObject[] = [
                 path: '/super-admin/pool-buying/created',
                 element: <SuperAdminPoolCreated />
             }, {
+                path: '/super-admin/pool-buying/published',
+                element: <SuperAdminPoolPublished />
+            }, {
                 path: '/super-admin/pool-buying/all',
                 element: <SuperAdminPoolBuyingAll />
             }, {
@@ -383,6 +392,27 @@ export const authRoutes: RouteObject[] = [
                 path: '/super-admin/pool-buying/:id/investor/:investorId',
                 element: <SuperAdminPoolInvestorDetails />
             },
+
+            {
+  path: '/super-admin/Documents/legal-documents/:id',
+  element: <SuperAdminLegalDocuments />,
+},
+{
+  path: '/super-admin/Documents/agriculture-report/:id',
+  element: <SuperAdminAgricultureReport />,
+},
+{
+  path: '/super-admin/Documents/land-boundaries/:id',
+  element: <SuperAdminLandBoundaries />,
+},
+{
+  path: '/super-admin/Documents/valuation/:id',
+  element: <SuperAdminValuation />,
+},
+{
+  path: '/super-admin/Documents/local-intelligence/:id',
+  element: <SuperAdminLocalIntelligence />,
+},
         ]
 
     },

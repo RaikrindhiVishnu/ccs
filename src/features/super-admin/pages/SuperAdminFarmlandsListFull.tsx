@@ -26,7 +26,7 @@ const SuperAdminFarmlandsListFull: React.FC = () => {
           <button
             onClick={() => navigate(-1)}
             className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white text-sm font-medium text-[var(--text-primary)] hover:bg-gray-50 transition-colors"
-          >
+           >
             <ArrowLeft size={16} />
             Go back to dashboard
           </button>
