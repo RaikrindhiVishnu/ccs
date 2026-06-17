@@ -43,12 +43,12 @@ export const StepperSidebar: React.FC<{
   steps: FlowStep[];
   onNavigate: (stepPath: string, stepId: string) => void;
 }> = ({ farmlandId, currentStepId, steps, onNavigate }) => (
-  <div className="absolute left-[40px] top-[120px] w-[380px] bottom-[40px] bg-white rounded-[2rem] p-10 shadow-sm">
-    <span className="font-semibold text-gray-500 text-sm">Farmland ID:</span>
-    <div className="font-bold text-4xl text-gray-900 mt-1 mb-16">{farmlandId}</div>
+  <div className="absolute left-[40px] top-[120px] w-[380px] bottom-[40px] bg-white rounded-[2rem] p-10 shadow-sm flex flex-col">
+    <span className="font-medium text-gray-900 text-[18px]">Farmland ID:</span>
+    <div className="font-medium text-[42px] text-gray-900 mt-1 mb-16">{farmlandId}</div>
 
-    <div className="relative pl-4 flex flex-col gap-[48px]">
-      <div className="absolute left-[27px] top-[10px] bottom-[10px] w-px bg-gray-200" />
+    <div className="relative pl-2 flex flex-col gap-[80px]">
+      <div className="absolute left-[22px] top-[14px] bottom-[14px] w-[1px] bg-gray-300" />
       
       {steps.map((step) => {
         const isCurrent = step.id === currentStepId;
@@ -58,11 +58,11 @@ export const StepperSidebar: React.FC<{
             className="relative flex items-center gap-6 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => onNavigate(step.routePath, step.id)}
           >
-            <div className="w-6 h-6 rounded-full bg-white border border-[#A3C33D] flex items-center justify-center relative z-10 shadow-sm">
-              <div className="w-3 h-3 rounded-full bg-[#A3C33D]" />
+            <div className="w-[28px] h-[28px] rounded-full bg-[#E1E8B0] flex items-center justify-center relative z-10 shadow-[0_0_0_2px_white]">
+              <div className="w-[12px] h-[12px] rounded-full bg-[#2B3024]" />
             </div>
-            <span className={`font-bold tracking-wider text-[13px] ${isCurrent ? 'text-[#A3C33D]' : 'text-gray-500'}`}>
-              {step.name}
+            <span className={`font-semibold tracking-wide text-[14px] ${isCurrent ? 'text-gray-900' : 'text-gray-500'}`}>
+              {step.name.toUpperCase()}
             </span>
           </div>
         );
@@ -78,7 +78,7 @@ export const TabsCard: React.FC<{
   activeTabId: string;
   onTabClick: (tabId: string) => void;
 }> = ({ tabs, activeTabId, onTabClick }) => (
-  <div className="absolute left-[440px] right-[40px] top-[120px] h-[400px] bg-white shadow-sm rounded-[2rem] p-10">
+  <div className="bg-white shadow-sm rounded-[2rem] p-8 overflow-y-auto" style={{ flex: 4 }}>
     <div className="flex flex-wrap gap-4">
       {tabs.map((tab) => {
         const isActive = tab.id === activeTabId;

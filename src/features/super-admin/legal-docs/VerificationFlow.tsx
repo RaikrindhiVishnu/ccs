@@ -161,12 +161,8 @@ const VerificationFlow: React.FC = () => {
       )}
 
       <div 
-        style={{
-          width: '1440px',
-          height: '1065px',
-          position: 'relative',
-          background: '#F2F2F2',
-          borderRadius: '32px',
+        className="w-[1440px] h-[1024px] bg-[#F9FAFB] relative overflow-hidden"
+        style={{ 
           transform: `scale(${scale})`,
           transformOrigin: 'top center',
           marginBottom: `${(scale - 1) * 1065}px`
@@ -181,55 +177,54 @@ const VerificationFlow: React.FC = () => {
           onNavigate={navigateToStep}
         />
 
-        {/* ── RIGHT TOP: Tabs Card ── */}
+        {/* ── RIGHT CONTENT (Responsive Flex) ── */}
         {tabs.length > 0 && (
-          <TabsCard tabs={tabs} activeTabId={activeTabId} onTabClick={setActiveTabId} />
-        )}
+          <div className="absolute left-[440px] right-[40px] top-[120px] bottom-[40px] flex flex-col gap-6">
+            <TabsCard tabs={tabs} activeTabId={activeTabId} onTabClick={setActiveTabId} />
 
-        {/* ── RIGHT BOTTOM: Content Card ── */}
-        {tabs.length > 0 && (
-          <div className="absolute left-[440px] right-[40px] top-[540px] bottom-[40px] bg-white shadow-sm rounded-[2rem] p-10 flex flex-col">
-            <div className="flex gap-16 flex-1">
-              
-              {/* Left Section - Conditional: Land Coordinates URL or Uploaded Files */}
-              <div className="flex-1 flex flex-col">
-                {activeTabId === 'land-coordinates' ? (
-                  <>
-                    <h3 className="text-[22px] font-bold text-gray-900 mb-6">Land Coordinates</h3>
-                    <div className="bg-[#F0F4F8] rounded-2xl p-4">
-                      <a 
-                        href="https://maps.app.goo.gl/w7pRkwAgPbcdzwAu7" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-[14px] text-[#1D7ABE] font-medium break-all hover:underline"
-                      >
-                        https://maps.app.goo.gl/w7pRkwAgPbcdzwAu7
-                      </a>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="text-[22px] font-bold text-gray-900 mb-6">Uploaded File</h3>
-                    <div className="flex flex-col gap-4">
-                      {MOCK_FILES.map((file) => (
-                        <FileRow key={file.id} file={file} />
-                      ))}
-                    </div>
-                  </>
-                )}
+            <div className="bg-white shadow-sm rounded-[2rem] p-10 flex flex-col min-h-0" style={{ flex: 6 }}>
+              <div className="flex gap-16 flex-1 overflow-y-auto pr-4 custom-scrollbar">
+                
+                {/* Left Section - Conditional: Land Coordinates URL or Uploaded Files */}
+                <div className="flex-1 flex flex-col">
+                  {activeTabId === 'land-coordinates' ? (
+                    <>
+                      <h3 className="text-[22px] font-bold text-gray-900 mb-6">Land Coordinates</h3>
+                      <div className="bg-[#F0F4F8] rounded-2xl p-4">
+                        <a 
+                          href="https://maps.app.goo.gl/w7pRkwAgPbcdzwAu7" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-[14px] text-[#1D7ABE] font-medium break-all hover:underline"
+                        >
+                          https://maps.app.goo.gl/w7pRkwAgPbcdzwAu7
+                        </a>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="text-[22px] font-bold text-gray-900 mb-5">Uploaded Files</h3>
+                      <div className="flex flex-col gap-4">
+                        {MOCK_FILES.map((file) => (
+                          <FileRow key={file.id} file={file} />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <CommentsSection comment={MOCK_COMMENT} />
+                
               </div>
 
-              <CommentsSection comment={MOCK_COMMENT} />
+              <FooterActions
+                isApproved={currentTab?.status === 'approved'}
+                onReject={() => setShowRejectModal(true)}
+                onApprove={handleApprove}
+              />
             </div>
-
-            <FooterActions
-              isApproved={currentTab?.status === 'approved'}
-              onReject={() => setShowRejectModal(true)}
-              onApprove={handleApprove}
-            />
           </div>
         )}
-
       </div>
     </div>
   );

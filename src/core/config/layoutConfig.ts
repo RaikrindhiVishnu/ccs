@@ -11,11 +11,11 @@ import io4 from '@/assets/io4.svg';
 
 //for superadmin side bar//
 
-import widgetIcon from "/public/super-admin/icons/Widget.svg";
-import assignedIcon from "/public/super-admin/icons/assignedicon.svg";
-import farmlandListIcon from "/public/super-admin/icons/farmlisticon.svg";
-import userIcon from "/public/super-admin/icons/usericon.svg";
-import poolIcon from "/public/super-admin/icons/poolicon.svg";
+import widgetIcon from "/super-admin/icons/Widget.svg";
+import assignedIcon from "/super-admin/icons/assignedicon.svg";
+import farmlandListIcon from "/super-admin/icons/farmlisticon.svg";
+import userIcon from "/super-admin/icons/usericon.svg";
+import poolIcon from "/super-admin/icons/poolicon.svg";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 export type LayoutVariant =
