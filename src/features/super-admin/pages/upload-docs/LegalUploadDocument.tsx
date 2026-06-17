@@ -127,6 +127,75 @@ export const LegalUploadDocument: React.FC = () => {
     Record<string, Record<string, string>>
   >({});
 
+  // Store soil types per farmland ID
+  // Structure: { [farmlandId]: string }
+  const [soilTypeStore, setSoilTypeStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store crop types per farmland ID
+  // Structure: { [farmlandId]: string }
+  const [cropTypeStore, setCropTypeStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store ground water levels per farmland ID
+  // Structure: { [farmlandId]: string }
+  const [waterLevelStore, setWaterLevelStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store future crops per farmland ID
+  // Structure: { [farmlandId]: string }
+  const [futureCropsStore, setFutureCropsStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store yield cost per farmland ID
+  const [yieldCostStore, setYieldCostStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store yield returns per farmland ID
+  const [yieldReturnsStore, setYieldReturnsStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store cultivation type per farmland ID
+  const [cultivationTypeStore, setCultivationTypeStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store cultivation name per farmland ID
+  const [cultivationNameStore, setCultivationNameStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store cultivation contact per farmland ID
+  const [cultivationContactStore, setCultivationContactStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store maintenance crop suggestions per farmland ID
+  const [maintenanceCropStore, setMaintenanceCropStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store maintenance best returns per farmland ID
+  const [maintenanceReturnsStore, setMaintenanceReturnsStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store natural advantages per farmland ID
+  const [advantagesStore, setAdvantagesStore] = useState<
+    Record<string, string>
+  >({});
+
+  // Store natural disadvantages per farmland ID
+  const [disadvantagesStore, setDisadvantagesStore] = useState<
+    Record<string, string>
+  >({});
+
   // Sync active tab when step changes
   useEffect(() => {
     if (stepConfig && stepConfig.tabs.length > 0) {
@@ -147,8 +216,16 @@ export const LegalUploadDocument: React.FC = () => {
   const handleTabSelect = (newTabId: string) => {
     const hasFiles = currentTabFiles.length > 0;
     const hasComment = currentTabComment.trim() !== "";
+    const isSoilTab = currentStepId === "agriculture-report" && activeTabId === "soil";
+    const isCropTab = currentStepId === "agriculture-report" && activeTabId === "type-of-crop";
+    const isWaterLevelTab = currentStepId === "agriculture-report" && activeTabId === "ground-water-level";
+    const isFutureCropsTab = currentStepId === "agriculture-report" && activeTabId === "types-of-crop-can-be-grown";
+    const isYieldCostTab = currentStepId === "agriculture-report" && activeTabId === "current-yield-cost";
+    const isCultivationTab = currentStepId === "agriculture-report" && activeTabId === "current-cultivation";
+    const isMaintenanceTab = currentStepId === "agriculture-report" && activeTabId === "maintenance";
+    const isNaturalAdvDisadvTab = currentStepId === "agriculture-report" && activeTabId === "natural-advantages-disadvantages";
 
-    if (hasFiles || hasComment) {
+    if (hasFiles || hasComment || isSoilTab || isCropTab || isWaterLevelTab || isFutureCropsTab || isYieldCostTab || isCultivationTab || isMaintenanceTab || isNaturalAdvDisadvTab) {
       setCompletedTabs((prev) => ({
         ...prev,
         [currentStepId]: {
@@ -306,14 +383,38 @@ export const LegalUploadDocument: React.FC = () => {
     let msg = "";
     const hasFiles = currentTabFiles.length > 0;
     const hasComment = currentTabComment.trim() !== "";
+    const isSoilTab = currentStepId === "agriculture-report" && activeTabId === "soil";
+    const isCropTab = currentStepId === "agriculture-report" && activeTabId === "type-of-crop";
+    const isWaterLevelTab = currentStepId === "agriculture-report" && activeTabId === "ground-water-level";
+    const isFutureCropsTab = currentStepId === "agriculture-report" && activeTabId === "types-of-crop-can-be-grown";
+    const isYieldCostTab = currentStepId === "agriculture-report" && activeTabId === "current-yield-cost";
+    const isCultivationTab = currentStepId === "agriculture-report" && activeTabId === "current-cultivation";
+    const isMaintenanceTab = currentStepId === "agriculture-report" && activeTabId === "maintenance";
+    const isNaturalAdvDisadvTab = currentStepId === "agriculture-report" && activeTabId === "natural-advantages-disadvantages";
 
     if (hasFiles) {
       msg = `${activeTabLabel} “Files” has been saved`;
     } else if (hasComment) {
       msg = `${activeTabLabel} “Comment” has been saved`;
+    } else if (isSoilTab) {
+      msg = `${activeTabLabel} “Soil Type” has been saved`;
+    } else if (isCropTab) {
+      msg = `${activeTabLabel} “Crop Type” has been saved`;
+    } else if (isWaterLevelTab) {
+      msg = `${activeTabLabel} “Water Level” has been saved`;
+    } else if (isFutureCropsTab) {
+      msg = `${activeTabLabel} “Future Crops” has been saved`;
+    } else if (isYieldCostTab) {
+      msg = `${activeTabLabel} “Yield Cost & Returns” has been saved`;
+    } else if (isCultivationTab) {
+      msg = `${activeTabLabel} “Cultivation Type & Details” has been saved`;
+    } else if (isMaintenanceTab) {
+      msg = `${activeTabLabel} “Maintenance Details” has been saved`;
+    } else if (isNaturalAdvDisadvTab) {
+      msg = `${activeTabLabel} “Advantages & Disadvantages” has been saved`;
     }
 
-    if (hasFiles || hasComment) {
+    if (hasFiles || hasComment || isSoilTab || isCropTab || isWaterLevelTab || isFutureCropsTab || isYieldCostTab || isCultivationTab || isMaintenanceTab || isNaturalAdvDisadvTab) {
       setCompletedTabs((prev) => ({
         ...prev,
         [currentStepId]: {
@@ -484,6 +585,97 @@ export const LegalUploadDocument: React.FC = () => {
           onPrevTab={handlePrevTab}
           onNextTab={handleNextTab}
           isFinishStep={currentStepId === "local-intelligence" && activeTabId === stepConfig?.tabs[stepConfig.tabs.length - 1]?.id}
+          selectedSoilType={soilTypeStore[targetId] || "Red Soil"}
+          onSoilTypeChange={(val) => {
+            setSoilTypeStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          selectedCropType={cropTypeStore[targetId] || "Paddy"}
+          onCropTypeChange={(val) => {
+            setCropTypeStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          waterLevelValue={waterLevelStore[targetId] || ""}
+          onWaterLevelChange={(val) => {
+            setWaterLevelStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          selectedFutureCrops={futureCropsStore[targetId] || ""}
+          onFutureCropsChange={(val) => {
+            setFutureCropsStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          yieldCostValue={yieldCostStore[targetId] || ""}
+          onYieldCostChange={(val) => {
+            setYieldCostStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          yieldReturnsValue={yieldReturnsStore[targetId] || ""}
+          onYieldReturnsChange={(val) => {
+            setYieldReturnsStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          cultivationTypeValue={cultivationTypeStore[targetId] || "Self"}
+          onCultivationTypeChange={(val) => {
+            setCultivationTypeStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          cultivationNameValue={cultivationNameStore[targetId] || ""}
+          onCultivationNameChange={(val) => {
+            setCultivationNameStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          cultivationContactValue={cultivationContactStore[targetId] || ""}
+          onCultivationContactChange={(val) => {
+            setCultivationContactStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          maintenanceCropValue={maintenanceCropStore[targetId] || ""}
+          onMaintenanceCropChange={(val) => {
+            setMaintenanceCropStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          maintenanceReturnsValue={maintenanceReturnsStore[targetId] || ""}
+          onMaintenanceReturnsChange={(val) => {
+            setMaintenanceReturnsStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          advantagesValue={advantagesStore[targetId] || ""}
+          onAdvantagesChange={(val) => {
+            setAdvantagesStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
+          disadvantagesValue={disadvantagesStore[targetId] || ""}
+          onDisadvantagesChange={(val) => {
+            setDisadvantagesStore((prev) => ({
+              ...prev,
+              [targetId]: val,
+            }));
+          }}
         />
 
         {/* Toast Notification: Frame 2147239854 */}

@@ -16,7 +16,7 @@ export const UploadSubmittedModal: React.FC<UploadSubmittedModalProps> = ({
   description,
 }) => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-[100] bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
       {/* Modal Container */}
       <div 
         className="box-sizing-border-box bg-white border border-[rgba(0,0,0,0.2)] shadow-[0px_0px_12.5px_rgba(0,0,0,0.15)] rounded-[24px] flex flex-col items-center justify-between p-8 relative animate-in zoom-in-95 duration-200"
