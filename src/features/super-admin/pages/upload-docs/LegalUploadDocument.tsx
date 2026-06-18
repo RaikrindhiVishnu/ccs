@@ -344,6 +344,71 @@ export const LegalUploadDocument: React.FC = () => {
     Record<string, Record<string, string>>
   >({});
 
+  // Store any issues type per farmland ID and activeTabId
+  const [anyIssuesTypeStore, setAnyIssuesTypeStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store local liabilities type per farmland ID and activeTabId
+  const [localLiabilitiesTypeStore, setLocalLiabilitiesTypeStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store pending loans type per farmland ID and activeTabId
+  const [pendingLoansTypeStore, setPendingLoansTypeStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store pending loans amount per farmland ID and activeTabId
+  const [pendingLoansAmountStore, setPendingLoansAmountStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store owner mindset per farmland ID and activeTabId
+  const [ownerMindsetStore, setOwnerMindsetStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store source person type per farmland ID and activeTabId
+  const [sourcePersonTypeStore, setSourcePersonTypeStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store source person name per farmland ID and activeTabId
+  const [sourcePersonNameStore, setSourcePersonNameStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store source person mobile per farmland ID and activeTabId
+  const [sourcePersonMobileStore, setSourcePersonMobileStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store agreement paper availability per farmland ID and activeTabId
+  const [agreementPaperStore, setAgreementPaperStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store agreement type per farmland ID and activeTabId
+  const [agreementTypeStore, setAgreementTypeStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store agreement price per farmland ID and activeTabId
+  const [agreementPriceStore, setAgreementPriceStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store previous transactions availability per farmland ID and activeTabId
+  const [prevTransactionsTypeStore, setPrevTransactionsTypeStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store previous transactions price per farmland ID and activeTabId
+  const [prevTransactionsPriceStore, setPrevTransactionsPriceStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
   // Sync active tab when step changes
   useEffect(() => {
     if (stepConfig && stepConfig.tabs.length > 0) {
@@ -785,13 +850,8 @@ export const LegalUploadDocument: React.FC = () => {
     if (currentTabIdx < stepConfig.tabs.length - 1) {
       setActiveTabId(stepConfig.tabs[currentTabIdx + 1].id);
     } else {
-      // Completed all tabs of this step, show submit/proceed modal if intermediate, otherwise finish
-      const stepIndex = STEP_ORDER.indexOf(currentStepId);
-      if (stepIndex < STEP_ORDER.length - 1) {
-        setShowSubmittedModal(true);
-      } else {
-        handleNextStep();
-      }
+      // Completed all tabs of this step, show submit/proceed modal
+      setShowSubmittedModal(true);
     }
   };
 
@@ -804,13 +864,21 @@ export const LegalUploadDocument: React.FC = () => {
           farmlandId={targetId}
           title={`${STEP_TABS_CONFIG[currentStepId]?.label || ""} Submitted`}
           description={
-            <>
-              Proceed With <span className="text-[#0052cc] hover:underline cursor-pointer" onClick={() => setShowSubmittedModal(false)}>{`'${STEP_TABS_CONFIG[STEP_ORDER[STEP_ORDER.indexOf(currentStepId) + 1]]?.label || ""}'`}</span> for further uploading
-            </>
+            currentStepId === "local-intelligence" ? (
+              "Proceed to upload the land"
+            ) : (
+              <>
+                Proceed With <span className="text-[#0052cc] hover:underline cursor-pointer" onClick={() => setShowSubmittedModal(false)}>{`'${STEP_TABS_CONFIG[STEP_ORDER[STEP_ORDER.indexOf(currentStepId) + 1]]?.label || ""}'`}</span> for further uploading
+              </>
+            )
           }
           onProceed={() => {
             setShowSubmittedModal(false);
-            handleNextStep();
+            if (currentStepId === "local-intelligence") {
+              navigate("/super-admin/dashboard");
+            } else {
+              handleNextStep();
+            }
           }}
           onDismiss={() => setShowSubmittedModal(false)}
         />
@@ -1244,6 +1312,136 @@ export const LegalUploadDocument: React.FC = () => {
           airportDistanceValue={airportDistanceStore[targetId]?.[activeTabId] || ""}
           onAirportDistanceChange={(val) => {
             setAirportDistanceStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          anyIssuesTypeValue={anyIssuesTypeStore[targetId]?.[activeTabId] || ""}
+          onAnyIssuesTypeChange={(val) => {
+            setAnyIssuesTypeStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          localLiabilitiesTypeValue={localLiabilitiesTypeStore[targetId]?.[activeTabId] || ""}
+          onLocalLiabilitiesTypeChange={(val) => {
+            setLocalLiabilitiesTypeStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          pendingLoansTypeValue={pendingLoansTypeStore[targetId]?.[activeTabId] || ""}
+          onPendingLoansTypeChange={(val) => {
+            setPendingLoansTypeStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          pendingLoansAmountValue={pendingLoansAmountStore[targetId]?.[activeTabId] || ""}
+          onPendingLoansAmountChange={(val) => {
+            setPendingLoansAmountStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          ownerMindsetValue={ownerMindsetStore[targetId]?.[activeTabId] || ""}
+          onOwnerMindsetChange={(val) => {
+            setOwnerMindsetStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          sourcePersonTypeValue={sourcePersonTypeStore[targetId]?.[activeTabId] || ""}
+          onSourcePersonTypeChange={(val) => {
+            setSourcePersonTypeStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          sourcePersonNameValue={sourcePersonNameStore[targetId]?.[activeTabId] || ""}
+          onSourcePersonNameChange={(val) => {
+            setSourcePersonNameStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          sourcePersonMobileValue={sourcePersonMobileStore[targetId]?.[activeTabId] || ""}
+          onSourcePersonMobileChange={(val) => {
+            setSourcePersonMobileStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          agreementPaperValue={agreementPaperStore[targetId]?.[activeTabId] || ""}
+          onAgreementPaperChange={(val) => {
+            setAgreementPaperStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          agreementTypeValue={agreementTypeStore[targetId]?.[activeTabId] || ""}
+          onAgreementTypeChange={(val) => {
+            setAgreementTypeStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          agreementPriceValue={agreementPriceStore[targetId]?.[activeTabId] || ""}
+          onAgreementPriceChange={(val) => {
+            setAgreementPriceStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          prevTransactionsTypeValue={prevTransactionsTypeStore[targetId]?.[activeTabId] || ""}
+          onPrevTransactionsTypeChange={(val) => {
+            setPrevTransactionsTypeStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          prevTransactionsPriceValue={prevTransactionsPriceStore[targetId]?.[activeTabId] || ""}
+          onPrevTransactionsPriceChange={(val) => {
+            setPrevTransactionsPriceStore((prev) => ({
               ...prev,
               [targetId]: {
                 ...(prev[targetId] || {}),

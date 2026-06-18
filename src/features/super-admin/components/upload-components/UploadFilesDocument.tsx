@@ -106,6 +106,32 @@ interface UploadFilesDocumentProps {
   onAirportConnectivityTypeChange?: (val: string) => void;
   airportDistanceValue?: string;
   onAirportDistanceChange?: (val: string) => void;
+  anyIssuesTypeValue?: string;
+  onAnyIssuesTypeChange?: (val: string) => void;
+  localLiabilitiesTypeValue?: string;
+  onLocalLiabilitiesTypeChange?: (val: string) => void;
+  pendingLoansTypeValue?: string;
+  onPendingLoansTypeChange?: (val: string) => void;
+  pendingLoansAmountValue?: string;
+  onPendingLoansAmountChange?: (val: string) => void;
+  ownerMindsetValue?: string;
+  onOwnerMindsetChange?: (val: string) => void;
+  sourcePersonTypeValue?: string;
+  onSourcePersonTypeChange?: (val: string) => void;
+  sourcePersonNameValue?: string;
+  onSourcePersonNameChange?: (val: string) => void;
+  sourcePersonMobileValue?: string;
+  onSourcePersonMobileChange?: (val: string) => void;
+  agreementPaperValue?: string;
+  onAgreementPaperChange?: (val: string) => void;
+  agreementTypeValue?: string;
+  onAgreementTypeChange?: (val: string) => void;
+  agreementPriceValue?: string;
+  onAgreementPriceChange?: (val: string) => void;
+  prevTransactionsTypeValue?: string;
+  onPrevTransactionsTypeChange?: (val: string) => void;
+  prevTransactionsPriceValue?: string;
+  onPrevTransactionsPriceChange?: (val: string) => void;
 }
 
 const LEGAL_TABS = [
