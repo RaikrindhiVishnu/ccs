@@ -90,9 +90,13 @@ const STEP_TABS_CONFIG: Record<
   "local-intelligence": {
     label: "Local Intelligence",
     tabs: [
-      { id: "local-inquiry", label: "Local Inquiry Report" },
-      { id: "neighbor-noc", label: "Neighbor NOC" },
-      { id: "dispute-check", label: "Dispute Check" },
+      { id: "any-issues", label: "Any Issues" },
+      { id: "local-liabilities", label: "Local Liabilities" },
+      { id: "any-pending-loans", label: "Any Pending Loans" },
+      { id: "owner-mindset", label: "Owner Mindset" },
+      { id: "source-person", label: "Source Person" },
+      { id: "agreements", label: "Agreements" },
+      { id: "previous-transactions", label: "Previous Transactions" },
     ],
   },
 };

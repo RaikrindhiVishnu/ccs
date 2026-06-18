@@ -166,9 +166,13 @@ const VALUATION_TABS = [
 ];
 
 const INTEL_TABS = [
-  "Local Inquiry Report",
-  "Neighbor NOC",
-  "Dispute Check",
+  "Any Issues",
+  "Local Liabilities",
+  "Any Pending Loans",
+  "Owner Mindset",
+  "Source Person",
+  "Agreements",
+  "Previous Transactions",
 ];
 
 export const UploadFilesDocument: React.FC<UploadFilesDocumentProps> = (props) => {
