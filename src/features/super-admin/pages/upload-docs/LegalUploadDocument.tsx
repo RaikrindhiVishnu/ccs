@@ -462,7 +462,67 @@ export const LegalUploadDocument: React.FC = () => {
       }
     }
 
-    if (hasFiles || hasComment || isSoilTab || isCropTab || isWaterLevelTab || isFutureCropsTab || isYieldCostTab || isCultivationTab || isMaintenanceTab || isNaturalAdvDisadvTab || isShapeLandTab || isWaterElectricityTab || isExistingTreesTab || (isSurveyReportTab && hasSurveyReport)) {
+    const isValuationStep = currentStepId === "valuation";
+    const isLocalIntelStep = currentStepId === "local-intelligence";
+
+    let hasValuationField = false;
+    if (isValuationStep) {
+      if (activeTabId === "village-map-or-naksha") {
+        hasValuationField = currentTabFiles.length > 0;
+      } else if (activeTabId === "road-approach") {
+        hasValuationField = !!boundaryRoadTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "recent-transactions") {
+        hasValuationField = !!recentTransactionTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "geological-advantages") {
+        hasValuationField = !!geologicalAdvantagesTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "future-plans" || activeTabId === "validating-disadvantages") {
+        hasValuationField = currentTabComment.trim() !== "";
+      } else if (activeTabId === "upcoming-infrastructures") {
+        hasValuationField = !!upcomingInfrastructuresStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "railway-track-connectivity") {
+        hasValuationField = !!railwayConnectivityTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "airport-connectivity") {
+        hasValuationField = !!airportConnectivityTypeStore[targetId]?.[activeTabId];
+      }
+    }
+
+    let hasLocalIntelField = false;
+    if (isLocalIntelStep) {
+      if (activeTabId === "any-issues") {
+        hasLocalIntelField = !!anyIssuesTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "local-liabilities") {
+        hasLocalIntelField = !!localLiabilitiesTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "any-pending-loans") {
+        hasLocalIntelField = !!pendingLoansTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "owner-mindset") {
+        hasLocalIntelField = !!ownerMindsetStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "source-person") {
+        hasLocalIntelField = !!sourcePersonTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "agreements") {
+        hasLocalIntelField = !!agreementPaperStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "previous-transactions") {
+        hasLocalIntelField = !!prevTransactionsTypeStore[targetId]?.[activeTabId];
+      }
+    }
+
+    if (
+      hasFiles ||
+      hasComment ||
+      isSoilTab ||
+      isCropTab ||
+      isWaterLevelTab ||
+      isFutureCropsTab ||
+      isYieldCostTab ||
+      isCultivationTab ||
+      isMaintenanceTab ||
+      isNaturalAdvDisadvTab ||
+      isShapeLandTab ||
+      isWaterElectricityTab ||
+      isExistingTreesTab ||
+      (isSurveyReportTab && hasSurveyReport) ||
+      (isValuationStep && hasValuationField) ||
+      (isLocalIntelStep && hasLocalIntelField)
+    ) {
       setCompletedTabs((prev) => ({
         ...prev,
         [currentStepId]: {
@@ -799,7 +859,54 @@ export const LegalUploadDocument: React.FC = () => {
       }
     }
 
-    if (hasFiles) {
+    const isValuationStep = currentStepId === "valuation";
+    const isLocalIntelStep = currentStepId === "local-intelligence";
+
+    let hasValuationField = false;
+    if (isValuationStep) {
+      if (activeTabId === "village-map-or-naksha") {
+        hasValuationField = currentTabFiles.length > 0;
+      } else if (activeTabId === "road-approach") {
+        hasValuationField = !!boundaryRoadTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "recent-transactions") {
+        hasValuationField = !!recentTransactionTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "geological-advantages") {
+        hasValuationField = !!geologicalAdvantagesTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "future-plans" || activeTabId === "validating-disadvantages") {
+        hasValuationField = currentTabComment.trim() !== "";
+      } else if (activeTabId === "upcoming-infrastructures") {
+        hasValuationField = !!upcomingInfrastructuresStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "railway-track-connectivity") {
+        hasValuationField = !!railwayConnectivityTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "airport-connectivity") {
+        hasValuationField = !!airportConnectivityTypeStore[targetId]?.[activeTabId];
+      }
+    }
+
+    let hasLocalIntelField = false;
+    if (isLocalIntelStep) {
+      if (activeTabId === "any-issues") {
+        hasLocalIntelField = !!anyIssuesTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "local-liabilities") {
+        hasLocalIntelField = !!localLiabilitiesTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "any-pending-loans") {
+        hasLocalIntelField = !!pendingLoansTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "owner-mindset") {
+        hasLocalIntelField = !!ownerMindsetStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "source-person") {
+        hasLocalIntelField = !!sourcePersonTypeStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "agreements") {
+        hasLocalIntelField = !!agreementPaperStore[targetId]?.[activeTabId];
+      } else if (activeTabId === "previous-transactions") {
+        hasLocalIntelField = !!prevTransactionsTypeStore[targetId]?.[activeTabId];
+      }
+    }
+
+    if (isValuationStep && hasValuationField) {
+      msg = `${activeTabLabel} has been saved`;
+    } else if (isLocalIntelStep && hasLocalIntelField) {
+      msg = `${activeTabLabel} has been saved`;
+    } else if (hasFiles) {
       msg = `${activeTabLabel} “Files” has been saved`;
     } else if (hasComment) {
       msg = `${activeTabLabel} “Comment” has been saved`;
@@ -831,7 +938,25 @@ export const LegalUploadDocument: React.FC = () => {
       msg = `${activeTabLabel} has been saved`;
     }
 
-    if (hasFiles || hasComment || isSoilTab || isCropTab || isWaterLevelTab || isFutureCropsTab || isYieldCostTab || isCultivationTab || isMaintenanceTab || isNaturalAdvDisadvTab || isShapeLandTab || isWaterElectricityTab || isExistingTreesTab || (isSurveyReportTab && hasSurveyReport) || (isBoundaryTab && hasBoundary)) {
+    if (
+      hasFiles ||
+      hasComment ||
+      isSoilTab ||
+      isCropTab ||
+      isWaterLevelTab ||
+      isFutureCropsTab ||
+      isYieldCostTab ||
+      isCultivationTab ||
+      isMaintenanceTab ||
+      isNaturalAdvDisadvTab ||
+      isShapeLandTab ||
+      isWaterElectricityTab ||
+      isExistingTreesTab ||
+      (isSurveyReportTab && hasSurveyReport) ||
+      (isBoundaryTab && hasBoundary) ||
+      (isValuationStep && hasValuationField) ||
+      (isLocalIntelStep && hasLocalIntelField)
+    ) {
       setCompletedTabs((prev) => ({
         ...prev,
         [currentStepId]: {
