@@ -301,6 +301,45 @@ export const LegalUploadDocument: React.FC = () => {
     Record<string, Record<string, string>>
   >({});
 
+  // Store recent transactions state per farmland ID and activeTabId
+  const [recentTransactionTypeStore, setRecentTransactionTypeStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+  const [valuationPerAcreStore, setValuationPerAcreStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+  const [localMarketPriceStore, setLocalMarketPriceStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store geological advantages type per farmland ID and activeTabId
+  const [geologicalAdvantagesTypeStore, setGeologicalAdvantagesTypeStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store upcoming infrastructures selection per farmland ID and activeTabId
+  const [upcomingInfrastructuresStore, setUpcomingInfrastructuresStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store railway connectivity type per farmland ID and activeTabId
+  const [railwayConnectivityTypeStore, setRailwayConnectivityTypeStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+  // Store railway distance selection per farmland ID and activeTabId
+  const [railwayDistanceStore, setRailwayDistanceStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
+  // Store airport connectivity type per farmland ID and activeTabId
+  const [airportConnectivityTypeStore, setAirportConnectivityTypeStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+  // Store airport distance selection per farmland ID and activeTabId
+  const [airportDistanceStore, setAirportDistanceStore] = useState<
+    Record<string, Record<string, string>>
+  >({});
+
   // Sync active tab when step changes
   useEffect(() => {
     if (stepConfig && stepConfig.tabs.length > 0) {
@@ -1111,6 +1150,96 @@ export const LegalUploadDocument: React.FC = () => {
           boundaryTreesCountValue={boundaryTreesCountStore[targetId]?.[activeTabId] || ""}
           onBoundaryTreesCountChange={(val) => {
             setBoundaryTreesCountStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          recentTransactionTypeValue={recentTransactionTypeStore[targetId]?.[activeTabId] || ""}
+          onRecentTransactionTypeChange={(val) => {
+            setRecentTransactionTypeStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          valuationPerAcreValue={valuationPerAcreStore[targetId]?.[activeTabId] || ""}
+          onValuationPerAcreChange={(val) => {
+            setValuationPerAcreStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          localMarketPriceValue={localMarketPriceStore[targetId]?.[activeTabId] || ""}
+          onLocalMarketPriceChange={(val) => {
+            setLocalMarketPriceStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          geologicalAdvantagesTypeValue={geologicalAdvantagesTypeStore[targetId]?.[activeTabId] || ""}
+          onGeologicalAdvantagesTypeChange={(val) => {
+            setGeologicalAdvantagesTypeStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          upcomingInfrastructuresValue={upcomingInfrastructuresStore[targetId]?.[activeTabId] || ""}
+          onUpcomingInfrastructuresChange={(val) => {
+            setUpcomingInfrastructuresStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          railwayConnectivityTypeValue={railwayConnectivityTypeStore[targetId]?.[activeTabId] || ""}
+          onRailwayConnectivityTypeChange={(val) => {
+            setRailwayConnectivityTypeStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          railwayDistanceValue={railwayDistanceStore[targetId]?.[activeTabId] || ""}
+          onRailwayDistanceChange={(val) => {
+            setRailwayDistanceStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          airportConnectivityTypeValue={airportConnectivityTypeStore[targetId]?.[activeTabId] || ""}
+          onAirportConnectivityTypeChange={(val) => {
+            setAirportConnectivityTypeStore((prev) => ({
+              ...prev,
+              [targetId]: {
+                ...(prev[targetId] || {}),
+                [activeTabId]: val,
+              },
+            }));
+          }}
+          airportDistanceValue={airportDistanceStore[targetId]?.[activeTabId] || ""}
+          onAirportDistanceChange={(val) => {
+            setAirportDistanceStore((prev) => ({
               ...prev,
               [targetId]: {
                 ...(prev[targetId] || {}),

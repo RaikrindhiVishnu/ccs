@@ -88,6 +88,24 @@ interface UploadFilesDocumentProps {
   onBoundaryRoadWidthChange?: (val: string) => void;
   boundaryTreesCountValue?: string;
   onBoundaryTreesCountChange?: (val: string) => void;
+  recentTransactionTypeValue?: string;
+  onRecentTransactionTypeChange?: (val: string) => void;
+  valuationPerAcreValue?: string;
+  onValuationPerAcreChange?: (val: string) => void;
+  localMarketPriceValue?: string;
+  onLocalMarketPriceChange?: (val: string) => void;
+  geologicalAdvantagesTypeValue?: string;
+  onGeologicalAdvantagesTypeChange?: (val: string) => void;
+  upcomingInfrastructuresValue?: string;
+  onUpcomingInfrastructuresChange?: (val: string) => void;
+  railwayConnectivityTypeValue?: string;
+  onRailwayConnectivityTypeChange?: (val: string) => void;
+  railwayDistanceValue?: string;
+  onRailwayDistanceChange?: (val: string) => void;
+  airportConnectivityTypeValue?: string;
+  onAirportConnectivityTypeChange?: (val: string) => void;
+  airportDistanceValue?: string;
+  onAirportDistanceChange?: (val: string) => void;
 }
 
 const LEGAL_TABS = [
