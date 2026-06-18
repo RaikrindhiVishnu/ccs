@@ -180,7 +180,7 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
         {activeTabLabel === "Maintenance" ? (
           <div className="w-full flex flex-col gap-[clamp(0.8rem,1.39vw,1.25rem)]" >
             <div className="flex flex-col gap-[clamp(0.4rem,0.63vw,0.5625rem)] w-full" >
-              <span className="font-sans text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
+              <span className="font-['Plus_Jakarta_Sans',_sans-serif] font-semibold text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
                 If Green Land Captial does the maintenace, what will be the suggested crop?
               </span>
 
@@ -274,7 +274,7 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
             </div>
 
             <div className="flex flex-col gap-[clamp(0.4rem,0.63vw,0.5625rem)] w-full" >
-              <span className="font-sans text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
+              <span className="font-['Plus_Jakarta_Sans',_sans-serif] font-semibold text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
                 What will be the best returns?
               </span>
               <div className="box-border w-full h-[clamp(2.25rem,3.75vw,3.375rem)] bg-white border border-[rgba(0,0,0,0.4)] rounded-[8px] relative" >
@@ -284,7 +284,7 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
           </div>
         ) : activeTabLabel === "Future Crops" ? (
           <div className="w-full flex flex-col gap-[clamp(0.4rem,0.63vw,0.5625rem)]" >
-            <span className="w-[max-content] whitespace-nowrap font-sans text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
+            <span className="w-[max-content] whitespace-nowrap font-['Plus_Jakarta_Sans',_sans-serif] font-semibold text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
               Future crop plans suggested by{" "}
               <span className="text-[#007BFF]" >Green Land Captial</span>
             </span>
@@ -304,7 +304,7 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
         ) : activeTabLabel === "Current Cultivation" ? (
           <div className="w-full flex flex-col gap-[clamp(0.9rem,1.6vw,1.4375rem)]" >
             <div className="flex flex-col gap-[clamp(0.5rem,0.9vw,0.8125rem)] w-full" >
-              <span className="font-sans text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
+              <span className="font-['Plus_Jakarta_Sans',_sans-serif] font-semibold text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
                 What is the Current Cultivation Type?
               </span>
 
@@ -330,7 +330,7 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
             </div>
 
             <div className="flex flex-col gap-[clamp(0.3rem,0.5vw,0.5625rem)] w-full" >
-              <span className="font-sans text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
+              <span className="font-['Plus_Jakarta_Sans',_sans-serif] font-semibold text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
                 Name
               </span>
               <div className="box-border w-full h-[clamp(2.25rem,3.75vw,3.375rem)] bg-white border border-[rgba(0,0,0,0.4)] rounded-[8px] relative" >
@@ -339,7 +339,7 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
             </div>
 
             <div className="flex flex-col gap-[clamp(0.3rem,0.5vw,0.5625rem)] w-full" >
-              <span className="font-sans text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
+              <span className="font-['Plus_Jakarta_Sans',_sans-serif] font-semibold text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
                 Contact Details
               </span>
               <div className="box-border w-full h-[clamp(2.25rem,3.75vw,3.375rem)] bg-white border border-[rgba(0,0,0,0.4)] rounded-[8px] relative" >
@@ -350,7 +350,7 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
         ) : activeTabLabel === "Current Yield Cost" ? (
           <div className="w-full flex flex-col gap-[clamp(0.8rem,1.39vw,1.25rem)]" >
             <div className="flex flex-col gap-[clamp(0.4rem,0.63vw,0.5625rem)] w-full" >
-              <span className="font-sans text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
+              <span className="font-['Plus_Jakarta_Sans',_sans-serif] font-semibold text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
                 What is the current yielding cost?
               </span>
               <div className="box-border w-full h-[clamp(2.25rem,3.75vw,3.375rem)] bg-white border border-[rgba(0,0,0,0.4)] rounded-[8px] relative" >
@@ -359,7 +359,7 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
             </div>
 
             <div className="flex flex-col gap-[clamp(0.4rem,0.63vw,0.5625rem)] w-full" >
-              <span className="font-sans text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
+              <span className="font-['Plus_Jakarta_Sans',_sans-serif] font-semibold text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
                 Current returns from yield?
               </span>
               <div className="box-border w-full h-[clamp(2.25rem,3.75vw,3.375rem)] bg-white border border-[rgba(0,0,0,0.4)] rounded-[8px] relative" >
@@ -370,7 +370,7 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
         ) : activeTabLabel === "Natural Advantages and Disadvantages" ? (
           <div className="w-full flex flex-col gap-[clamp(0.8rem,1.39vw,1.25rem)]" >
             <div className="flex flex-col gap-[clamp(0.4rem,0.63vw,0.5625rem)] w-full" >
-              <span className="font-sans text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
+              <span className="font-['Plus_Jakarta_Sans',_sans-serif] font-semibold text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
                 What are the Advantages?
               </span>
               <div className="box-border w-full h-[clamp(2.25rem,3.75vw,3.375rem)] bg-white border border-[rgba(0,0,0,0.4)] rounded-[8px] relative" >
@@ -379,7 +379,7 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
             </div>
 
             <div className="flex flex-col gap-[clamp(0.4rem,0.63vw,0.5625rem)] w-full" >
-              <span className="font-sans text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
+              <span className="font-['Plus_Jakarta_Sans',_sans-serif] font-semibold text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
                 What are the Disadvantages?
               </span>
               <div className="box-border w-full h-[clamp(2.25rem,3.75vw,3.375rem)] bg-white border border-[rgba(0,0,0,0.4)] rounded-[8px] relative" >
@@ -389,7 +389,7 @@ export const AgricultureReportUploadFile: React.FC<AgricultureReportUploadFilePr
           </div>
         ) : (
           <>
-            <span className="w-full h-[clamp(1.33rem,2.08vw,2.5rem)] font-sans not-italic text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
+            <span className="w-full h-[clamp(1.33rem,2.08vw,2.5rem)] font-['Plus_Jakarta_Sans',_sans-serif] font-semibold not-italic text-[clamp(1.07rem,1.67vw,2rem)] leading-[clamp(1.33rem,2.08vw,2.5rem)] text-black" >
               {activeTabLabel === "Soil Report"
                 ? "Soil Type"
                 : activeTabLabel === "Type of Crop"
