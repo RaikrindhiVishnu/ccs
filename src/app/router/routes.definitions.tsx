@@ -151,6 +151,7 @@ import {
     SuperAdminUploadViewMaps,
     SuperAdminUploadCustomerInformation,
     LegalUploadDocument
+    SuperAdminLocalIntelligence
 } from './routes.config';
 
 
