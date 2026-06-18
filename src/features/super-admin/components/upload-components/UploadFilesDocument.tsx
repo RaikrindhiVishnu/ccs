@@ -133,8 +133,18 @@ const BOUNDARY_TABS = [
 ];
 
 const VALUATION_TABS = [
-  "Valuation Report",
-  "Market Analysis",
+  "Village Map or Naksha",
+  "Sub - Register Value",
+  "Valuator Report",
+  "Legal Opinion Report",
+  "Road Approach",
+  "Recent Transactions",
+  "Geological Advantages",
+  "Future Plans",
+  "Validating Disadvantages",
+  "Upcoming Infrastrucutres",
+  "Railway Track Connectivity",
+  "Airport Connectivity",
 ];
 
 const INTEL_TABS = [

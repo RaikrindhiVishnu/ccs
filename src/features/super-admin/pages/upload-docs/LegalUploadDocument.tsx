@@ -73,8 +73,18 @@ const STEP_TABS_CONFIG: Record<
   "valuation": {
     label: "Valuation",
     tabs: [
-      { id: "valuation-report", label: "Valuation Report" },
-      { id: "market-analysis", label: "Market Analysis" },
+      { id: "village-map-naksha", label: "Village Map or Naksha" },
+      { id: "sub-register-value", label: "Sub - Register Value" },
+      { id: "valuator-report", label: "Valuator Report" },
+      { id: "legal-opinion-report", label: "Legal Opinion Report" },
+      { id: "road-approach", label: "Road Approach" },
+      { id: "recent-transactions", label: "Recent Transactions" },
+      { id: "geological-advantages", label: "Geological Advantages" },
+      { id: "future-plans", label: "Future Plans" },
+      { id: "validating-disadvantages", label: "Validating Disadvantages" },
+      { id: "upcoming-infrastructures", label: "Upcoming Infrastrucutres" },
+      { id: "railway-track-connectivity", label: "Railway Track Connectivity" },
+      { id: "airport-connectivity", label: "Airport Connectivity" },
     ],
   },
   "local-intelligence": {
