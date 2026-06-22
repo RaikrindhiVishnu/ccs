@@ -75,10 +75,8 @@ export default function FarmlandRequest() {
       <div
         className="
           h-full overflow-y-auto
-          px-5 py-5
-          lg:px-7 lg:py-6
-          xl:px-9 xl:py-7
-          2xl:px-11 2xl:py-9
+          px-4 py-4
+          lg:px-6 lg:py-6
         "
       >
         {/* ── HEADER ── */}
@@ -97,7 +95,7 @@ export default function FarmlandRequest() {
           {/* RIGHT — search + filter + bell */}
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-[8px] w-full md:w-auto">
             {/* SEARCH BAR */}
-            <div className="flex flex-1 sm:flex-none items-center gap-[8px] rounded-[60px] bg-[#FFFFFF] px-[20px] h-[52px] w-full sm:w-[312px] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] border border-transparent hover:border-gray-100 transition-colors">
+            <div className="flex flex-1 min-w-0 xl:flex-none items-center gap-[8px] rounded-[60px] bg-[#FFFFFF] px-[20px] h-[52px] w-full xl:w-[312px] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] border border-transparent hover:border-gray-100 transition-colors">
               <Search className="h-[24px] w-[24px] shrink-0 text-[#5C5C5C] opacity-50" strokeWidth={1.5} />
               <input
                 placeholder="Search by GLC ID, Agent....."

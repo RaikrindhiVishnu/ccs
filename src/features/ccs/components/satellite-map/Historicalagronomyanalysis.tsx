@@ -235,7 +235,7 @@ function TemporalRibbon({
 }) {
   return (
     <div
-      className="absolute bottom-[20px] md:bottom-[67px] left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-[625px] h-[80px] md:h-[114px] flex items-center justify-between px-[20px] md:px-[47px] z-30 overflow-x-auto custom-scrollbar"
+      className="absolute bottom-[20px] md:bottom-[30px] lg:bottom-[67px] left-[20px] lg:left-1/2 lg:-translate-x-1/2 w-[calc(100%-40px)] md:w-[calc(100%-340px)] lg:w-[calc(100%-40px)] max-w-[625px] h-[80px] md:h-[90px] lg:h-[114px] flex items-center justify-between px-[20px] md:px-[24px] lg:px-[47px] z-30 overflow-x-auto custom-scrollbar"
     >
       {/* Shadow layer */}
       <div className="absolute top-[0px] bottom-[0.44px] left-[0px] right-[-0.32px] bg-[#FFFFFF] rounded-[36.88px] shadow-[0px_28.81px_57.62px_-13.83px_rgba(0,0,0,0.25)] z-[-2]"></div>
@@ -251,7 +251,7 @@ function TemporalRibbon({
             <button
               key={year}
               onClick={() => onYearChange(year)}
-              className="flex flex-col items-center justify-center shrink-0 w-[110px] md:w-[135px] h-[70px] md:h-[79px] bg-[#2780C4] rounded-[11523px] shadow-[0px_0px_0px_9.2px_rgba(255,255,255,0.4),0px_11.5px_17.3px_-3.5px_rgba(0,0,0,0.1),0px_4.6px_6.9px_-4.6px_rgba(0,0,0,0.1)] transition-transform hover:scale-105 z-10"
+              className="flex flex-col items-center justify-center shrink-0 w-[110px] md:w-[120px] lg:w-[135px] h-[70px] md:h-[76px] lg:h-[79px] bg-[#2780C4] rounded-[11523px] shadow-[0px_0px_0px_9.2px_rgba(255,255,255,0.4),0px_11.5px_17.3px_-3.5px_rgba(0,0,0,0.1),0px_4.6px_6.9px_-4.6px_rgba(0,0,0,0.1)] transition-transform hover:scale-105 z-10"
             >
               <div className="w-[20px] h-[20px] md:w-[23.34px] md:h-[25.93px] text-[#FFFFFF] flex items-center justify-center mb-[4.6px]">
                 {icon}

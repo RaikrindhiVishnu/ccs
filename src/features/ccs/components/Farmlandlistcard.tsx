@@ -69,9 +69,9 @@ export default function FarmlandListCard({ item, onViewDetails }: Props) {
       "
     >
       {/* ══ MAIN ROW ══ */}
-      <div className="flex gap-4 lg:gap-5 xl:gap-6 2xl:gap-8">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-5 xl:gap-6 2xl:gap-8">
         {/* ── LEFT: image + info ── */}
-        <div className="flex w-[38%] shrink-0 flex-col gap-3 lg:w-[40%] xl:w-[40%] 2xl:w-[42%]">
+        <div className="flex w-full lg:w-[38%] shrink-0 flex-col gap-3 xl:w-[40%] 2xl:w-[42%]">
           {/* Image */}
           <div className="w-full overflow-hidden rounded-[1.25rem] xl:rounded-[1.5rem]">
             <div className="relative w-full pb-[62.6%]">

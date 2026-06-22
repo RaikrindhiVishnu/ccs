@@ -1,19 +1,25 @@
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutGrid, CircleDashed, MapPin, type LucideIcon } from 'lucide-react';
+import { LayoutDashboard, CircleDashed, MapPin, History, type LucideIcon } from 'lucide-react';
 import { useRoleLayout } from '@/core/hooks/useRoleLayout';
 
 import logo from '@/assets/glc-logo.svg';
 import profImg from '@/assets/prof.jpg';
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  LayoutDashboard: LayoutGrid,
+  LayoutDashboard: LayoutDashboard,
   CircleDashed,
   MapPin,
+  History,
 };
 
-const NavIcon = ({ name }: { name: string }) => {
-  const Icon = ICON_MAP[name] ?? LayoutGrid;
-  return <Icon className="lg:h-4 lg:w-4 xl:h-[1.125rem] xl:w-[1.125rem]" strokeWidth={1.6} />;
+const NavIcon = ({ name, isActive }: { name: string; isActive?: boolean }) => {
+  const Icon = ICON_MAP[name] ?? LayoutDashboard;
+  return (
+    <Icon
+      className={`lg:h-4 lg:w-4 xl:h-[1.125rem] xl:w-[1.125rem] ${name === 'LayoutDashboard' && isActive ? 'fill-current' : 'fill-none'}`}
+      strokeWidth={1.6}
+    />
+  );
 };
 
 export const CcsOfficerLayout = () => {
@@ -37,7 +43,7 @@ export const CcsOfficerLayout = () => {
     <div className="flex h-screen w-full overflow-hidden bg-[#FFFFFF] rounded-none">
 
       {/* ───────────────── SIDEBAR ───────────────── */}
-      <aside className="hidden lg:flex flex-col shrink-0 w-[291px] h-full min-h-0 bg-[#FFFFFF] pt-[30px]">
+      <aside className="hidden md:flex flex-col shrink-0 w-[291px] h-full min-h-0 bg-[#FFFFFF] pt-[30px]">
 
         {/* Logo */}
         <div className="shrink-0 flex justify-start pl-[38px] pt-[3px] pb-[70px]">
@@ -68,18 +74,27 @@ export const CcsOfficerLayout = () => {
                 ].join(' ')
               }
             >
-              <span className="shrink-0 flex items-center justify-center w-[23.46px] h-[23.46px]">
-                {item.iconImg ? (
-                  <img
-                    src={item.iconImg}
-                    alt={item.label}
-                    className="h-[18px] w-[18px] object-contain"
-                  />
-                ) : (
-                  <NavIcon name={item.icon} />
-                )}
-              </span>
-              <span className="whitespace-nowrap">{item.label}</span>
+              {({ isActive }) => (
+                <>
+                  <span className="shrink-0 flex items-center justify-center w-[23.46px] h-[23.46px]">
+                    {item.iconImg ? (
+                      <img
+                        src={item.iconImg}
+                        alt={item.label}
+                        className="h-[18px] w-[18px] object-contain transition-all duration-200"
+                        style={{
+                          filter: isActive
+                            ? 'brightness(0) saturate(100%) invert(41%) sepia(40%) saturate(1464%) hue-rotate(168deg) brightness(91%) contrast(88%)'
+                            : 'none'
+                        }}
+                      />
+                    ) : (
+                      <NavIcon name={item.icon || ''} isActive={isActive} />
+                    )}
+                  </span>
+                  <span className="whitespace-nowrap">{item.label}</span>
+                </>
+              )}
             </NavLink>
           ))}
         </nav>
@@ -99,7 +114,7 @@ export const CcsOfficerLayout = () => {
       </aside>
 
       {/* ───────────────── MAIN ───────────────── */}
-      <section className="flex-1 min-h-0 h-full py-[30px] pr-[30px] pl-0">
+      <section className="flex-1 min-h-0 h-full py-[30px] pr-[30px] pl-[30px] md:pl-0">
         <div className="h-full w-full overflow-y-auto rounded-[43px] bg-[#F2F2F2] shadow-sm">
           <Outlet />
         </div>

@@ -28,7 +28,7 @@ function CheckmarkHeader() {
 
 function TotalSummary() {
   return (
-    <div className="w-full px-[40px] pt-[24px] border-t border-[rgba(0,0,0,0.15)] flex items-center justify-between mt-[24px]">
+    <div className="w-full px-[20px] xl:px-[40px] pt-[24px] border-t border-[rgba(0,0,0,0.15)] flex flex-col xl:flex-row items-start xl:items-center justify-between mt-[24px] gap-[16px] xl:gap-[0px]">
       <div className="flex flex-col gap-[4px]">
         <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[20px] tracking-[0.14px] text-[#1A1C1C]">
           Total Processing Fee
@@ -37,7 +37,7 @@ function TotalSummary() {
           (Auto Calculated)
         </span>
       </div>
-      <div className="flex items-center gap-[24px]">
+      <div className="flex flex-wrap items-center gap-[16px] xl:gap-[24px]">
         <div className="flex items-baseline gap-[8px]">
           <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[20px] tracking-[0.14px] text-[#717783]">
             Total =
@@ -62,7 +62,7 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
     <div className="relative w-full h-full bg-[#F2F2F2] md:rounded-[32px] overflow-y-auto custom-scrollbar flex flex-col items-center">
       
       {/* Go Back Button */}
-      <div className="absolute top-[32px] left-[52px]">
+      <div className="w-full flex justify-start pt-[24px] pl-[24px] xl:absolute xl:top-[32px] xl:left-[52px] xl:p-0 z-10">
         <button
           onClick={onBack}
           className="flex items-center justify-center gap-[8px] w-[135px] h-[52px] bg-[#FFFFFF] rounded-[60px] shadow-[0px_0px_4px_rgba(0,0,0,0.12)] hover:bg-gray-50 transition-colors"
@@ -84,7 +84,7 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
             Officer Fee Allocation
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-[24px] px-[24px]">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-[24px] px-[24px]">
             {/* RO Verification */}
             <div className="flex flex-col gap-[16px]">
               <div className="flex items-center gap-[12px]">
@@ -100,7 +100,7 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
                   </span>
                 </div>
               </div>
-              <div className="relative w-[236px] h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
+              <div className="relative w-full max-w-[236px] h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
                 <span className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] text-[#717783] mr-[8px]">₹</span>
                 <input 
                   type="text" 
@@ -125,7 +125,7 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
                   </span>
                 </div>
               </div>
-              <div className="relative w-[236px] h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
+              <div className="relative w-full max-w-[236px] h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
                 <span className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] text-[#717783] mr-[8px]">₹</span>
                 <input 
                   type="text" 
@@ -150,7 +150,7 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
                   </span>
                 </div>
               </div>
-              <div className="relative w-[236px] h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
+              <div className="relative w-full max-w-[236px] h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
                 <span className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] text-[#717783] mr-[8px]">₹</span>
                 <input 
                   type="text" 
@@ -171,12 +171,12 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
             Verification Progress
           </h2>
           
-          <div className="relative flex justify-between items-start px-[80px] mb-[40px]">
+          <div className="relative flex flex-col xl:flex-row justify-between items-center xl:items-start px-[20px] xl:px-[80px] mb-[40px] gap-[32px] xl:gap-[0px]">
             {/* Connection Line */}
-            <div className="absolute top-[28px] left-[150px] right-[150px] h-[1px] bg-[rgba(224,192,180,0.5)] z-0 hidden md:block"></div>
+            <div className="absolute top-[28px] left-[150px] right-[150px] h-[1px] bg-[rgba(224,192,180,0.5)] z-0 hidden xl:block"></div>
 
             {/* Step 1 */}
-            <div className="flex flex-col items-center z-10 w-[200px]">
+            <div className="flex flex-col items-center z-10 w-full xl:w-[200px]">
               <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px]">
                 <img src="https://i.pravatar.cc/150?u=srikar" alt="Srikar Patel" className="w-full h-full object-cover" />
               </div>
@@ -189,7 +189,7 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
             </div>
 
             {/* Step 2 */}
-            <div className="flex flex-col items-center z-10 w-[200px]">
+            <div className="flex flex-col items-center z-10 w-full xl:w-[200px]">
               <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px]">
                 <img src="https://i.pravatar.cc/150?u=ananthu" alt="Ananthu" className="w-full h-full object-cover" />
               </div>
@@ -202,7 +202,7 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
             </div>
 
             {/* Step 3 */}
-            <div className="flex flex-col items-center z-10 w-[200px]">
+            <div className="flex flex-col items-center z-10 w-full xl:w-[200px]">
               <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px]">
                 <img src="https://i.pravatar.cc/150?u=yakoob" alt="Yakoob Syed" className="w-full h-full object-cover" />
               </div>
