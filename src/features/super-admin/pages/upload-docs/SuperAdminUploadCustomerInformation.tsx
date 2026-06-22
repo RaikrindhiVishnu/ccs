@@ -24,9 +24,9 @@ export const SuperAdminUploadCustomerInformation: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F2F2] flex flex-col justify-start items-center p-[clamp(1.5rem,2.78vw,3.33rem)] font-sans">
+    <div className="min-h-screen bg-[#F2F2F2] flex flex-col justify-start items-center p-[clamp(1.33rem,2.78vw,3.33rem)] font-sans">
       <div 
-        className="w-full max-w-[clamp(64rem,90vw,120rem)] flex flex-col gap-[clamp(1.5rem,2vw,2.5rem)]"
+        className="w-full max-w-[clamp(43.2rem,90vw,120.0rem)] flex flex-col gap-[clamp(0.96rem,2vw,2.5rem)]"
       >
         {/* ── Top Header - Reuses UploadGoBack ── */}
         <div className="flex justify-start w-full">
@@ -34,7 +34,7 @@ export const SuperAdminUploadCustomerInformation: React.FC = () => {
         </div>
 
         {/* ── Main Layout - Sidebar & Central Form side-by-side ── */}
-        <div className="w-full flex flex-col lg:flex-row gap-[clamp(1rem,1.67vw,2.5rem)] lg:items-stretch items-start">
+        <div className="w-full flex flex-col lg:flex-row gap-[clamp(0.8rem,1.67vw,2.5rem)] lg:items-stretch items-start">
           
           {/* Left Column: Timeline Stepper Card */}
           <UploadTimelineSidebar 

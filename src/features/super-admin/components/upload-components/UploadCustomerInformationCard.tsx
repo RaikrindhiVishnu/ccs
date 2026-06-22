@@ -185,17 +185,17 @@ export const UploadCustomerInformationCard: React.FC<UploadCustomerInformationCa
       }}
     >
       {/* ── Top Row: Switcher Tabs (Aligned Right) ── */}
-      <div className="flex justify-end w-full mb-[clamp(1.5rem,2.22vw,2rem)]">
+      <div className="flex justify-end w-full mb-[clamp(1.07rem,2.22vw,2.0rem)]">
         <div className="flex flex-row items-center gap-6 sm:w-auto w-full justify-end">
           
           {/* Tab 1: Owner details */}
           <button
             type="button"
             onClick={() => setActiveTab("owner")}
-            className="box-sizing-border-box flex flex-row items-center justify-center gap-[clamp(0.5rem,0.97vw,0.875rem)] cursor-pointer rounded-[72.5581px] transition-all hover:scale-[1.03] shadow-[0px_42px_17px_rgba(0,0,0,0.01)]"
+            className="box-sizing-border-box flex flex-row items-center justify-center gap-[clamp(0.47rem,0.97vw,0.875rem)] cursor-pointer rounded-[72.5581px] transition-all hover:scale-[1.03] shadow-[0px_42px_17px_rgba(0,0,0,0.01)]"
             style={{
-              width: "clamp(8.5rem, 11.3vw, 10.1875rem)",
-              height: "clamp(2.2rem, 2.92vw, 2.625rem)",
+              width: "clamp(5.42rem, 11.3vw, 10.1875rem)",
+              height: "clamp(1.4rem, 2.92vw, 2.625rem)",
               backgroundColor: activeTab === "owner" ? "#FFFFFF" : "#F9F9F9",
               border: activeTab === "owner" ? "1px solid #E6EEAD" : "1px solid transparent",
               color: activeTab === "owner" ? "#2A3008" : "#5A5C5E",
@@ -204,7 +204,7 @@ export const UploadCustomerInformationCard: React.FC<UploadCustomerInformationCa
             {/* Checklist indicator */}
             {activeTab === "owner" ? (
               <div 
-                className="w-[clamp(1rem,1.25vw,1.125rem)] h-[clamp(1rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0"
+                className="w-[clamp(0.6rem,1.25vw,1.125rem)] h-[clamp(0.6rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0"
                 style={{
                   backgroundColor: "#2D3409",
                   border: "4px solid #E6EEAD",
@@ -212,15 +212,15 @@ export const UploadCustomerInformationCard: React.FC<UploadCustomerInformationCa
               />
             ) : (
               <div 
-                className="w-[clamp(1rem,1.25vw,1.125rem)] h-[clamp(1rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0 bg-[#BDD327] relative"
+                className="w-[clamp(0.6rem,1.25vw,1.125rem)] h-[clamp(0.6rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0 bg-[#BDD327] relative"
               >
                 {/* Checkmark mark */}
-                <svg className="w-[clamp(0.5rem,0.69vw,0.625rem)] h-[clamp(0.5rem,0.69vw,0.625rem)] text-[#FFFCEE]" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                <svg className="w-[clamp(0.33rem,0.69vw,0.625rem)] h-[clamp(0.33rem,0.69vw,0.625rem)] text-[#FFFCEE]" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               </div>
             )}
-            <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.75rem,0.97vw,0.875rem)] leading-tight">
+            <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.47rem,0.97vw,0.875rem)] leading-tight">
               Owner details
             </span>
           </button>
@@ -229,10 +229,10 @@ export const UploadCustomerInformationCard: React.FC<UploadCustomerInformationCa
           <button
             type="button"
             onClick={() => setActiveTab("family")}
-            className="box-sizing-border-box flex flex-row items-center justify-center gap-[clamp(0.5rem,0.97vw,0.875rem)] cursor-pointer rounded-[72.5581px] transition-all hover:scale-[1.03] shadow-[0px_42px_17px_rgba(0,0,0,0.01)]"
+            className="box-sizing-border-box flex flex-row items-center justify-center gap-[clamp(0.47rem,0.97vw,0.875rem)] cursor-pointer rounded-[72.5581px] transition-all hover:scale-[1.03] shadow-[0px_42px_17px_rgba(0,0,0,0.01)]"
             style={{
-              width: "clamp(7.5rem, 9.93vw, 8.9375rem)",
-              height: "clamp(2.2rem, 2.92vw, 2.625rem)",
+              width: "clamp(4.77rem, 9.93vw, 8.9375rem)",
+              height: "clamp(1.4rem, 2.92vw, 2.625rem)",
               backgroundColor: activeTab === "family" ? "#FFFFFF" : "#F9F9F9",
               border: activeTab === "family" ? "1px solid #E6EEAD" : "1px solid transparent",
               color: activeTab === "family" ? "#2A3008" : "#5A5C5E",
@@ -241,7 +241,7 @@ export const UploadCustomerInformationCard: React.FC<UploadCustomerInformationCa
             {/* Checklist indicator */}
             {activeTab === "family" ? (
               <div 
-                className="w-[clamp(1rem,1.25vw,1.125rem)] h-[clamp(1rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0"
+                className="w-[clamp(0.6rem,1.25vw,1.125rem)] h-[clamp(0.6rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0"
                 style={{
                   backgroundColor: "#2D3409",
                   border: "4px solid #E6EEAD",
@@ -249,22 +249,22 @@ export const UploadCustomerInformationCard: React.FC<UploadCustomerInformationCa
               />
             ) : activeTab === "land" ? (
               <div 
-                className="w-[clamp(1rem,1.25vw,1.125rem)] h-[clamp(1rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0 bg-[#BDD327] relative animate-in zoom-in duration-200"
+                className="w-[clamp(0.6rem,1.25vw,1.125rem)] h-[clamp(0.6rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0 bg-[#BDD327] relative animate-in zoom-in duration-200"
               >
-                <svg className="w-[clamp(0.5rem,0.69vw,0.625rem)] h-[clamp(0.5rem,0.69vw,0.625rem)] text-[#FFFCEE]" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                <svg className="w-[clamp(0.33rem,0.69vw,0.625rem)] h-[clamp(0.33rem,0.69vw,0.625rem)] text-[#FFFCEE]" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               </div>
             ) : (
               <div 
-                className="w-[clamp(1rem,1.25vw,1.125rem)] h-[clamp(1rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0"
+                className="w-[clamp(0.6rem,1.25vw,1.125rem)] h-[clamp(0.6rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0"
                 style={{
                   backgroundColor: "#C0C2B7",
                   border: "4px solid #E6EEAD",
                 }}
               />
             )}
-            <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.75rem,0.97vw,0.875rem)] leading-tight">
+            <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.47rem,0.97vw,0.875rem)] leading-tight">
               Family Tree
             </span>
           </button>
@@ -273,10 +273,10 @@ export const UploadCustomerInformationCard: React.FC<UploadCustomerInformationCa
           <button
             type="button"
             onClick={() => setActiveTab("land")}
-            className="box-sizing-border-box flex flex-row items-center justify-center gap-[clamp(0.5rem,0.97vw,0.875rem)] cursor-pointer rounded-[72.5581px] transition-all hover:scale-[1.03] shadow-[0px_42px_17px_rgba(0,0,0,0.01)]"
+            className="box-sizing-border-box flex flex-row items-center justify-center gap-[clamp(0.47rem,0.97vw,0.875rem)] cursor-pointer rounded-[72.5581px] transition-all hover:scale-[1.03] shadow-[0px_42px_17px_rgba(0,0,0,0.01)]"
             style={{
-              width: "clamp(8rem, 10.49vw, 9.4375rem)",
-              height: "clamp(2.2rem, 2.92vw, 2.625rem)",
+              width: "clamp(5.04rem, 10.49vw, 9.4375rem)",
+              height: "clamp(1.4rem, 2.92vw, 2.625rem)",
               backgroundColor: activeTab === "land" ? "#FFFFFF" : "#F9F9F9",
               border: activeTab === "land" ? "1px solid #E6EEAD" : "1px solid transparent",
               color: activeTab === "land" ? "#2A3008" : "#5A5C5E",
@@ -285,7 +285,7 @@ export const UploadCustomerInformationCard: React.FC<UploadCustomerInformationCa
             {/* Checklist indicator */}
             {activeTab === "land" ? (
               <div 
-                className="w-[clamp(1rem,1.25vw,1.125rem)] h-[clamp(1rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0"
+                className="w-[clamp(0.6rem,1.25vw,1.125rem)] h-[clamp(0.6rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0"
                 style={{
                   backgroundColor: "#2D3409",
                   border: "4px solid #E6EEAD",
@@ -293,14 +293,14 @@ export const UploadCustomerInformationCard: React.FC<UploadCustomerInformationCa
               />
             ) : (
               <div 
-                className="w-[clamp(1rem,1.25vw,1.125rem)] h-[clamp(1rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0"
+                className="w-[clamp(0.6rem,1.25vw,1.125rem)] h-[clamp(0.6rem,1.25vw,1.125rem)] rounded-full flex items-center justify-center shrink-0"
                 style={{
                   backgroundColor: "#C0C2B7",
                   border: "4px solid #E6EEAD",
                 }}
               />
             )}
-            <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.75rem,0.97vw,0.875rem)] leading-tight">
+            <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.47rem,0.97vw,0.875rem)] leading-tight">
               Land Details
             </span>
           </button>
@@ -310,20 +310,20 @@ export const UploadCustomerInformationCard: React.FC<UploadCustomerInformationCa
 
       {/* ── Middle Row: Avatar HUD (Aligned Left with Bottom Border) ── */}
       {activeTab === "owner" && (
-        <div className="flex justify-start items-center pb-8 border-b border-gray-100 w-full mb-[clamp(1.5rem,2.22vw,3rem)]">
-          <div className="flex flex-row items-center gap-[clamp(1rem,1.46vw,2rem)] shrink-0">
+        <div className="flex justify-start items-center pb-8 border-b border-gray-100 w-full mb-[clamp(1.07rem,2.22vw,3.0rem)]">
+          <div className="flex flex-row items-center gap-[clamp(0.7rem,1.46vw,2.0rem)] shrink-0">
             {/* Avatar Circle */}
             <div 
-              className="box-sizing-border-box bg-[#E6EEAD] border-[4px] border-[#F9F9FB] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[9999px] flex items-center justify-center relative shrink-0 w-[clamp(4.5rem,5.7vw,7rem)] h-[clamp(4.5rem,5.7vw,7rem)]"
+              className="box-sizing-border-box bg-[#E6EEAD] border-[4px] border-[#F9F9FB] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-[9999px] flex items-center justify-center relative shrink-0 w-[clamp(2.74rem,5.7vw,7.0rem)] h-[clamp(2.74rem,5.7vw,7.0rem)]"
             >
-              <span className="font-['Manrope'] font-bold text-[#2D3409] text-[clamp(1.5rem,2.08vw,2.75rem)] leading-none flex items-center justify-center">
+              <span className="font-['Manrope'] font-bold text-[#2D3409] text-[clamp(1rem,2.08vw,2.75rem)] leading-none flex items-center justify-center">
                 {getInitials()}
               </span>
             </div>
             
             {/* Full Name display */}
             <div className="flex flex-col justify-center items-start shrink-0">
-              <h2 className="font-['Manrope'] font-bold text-[#1A1C1D] text-[clamp(1.25rem,1.67vw,2.25rem)] leading-tight flex items-center">
+              <h2 className="font-['Manrope'] font-bold text-[#1A1C1D] text-[clamp(0.8rem,1.67vw,2.25rem)] leading-tight flex items-center">
                 {getDisplayName()}
               </h2>
             </div>

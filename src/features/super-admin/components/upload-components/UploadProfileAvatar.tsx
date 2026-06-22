@@ -28,14 +28,14 @@ export const UploadProfileAvatar: React.FC<UploadProfileAvatarProps> = ({
 
   return (
     <div
-      className={`flex flex-row items-center p-0 select-none gap-[clamp(0.5rem,_0.91vw,_1.09rem)] w-[clamp(4.0rem,_8.13vw,_9.75rem)] h-[clamp(2.0rem,_3.61vw,_4.33rem)] relative ${className}`}
+      className={`flex flex-row items-center p-0 select-none gap-[clamp(0.44rem,_0.91vw,_1.09rem)] w-[clamp(3.9rem,_8.13vw,_9.75rem)] h-[clamp(1.73rem,_3.61vw,_4.33rem)] relative ${className}`}
       style={style}
     >
       {/* ── Bell / Notifications Button (Frame 1171277098) ── */}
       <button
         type="button"
         onClick={handleBellClick}
-        className="flex items-center justify-center bg-white rounded-[40px] border-none cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-[0px_0px_4px_rgba(0,0,0,0.12)] shrink-0 w-[clamp(2.0rem,_3.61vw,_4.33rem)] h-[clamp(2.0rem,_3.61vw,_4.33rem)] p-2"
+        className="flex items-center justify-center bg-white rounded-[40px] border-none cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-[0px_0px_4px_rgba(0,0,0,0.12)] shrink-0 w-[clamp(1.73rem,_3.61vw,_4.33rem)] h-[clamp(1.73rem,_3.61vw,_4.33rem)] p-2"
       >
         <svg
           viewBox="0 0 24 24"
@@ -67,7 +67,7 @@ export const UploadProfileAvatar: React.FC<UploadProfileAvatarProps> = ({
       {/* ── Profile Avatar Container (Frame 2147239617) ── */}
       <div
         onClick={() => navigate("/super-admin/profile")}
-        className="bg-white rounded-full overflow-hidden flex items-center justify-center shadow-[0px_0px_4px_rgba(0,0,0,0.12)] shrink-0 w-[clamp(2.0rem,_3.61vw,_4.33rem)] h-[clamp(2.0rem,_3.61vw,_4.33rem)] cursor-pointer hover:scale-105 active:scale-95 transition-transform"
+        className="bg-white rounded-full overflow-hidden flex items-center justify-center shadow-[0px_0px_4px_rgba(0,0,0,0.12)] shrink-0 w-[clamp(1.73rem,_3.61vw,_4.33rem)] h-[clamp(1.73rem,_3.61vw,_4.33rem)] cursor-pointer hover:scale-105 active:scale-95 transition-transform"
       >
         <img
           src={avatarUrl}

@@ -14,8 +14,8 @@ export const Comments: React.FC<CommentsProps> = ({
   onCommentChange,
   activeTabLabel,
   mockDictationSuffix = ".",
-  textareaClassName = "absolute w-[91.59%] h-[clamp(3.73rem,5.83vw,7.0rem)] left-[4.21%] top-[clamp(1.07rem,1.67vw,2.0rem)]",
-  micButtonClassName = "absolute w-[clamp(1.42rem,_2.22vw,_2.67rem)] h-[clamp(1.42rem,_2.22vw,_2.67rem)] right-[clamp(0.62rem,_0.97vw,_1.17rem)] top-[clamp(6.0rem,_9.38vw,_11.25rem)]",
+  textareaClassName = "absolute w-[91.59%] h-[clamp(2.8rem,5.83vw,7.0rem)] left-[4.21%] top-[clamp(0.8rem,1.67vw,2.0rem)]",
+  micButtonClassName = "absolute w-[clamp(1.07rem,_2.22vw,_2.67rem)] h-[clamp(1.07rem,_2.22vw,_2.67rem)] right-[clamp(0.47rem,_0.97vw,_1.17rem)] top-[clamp(4.5rem,_9.38vw,_11.25rem)]",
 }) => {
   const [isListening, setIsListening] = useState(false);
 
@@ -38,7 +38,7 @@ export const Comments: React.FC<CommentsProps> = ({
         value={commentValue}
         onChange={(e) => onCommentChange(e.target.value)}
         placeholder="Write a comment"
-        className={`bg-transparent resize-none border-none outline-none text-black placeholder-[rgba(0,0,0,0.4)] font-sans text-[clamp(0.62rem,0.97vw,1.17rem)] leading-[clamp(0.93rem,1.46vw,1.75rem)] z-[1] ${textareaClassName}`}
+        className={`bg-transparent resize-none border-none outline-none text-black placeholder-[rgba(0,0,0,0.4)] font-sans text-[clamp(0.47rem,0.97vw,1.17rem)] leading-[clamp(0.7rem,1.46vw,1.75rem)] z-[1] ${textareaClassName}`}
       />
 
       <button
@@ -56,7 +56,7 @@ export const Comments: React.FC<CommentsProps> = ({
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="w-[clamp(0.8rem,1.25vw,1.5rem)] h-[clamp(0.8rem,1.25vw,1.5rem)] text-white"
+          className="w-[clamp(0.6rem,1.25vw,1.5rem)] h-[clamp(0.6rem,1.25vw,1.5rem)] text-white"
         >
           <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
           <path d="M19 10v1a7 7 0 0 1-14 0v-1" />

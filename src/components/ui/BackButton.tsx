@@ -30,9 +30,9 @@ const backButtonVariants = cva(
         ],
       },
       size: {
-        sm:      "w-[200px] h-[42px] px-4 py-[14px] gap-[6px] text-sm  rounded-[var(--btn-radius-pill-sm)]",
-        default: "w-[240px] h-[52px] px-5 py-[19px] gap-2  text-base rounded-[var(--btn-radius-pill)]",
-        lg:      "w-[280px] h-[60px] px-6 py-[22px] gap-[10px] text-lg rounded-[var(--btn-radius-pill)]",
+        sm:      "w-fit min-w-[clamp(8rem,13.8vw,12.5rem)] h-auto min-h-[clamp(2rem,2.9vw,2.625rem)] px-[clamp(0.6rem,1.1vw,1rem)] py-[clamp(0.4rem,0.9vw,0.875rem)] gap-[clamp(0.2rem,0.4vw,0.375rem)] text-[clamp(0.7rem,0.97vw,0.875rem)] rounded-[var(--btn-radius-pill-sm)]",
+        default: "w-fit min-w-[clamp(10rem,16.6vw,15rem)] h-auto min-h-[clamp(2.2rem,3.6vw,3.25rem)] px-[clamp(0.7rem,1.38vw,1.25rem)] py-[clamp(0.4rem,1vw,1.1875rem)] gap-[clamp(0.3rem,0.55vw,0.5rem)] text-[clamp(0.75rem,1.1vw,1rem)] rounded-[var(--btn-radius-pill)]",
+        lg:      "w-fit min-w-[clamp(12rem,19.4vw,17.5rem)] h-auto min-h-[clamp(2.6rem,4.1vw,3.75rem)] px-[clamp(0.9rem,1.6vw,1.5rem)] py-[clamp(0.6rem,1.5vw,1.375rem)] gap-[clamp(0.4rem,0.69vw,0.625rem)] text-[clamp(0.85rem,1.25vw,1.125rem)] rounded-[var(--btn-radius-pill)]",
       },
     },
     defaultVariants: {

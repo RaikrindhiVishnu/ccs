@@ -138,26 +138,26 @@ const UploadSuperAdmin: React.FC = () => {
           </div>
 
           {/* ── Uploaded Farmlands Main Section ── */}
-          <div className="flex flex-col gap-[clamp(1rem,2vw,1.5rem)] mt-[clamp(1rem,2vw,1.5rem)] px-[clamp(0.25rem,1.5vw,0.75rem)]">
+          <div className="flex flex-col gap-[clamp(0.96rem,2vw,1.5rem)] mt-[clamp(0.96rem,2vw,1.5rem)] px-[clamp(0.25rem,1.5vw,0.75rem)]">
             {/* Title row and Upload button */}
             <div className="flex items-center justify-between w-full">
-              <div className="flex flex-col gap-[clamp(0.125rem,0.25vw,0.25rem)]">
-                <h2 className="font-['Plus_Jakarta_Sans'] font-extrabold text-[clamp(1.5rem,2.2vw,3rem)] leading-tight text-[#131600]">
+              <div className="flex flex-col gap-[clamp(0.12rem,0.25vw,0.25rem)]">
+                <h2 className="font-['Plus_Jakarta_Sans'] font-extrabold text-[clamp(1.06rem,2.2vw,3.0rem)] leading-tight text-[#131600]">
                   Uploaded Farmlands
                 </h2>
-                <p className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.875rem,1.2vw,1.6rem)] leading-normal text-[#45474C]">
+                <p className="font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.58rem,1.2vw,1.6rem)] leading-normal text-[#45474C]">
                   Upload documents to list a farmland
                 </p>
               </div>
 
               <button
                 onClick={() => setIsUploadModalOpen(true)}
-                className="flex items-center justify-center gap-[clamp(0.25rem,0.5vw,0.375rem)] h-[clamp(2.25rem,2.5vw,2.75rem)] px-[clamp(0.75rem,1.5vw,1.25rem)] rounded-[clamp(1.5rem,2.5vw,2.18rem)] text-white transition-transform hover:scale-[1.02] shadow-sm shrink-0"
+                className="flex items-center justify-center gap-[clamp(0.24rem,0.5vw,0.375rem)] h-[clamp(1.2rem,2.5vw,2.75rem)] px-[clamp(0.72rem,1.5vw,1.25rem)] rounded-[clamp(1.2rem,2.5vw,2.18rem)] text-white transition-transform hover:scale-[1.02] shadow-sm shrink-0"
                 style={{
                   background: "radial-gradient(50% 50% at 50% 50%, #3D4A0D 0%, #2A3008 100%)",
                 }}
               >
-                <span className="font-['Plus_Jakarta_Sans'] font-normal text-[clamp(0.75rem,1vw,1.35rem)] leading-none text-center">
+                <span className="font-['Plus_Jakarta_Sans'] font-normal text-[clamp(0.48rem,1vw,1.35rem)] leading-none text-center">
                   Upload a farmland
                 </span>
                 <ArrowUpRight size={14} className="text-white" />
@@ -165,27 +165,27 @@ const UploadSuperAdmin: React.FC = () => {
             </div>
 
             {/* Filter / Search Bar */}
-            <div className="flex flex-row flex-wrap gap-[clamp(0.75rem,1.5vw,1.25rem)] items-center justify-between w-full">
+            <div className="flex flex-row flex-wrap gap-[clamp(0.72rem,1.5vw,1.25rem)] items-center justify-between w-full">
               {/* Search Box */}
-              <div className="relative w-[clamp(14rem,18vw,22rem)] max-w-full">
+              <div className="relative w-[clamp(8.64rem,18vw,22.0rem)] max-w-full">
                 <input
                   type="text"
                   placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-[clamp(2.25rem,2.5vw,2.6rem)] pl-[clamp(2rem,2.5rem,2.75rem)] pr-[1rem] bg-white border border-[#EBEBEB] rounded-[clamp(2rem,4rem,4.04rem)] font-['Outfit'] font-normal text-[clamp(0.7rem,0.9vw,1.25rem)] text-[#767676] placeholder:text-[#767676] shadow-[0px_2.3rem_0.95rem_rgba(0,0,0,0.01)] focus:outline-none focus:border-gray-400"
+                  className="w-full h-[clamp(1.2rem,2.5vw,2.6rem)] pl-[clamp(2rem,2.5rem,2.75rem)] pr-[1rem] bg-white border border-[#EBEBEB] rounded-[clamp(2rem,4rem,4.04rem)] font-['Outfit'] font-normal text-[clamp(0.43rem,0.9vw,1.25rem)] text-[#767676] placeholder:text-[#767676] shadow-[0px_2.3rem_0.95rem_rgba(0,0,0,0.01)] focus:outline-none focus:border-gray-400"
                 />
                 <SearchIcon size={16} className="absolute left-[1.125rem] top-1/2 -translate-y-1/2 text-[#767676]" />
               </div>
 
               {/* Dropdowns */}
-              <div className="flex items-center justify-end flex-wrap gap-[clamp(0.5rem,1vw,0.75rem)] flex-1 min-w-0 pb-[clamp(0.25rem,0.5vw,0.375rem)]">
+              <div className="flex items-center justify-end flex-wrap gap-[clamp(0.48rem,1vw,0.75rem)] flex-1 min-w-0 pb-[clamp(0.24rem,0.5vw,0.375rem)]">
                 {/* Area Filter */}
                 <div className="relative shrink-0">
                   <select
                     value={areaFilter}
                     onChange={(e) => setAreaFilter(e.target.value)}
-                    className="appearance-none h-[clamp(2.1rem,2.3vw,2.4rem)] pl-[clamp(1rem,1.5rem,1.75rem)] pr-[clamp(2rem,2.5rem,2.75rem)] bg-white border border-[#EBEBEB] rounded-[clamp(2rem,4rem,4.04rem)] font-['Plus_Jakarta_Sans'] font-normal text-[clamp(0.7rem,0.9vw,1.25rem)] text-[#5A5C5E] cursor-pointer focus:outline-none hover:bg-gray-50 shadow-[0px_2.3rem_0.95rem_rgba(0,0,0,0.01)]"
+                    className="appearance-none h-[clamp(1.1rem,2.3vw,2.4rem)] pl-[clamp(1rem,1.5rem,1.75rem)] pr-[clamp(2rem,2.5rem,2.75rem)] bg-white border border-[#EBEBEB] rounded-[clamp(2rem,4rem,4.04rem)] font-['Plus_Jakarta_Sans'] font-normal text-[clamp(0.43rem,0.9vw,1.25rem)] text-[#5A5C5E] cursor-pointer focus:outline-none hover:bg-gray-50 shadow-[0px_2.3rem_0.95rem_rgba(0,0,0,0.01)]"
                   >
                     <option value="">Area</option>
                     <option value="10">10 Acres</option>
@@ -200,7 +200,7 @@ const UploadSuperAdmin: React.FC = () => {
                   <select
                     value={regionFilter}
                     onChange={(e) => setRegionFilter(e.target.value)}
-                    className="appearance-none h-[clamp(2.1rem,2.3vw,2.4rem)] pl-[clamp(1rem,1.5rem,1.75rem)] pr-[clamp(2rem,2.5rem,2.75rem)] bg-white border border-[#EBEBEB] rounded-[clamp(2rem,4rem,4.04rem)] font-['Plus_Jakarta_Sans'] font-normal text-[clamp(0.7rem,0.9vw,1.25rem)] text-[#5A5C5E] cursor-pointer focus:outline-none hover:bg-gray-50 shadow-[0px_2.3rem_0.95rem_rgba(0,0,0,0.01)]"
+                    className="appearance-none h-[clamp(1.1rem,2.3vw,2.4rem)] pl-[clamp(1rem,1.5rem,1.75rem)] pr-[clamp(2rem,2.5rem,2.75rem)] bg-white border border-[#EBEBEB] rounded-[clamp(2rem,4rem,4.04rem)] font-['Plus_Jakarta_Sans'] font-normal text-[clamp(0.43rem,0.9vw,1.25rem)] text-[#5A5C5E] cursor-pointer focus:outline-none hover:bg-gray-50 shadow-[0px_2.3rem_0.95rem_rgba(0,0,0,0.01)]"
                   >
                     <option value="">Region</option>
                     <option value="south">South</option>
@@ -214,7 +214,7 @@ const UploadSuperAdmin: React.FC = () => {
                   <select
                     value={stateFilter}
                     onChange={(e) => setStateFilter(e.target.value)}
-                    className="appearance-none h-[clamp(2.1rem,2.3vw,2.4rem)] pl-[clamp(1rem,1.5rem,1.75rem)] pr-[clamp(2rem,2.5rem,2.75rem)] bg-white border border-[#EBEBEB] rounded-[clamp(2rem,4rem,4.04rem)] font-['Plus_Jakarta_Sans'] font-normal text-[clamp(0.7rem,0.9vw,1.25rem)] text-[#5A5C5E] cursor-pointer focus:outline-none hover:bg-gray-50 shadow-[0px_2.3rem_0.95rem_rgba(0,0,0,0.01)]"
+                    className="appearance-none h-[clamp(1.1rem,2.3vw,2.4rem)] pl-[clamp(1rem,1.5rem,1.75rem)] pr-[clamp(2rem,2.5rem,2.75rem)] bg-white border border-[#EBEBEB] rounded-[clamp(2rem,4rem,4.04rem)] font-['Plus_Jakarta_Sans'] font-normal text-[clamp(0.43rem,0.9vw,1.25rem)] text-[#5A5C5E] cursor-pointer focus:outline-none hover:bg-gray-50 shadow-[0px_2.3rem_0.95rem_rgba(0,0,0,0.01)]"
                   >
                     <option value="">State</option>
                     <option value="ap">Andhra Pradesh</option>
@@ -228,7 +228,7 @@ const UploadSuperAdmin: React.FC = () => {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="appearance-none h-[clamp(2.1rem,2.3vw,2.4rem)] pl-[clamp(1rem,1.5rem,1.75rem)] pr-[clamp(2rem,2.5rem,2.75rem)] bg-white border border-[#EBEBEB] rounded-[clamp(2rem,4rem,4.04rem)] font-['Plus_Jakarta_Sans'] font-normal text-[clamp(0.7rem,0.9vw,1.25rem)] text-[#5A5C5E] cursor-pointer focus:outline-none hover:bg-gray-50 shadow-[0px_2.3rem_0.95rem_rgba(0,0,0,0.01)]"
+                    className="appearance-none h-[clamp(1.1rem,2.3vw,2.4rem)] pl-[clamp(1rem,1.5rem,1.75rem)] pr-[clamp(2rem,2.5rem,2.75rem)] bg-white border border-[#EBEBEB] rounded-[clamp(2rem,4rem,4.04rem)] font-['Plus_Jakarta_Sans'] font-normal text-[clamp(0.43rem,0.9vw,1.25rem)] text-[#5A5C5E] cursor-pointer focus:outline-none hover:bg-gray-50 shadow-[0px_2.3rem_0.95rem_rgba(0,0,0,0.01)]"
                   >
                     <option value="">Status</option>
                     <option value="draft">Draft (Resume)</option>
@@ -240,10 +240,10 @@ const UploadSuperAdmin: React.FC = () => {
             </div>
 
             {/* Horizontal Scroll Cards List */}
-            <div className="w-full overflow-x-auto pb-[clamp(0.75rem,1.5vw,1rem)] scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
-              <div className="flex gap-[clamp(1rem,2vw,1.5rem)] min-w-max px-[clamp(0.25rem,0.5vw,0.375rem)]">
+            <div className="w-full overflow-x-auto pb-[clamp(0.72rem,1.5vw,1.0rem)] scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+              <div className="flex gap-[clamp(0.96rem,2vw,1.5rem)] min-w-max px-[clamp(0.24rem,0.5vw,0.375rem)]">
                 {filteredFarmlands.length === 0 ? (
-                  <div className="w-full py-[clamp(3rem,6vw,4rem)] flex flex-col items-center justify-center text-center bg-white border border-dashed border-gray-200 rounded-[clamp(1rem,2vw,1.5rem)] min-w-[clamp(18rem,80vw,100%)] lg:min-w-full">
+                  <div className="w-full py-[clamp(2.88rem,6vw,4.0rem)] flex flex-col items-center justify-center text-center bg-white border border-dashed border-gray-200 rounded-[clamp(0.96rem,2vw,1.5rem)] min-w-[clamp(18rem,80vw,100%)] lg:min-w-full">
                     <Typography variant="p" className="text-sm text-[#64748B]">
                       No matching farmlands found.
                     </Typography>
@@ -289,45 +289,45 @@ const UploadSuperAdmin: React.FC = () => {
           <div 
             className="relative bg-white shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] w-[42rem] h-[41rem] max-w-[95vw] max-h-[95vh] overflow-hidden z-10 flex flex-col md:flex-row animate-in fade-in zoom-in duration-200"
             style={{
-              width: "clamp(32rem, 46.67vw, 48rem)",
-              height: "clamp(30rem, 45.56vw, 46rem)",
-              borderRadius: "clamp(1.5rem, 2.22vw, 2.5rem)",
+              width: "clamp(22.4rem, 46.67vw, 48rem)",
+              height: "clamp(21.87rem, 45.56vw, 46rem)",
+              borderRadius: "clamp(1.07rem, 2.22vw, 2.5rem)",
             }}
           >
             {/* Close Button */}
             <button
               onClick={() => setIsUploadModalOpen(false)}
-              className="absolute right-[clamp(1rem,1.67vw,2rem)] top-[clamp(1rem,1.5vw,1.8rem)] text-[#000000] opacity-60 hover:opacity-100 p-1 hover:bg-black/5 rounded-full transition-all z-20 cursor-pointer"
+              className="absolute right-[clamp(0.8rem,1.67vw,2.0rem)] top-[clamp(0.72rem,1.5vw,1.8rem)] text-[#000000] opacity-60 hover:opacity-100 p-1 hover:bg-black/5 rounded-full transition-all z-20 cursor-pointer"
             >
               <XIcon size={20} />
             </button>
 
             {/* Left Side: Header & Info */}
-            <div className="flex-1 flex flex-col justify-between p-[clamp(1.5rem,2.78vw,3rem)] border-r border-[#C6C8BA]/30 h-full relative">
-              <div className="flex flex-col gap-[clamp(0.5rem,0.83vw,1rem)]">
+            <div className="flex-1 flex flex-col justify-between p-[clamp(1.33rem,2.78vw,3.0rem)] border-r border-[#C6C8BA]/30 h-full relative">
+              <div className="flex flex-col gap-[clamp(0.4rem,0.83vw,1.0rem)]">
                 {/* Heading 2 */}
-                <h2 className="font-['Plus_Jakarta_Sans'] font-bold text-[clamp(1.5rem,2.22vw,2.5rem)] leading-[clamp(2rem,2.78vw,3rem)] tracking-[-0.01em] text-[#191C1B]">
+                <h2 className="font-['Plus_Jakarta_Sans'] font-bold text-[clamp(1.07rem,2.22vw,2.5rem)] leading-[clamp(1.33rem,2.78vw,3.0rem)] tracking-[-0.01em] text-[#191C1B]">
                   Upload a new farmland
                 </h2>
                 {/* Description */}
-                <p className="font-['Plus_Jakarta_Sans'] font-normal text-[clamp(0.75rem,0.97vw,1.1rem)] leading-[clamp(1.05rem,1.25vw,1.4rem)] text-[#45483E]">
+                <p className="font-['Plus_Jakarta_Sans'] font-normal text-[clamp(0.47rem,0.97vw,1.1rem)] leading-[clamp(0.6rem,1.25vw,1.4rem)] text-[#45483E]">
                   Complete the following onboarding pipeline to successfully list a farmland.
                 </p>
               </div>
 
               {/* Steps timeline container */}
-              <div className="flex-1 flex flex-col justify-center relative pl-[clamp(1rem,2.2vw,2.5rem)] my-[clamp(1rem,2vw,2.5rem)]">
+              <div className="flex-1 flex flex-col justify-center relative pl-[clamp(1rem,2.2vw,2.5rem)] my-[clamp(0.96rem,2vw,2.5rem)]">
                 {/* Vertical Timeline line - placed perfectly centered behind the 9px dots */}
                 <div 
                   className="absolute w-[1px] bg-[#2C2C2C]/25"
                   style={{
                     left: "calc(clamp(1rem, 2.2vw, 2.5rem) + 4px)",
-                    top: "clamp(0.5rem, 1vw, 1.25rem)",
-                    bottom: "clamp(0.5rem, 1vw, 1.25rem)"
+                    top: "clamp(0.48rem, 1vw, 1.25rem)",
+                    bottom: "clamp(0.48rem, 1vw, 1.25rem)"
                   }}
                 />
 
-                <div className="flex flex-col gap-[clamp(1.5rem,2.8vw,3.5rem)]">
+                <div className="flex flex-col gap-[clamp(1.34rem,2.8vw,3.5rem)]">
                   {[
                     { name: "Customer Information", active: true },
                     { name: "Legal Documents", active: false },
@@ -336,7 +336,7 @@ const UploadSuperAdmin: React.FC = () => {
                     { name: "Valuation", active: false },
                     { name: "Local Intelligence", active: false },
                   ].map((step, idx) => (
-                    <div key={idx} className="relative flex items-center gap-[clamp(0.75rem,1.25vw,1.5rem)] z-10">
+                    <div key={idx} className="relative flex items-center gap-[clamp(0.6rem,1.25vw,1.5rem)] z-10">
                       {/* Step Dot Container to keep it perfectly centered with the line */}
                       <div className="w-[9px] h-[9px] shrink-0 flex items-center justify-center">
                         <div 
@@ -349,7 +349,7 @@ const UploadSuperAdmin: React.FC = () => {
                       </div>
                       {/* Step Text */}
                       <span 
-                        className={`font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.65rem,0.83vw,0.75rem)] uppercase tracking-[0.6px] leading-none transition-colors ${
+                        className={`font-['Plus_Jakarta_Sans'] font-semibold text-[clamp(0.4rem,0.83vw,0.75rem)] uppercase tracking-[0.6px] leading-none transition-colors ${
                           step.active ? "text-[#2A3008] font-bold" : "text-[#808277]"
                         }`}
                       >
@@ -362,15 +362,15 @@ const UploadSuperAdmin: React.FC = () => {
             </div>
 
             {/* Right Side: Content Area / Preview */}
-            <div className="w-full md:w-[clamp(15rem,22.22vw,22rem)] bg-[#F3F4F1] h-full flex flex-col justify-between items-center p-[clamp(1.5rem,2.78vw,3rem)] pt-[clamp(2.5rem,4vw,5rem)] pb-[clamp(1.5rem,2.78vw,3rem)] shrink-0">
+            <div className="w-full md:w-[clamp(10.67rem,22.22vw,22.0rem)] bg-[#F3F4F1] h-full flex flex-col justify-between items-center p-[clamp(1.33rem,2.78vw,3.0rem)] pt-[clamp(1.92rem,4vw,5.0rem)] pb-[clamp(1.33rem,2.78vw,3.0rem)] shrink-0">
               
               {/* Floating Rotated Card Illustration */}
               <div 
-                className="bg-white border border-[#C6C8BA]/20 shadow-[0px_4px_16px_rgba(0,0,0,0.06)] rounded-[clamp(1rem,1.67vw,1.8rem)] p-[clamp(1rem,1.3vw,1.5rem)] flex flex-col gap-[clamp(0.5rem,0.6vw,0.8rem)] w-[clamp(11rem,16.67vw,17rem)] h-[clamp(10rem,15.59vw,16rem)] transition-transform duration-300 hover:scale-[1.03] select-none"
+                className="bg-white border border-[#C6C8BA]/20 shadow-[0px_4px_16px_rgba(0,0,0,0.06)] rounded-[clamp(0.8rem,1.67vw,1.8rem)] p-[clamp(0.62rem,1.3vw,1.5rem)] flex flex-col gap-[clamp(0.29rem,0.6vw,0.8rem)] w-[clamp(8rem,16.67vw,17.0rem)] h-[clamp(7.48rem,15.59vw,16.0rem)] transition-transform duration-300 hover:scale-[1.03] select-none"
                 style={{ transform: "rotate(2deg)" }}
               >
                 {/* Document Preview Image */}
-                <div className="w-full aspect-[4/3] rounded-[clamp(0.5rem,0.83vw,1rem)] overflow-hidden shrink-0">
+                <div className="w-full aspect-[4/3] rounded-[clamp(0.4rem,0.83vw,1.0rem)] overflow-hidden shrink-0">
                   <img 
                     src="/super-admin/images/document_preview_mockup.png" 
                     alt="Document Mockup Preview" 
@@ -378,13 +378,13 @@ const UploadSuperAdmin: React.FC = () => {
                   />
                 </div>
                 {/* Skeleton Lines */}
-                <div className="w-[60%] h-[clamp(0.35rem,0.5vw,0.6rem)] bg-[#EDEEEB] rounded-full mt-1" />
-                <div className="w-[40%] h-[clamp(0.35rem,0.5vw,0.6rem)] bg-[#EDEEEB] rounded-full" />
+                <div className="w-[60%] h-[clamp(0.24rem,0.5vw,0.6rem)] bg-[#EDEEEB] rounded-full mt-1" />
+                <div className="w-[40%] h-[clamp(0.24rem,0.5vw,0.6rem)] bg-[#EDEEEB] rounded-full" />
               </div>
 
               {/* Text description */}
               <p 
-                className="font-['Plus_Jakarta_Sans'] font-semibold text-[12px] leading-[16px] text-[#45483E] text-center tracking-[0.6px] my-[clamp(0.75rem,1vw,1.5rem)]"
+                className="font-['Plus_Jakarta_Sans'] font-semibold text-[12px] leading-[16px] text-[#45483E] text-center tracking-[0.6px] my-[clamp(0.48rem,1vw,1.5rem)]"
                 style={{ width: "212px" }}
               >
                 Upload high-resolution scans of your land titles and documents in PDF format.
@@ -396,7 +396,7 @@ const UploadSuperAdmin: React.FC = () => {
                   setIsUploadModalOpen(false);
                   navigate("/super-admin/upload/land-details/GLCSOS-05");
                 }}
-                className="hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-[0px_4px_12px_rgba(42,48,8,0.2)] text-white font-['Plus_Jakarta_Sans'] font-medium text-[clamp(0.75rem,0.9vw,1.1rem)] w-[clamp(12rem,15.95vw,17rem)] h-[clamp(2.25rem,2.76vw,3.25rem)] rounded-[35px]"
+                className="hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-[0px_4px_12px_rgba(42,48,8,0.2)] text-white font-['Plus_Jakarta_Sans'] font-medium text-[clamp(0.43rem,0.9vw,1.1rem)] w-[clamp(7.66rem,15.95vw,17.0rem)] h-[clamp(1.32rem,2.76vw,3.25rem)] rounded-[35px]"
                 style={{
                   background: "radial-gradient(50% 50% at 50% 50%, #3D4A0D 0%, #2A3008 100%)",
                 }}

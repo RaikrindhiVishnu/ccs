@@ -33,9 +33,9 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F2F2] flex flex-col justify-start items-center p-[clamp(1.77rem,2.78vw,3.33rem)] font-sans">
+    <div className="min-h-screen bg-[#F2F2F2] flex flex-col justify-start items-center p-[clamp(1.33rem,2.78vw,3.33rem)] font-sans">
       <div
-        className="w-full max-w-[clamp(64rem,90vw,120rem)] flex flex-col gap-[clamp(1rem,2vw,2.5rem)]"
+        className="w-full max-w-[clamp(43.2rem,90vw,120.0rem)] flex flex-col gap-[clamp(0.96rem,2vw,2.5rem)]"
       >
         {/* ── Top Header ── */}
         <div className="flex flex-row justify-between items-center w-full">
@@ -43,13 +43,13 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
         </div>
 
         {/* ── Central Card ── */}
-        <div className="w-full bg-white shadow-[0px_20px_40px_rgba(0,49,50,0.06)] rounded-[clamp(1.5rem,2.22vw,2rem)] p-[clamp(1rem,1.53vw,1.83rem)] relative flex flex-col gap-[clamp(1rem,1.53vw,1.83rem)]">
+        <div className="w-full bg-white shadow-[0px_20px_40px_rgba(0,49,50,0.06)] rounded-[clamp(1.07rem,2.22vw,2.0rem)] p-[clamp(0.73rem,1.53vw,1.83rem)] relative flex flex-col gap-[clamp(0.73rem,1.53vw,1.83rem)]">
 
           {/* Map Container inside Card */}
           <div
             className="relative w-full bg-[#FFFFFF] border border-[rgba(0,0,0,0.12)] rounded-[18px] overflow-hidden flex items-center justify-center select-none"
             style={{
-              height: "clamp(33.6rem, 52.5vw, 63.0rem)"
+              height: "clamp(25.2rem, 52.5vw, 63.0rem)"
             }}
           >
             {/* Sat Map High-Resolution Mockup Background */}
@@ -65,13 +65,13 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
 
             {/* HUD Float Search bar input */}
             <div
-              className="absolute flex flex-row items-center bg-white px-[clamp(1rem,1.38vw,1.66rem)] gap-2 shadow-[0px_4px_12px_rgba(0,0,0,0.15)] border-none z-10"
+              className="absolute flex flex-row items-center bg-white px-[clamp(0.66rem,1.38vw,1.66rem)] gap-2 shadow-[0px_4px_12px_rgba(0,0,0,0.15)] border-none z-10"
               style={{
                 top: "clamp(1rem, 2.08vw, 2.08rem)",
                 right: "clamp(1rem, 2.08vw, 2.08rem)",
-                width: "clamp(13.867rem, 21.667vw, 26.0rem)",
-                height: "clamp(2.311rem, 3.611vw, 4.333rem)",
-                borderRadius: "clamp(2.667rem, 4.167vw, 5.0rem)"
+                width: "clamp(10.4rem, 21.667vw, 26.0rem)",
+                height: "clamp(1.73rem, 3.611vw, 4.333rem)",
+                borderRadius: "clamp(2rem, 4.167vw, 5.0rem)"
               }}
             >
               <Search size={20} className="text-[#5C5C5C]/60 shrink-0" />
@@ -80,7 +80,7 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
                 placeholder="Search city, area...."
                 value={searchVal}
                 onChange={(e) => setSearchVal(e.target.value)}
-                className="w-full bg-transparent outline-none font-['Inter'] font-normal text-[clamp(0.71rem,1.11vw,1.33rem)] text-[#191C1E] placeholder-[#5C5C5C]/30"
+                className="w-full bg-transparent outline-none font-['Inter'] font-normal text-[clamp(0.53rem,1.11vw,1.33rem)] text-[#191C1E] placeholder-[#5C5C5C]/30"
               />
             </div>
 
@@ -91,11 +91,11 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
             <div
               className="absolute flex flex-col items-center justify-around bg-[rgba(6,6,6,0.5)] border border-white/10 shadow-lg select-none z-10"
               style={{
-                right: "clamp(1rem, 1.8vw, 2.5rem)",
-                bottom: "clamp(5rem, 6.5vw, 8rem)",
-                width: "clamp(1.528rem, 2.388vw, 2.865rem)",
-                height: "clamp(3.31rem, 5.172vw, 6.207rem)",
-                borderRadius: "clamp(0.38rem, 0.6vw, 0.72rem)"
+                right: "clamp(0.86rem, 1.8vw, 2.5rem)",
+                bottom: "clamp(3.12rem, 6.5vw, 8rem)",
+                width: "clamp(1.15rem, 2.388vw, 2.865rem)",
+                height: "clamp(2.48rem, 5.172vw, 6.207rem)",
+                borderRadius: "clamp(0.29rem, 0.6vw, 0.72rem)"
               }}
             >
               {/* Zoom In Button */}
@@ -104,7 +104,7 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
                 onClick={handleZoomIn}
                 className="w-full h-1/2 flex items-center justify-center font-['Outfit'] font-normal text-white hover:bg-white/10 active:bg-white/20 transition-colors border-b border-white/10 cursor-pointer"
                 style={{
-                  fontSize: "clamp(1.146rem, 1.79vw, 2.148rem)"
+                  fontSize: "clamp(0.86rem, 1.79vw, 2.148rem)"
                 }}
               >
                 +
@@ -115,7 +115,7 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
                 onClick={handleZoomOut}
                 className="w-full h-1/2 flex items-center justify-center font-['Outfit'] font-normal text-white hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer"
                 style={{
-                  fontSize: "clamp(1.146rem, 1.79vw, 2.148rem)"
+                  fontSize: "clamp(0.86rem, 1.79vw, 2.148rem)"
                 }}
               >
                 -
@@ -128,10 +128,10 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
               onClick={handleRecenter}
               className="absolute flex items-center justify-center bg-[rgba(6,6,6,0.6)] border border-white/10 shadow-lg rounded-[6px] hover:bg-white/10 active:bg-white/20 transition-colors cursor-pointer z-10"
               style={{
-                right: "clamp(1rem, 1.8vw, 2.5rem)",
-                bottom: "clamp(1rem, 1.8vw, 2.5rem)",
-                width: "clamp(1.422rem, 2.222vw, 2.667rem)",
-                height: "clamp(1.422rem, 2.222vw, 2.667rem)"
+                right: "clamp(0.86rem, 1.8vw, 2.5rem)",
+                bottom: "clamp(0.86rem, 1.8vw, 2.5rem)",
+                width: "clamp(1.07rem, 2.222vw, 2.667rem)",
+                height: "clamp(1.07rem, 2.222vw, 2.667rem)"
               }}
             >
               <svg
@@ -139,8 +139,8 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
                 fill="none"
                 className="text-white"
                 style={{
-                  width: "clamp(0.889rem, 1.389vw, 1.667rem)",
-                  height: "clamp(0.889rem, 1.389vw, 1.667rem)"
+                  width: "clamp(0.67rem, 1.389vw, 1.667rem)",
+                  height: "clamp(0.67rem, 1.389vw, 1.667rem)"
                 }}
               >
                 <path
@@ -157,9 +157,9 @@ export const SuperAdminUploadViewMaps: React.FC = () => {
               onClick={handleConfirm}
               className="flex justify-center items-center rounded-[57px] text-white font-['Outfit'] font-normal transition-transform hover:scale-105 active:scale-95 cursor-pointer shadow-[0px_4px_12px_rgba(42,48,8,0.2)]"
               style={{
-                width: "clamp(9.2rem, 14.375vw, 17.25rem)",
-                height: "clamp(2.089rem, 3.264vw, 3.917rem)",
-                fontSize: "clamp(0.8rem, 1.25vw, 1.5rem)",
+                width: "clamp(6.9rem, 14.375vw, 17.25rem)",
+                height: "clamp(1.57rem, 3.264vw, 3.917rem)",
+                fontSize: "clamp(0.6rem, 1.25vw, 1.5rem)",
                 background: "radial-gradient(50% 50% at 50% 50%, #3D4A0D 0%, #2A3008 100%)"
               }}
             >
