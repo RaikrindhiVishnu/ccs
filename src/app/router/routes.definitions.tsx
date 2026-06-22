@@ -89,6 +89,15 @@ import {
     VerificationOfficer1CompletedFarmlandDetails,
     VerificationOfficer1AssignedFarmlandsOwnerDetails,
     VerificationOfficer1Layout,
+  VerificationOfficer1Profile,
+  VerificationOfficer1Login,
+
+    // Verification Officer 3 imports
+    VerificationOfficer3Dashboard,
+    VerificationOfficer3AssignedFarmlands,
+    VerificationOfficer3InProgressFarmlands,
+    VerificationOfficer3CompletedFarmlands,
+    VerificationOfficer3Layout,
 
     // Dev imports
     DraftsPage,
@@ -141,6 +150,9 @@ export const guestRoutes: RouteObject[] = [
     }, {
         path: '/super-admin/login',
         element: <SuperAdminLogin />
+    }, {
+        path: '/verification-officer-1/login',
+        element: <VerificationOfficer1Login />
     }, {
         path: '/ccs/login',
         element: <CcsLogin />
@@ -397,6 +409,10 @@ export const authRoutes: RouteObject[] = [
         element: <IOProfile />
     },
     {
+        path: '/verification-officer-3/profile',
+        element: <IOProfile />
+    },
+    {
         element: <RegionalOfficerLayout />,
         children: [
             { path: '/regional-officer/dashboard',          element: <RegionalOfficerDashboard /> },
@@ -476,7 +492,45 @@ export const authRoutes: RouteObject[] = [
                 path: "completed-farmland",
                 element: <VerificationOfficer1CompletedFarmlands />,
             },
+          {
+        path: "profile",
+        element: <VerificationOfficer1Profile />,
+      },
+    ],
+    },
+    {
+        path: "verification-officer-3",
+        element: <VerificationOfficer3Layout />,
+        children: [
+            {
+                index: true,
+                element: <VerificationOfficer3Dashboard />,
+            },
+            {
+                path: "dashboard",
+                element: <VerificationOfficer3Dashboard />,
+            },
+            {
+                path: "assigned-farmlands",
+                element: <VerificationOfficer3AssignedFarmlands />,
+            },
+            {
+                path: "in-progress-farmlands",
+                element: <VerificationOfficer3InProgressFarmlands />,
+            },
+            {
+                path: "completed-farmland",
+                element: <VerificationOfficer3CompletedFarmlands />,
+            },
         ],
+    },
+    {
+        path: '/verification-officer-3/completed-farmland/:id',
+        element: <Farmlanddocument />,
+    },
+    {
+        path: '/verification-officer-3/assigned-farmland/:id',
+        element: <Farmlanddocument />,
     },
     {
         path: '/verification-officer-1/completed-farmland/:id',

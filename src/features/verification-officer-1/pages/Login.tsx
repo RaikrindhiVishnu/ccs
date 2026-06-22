@@ -7,18 +7,9 @@ import { useLoginMutation, useUpdatePasswordMutation, useForgotPasswordMutation 
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "@/features/auth/store/authSlice";
-import { UserRole, ROLE_CODES } from "@/features/auth/types";
+import { ROLE_CODES } from "@/features/auth/types";
 
-// ─── Dev Mock Users ───────────────────────────────────────────────────────────
-const MOCK_USERS = [
-  { login_id: "manager@glc.com", password: "manager@123", role_id: UserRole.ROLEMNGR, first_name: "Harish", last_name: "Kumar", id: 102 },
-  { login_id: "ccs@glc.com", password: "ccs@123456", role_id: UserRole.CCS, first_name: "CCS", last_name: "Officer", id: 103 },
-  { login_id: "field.officer@glc.com", password: "field.officer@123", role_id: UserRole.FO, first_name: "Field", last_name: "Officer", id: 104 },
-  { login_id: "io@glc.com", password: "io@123456", role_id: UserRole.IO, first_name: "Intelligence", last_name: "Officer", id: 105 },
-  { login_id: "regional@glc.com", password: "regional@123", role_id: UserRole.RO, first_name: "Edward", last_name: "Janowski", id: 106 },
-  { login_id: "vo2@glc.com", password: "vo2@123", role_id: UserRole.VO2, first_name: "Verification", last_name: "Officer 2", id: 107 },
-  { login_id: "vo3@glc.com", password: "vo3@123", role_id: UserRole.VO3, first_name: "Verification", last_name: "Officer 3", id: 108 },
-];
+import { MOCK_USERS } from "../data/authMockData";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface InputFieldProps {
@@ -84,9 +75,11 @@ function InputField({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full h-full bg-transparent border-none outline-none font-sans font-normal text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/60 rounded-full text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] ${Icon ? "pl-[clamp(2.5rem,3.47vw,3.125rem)] lg:pl-[3.33vw]" : "pl-[clamp(0.875rem,1.11vw,1.25rem)] lg:pl-[1.11vw]"
-            } ${rightEl ? "pr-[clamp(2.5rem,3.47vw,3.125rem)] lg:pr-[3.33vw]" : "pr-[clamp(0.875rem,1.11vw,1.25rem)] lg:pr-[1.11vw]"
-            }`}
+          className={`w-full h-full bg-transparent border-none outline-none font-sans font-normal text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/60 rounded-full text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] ${
+            Icon ? "pl-[clamp(2.5rem,3.47vw,3.125rem)] lg:pl-[3.33vw]" : "pl-[clamp(0.875rem,1.11vw,1.25rem)] lg:pl-[1.11vw]"
+          } ${
+            rightEl ? "pr-[clamp(2.5rem,3.47vw,3.125rem)] lg:pr-[3.33vw]" : "pr-[clamp(0.875rem,1.11vw,1.25rem)] lg:pr-[1.11vw]"
+          }`}
         />
 
         {rightEl && (
@@ -147,10 +140,10 @@ function CardLogo({ className = "" }: { className?: string }) {
     </div>
   );
 }
+
 function SecureFooter({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center justify-center gap-4 -pt-[clamp(0.5rem,1.5vh,1rem)] ${className}`}>
-
       <ShieldCheck
         strokeWidth={1.8}
         className="shrink-0 text-[var(--status-success)] w-4 h-5 lg:w-[1.11vw] lg:h-[1.39vw]"
@@ -189,7 +182,6 @@ function LoginScreen({
   onForgotPassword: () => void;
 }) {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [login] = useLoginMutation();
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
@@ -199,7 +191,7 @@ function LoginScreen({
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!loginId.trim()) e.loginId = "Email address required";
+    if (!loginId.trim()) e.loginId = "Login ID is required";
     else if (!/\S+@\S+\.\S+/.test(loginId)) e.loginId = "Enter a valid email";
     if (!password) e.password = "Password is required";
     else if (password.length < 6) e.password = "Password must be at least 6 characters";
@@ -209,14 +201,17 @@ function LoginScreen({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
-    if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
     setErrors({});
 
     const mockUser = MOCK_USERS.find(
       (u) => u.login_id === loginId && u.password === password
     );
     if (mockUser) {
-      const roleCode = ROLE_CODES[mockUser.role_id];
+      const roleCode = ROLE_CODES[mockUser.role_id] || "VO1";
       dispatch(
         setCredentials({
           user: {
@@ -283,10 +278,10 @@ function LoginScreen({
 
       <div className="mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 lg:flex lg:flex-col lg:items-start shrink-0 min-[1440px]:mb-[1.94vw]">
         <h1 className="font-heading font-bold text-[var(--text-heading)] text-[clamp(1.25rem,1.66vw,1.5rem)] lg:text-[1.67vw] lg:leading-[2.78vw] leading-snug tracking-[-0.05625rem] lg:tracking-[-0.06vw] m-0 mb-[clamp(0.25rem,0.4vw,0.5rem)] min-[1440px]:mb-[0.97vw] ">
-          Role Manager Login
+          Verification Officer 1 Login
         </h1>
         <p className="font-sans font-normal text-[var(--text-secondary)] text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] lg:leading-[1.81vw] leading-normal m-0">
-          Secure access for authorized Role Managers.
+          Secure access for authorised verification officers.
           <br />
           Please authenticate to continue.
         </p>
@@ -298,8 +293,8 @@ function LoginScreen({
       >
         <InputField
           id="login-id"
-          label="Email Address"
-          placeholder="Enter your registered Email address"
+          label="Login ID"
+          placeholder="Enter your assigned ID"
           type="text"
           value={loginId}
           onChange={(e) => setLoginId(e.target.value)}
@@ -350,18 +345,8 @@ function LoginScreen({
 
         <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:mt-[1.67vw]">
           <PrimaryButton type="submit" disabled={loading} className=" lg:rounded-full lg:text-[1.11vw]">
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? "Signing in…" : "LOGIN"}
           </PrimaryButton>
-        </div>
-
-        <div className="mt-4 flex justify-center">
-          <button
-            type="button"
-            onClick={() => navigate('/ccs/login')}
-            className="border-none bg-transparent cursor-pointer font-sans text-[var(--brand-500)] hover:underline font-semibold text-sm"
-          >
-            Go to CCS Login
-          </button>
         </div>
       </form>
 
@@ -372,7 +357,7 @@ function LoginScreen({
 
 // ─── SCREEN 2 · Forgot Password ───────────────────────────────────────────────
 function ForgotPasswordScreen({
-  onBack,
+  onBack: _onBack,
   onSuccess,
 }: {
   onBack: () => void;
@@ -390,8 +375,14 @@ function ForgotPasswordScreen({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) { setError("Email is required"); return; }
-    if (!/\S+@\S+\.\S+/.test(email)) { setError("Enter a valid email address"); return; }
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Enter a valid email address");
+      return;
+    }
     setError("");
     try {
       await forgotPassword({ login_id: email }).unwrap();
@@ -430,17 +421,10 @@ function ForgotPasswordScreen({
           className="min-[1440px]:mt-[1.67vw] min-[1440px]:gap-[0.83vw]"
         />
 
-        <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:mt-[2.36vw] flex flex-col gap-3">
+        <div className="mt-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:mt-[2.36vw]">
           <PrimaryButton type="submit" disabled={isLoading} variant="secondary" className=" lg:rounded-full lg:text-[1.11vw]">
             {isLoading ? "Sending…" : "Send Password"}
           </PrimaryButton>
-          <button
-            type="button"
-            onClick={onBack}
-            className="border-none cursor-pointer p-0 bg-transparent font-semibold text-[#3D4949] hover:text-[var(--text-heading)] transition-colors text-[14px] self-center"
-          >
-            Back to Login
-          </button>
         </div>
       </form>
 
@@ -595,12 +579,17 @@ function ChangePasswordScreen({ onDone, oldPassword }: { onDone: () => void; old
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
-    if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
     setErrors({});
     try {
       await updatePassword({ old_password: oldPassword, new_password: newPw }).unwrap();
       setSuccess(true);
-      setTimeout(() => { onDone(); }, 1400);
+      setTimeout(() => {
+        onDone();
+      }, 1400);
     } catch (err: any) {
       setErrors({ confirmPw: err?.data?.error || "Failed to update password" });
     }
@@ -710,7 +699,7 @@ function Background() {
 }
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
-export default function LoginFlow() {
+export default function VerificationOfficer1Login() {
   const navigate = useNavigate();
   type Screen = "login" | "update-default" | "change-password" | "forgot-password" | "forgot-success";
   const [screen, setScreen] = useState<Screen>("login");
@@ -728,7 +717,7 @@ export default function LoginFlow() {
     if (is_first_login === 1) {
       setScreen("update-default");
     } else {
-      navigate("/");
+      navigate("/verification-officer-1/dashboard");
     }
   };
 
@@ -746,7 +735,10 @@ export default function LoginFlow() {
       {screen === "forgot-password" && (
         <ForgotPasswordScreen
           onBack={() => setScreen("login")}
-          onSuccess={(masked) => { setMaskedEmail(masked); setScreen("forgot-success"); }}
+          onSuccess={(masked) => {
+            setMaskedEmail(masked);
+            setScreen("forgot-success");
+          }}
         />
       )}
 
@@ -760,12 +752,12 @@ export default function LoginFlow() {
       {screen === "update-default" && (
         <UpdateDefaultPasswordScreen
           onSetNew={() => setScreen("change-password")}
-          onContinue={() => navigate("/")}
+          onContinue={() => navigate("/verification-officer-1/dashboard")}
         />
       )}
 
       {screen === "change-password" && (
-        <ChangePasswordScreen onDone={() => navigate("/")} oldPassword={oldPassword} />
+        <ChangePasswordScreen onDone={() => navigate("/verification-officer-1/dashboard")} oldPassword={oldPassword} />
       )}
     </div>
   );

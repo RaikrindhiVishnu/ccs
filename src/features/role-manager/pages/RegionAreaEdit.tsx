@@ -504,6 +504,10 @@ const RegionAreaEdit: React.FC = () => {
 
   // Selected Region for View Mode (clicking region to zoom and show areas)
   const [selectedRegion, setSelectedRegion] = useState<any | null>(null);
+  const selectedRegionRef = useRef(selectedRegion);
+  useEffect(() => {
+    selectedRegionRef.current = selectedRegion;
+  }, [selectedRegion]);
   const [activeAreaId, setActiveAreaId] = useState<number | null>(null);
   const selectedRegionId = selectedRegion ? getRegionId(selectedRegion) : null;
   const selectedRegionName = useMemo(() => {
@@ -707,7 +711,7 @@ const RegionAreaEdit: React.FC = () => {
       { refetchOnMountOrArgChange: true },
     );
 
-  const { data: editedRegionGeoJson } = useGetRegionGeoJsonQuery(
+  const { data: editedRegionGeoJson, isLoading: isLoadingRegionGeoJson } = useGetRegionGeoJsonQuery(
     { region_id: Number(editRegionId) },
     { skip: !editRegionId },
   );
@@ -741,7 +745,7 @@ const RegionAreaEdit: React.FC = () => {
     }
   }, [regionsByStateData, selectedStateId]);
 
-  const { data: areaGeoJsonData } = useGetAreaGeoJsonQuery(
+  const { data: areaGeoJsonData, isLoading: isLoadingAreaGeoJson } = useGetAreaGeoJsonQuery(
     { area_id: Number(editAreaId) },
     { skip: !editAreaId },
   );
@@ -766,6 +770,9 @@ const RegionAreaEdit: React.FC = () => {
   );
 
   const isAreaMode = getSearchParamFallback("mode") === "area" || !!editAreaId;
+  const isEditModeLoading =
+    (editModeType === "region" && isLoadingRegionGeoJson) ||
+    (editModeType === "area" && isLoadingAreaGeoJson);
   const [triggerGetAreas] = useLazyGetAllAreasByRegionIdQuery();
   const [regionsWithAreas, setRegionsWithAreas] = useState<Set<number> | null>(null);
 
@@ -1421,9 +1428,9 @@ const RegionAreaEdit: React.FC = () => {
         if (map.current && mapLoaded > 0) {
           try {
             map.current.fitBounds(getFeatureBounds(rawRegion), {
-              padding: 150,
+              padding: 60,
               duration: 1500,
-              maxZoom: 6.5,
+              maxZoom: 8.5,
             });
           } catch (e) {
             console.error("[RegionAreaEdit] Zoom to region failed:", e);
@@ -1907,6 +1914,20 @@ const RegionAreaEdit: React.FC = () => {
         map.current.on("click", "districts-fill", (e) => {
           const searchParamsLocal = new URLSearchParams(window.location.search);
           const isEditModeLocal = !!searchParamsLocal.get("editRegionId");
+          const editModeTypeLocal =
+            searchParamsLocal.get("mode") === "area" || !!searchParamsLocal.get("editAreaId") ? "area" : "region";
+
+          if (editModeTypeLocal === "area") {
+            if (e.features && e.features.length > 0) {
+              const districtFeature = e.features[0];
+              const isAssigned = districtFeature.properties?.isAssigned;
+              if (!isAssigned) {
+                toast.error("This district is not part of any region. Please select a created region or create a new region first.");
+              }
+            }
+            return;
+          }
+
           if (!isEditModeLocal) return;
 
           if (e.features && e.features.length > 0) {
@@ -1939,6 +1960,35 @@ const RegionAreaEdit: React.FC = () => {
           map.current.setLayoutProperty("districts-labels", "visibility", visibility);
         }
       }
+
+      // Apply filters to districts to show only the selected region's districts in region view mode
+      const isRegionSelectionActive = editModeType === "region" && selectedRegion && !isEditMode;
+      if (isRegionSelectionActive) {
+        const regionDistrictIds = getDistrictIdsFromRegion(selectedRegion, geoMasterData);
+        const filterExpr = regionDistrictIds.length > 0
+          ? ["in", ["id"], ["literal", regionDistrictIds.map(Number)]]
+          : ["literal", false];
+
+        if (map.current.getLayer("districts-fill")) {
+          map.current.setFilter("districts-fill", filterExpr as maplibregl.FilterSpecification);
+        }
+        if (map.current.getLayer("districts-line")) {
+          map.current.setFilter("districts-line", filterExpr as maplibregl.FilterSpecification);
+        }
+        if (map.current.getLayer("districts-labels")) {
+          map.current.setFilter("districts-labels", filterExpr as maplibregl.FilterSpecification);
+        }
+      } else {
+        if (map.current.getLayer("districts-fill")) {
+          map.current.setFilter("districts-fill", null);
+        }
+        if (map.current.getLayer("districts-line")) {
+          map.current.setFilter("districts-line", null);
+        }
+        if (map.current.getLayer("districts-labels")) {
+          map.current.setFilter("districts-labels", null);
+        }
+      }
     } catch (err) {
       console.error("RegionAreaEdit: Failed to render districts:", err);
     }
@@ -1952,6 +2002,7 @@ const RegionAreaEdit: React.FC = () => {
     selectedRegion,
     urlAreaRegionId,
     editAreaId,
+    isEditMode,
   ]);
 
   // ── Render mandal boundaries for Area Edit Mode or Zoomed View Mode ─────────
@@ -2434,6 +2485,8 @@ const RegionAreaEdit: React.FC = () => {
     editModeType,
     selectedDistricts,
     mapLoaded,
+    editAreaId,
+    editRegionId,
   ]);
 
   // ── Initialize MapLibre map ──────────────────────────────────────────────
@@ -2696,8 +2749,9 @@ const RegionAreaEdit: React.FC = () => {
               setIsZoomed(true);
               if (map.current) {
                 map.current.fitBounds(getFeatureBounds(feature), {
-                  padding: 120,
+                  padding: 60,
                   duration: 1500,
+                  maxZoom: 8.5,
                 });
               }
             } else {
@@ -2909,12 +2963,15 @@ const RegionAreaEdit: React.FC = () => {
           sessionStorage.removeItem("region_map_selected_state");
           sessionStorage.removeItem("region_map_is_zoomed");
         } else if (!isEditModeLocal) {
-          map.current?.flyTo({
-            center: [78.9629, 20.5937],
-            zoom: 3.5,
-            duration: 3000,
-            essential: true,
-          });
+          const isAreaMode = (getSearchParamFallback("mode") || "region") === "area";
+          if (!(isAreaMode && selectedRegionRef.current)) {
+            map.current?.flyTo({
+              center: [78.9629, 20.5937],
+              zoom: 3.5,
+              duration: 3000,
+              essential: true,
+            });
+          }
         }
 
         setTimeout(() => map.current?.resize(), 100);
@@ -2966,7 +3023,6 @@ const RegionAreaEdit: React.FC = () => {
 
       const assigned = mappedFeatures
         .filter((f: any) => {
-          if (isAreaMode) return true;
           return f.isAssignedFromApi;
         })
         .filter((f: any) => {
@@ -2984,14 +3040,13 @@ const RegionAreaEdit: React.FC = () => {
 
       const unassigned = mappedFeatures
         .filter((f: any) => {
-          if (isAreaMode) return true;
           return !f.isAssignedFromApi;
         })
         .filter((f: any) => {
           if (!isAreaMode) return true;
           if (!regionsWithAreas) return true; // loading fallback
           const regionId = f.properties?.region_id || f.id;
-          return !regionsWithAreas.has(Number(regionId));
+          return regionsWithAreas.has(Number(regionId));
         })
         .map((f: any) => ({
           id: f.properties?.region_id || f.id,
@@ -3069,11 +3124,33 @@ const RegionAreaEdit: React.FC = () => {
           setSelectedRegion(matchedRegion);
           setAssignPanelOpen(true);
           setIsZoomed(true);
-          sessionStorage.removeItem("selected_region_id");
         }
       }
     }
   }, [allRegionsData, selectedRegion, isEditMode, searchParams]);
+
+  // Zoom to selectedRegion when map is loaded or when selectedRegion changes (only in mode=area)
+  useEffect(() => {
+    const mode = getSearchParamFallback("mode") || "region";
+    if (mode === "area" && selectedRegion && map.current && mapLoaded > 0) {
+      try {
+        const builtFeature = geoMasterData
+          ? buildRegionFeatureFromDistricts(selectedRegion, geoMasterData)
+          : null;
+        const target = builtFeature || selectedRegion;
+        if (target && target.geometry) {
+          const bounds = getFeatureBounds(target);
+          map.current.fitBounds(bounds, {
+            padding: 60,
+            duration: 1500,
+            maxZoom: 8.5,
+          });
+        }
+      } catch (err) {
+        console.error("[RegionAreaEdit] Failed to zoom to selected region:", err);
+      }
+    }
+  }, [selectedRegion, mapLoaded, geoMasterData]);
 
   const resetView = () => {
     map.current?.flyTo({
@@ -3085,6 +3162,7 @@ const RegionAreaEdit: React.FC = () => {
     setIsZoomed(false);
     setSelectedState(null); // triggers stateRegionsData → allRegionsData → regions re-render
     setSelectedRegion(null); // Clear selected region when resetting to India overview
+    sessionStorage.removeItem("selected_region_id");
     // Clear district boundaries (only visible inside a selected state)
     setAssignPanelOpen(false);
 
@@ -3098,6 +3176,35 @@ const RegionAreaEdit: React.FC = () => {
 
   // ── Clear edit mode, reset states, and return map to India overview ─────
   const clearEditMode = () => {
+    if (map.current) {
+      try {
+        map.current.removeFeatureState({ source: "mandals-source" });
+      } catch (e) {
+        console.error("Failed to clear mandals-source feature state:", e);
+      }
+      try {
+        map.current.removeFeatureState({ source: "districts-source" });
+      } catch (e) {
+        console.error("Failed to clear districts-source feature state:", e);
+      }
+    }
+
+    if (editModeType === "area" && editAreaId) {
+      setActiveAreaId(Number(editAreaId));
+      setAssignPanelOpen(true);
+      setSearchParams({ mode: "area" });
+      setRegionName("");
+      setRegionCode("");
+      setSelectedDistricts([]);
+      setSelectedRegionalOfficerId(null);
+      setSelectedIntelligenceOfficerId(null);
+      setSelectedFieldOfficerId(null);
+      setHasInitialized(false);
+      setEditDropdownOpen(false);
+      setEditSearchQuery("");
+      return;
+    }
+
     setSearchParams({});
     setRegionName("");
     setRegionCode("");
@@ -3192,8 +3299,8 @@ const RegionAreaEdit: React.FC = () => {
           if (map.current.getLayer("states-fill")) {
             map.current.setPaintProperty("states-fill", "fill-color", "#F0EEF0");
             map.current.setFilter("states-fill", ["==", ["get", "id"], stateId]);
-            // If a region is selected in Area Mode, hide the state-fill completely so only the region is visible
-            if (editModeType === "area" && selectedRegion) {
+            // If a region is selected, hide the state-fill completely so only the region is visible
+            if (selectedRegion) {
               map.current.setLayoutProperty("states-fill", "visibility", "none");
             } else {
               map.current.setLayoutProperty("states-fill", "visibility", "visible");
@@ -3201,7 +3308,7 @@ const RegionAreaEdit: React.FC = () => {
           }
           if (map.current.getLayer("states-border-line")) {
             map.current.setFilter("states-border-line", ["==", ["get", "id"], stateId]);
-            if (editModeType === "area" && selectedRegion) {
+            if (selectedRegion) {
               map.current.setLayoutProperty("states-border-line", "visibility", "none");
             } else {
               map.current.setLayoutProperty("states-border-line", "visibility", "visible");
@@ -3701,9 +3808,10 @@ const RegionAreaEdit: React.FC = () => {
           onClick={() => {
             if (isEditMode) {
               clearEditMode();
-            } else if (editModeType === "area" && selectedRegion) {
+            } else if (selectedRegion) {
               setSelectedRegion(null);
               setActiveAreaId(null);
+              sessionStorage.removeItem("selected_region_id");
               if (selectedState && map.current) {
                 map.current.fitBounds(getFeatureBounds(selectedState), {
                   padding: 100,
@@ -3779,7 +3887,15 @@ const RegionAreaEdit: React.FC = () => {
             <div className="h-px bg-slate-100 mb-4 shrink-0 w-full" />
 
             {/* Form fields body (Scrollable) */}
-            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-5 mb-5 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-5 mb-5 custom-scrollbar relative">
+              {isEditModeLoading && (
+                <div className="absolute inset-0 bg-white/85 backdrop-blur-[2px] z-50 flex flex-col items-center justify-center gap-3 animate-in fade-in duration-300">
+                  <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    Loading Operational Details...
+                  </span>
+                </div>
+              )}
               {/* Input: Region/Area Name */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-0.5">
@@ -4124,9 +4240,10 @@ const RegionAreaEdit: React.FC = () => {
               <Button
                 variant="primary"
                 fullWidth
-                loading={isSaving}
+                loading={isSaving || isEditModeLoading}
+                disabled={isEditModeLoading}
                 onClick={handleSave}
-                className="h-12 text-xs font-bold uppercase tracking-widest rounded-2xl flex items-center justify-center gap-2 border-0 bg-blue-600 text-white shadow-md shadow-blue-500/20 hover:opacity-95"
+                className="h-12 text-xs font-bold uppercase tracking-widest rounded-2xl flex items-center justify-center gap-2 border-0 bg-blue-600 text-white shadow-md shadow-blue-500/20 hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save className="w-4 h-4" />
                 Save Changes
@@ -4347,8 +4464,15 @@ const RegionAreaEdit: React.FC = () => {
                                 onClick={() => {
                                   if (isSelected) {
                                     setSelectedRegion(null);
+                                    sessionStorage.removeItem("selected_region_id");
                                   } else {
                                     setSelectedRegion(region.rawFeature);
+                                    if (region.rawFeature) {
+                                      sessionStorage.setItem(
+                                        "selected_region_id",
+                                        String(getRegionId(region.rawFeature)),
+                                      );
+                                    }
                                     if (
                                       region.rawFeature &&
                                       map.current &&
@@ -4367,8 +4491,9 @@ const RegionAreaEdit: React.FC = () => {
                                           map.current.fitBounds(
                                             getFeatureBounds(target),
                                             {
-                                              padding: 80,
+                                              padding: 60,
                                               duration: 1500,
+                                              maxZoom: 8.5,
                                             },
                                           );
                                         }
@@ -4498,6 +4623,7 @@ const RegionAreaEdit: React.FC = () => {
                     onClose={() => {
                       setSelectedRegion(null);
                       setActiveAreaId(null);
+                      sessionStorage.removeItem("selected_region_id");
                       if (editModeType === "area") {
                         setAssignPanelOpen(false);
                       }
@@ -4694,8 +4820,15 @@ const RegionAreaEdit: React.FC = () => {
                                 onClick={() => {
                                   if (isSelected) {
                                     setSelectedRegion(null);
+                                    sessionStorage.removeItem("selected_region_id");
                                   } else {
                                     setSelectedRegion(region.rawFeature);
+                                    if (region.rawFeature) {
+                                      sessionStorage.setItem(
+                                        "selected_region_id",
+                                        String(getRegionId(region.rawFeature)),
+                                      );
+                                    }
                                     if (
                                       region.rawFeature &&
                                       map.current &&
@@ -4714,8 +4847,9 @@ const RegionAreaEdit: React.FC = () => {
                                           map.current.fitBounds(
                                             getFeatureBounds(target),
                                             {
-                                              padding: 80,
+                                              padding: 60,
                                               duration: 1500,
+                                              maxZoom: 8.5,
                                             },
                                           );
                                         }

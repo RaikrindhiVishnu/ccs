@@ -9,18 +9,22 @@ import { useNavigate } from "react-router-dom";
 
 interface LandDetailsDocumentProps {
   onBack: () => void;
+  onGoBackDashboard?: () => void;
   onNext: () => void;
   onTabChange: (tab: "owner" | "family" | "land") => void;
   onStepChange?: (step: "customer" | "local") => void;
   farmlandId?: string;
+  isVO3?: boolean;
 }
 
 export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
   onBack,
+  onGoBackDashboard,
   onNext,
   onTabChange,
   onStepChange,
   farmlandId = "GLCSOS 01",
+  isVO3 = false,
 }) => {
   const [activeStep, setActiveStep] = React.useState<"customer" | "local">("customer");
   const navigate = useNavigate();
@@ -57,7 +61,7 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
           label="Go back to dashboard"
           variant="light"
           size="default"
-          onClick={onBack}
+          onClick={onGoBackDashboard || onBack}
           className="
             w-[clamp(15.5rem,16.67vw,20rem)]
             h-[clamp(2.31rem,3.61vw,4.3rem)]
@@ -485,7 +489,7 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
                 text-[clamp(0.625rem,0.97vw,1.1625rem)]
               "
             >
-              Back
+              {isVO3 ? "Turn Back" : "Back"}
             </button>
 
             <button
@@ -500,7 +504,7 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
                 text-[clamp(0.625rem,0.97vw,1.1625rem)]
               "
             >
-              Next
+              {isVO3 ? "Approve" : "Next"}
             </button>
           </div>
         </Card>
