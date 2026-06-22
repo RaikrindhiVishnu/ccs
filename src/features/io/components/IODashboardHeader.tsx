@@ -32,10 +32,10 @@ export const IODashboardHeader = ({
         w-full
         min-w-0
 
-        lg:flex-row
+        md:flex-row
         lg:items-center
         lg:justify-between
-        lg:gap-6
+        md:gap-6
       "
     >
       {/* LEFT */}
@@ -57,7 +57,7 @@ export const IODashboardHeader = ({
               leading-[125%]
               tracking-[0]
 
-              text-[clamp(1.1rem,1.875vw,1.75rem)]
+              text-[clamp(0.9rem,1.875vw,1.75rem)]
 
               text-[var(--text-strong)]
             `
@@ -79,7 +79,7 @@ export const IODashboardHeader = ({
 
               leading-[129%]
 
-              text-[clamp(0.75rem,0.972vw,0.9375rem)]
+              text-[clamp(0.5625rem,0.972vw,0.9375rem)]
 
               text-[var(--surface-sidebar-accent)]
             "
@@ -90,7 +90,7 @@ export const IODashboardHeader = ({
       </div>
 
       {/* RIGHT */}
-      <div className="w-full lg:w-auto lg:flex-shrink-0">
+      <div className="w-full md:w-auto md:flex-shrink-0">
         <Input
           variant="white"
           placeholder={searchPlaceholder}
@@ -103,8 +103,8 @@ export const IODashboardHeader = ({
 
                 text-[var(--text-subtle)]
 
-                w-[clamp(1.25rem,1.667vw,1.5rem)]
-                h-[clamp(1.25rem,1.667vw,1.5rem)]
+                w-[clamp(0.9375rem,1.667vw,1.5rem)]
+                h-[clamp(0.9375rem,1.667vw,1.5rem)]
               "
               strokeWidth={1.8}
             />
@@ -118,11 +118,11 @@ export const IODashboardHeader = ({
 
             !w-full
 
-            lg:!w-[clamp(20rem,26.111vw,28rem)]
+            lg:!w-[clamp(15rem,26.111vw,28.0rem)]
 
-            !h-[clamp(2.75rem,3.611vw,3.25rem)]
+            !h-[clamp(2.0625rem,3.611vw,3.25rem)]
 
-            !px-[clamp(0.875rem,1.389vw,1.25rem)]
+            !px-[clamp(0.6667rem,1.389vw,1.25rem)]
 
             !gap-[0.5rem]
 
@@ -136,7 +136,7 @@ export const IODashboardHeader = ({
 
             !text-[var(--text-subtle)]
 
-            text-[clamp(0.875rem,1.111vw,1rem)]
+            text-[clamp(0.6562rem,1.111vw,1.0rem)]
           "
         />
       </div>

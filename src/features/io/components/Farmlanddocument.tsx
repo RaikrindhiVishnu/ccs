@@ -52,7 +52,7 @@ export interface FarmlandDetailPageProps {
 
 const MapPinIcon = () => (
   <svg
-    className="w-[clamp(0.53rem,0.83vw,1rem)] h-[clamp(0.66rem,1.04vw,1.25rem)] shrink-0 text-[var(--text-secondary)]"
+    className="w-[clamp(0.3984rem,0.83vw,1.0rem)] h-[clamp(0.4992rem,1.04vw,1.25rem)] shrink-0 text-[var(--text-secondary)]"
     viewBox="0 0 12 15"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -87,8 +87,8 @@ const AgentAvatar = ({
       className="
         flex items-center justify-center shrink-0 overflow-hidden rounded-full
         bg-[var(--border-subtle)]
-        w-[clamp(1.775rem,2.78vw,3.325rem)]
-        h-[clamp(1.775rem,2.78vw,3.325rem)]
+        w-[clamp(1.3344rem,2.78vw,3.325rem)]
+        h-[clamp(1.3344rem,2.78vw,3.325rem)]
       "
     >
       {avatarUrl ? (
@@ -97,7 +97,7 @@ const AgentAvatar = ({
         <span
           className="
             font-bold text-[var(--text-primary)]
-            text-[clamp(0.625rem,0.97vw,1.1625rem)]
+            text-[clamp(0.4688rem,0.97vw,1.1625rem)]
             font-[family-name:var(--font-sans)]
           "
         >
@@ -110,14 +110,14 @@ const AgentAvatar = ({
 
 const InfoField = ({
   label,
-  fontSizeClass = "text-[clamp(0.53rem,0.83vw,1rem)] leading-[clamp(0.71rem,1.11vw,1.33rem)]",
+  fontSizeClass = "text-[clamp(0.3984rem,0.83vw,1.0rem)] leading-[clamp(0.5328rem,1.11vw,1.33rem)]",
   children,
 }: {
   label: string;
   fontSizeClass?: string;
   children: React.ReactNode;
 }) => (
-  <div className="flex flex-col gap-[clamp(0.177rem,0.28vw,0.33rem)]">
+  <div className="flex flex-col gap-[clamp(0.1344rem,0.28vw,0.33rem)]">
     <span
       className={`
         font-normal uppercase tracking-[0.6px]
@@ -146,18 +146,18 @@ const StatusBox = ({
       flex flex-row justify-between items-center
       bg-[var(--status-pending-bg)]
       border border-[var(--border-default)]
-      rounded-[clamp(1.42rem,2.22vw,2.66rem)]
-      p-[clamp(1.0625rem,1.67vw,2rem)]
+      rounded-[clamp(1.0656rem,2.22vw,2.66rem)]
+      p-[clamp(0.8016rem,1.67vw,2.0rem)]
       w-full
     "
   >
-    <div className="flex flex-col gap-[clamp(0.177rem,0.28vw,0.33rem)]">
+    <div className="flex flex-col gap-[clamp(0.1344rem,0.28vw,0.33rem)]">
       <span
         className="
           font-normal uppercase tracking-[0.6px]
           text-[var(--text-secondary)]
-          text-[clamp(0.53rem,0.83vw,1rem)]
-          leading-[clamp(0.71rem,1.11vw,1.33rem)]
+          text-[clamp(0.3984rem,0.83vw,1.0rem)]
+          leading-[clamp(0.5328rem,1.11vw,1.33rem)]
           font-[family-name:var(--font-sans)]
         "
       >
@@ -166,8 +166,8 @@ const StatusBox = ({
       <span
         className="
           font-medium text-[var(--text-primary)]
-          text-[clamp(0.8rem,1.25vw,1.5rem)]
-          leading-[clamp(1.25rem,1.94vw,2.33rem)]
+          text-[clamp(0.6rem,1.25vw,1.5rem)]
+          leading-[clamp(0.9375rem,1.94vw,2.33rem)]
           font-[family-name:var(--font-sans)]
         "
       >
@@ -193,13 +193,13 @@ const HeroSection = ({
     className="
       relative overflow-hidden flex flex-col justify-end items-start
       w-full
-      h-[clamp(18.15rem,28.4vw,34rem)]
+      h-[clamp(13.632rem,28.4vw,34.0rem)]
       min-h-[300px]
       bg-[var(--border-default)]
-      rounded-[clamp(1.42rem,2.22vw,2.66rem)]
+      rounded-[clamp(1.0656rem,2.22vw,2.66rem)]
       shadow-[0px_20px_40px_rgba(0,49,50,0.04)]
-      mt-[clamp(1.25rem,1.94vw,2.33rem)]
-      pb-[clamp(1.775rem,2.81vw,3.325rem)]
+      mt-[clamp(0.9375rem,1.94vw,2.33rem)]
+      pb-[clamp(1.3488rem,2.81vw,3.325rem)]
     "
   >
     {/* Background image */}
@@ -218,17 +218,17 @@ const HeroSection = ({
     <div
       className="
         relative z-10 flex flex-row justify-between items-center w-full
-        px-[clamp(6.375rem,10vw,12rem)]
+        px-[clamp(4.8rem,10.0vw,12.0rem)]
       "
     >
       {/* Left: badge + name + location */}
-      <div className="flex flex-col gap-[clamp(0.356rem,0.56vw,0.665rem)]">
+      <div className="flex flex-col gap-[clamp(0.2688rem,0.56vw,0.665rem)]">
         {/* Badge pill */}
         <div
           className={
             isCompletedVO3
-              ? "inline-flex items-center self-start bg-[#ECFDF5] rounded-full px-[clamp(0.53rem,0.83vw,1rem)] py-[clamp(0.177rem,0.28vw,0.33rem)] gap-[6px]"
-              : "inline-flex items-center self-start bg-[var(--illus-card-white-bg)] border border-[var(--border-soft)] backdrop-filter backdrop-blur-[6px] rounded-full px-[clamp(0.53rem,0.83vw,1rem)] py-[clamp(0.177rem,0.28vw,0.33rem)]"
+              ? "inline-flex items-center self-start bg-[#ECFDF5] rounded-full px-[clamp(0.3984rem,0.83vw,1.0rem)] py-[clamp(0.1344rem,0.28vw,0.33rem)] gap-[6px]"
+              : "inline-flex items-center self-start bg-[var(--illus-card-white-bg)] border border-[var(--border-soft)] backdrop-filter backdrop-blur-[6px] rounded-full px-[clamp(0.3984rem,0.83vw,1.0rem)] py-[clamp(0.1344rem,0.28vw,0.33rem)]"
           }
         >
           {isCompletedVO3 && (
@@ -249,8 +249,8 @@ const HeroSection = ({
           <span
             className={
               isCompletedVO3
-                ? "font-bold uppercase tracking-[0.6px] text-[#047857] text-[clamp(0.53rem,0.83vw,1rem)] leading-[clamp(0.71rem,1.11vw,1.33rem)] font-[family-name:var(--font-sans)]"
-                : "font-bold uppercase tracking-[0.6px] text-white text-[clamp(0.53rem,0.83vw,1rem)] leading-[clamp(0.71rem,1.11vw,1.33rem)] font-[family-name:var(--font-sans)]"
+                ? "font-bold uppercase tracking-[0.6px] text-[#047857] text-[clamp(0.3984rem,0.83vw,1.0rem)] leading-[clamp(0.5328rem,1.11vw,1.33rem)] font-[family-name:var(--font-sans)]"
+                : "font-bold uppercase tracking-[0.6px] text-white text-[clamp(0.3984rem,0.83vw,1.0rem)] leading-[clamp(0.5328rem,1.11vw,1.33rem)] font-[family-name:var(--font-sans)]"
             }
           >
             {data.badge ?? "ASSIGNED FARMLAND"}
@@ -261,8 +261,8 @@ const HeroSection = ({
         <h2
           className="
             font-extrabold text-white tracking-[-1.2px]
-            text-[clamp(2.125rem,3.33vw,4rem)]
-            leading-[clamp(2.125rem,3.33vw,4rem)]
+            text-[clamp(1.5984rem,3.33vw,4.0rem)]
+            leading-[clamp(1.5984rem,3.33vw,4.0rem)]
             drop-shadow-[0px_2px_2px_rgba(0,0,0,0.06)]
             font-[family-name:var(--font-sans)]
           "
@@ -271,13 +271,13 @@ const HeroSection = ({
         </h2>
 
         {/* Location */}
-        <div className="flex items-center gap-[clamp(0.177rem,0.28vw,0.33rem)]">
+        <div className="flex items-center gap-[clamp(0.1344rem,0.28vw,0.33rem)]">
           <MapPinIcon />
           <span
             className="
               font-normal text-[var(--border-subtle)]
-              text-[clamp(0.71rem,1.11vw,1.33rem)]
-              leading-[clamp(1.0625rem,1.67vw,2rem)]
+              text-[clamp(0.5328rem,1.11vw,1.33rem)]
+              leading-[clamp(0.8016rem,1.67vw,2.0rem)]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -288,26 +288,26 @@ const HeroSection = ({
 
       {/* Right side metric box(es) */}
       {isCompletedVO3 ? (
-        <div className="flex flex-row gap-[clamp(0.71rem,1.11vw,1.33rem)] shrink-0">
+        <div className="flex flex-row gap-[clamp(0.5328rem,1.11vw,1.33rem)] shrink-0">
           {/* Land Size Box */}
           <div
             className="
               flex flex-col items-center justify-center
               bg-[var(--surface-card)] border border-[var(--border-soft)]
               backdrop-filter backdrop-blur-[10px]
-              rounded-[clamp(0.71rem,1.11vw,1.33rem)]
-              p-[clamp(0.8rem,1.25vw,1.5rem)]
-              gap-[clamp(0.177rem,0.28vw,0.33rem)]
-              w-[clamp(7.4375rem,11.67vw,14rem)]
-              h-[clamp(4.7rem,7.36vw,8.8125rem)]
+              rounded-[clamp(0.5328rem,1.11vw,1.33rem)]
+              p-[clamp(0.6rem,1.25vw,1.5rem)]
+              gap-[clamp(0.1344rem,0.28vw,0.33rem)]
+              w-[clamp(5.6016rem,11.67vw,14.0rem)]
+              h-[clamp(3.5328rem,7.36vw,8.8125rem)]
             "
           >
             <span
               className="
                 font-semibold uppercase tracking-[0.6px] text-center
                 text-[var(--text-secondary)]
-                text-[clamp(0.53rem,0.83vw,1rem)]
-                leading-[clamp(0.71rem,1.11vw,1.33rem)]
+                text-[clamp(0.3984rem,0.83vw,1.0rem)]
+                leading-[clamp(0.5328rem,1.11vw,1.33rem)]
                 font-[family-name:var(--font-sans)]
               "
             >
@@ -316,8 +316,8 @@ const HeroSection = ({
             <span
               className="
                 font-bold text-[var(--text-strong)] text-center
-                text-[clamp(1.2rem,1.8vw,2.2rem)]
-                leading-[clamp(1.6rem,2.5vw,3rem)]
+                text-[clamp(0.9rem,1.8vw,2.2rem)]
+                leading-[clamp(1.2rem,2.5vw,3.0rem)]
                 font-[family-name:var(--font-sans)]
               "
             >
@@ -331,19 +331,19 @@ const HeroSection = ({
               flex flex-col items-center justify-center
               bg-[var(--surface-card)] border border-[var(--border-soft)]
               backdrop-filter backdrop-blur-[10px]
-              rounded-[clamp(0.71rem,1.11vw,1.33rem)]
-              p-[clamp(0.8rem,1.25vw,1.5rem)]
-              gap-[clamp(0.177rem,0.28vw,0.33rem)]
-              w-[clamp(7.4375rem,11.67vw,14rem)]
-              h-[clamp(4.7rem,7.36vw,8.8125rem)]
+              rounded-[clamp(0.5328rem,1.11vw,1.33rem)]
+              p-[clamp(0.6rem,1.25vw,1.5rem)]
+              gap-[clamp(0.1344rem,0.28vw,0.33rem)]
+              w-[clamp(5.6016rem,11.67vw,14.0rem)]
+              h-[clamp(3.5328rem,7.36vw,8.8125rem)]
             "
           >
             <span
               className="
                 font-semibold uppercase tracking-[0.6px] text-center
                 text-[var(--text-secondary)]
-                text-[clamp(0.53rem,0.83vw,1rem)]
-                leading-[clamp(0.71rem,1.11vw,1.33rem)]
+                text-[clamp(0.3984rem,0.83vw,1.0rem)]
+                leading-[clamp(0.5328rem,1.11vw,1.33rem)]
                 font-[family-name:var(--font-sans)]
               "
             >
@@ -352,8 +352,8 @@ const HeroSection = ({
             <span
               className="
                 font-bold text-[var(--text-strong)] text-center
-                text-[clamp(1.2rem,1.8vw,2.2rem)]
-                leading-[clamp(1.6rem,2.5vw,3rem)]
+                text-[clamp(0.9rem,1.8vw,2.2rem)]
+                leading-[clamp(1.2rem,2.5vw,3.0rem)]
                 font-[family-name:var(--font-sans)]
               "
             >
@@ -368,11 +368,11 @@ const HeroSection = ({
             flex flex-col items-end justify-center
             bg-[var(--surface-card)] border border-[var(--border-soft)]
             backdrop-filter backdrop-blur-[10px]
-            rounded-[clamp(0.71rem,1.11vw,1.33rem)]
-            p-[clamp(1.0625rem,1.67vw,2rem)]
-            gap-[clamp(0.177rem,0.28vw,0.33rem)]
-            w-[clamp(7.4375rem,11.67vw,14rem)]
-            h-[clamp(4.7rem,7.36vw,8.8125rem)]
+            rounded-[clamp(0.5328rem,1.11vw,1.33rem)]
+            p-[clamp(0.8016rem,1.67vw,2.0rem)]
+            gap-[clamp(0.1344rem,0.28vw,0.33rem)]
+            w-[clamp(5.6016rem,11.67vw,14.0rem)]
+            h-[clamp(3.5328rem,7.36vw,8.8125rem)]
             shrink-0
           "
         >
@@ -380,8 +380,8 @@ const HeroSection = ({
             className="
               font-semibold uppercase tracking-[0.6px] text-right
               text-[var(--text-secondary)]
-              text-[clamp(0.53rem,0.83vw,1rem)]
-              leading-[clamp(0.71rem,1.11vw,1.33rem)]
+              text-[clamp(0.3984rem,0.83vw,1.0rem)]
+              leading-[clamp(0.5328rem,1.11vw,1.33rem)]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -390,8 +390,8 @@ const HeroSection = ({
           <span
             className="
               font-bold text-[var(--text-strong)] text-right
-              text-[clamp(1.33rem,2.08vw,2.5rem)]
-              leading-[clamp(1.6rem,2.5vw,3rem)]
+              text-[clamp(0.9984rem,2.08vw,2.5rem)]
+              leading-[clamp(1.2rem,2.5vw,3.0rem)]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -420,18 +420,18 @@ const AssetDetailsCard = ({
       bg-[var(--surface-card)]
       border border-[var(--border-soft)]
       shadow-[var(--shadow-card)]
-      rounded-[clamp(1.42rem,2.22vw,2.66rem)]
-      pt-[clamp(1.42rem,2.22vw,2.66rem)]
-      px-[clamp(1.42rem,2.22vw,2.66rem)]
-      pb-[clamp(3.33rem,5.21vw,6.25rem)]
-      gap-[clamp(1.42rem,2.22vw,2.66rem)]
+      rounded-[clamp(1.0656rem,2.22vw,2.66rem)]
+      pt-[clamp(1.0656rem,2.22vw,2.66rem)]
+      px-[clamp(1.0656rem,2.22vw,2.66rem)]
+      pb-[clamp(2.5008rem,5.21vw,6.25rem)]
+      gap-[clamp(1.0656rem,2.22vw,2.66rem)]
       h-full
     "
   >
     {/* Heading */}
     <div
       className="
-        pb-[clamp(0.71rem,1.11vw,1.33rem)]
+        pb-[clamp(0.5328rem,1.11vw,1.33rem)]
         border-b border-[var(--border-subtle)]
       "
     >
@@ -440,8 +440,8 @@ const AssetDetailsCard = ({
         variant="h4"
         className="
           font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-          text-[clamp(0.8875rem,1.39vw,1.6625rem)]
-          leading-[clamp(1.25rem,1.94vw,2.33rem)]
+          text-[clamp(0.6672rem,1.39vw,1.6625rem)]
+          leading-[clamp(0.9375rem,1.94vw,2.33rem)]
         "
       >
         Asset Details
@@ -452,7 +452,7 @@ const AssetDetailsCard = ({
     <div
       className="
         flex flex-col
-        gap-[clamp(0.8875rem,1.39vw,1.6625rem)]
+        gap-[clamp(0.6672rem,1.39vw,1.6625rem)]
       "
     >
       {/* Farmland ID */}
@@ -460,8 +460,8 @@ const AssetDetailsCard = ({
         <span
           className="
             font-medium text-[var(--text-primary)]
-            text-[clamp(0.71rem,1.11vw,1.33rem)]
-            leading-[clamp(1.0625rem,1.67vw,2rem)]
+            text-[clamp(0.5328rem,1.11vw,1.33rem)]
+            leading-[clamp(0.8016rem,1.67vw,2.0rem)]
             font-[family-name:var(--font-sans)]
           "
         >
@@ -471,7 +471,7 @@ const AssetDetailsCard = ({
 
       {/* Assigned Agent */}
       <InfoField label="ASSIGNED AGENT">
-        <div className="flex items-center gap-[clamp(0.53rem,0.83vw,1rem)]">
+        <div className="flex items-center gap-[clamp(0.3984rem,0.83vw,1.0rem)]">
           <AgentAvatar
             name={data.assignedAgent.name}
             avatarUrl={data.assignedAgent.avatarUrl}
@@ -479,8 +479,8 @@ const AssetDetailsCard = ({
           <span
             className="
               font-medium text-[var(--text-primary)]
-              text-[clamp(0.71rem,1.11vw,1.33rem)]
-              leading-[clamp(1.0625rem,1.67vw,2rem)]
+              text-[clamp(0.5328rem,1.11vw,1.33rem)]
+              leading-[clamp(0.8016rem,1.67vw,2.0rem)]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -490,16 +490,16 @@ const AssetDetailsCard = ({
       </InfoField>
 
       {/* Creation Time + Last Updated */}
-      <div className="grid grid-cols-2 gap-x-[clamp(1.275rem,2vw,2.4rem)]">
+      <div className="grid grid-cols-2 gap-x-[clamp(0.96rem,2.0vw,2.4rem)]">
         <InfoField
           label="CREATION TIME"
-          fontSizeClass="text-[clamp(0.44rem,0.69vw,0.83rem)] leading-[clamp(0.66rem,1.04vw,1.25rem)]"
+          fontSizeClass="text-[clamp(0.3312rem,0.69vw,0.83rem)] leading-[clamp(0.4992rem,1.04vw,1.25rem)]"
         >
           <span
             className="
               font-normal text-[var(--text-primary)]
-              text-[clamp(0.625rem,0.97vw,1.1625rem)]
-              leading-[clamp(0.8875rem,1.39vw,1.6625rem)]
+              text-[clamp(0.4688rem,0.97vw,1.1625rem)]
+              leading-[clamp(0.6672rem,1.39vw,1.6625rem)]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -508,13 +508,13 @@ const AssetDetailsCard = ({
         </InfoField>
         <InfoField
           label={isCompletedVO3 ? "VERIFICATION TIME" : "LAST UPDATED"}
-          fontSizeClass="text-[clamp(0.44rem,0.69vw,0.83rem)] leading-[clamp(0.66rem,1.04vw,1.25rem)]"
+          fontSizeClass="text-[clamp(0.3312rem,0.69vw,0.83rem)] leading-[clamp(0.4992rem,1.04vw,1.25rem)]"
         >
           <span
             className="
               font-normal text-[var(--text-primary)]
-              text-[clamp(0.625rem,0.97vw,1.1625rem)]
-              leading-[clamp(0.8875rem,1.39vw,1.6625rem)]
+              text-[clamp(0.4688rem,0.97vw,1.1625rem)]
+              leading-[clamp(0.6672rem,1.39vw,1.6625rem)]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -537,16 +537,16 @@ const CurrentStatusCard = ({ data }: { data: FarmlandDetailData }) => (
       bg-[var(--surface-card)]
       border border-[var(--border-soft)]
       shadow-[var(--shadow-card)]
-      rounded-[clamp(1.42rem,2.22vw,2.66rem)]
-      p-[clamp(1.42rem,2.22vw,2.66rem)]
-      gap-[clamp(1.42rem,2.22vw,2.66rem)]
+      rounded-[clamp(1.0656rem,2.22vw,2.66rem)]
+      p-[clamp(1.0656rem,2.22vw,2.66rem)]
+      gap-[clamp(1.0656rem,2.22vw,2.66rem)]
       h-full
     "
   >
     {/* Heading */}
     <div
       className="
-        pb-[clamp(0.71rem,1.11vw,1.33rem)]
+        pb-[clamp(0.5328rem,1.11vw,1.33rem)]
         border-b border-[var(--border-subtle)]
       "
     >
@@ -555,8 +555,8 @@ const CurrentStatusCard = ({ data }: { data: FarmlandDetailData }) => (
         variant="h4"
         className="
           font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-          text-[clamp(0.8875rem,1.39vw,1.6625rem)]
-          leading-[clamp(1.25rem,1.94vw,2.33rem)]
+          text-[clamp(0.6672rem,1.39vw,1.6625rem)]
+          leading-[clamp(0.9375rem,1.94vw,2.33rem)]
         "
       >
         Current Status
@@ -567,7 +567,7 @@ const CurrentStatusCard = ({ data }: { data: FarmlandDetailData }) => (
     <div
       className="
         flex flex-col
-        gap-[clamp(1.42rem,2.22vw,2.66rem)]
+        gap-[clamp(1.0656rem,2.22vw,2.66rem)]
         flex-1 justify-center
       "
     >
@@ -625,25 +625,25 @@ const TopNav = ({
         size="default"
         onClick={onBack}
         className="
-          w-[clamp(15.5rem,16.94vw,20.3rem)]
-          h-[clamp(2.31rem,3.61vw,4.3rem)]
-          text-[clamp(0.71rem,1.11vw,1.33rem)]
-          py-[clamp(0.84rem,1.32vw,1.56rem)]
-          px-[clamp(0.8875rem,1.39vw,1.66rem)]
+          w-[clamp(11.625rem,16.94vw,20.3rem)]
+          h-[clamp(1.7328rem,3.61vw,4.3rem)]
+          text-[clamp(0.5328rem,1.11vw,1.33rem)]
+          py-[clamp(0.6336rem,1.32vw,1.56rem)]
+          px-[clamp(0.6672rem,1.39vw,1.66rem)]
           font-[family-name:var(--font-sans)]
           text-[var(--text-button)]
         "
       />
 
       {/* Right: bell + avatar */}
-      <div className="flex items-center gap-[clamp(0.5rem,0.9vw,0.8125rem)]">
+      <div className="flex items-center gap-[clamp(0.432rem,0.9vw,0.8125rem)]">
         {/* Bell */}
         <button
           className="
             relative
             flex items-center justify-center bg-[var(--surface-card)] rounded-full shrink-0
-            w-[clamp(2.25rem,3.61vw,3.25rem)]
-            h-[clamp(2.25rem,3.61vw,3.25rem)]
+            w-[clamp(1.7328rem,3.61vw,3.25rem)]
+            h-[clamp(1.7328rem,3.61vw,3.25rem)]
             shadow-sm
             border border-[var(--border)]
             hover:opacity-85 transition-opacity
@@ -655,8 +655,8 @@ const TopNav = ({
             strokeWidth={1.5}
             color="var(--text-primary)"
             className="
-              w-[clamp(1rem,1.67vw,1.5rem)]
-              h-[clamp(1rem,1.67vw,1.5rem)]
+              w-[clamp(0.8016rem,1.67vw,1.5rem)]
+              h-[clamp(0.8016rem,1.67vw,1.5rem)]
             "
           />
 
@@ -664,10 +664,10 @@ const TopNav = ({
             className="
               absolute rounded-full
               bg-[var(--status-danger)]
-              w-[clamp(0.25rem,0.4vw,0.375rem)]
-              h-[clamp(0.25rem,0.4vw,0.375rem)]
-              top-[clamp(0.375rem,0.7vw,0.625rem)]
-              right-[clamp(0.375rem,0.7vw,0.625rem)]
+              w-[clamp(0.192rem,0.4vw,0.375rem)]
+              h-[clamp(0.192rem,0.4vw,0.375rem)]
+              top-[clamp(0.336rem,0.7vw,0.625rem)]
+              right-[clamp(0.336rem,0.7vw,0.625rem)]
             "
           />
         </button>
@@ -689,8 +689,8 @@ const TopNav = ({
             bg-[var(--surface-card)]
             transition-opacity
             hover:opacity-90
-            w-[clamp(2.25rem,3.61vw,3.25rem)]
-            h-[clamp(2.25rem,3.61vw,3.25rem)]
+            w-[clamp(1.7328rem,3.61vw,3.25rem)]
+            h-[clamp(1.7328rem,3.61vw,3.25rem)]
             border border-[rgba(0,0,0,0.05)]
             cursor-pointer
           "
@@ -709,7 +709,7 @@ const TopNav = ({
                 font-bold
                 font-[var(--font-sans)]
                 text-[var(--text-primary)]
-                text-[clamp(0.71rem,1.11vw,1.33rem)]
+                text-[clamp(0.5328rem,1.11vw,1.33rem)]
               "
             >
               {initials}
@@ -741,10 +741,10 @@ const BottomActions = ({
   <div
     className="
       flex flex-row justify-end items-center
-      gap-[clamp(0.71rem,1.11vw,1.33rem)]
-      mt-[clamp(1.81rem,2.85vw,3.41rem)]
-      pt-[clamp(1.42rem,2.22vw,2.66rem)]
-      pb-[clamp(2.125rem,3.33vw,4rem)]
+      gap-[clamp(0.5328rem,1.11vw,1.33rem)]
+      mt-[clamp(1.368rem,2.85vw,3.41rem)]
+      pt-[clamp(1.0656rem,2.22vw,2.66rem)]
+      pb-[clamp(1.5984rem,3.33vw,4.0rem)]
     "
   >
     {isCompletedVO3 ? (
@@ -755,9 +755,9 @@ const BottomActions = ({
           rounded-full bg-[#2780C4] hover:bg-[#1f6da9]
           font-semibold text-white
           transition-opacity hover:opacity-90
-          w-[clamp(5.375rem,8.4vw,10rem)]
-          h-[clamp(1.6875rem,2.64vw,3.16rem)]
-          text-[clamp(0.625rem,0.97vw,1.1625rem)]
+          w-[clamp(4.032rem,8.4vw,10.0rem)]
+          h-[clamp(1.2672rem,2.64vw,3.16rem)]
+          text-[clamp(0.4688rem,0.97vw,1.1625rem)]
           font-[family-name:var(--font-sans)]
         "
       >
@@ -773,9 +773,9 @@ const BottomActions = ({
             rounded-full bg-[#96C9ED] hover:bg-[#1f6da9]
             font-semibold text-[#000000]
             transition-opacity hover:opacity-90
-            w-[clamp(5.375rem,8.4vw,10rem)]
-            h-[clamp(1.6875rem,2.64vw,3.16rem)]
-            text-[clamp(0.625rem,0.97vw,1.1625rem)]
+            w-[clamp(4.032rem,8.4vw,10.0rem)]
+            h-[clamp(1.2672rem,2.64vw,3.16rem)]
+            text-[clamp(0.4688rem,0.97vw,1.1625rem)]
             font-[family-name:var(--font-sans)]
           "
         >
@@ -793,9 +793,9 @@ const BottomActions = ({
             font-medium text-[rgba(0,0,0,0.8)]
             bg-transparent
             transition-opacity hover:opacity-75
-            w-[clamp(5.375rem,8.4vw,10rem)]
-            h-[clamp(1.6875rem,2.64vw,3.16rem)]
-            text-[clamp(0.625rem,0.97vw,1.1625rem)]
+            w-[clamp(4.032rem,8.4vw,10.0rem)]
+            h-[clamp(1.2672rem,2.64vw,3.16rem)]
+            text-[clamp(0.4688rem,0.97vw,1.1625rem)]
             font-[family-name:var(--font-sans)]
           "
         >
@@ -810,9 +810,9 @@ const BottomActions = ({
             rounded-full bg-[#2780C4] hover:bg-[#1f6da9]
             font-semibold text-white
             transition-opacity hover:opacity-90
-            w-[clamp(5.375rem,8.4vw,10rem)]
-            h-[clamp(1.6875rem,2.64vw,3.16rem)]
-            text-[clamp(0.625rem,0.97vw,1.1625rem)]
+            w-[clamp(4.032rem,8.4vw,10.0rem)]
+            h-[clamp(1.2672rem,2.64vw,3.16rem)]
+            text-[clamp(0.4688rem,0.97vw,1.1625rem)]
             font-[family-name:var(--font-sans)]
           "
         >
@@ -1157,40 +1157,40 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999] flex items-center justify-center p-4 animate-in fade-in duration-300">
             <div
               className="
-                relative w-full max-w-[clamp(30rem,46.67vw,42rem)] min-h-[clamp(22rem,30.07vw,32rem)] bg-white rounded-[clamp(1.5rem,2.2vw,2.5rem)]
+                relative w-full max-w-[clamp(22.5rem,46.67vw,42.0rem)] min-h-[clamp(16.5rem,30.07vw,32.0rem)] bg-white rounded-[clamp(1.125rem,2.2vw,2.5rem)]
                 flex flex-col gap-4 shadow-[0px_20px_40px_rgba(0,49,50,0.06)]
               "
             >
               {/* Header: Title and Close Button */}
-              <div className="pt-[clamp(1.25rem,1.67vw,2rem)] px-[clamp(1.5rem,2.22vw,2.5rem)] flex flex-row justify-between items-center w-full">
-                <h3 className="font-sans font-semibold text-[clamp(1.25rem,1.67vw,1.75rem)] leading-[clamp(1.65rem,2.22vw,2.5rem)] tracking-[-0.6px] text-[#1A1C1D]">
+              <div className="pt-[clamp(0.9375rem,1.67vw,2.0rem)] px-[clamp(1.125rem,2.22vw,2.5rem)] flex flex-row justify-between items-center w-full">
+                <h3 className="font-sans font-semibold text-[clamp(0.9375rem,1.67vw,1.75rem)] leading-[clamp(1.2375rem,2.22vw,2.5rem)] tracking-[-0.6px] text-[#1A1C1D]">
                   Turnback
                 </h3>
                 <button
                   onClick={() => setShowTurnBackModal(false)}
-                  className="w-[clamp(1.5rem,2.08vw,2.5rem)] h-[clamp(1.5rem,2.08vw,2.5rem)] rounded-full flex items-center justify-center bg-transparent border-none hover:bg-gray-100 transition-colors cursor-pointer"
+                  className="w-[clamp(1.125rem,2.08vw,2.5rem)] h-[clamp(1.125rem,2.08vw,2.5rem)] rounded-full flex items-center justify-center bg-transparent border-none hover:bg-gray-100 transition-colors cursor-pointer"
                   aria-label="Close"
                 >
-                  <X className="w-[clamp(1rem,1.39vw,1.5rem)] h-[clamp(1rem,1.39vw,1.5rem)] text-black" />
+                  <X className="w-[clamp(0.75rem,1.39vw,1.5rem)] h-[clamp(0.75rem,1.39vw,1.5rem)] text-black" />
                 </button>
               </div>
 
               {/* Body */}
-              <div className="px-[clamp(1.5rem,2.22vw,2.5rem)] pb-[clamp(1.5rem,2.22vw,2.5rem)] flex flex-col gap-[clamp(0.75rem,1.11vw,1.5rem)] w-full">
-                <div className="flex flex-col gap-[clamp(0.4rem,0.6vw,0.8rem)] w-full">
-                  <span className="font-sans font-normal text-[clamp(0.8rem,0.97vw,1.1rem)] leading-[clamp(1rem,1.39vw,1.5rem)] text-[#3D4949]">
+              <div className="px-[clamp(1.125rem,2.22vw,2.5rem)] pb-[clamp(1.125rem,2.22vw,2.5rem)] flex flex-col gap-[clamp(0.5625rem,1.11vw,1.5rem)] w-full">
+                <div className="flex flex-col gap-[clamp(0.3rem,0.6vw,0.8rem)] w-full">
+                  <span className="font-sans font-normal text-[clamp(0.6rem,0.97vw,1.1rem)] leading-[clamp(0.75rem,1.39vw,1.5rem)] text-[#3D4949]">
                     Provide the reason for turnback:
                   </span>
 
                   {/* Textarea container */}
-                  <div className="relative w-full h-[clamp(10rem,13.88vw,15rem)] bg-[#F3F3F5] border border-[#BCC9C9] rounded-[clamp(0.75rem,1.11vw,1.25rem)]">
+                  <div className="relative w-full h-[clamp(7.5rem,13.88vw,15.0rem)] bg-[#F3F3F5] border border-[#BCC9C9] rounded-[clamp(0.5625rem,1.11vw,1.25rem)]">
                     <textarea
                       value={turnBackReason}
                       onChange={(e) => setTurnBackReason(e.target.value)}
                       placeholder="Start write here..."
                       className="
                         w-full h-full bg-transparent outline-none border-none resize-none
-                        p-[clamp(1rem,1.39vw,1.75rem)] font-sans font-normal text-[clamp(0.9rem,1.11vw,1.25rem)] leading-[clamp(1.25rem,1.8vw,2rem)] text-[#1A1C1D]
+                        p-[clamp(0.75rem,1.39vw,1.75rem)] font-sans font-normal text-[clamp(0.675rem,1.11vw,1.25rem)] leading-[clamp(0.9375rem,1.8vw,2.0rem)] text-[#1A1C1D]
                         placeholder:text-[rgba(26,28,29,0.3)]
                       "
                     />
@@ -1204,12 +1204,12 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
                     navigate("/verification-officer-3/assigned-farmlands");
                   }}
                   className="
-                    flex flex-row justify-center items-center px-[clamp(0.5rem,0.69vw,1rem)] py-[clamp(0.5rem,0.69vw,1rem)] gap-2
-                    w-[clamp(6.5rem,8.4vw,8.5rem)] h-[clamp(2.25rem,2.64vw,2.75rem)] bg-[#2780C4] hover:bg-[#1f6da9] rounded-[clamp(1.5rem,2.2vw,2.5rem)]
+                    flex flex-row justify-center items-center px-[clamp(0.375rem,0.69vw,1.0rem)] py-[clamp(0.375rem,0.69vw,1.0rem)] gap-2
+                    w-[clamp(4.875rem,8.4vw,8.5rem)] h-[clamp(1.6875rem,2.64vw,2.75rem)] bg-[#2780C4] hover:bg-[#1f6da9] rounded-[clamp(1.125rem,2.2vw,2.5rem)]
                     cursor-pointer transition-colors shadow-md hover:shadow-lg self-end
                   "
                 >
-                  <span className="font-sans font-semibold text-[clamp(0.8rem,0.97vw,1.1rem)] leading-[clamp(1rem,1.25vw,1.5rem)] text-white text-center">
+                  <span className="font-sans font-semibold text-[clamp(0.6rem,0.97vw,1.1rem)] leading-[clamp(0.75rem,1.25vw,1.5rem)] text-white text-center">
                     Submit
                   </span>
                 </button>
@@ -1233,13 +1233,13 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
         className="
           mx-auto w-full
           max-w-full
-          pt-[clamp(1.5rem,2.36vw,2.81rem)]
+          pt-[clamp(1.1328rem,2.36vw,2.81rem)]
           pb-0
           flex flex-col
         "
       >
         {/* Top nav wrapped in its own 40px padding */}
-        <div className="px-[clamp(1.775rem,2.78vw,3.3rem)] w-full">
+        <div className="px-[clamp(1.3344rem,2.78vw,3.3rem)] w-full">
           <TopNav onBack={handleBack} isRequestedInfo={isRequestedInfo} isCompletedVO3={isCompletedVO3} />
         </div>
 
@@ -1247,18 +1247,18 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
         <div
           className="
             flex flex-col w-full
-            px-[clamp(4.25rem,6.67vw,8rem)]
+            px-[clamp(3.2016rem,6.67vw,8.0rem)]
           "
         >
           {/* Page heading */}
-          <div className="flex flex-col gap-2 mt-[clamp(1.33rem,2.08vw,2.5rem)]">
+          <div className="flex flex-col gap-2 mt-[clamp(0.9984rem,2.08vw,2.5rem)]">
             <Typography
               as="h1"
               className="
                 font-extrabold tracking-[-1.2px] text-[var(--text-primary)]
                 font-[family-name:var(--font-heading)]
-                text-[clamp(1.25rem,1.94vw,2.33rem)]
-                leading-[clamp(2.125rem,3.33vw,4rem)]
+                text-[clamp(0.9375rem,1.94vw,2.33rem)]
+                leading-[clamp(1.5984rem,3.33vw,4.0rem)]
               "
             >
               {isCompletedVO3 ? "Completed Farmlands" : isRequestedInfo ? "Requested Information" : "Assigned Farmlands"}
@@ -1274,8 +1274,8 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
               grid
               grid-cols-1
               md:grid-cols-2
-              gap-[clamp(1.7rem,2.7vw,3.22rem)]
-              mt-[clamp(2.125rem,3.33vw,4rem)]
+              gap-[clamp(1.296rem,2.7vw,3.22rem)]
+              mt-[clamp(1.5984rem,3.33vw,4.0rem)]
             "
           >
             <AssetDetailsCard data={displayData} isCompletedVO3={isCompletedVO3} />

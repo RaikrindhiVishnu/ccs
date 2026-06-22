@@ -43,7 +43,7 @@ const AssignedFarmlandList = () => {
         md:px-[1.25rem]
         md:pt-[1.25rem]
 
-        lg:px-[1.5rem]
+        md:px-[1.5rem]
         lg:pt-[1.5rem]
         lg:pb-[1.5rem]
 
@@ -79,7 +79,7 @@ const AssignedFarmlandList = () => {
 
           md:gap-[1.5rem]
 
-          lg:gap-[1.75rem]
+          md:gap-[1.75rem]
 
           xl:gap-[2rem]
 
@@ -109,8 +109,8 @@ const AssignedFarmlandList = () => {
             sm:p-[1.25rem]
 
             lg:rounded-[2rem]
-            lg:p-[1.5rem]
-            lg:gap-[1.75rem]
+            md:p-[1.5rem]
+            md:gap-[1.75rem]
 
             xl:p-[1.75rem]
             xl:gap-[2rem]
@@ -131,7 +131,7 @@ const AssignedFarmlandList = () => {
                   font-bold
                   leading-[110%]
                   tracking-[-0.04em]
-                  text-[clamp(1.5rem,2.361vw,2.375rem)]
+                  text-[clamp(1.1333rem,2.361vw,2.375rem)]
                   text-[var(--text-primary)]
                       
                   "
@@ -166,11 +166,11 @@ const AssignedFarmlandList = () => {
             sm:px-[1.25rem]
 
             lg:min-h-[4.75rem]
-            lg:flex-row
+            md:flex-row
             lg:items-center
             lg:justify-between
 
-            lg:px-[1.5rem]
+            md:px-[1.5rem]
 
             xl:px-[2rem]
 

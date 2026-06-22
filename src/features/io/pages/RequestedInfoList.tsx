@@ -180,8 +180,8 @@ const RequestedInfoList = () => {
       className="
         w-full
         bg-[var(--chart-bg)]
-        px-[clamp(12px,2vw,24px)]
-        pt-[clamp(12px,2vw,24px)]
+        px-[clamp(15.36px,2.0vw,24.0px)]
+        pt-[clamp(15.36px,2.0vw,24.0px)]
         pb-[12px]
       "
     >
@@ -195,7 +195,7 @@ const RequestedInfoList = () => {
           max-w-[1360px]
           gap-[1.25rem]
           md:gap-[1.5rem]
-          lg:gap-[1.75rem]
+          md:gap-[1.75rem]
           xl:gap-[2rem]
           2xl:gap-[2.25rem]
           min-[1800px]:gap-[2.5rem]
@@ -207,7 +207,7 @@ const RequestedInfoList = () => {
             w-full
             bg-white
             rounded-[32px]
-            p-[clamp(16px,2.5vw,34px)]
+            p-[clamp(19.2px,2.5vw,34.0px)]
             flex
             flex-col
             gap-[24px]
@@ -248,8 +248,8 @@ const RequestedInfoList = () => {
                 titleClassName="
                   font-[var(--font-sans)]
                   font-semibold
-                  text-[clamp(24px,2.36vw,48px)]
-                  leading-[clamp(28px,2.78vw,56px)]
+                  text-[clamp(18.1248px,2.36vw,48.0px)]
+                  leading-[clamp(21.3504px,2.78vw,56.0px)]
                   tracking-[-0.9px]
                   text-[var(--text-primary)]
                   normal-case
@@ -258,9 +258,9 @@ const RequestedInfoList = () => {
                   !bg-[var(--chart-bg)]
                   border
                   border-[var(--border-subtle)]
-                  !h-[clamp(40px,3.61vw,68px)]
+                  !h-[clamp(30px,3.61vw,68.0px)]
                   !rounded-[60px]
-                  !px-[clamp(14px,1.39vw,28px)]
+                  !px-[clamp(10.6752px,1.39vw,28.0px)]
                 "
               />
             </section>
@@ -289,8 +289,8 @@ const RequestedInfoList = () => {
             px-[24px]
             py-[26px]
             h-auto
-            lg:h-[76px]
-            lg:flex-row
+            md:h-[76px]
+            md:flex-row
             lg:items-center
             lg:justify-between
           "
@@ -301,7 +301,7 @@ const RequestedInfoList = () => {
               font-[var(--font-sans)]
               font-medium
               text-[#64748B]
-              text-[clamp(14px,1.11vw,16px)]
+              text-[clamp(10.5px,1.11vw,16.0px)]
               leading-[16px]
               flex
               items-center

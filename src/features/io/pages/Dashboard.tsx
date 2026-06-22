@@ -25,7 +25,7 @@ const IODashboard = () => {
 
         px-[0.75rem]
         sm:px-[1rem]
-        lg:px-[1.25rem]
+        md:px-[1.25rem]
         xl:px-[1.8rem]
         2xl:px-[2.3rem]
 
@@ -58,7 +58,7 @@ const IODashboard = () => {
 
             p-[0.9rem]
             sm:p-[1rem]
-            lg:p-[1.25rem]
+            md:p-[1.25rem]
             xl:p-[1.4rem]
             2xl:p-[1.5rem]
           "
@@ -120,7 +120,7 @@ const IODashboard = () => {
 
                 gap-[0.9rem]
                 sm:gap-[1rem]
-                lg:gap-[1.1rem]
+                md:gap-[1.1rem]
                 xl:gap-[1.25rem]
                 2xl:gap-[1.4rem]
 
