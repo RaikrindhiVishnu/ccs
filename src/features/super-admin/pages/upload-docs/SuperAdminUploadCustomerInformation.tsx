@@ -34,7 +34,7 @@ export const SuperAdminUploadCustomerInformation: React.FC = () => {
         </div>
 
         {/* ── Main Layout - Sidebar & Central Form side-by-side ── */}
-        <div className="w-full flex flex-col lg:flex-row gap-[clamp(0.8rem,1.67vw,2.5rem)] lg:items-stretch items-start">
+        <div className="w-full flex flex-col md:flex-row gap-[clamp(0.8rem,1.67vw,2.5rem)] md:items-stretch items-start">
           
           {/* Left Column: Timeline Stepper Card */}
           <UploadTimelineSidebar 

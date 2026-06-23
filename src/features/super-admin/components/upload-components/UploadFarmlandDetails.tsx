@@ -71,9 +71,9 @@ const UploadFarmlandDetails: React.FC<UploadFarmlandDetailsProps> = ({
       </div>
 
       {/* ── Two-Column Mid Section ── */}
-      <div className="flex flex-col lg:flex-row gap-[clamp(0.72rem,1.5vw,1.5rem)] items-stretch w-full">
+      <div className="flex flex-col md:flex-row gap-[clamp(0.72rem,1.5vw,1.5rem)] items-stretch w-full">
         {/* Left Side: Land Hero Image Card with overlays */}
-        <div className="relative flex-1 min-w-[clamp(18rem,50%,36rem)] lg:w-[clamp(17.47rem,36.39vw,36.0rem)] lg:h-[clamp(13.63rem,28.4vw,32.0rem)] rounded-[clamp(1.07rem,2.22vw,2.75rem)] overflow-hidden shadow-sm aspect-[4/3] lg:aspect-auto">
+        <div className="relative flex-1 min-w-[clamp(18rem,50%,36rem)] md:w-[clamp(17.47rem,36.39vw,36.0rem)] md:h-[clamp(13.63rem,28.4vw,32.0rem)] rounded-[clamp(1.07rem,2.22vw,2.75rem)] overflow-hidden shadow-sm aspect-[4/3] md:aspect-auto">
           {/* Main Background Image */}
           <img
             src={farmland.image}
@@ -104,7 +104,7 @@ const UploadFarmlandDetails: React.FC<UploadFarmlandDetailsProps> = ({
         </div>
 
         {/* Right Side: Current Status Card */}
-        <div className="bg-white border border-[#BCC9C9]/15 shadow-[0px_20px_40px_rgba(0,49,50,0.02)] rounded-[clamp(1.07rem,2.22vw,2.75rem)] p-[clamp(1.1rem,2.29vw,2.5rem)] w-full lg:w-[clamp(18rem,37.5vw,39.0rem)] lg:h-[clamp(13.63rem,28.4vw,32.0rem)] flex flex-col gap-[clamp(0.8rem,1.67vw,2.2rem)] shrink-0 justify-between">
+        <div className="bg-white border border-[#BCC9C9]/15 shadow-[0px_20px_40px_rgba(0,49,50,0.02)] rounded-[clamp(1.07rem,2.22vw,2.75rem)] p-[clamp(1.1rem,2.29vw,2.5rem)] w-full md:w-[clamp(18rem,37.5vw,39.0rem)] md:h-[clamp(13.63rem,28.4vw,32.0rem)] flex flex-col gap-[clamp(0.8rem,1.67vw,2.2rem)] shrink-0 justify-between">
           <div className="border-b border-[#EEEEF0] pb-[clamp(0.48rem,1vw,1.0rem)]">
             <h3 className="font-['Plus_Jakarta_Sans'] font-bold text-[clamp(0.67rem,1.39vw,1.6rem)] leading-[clamp(0.93rem,1.94vw,2.2rem)] text-[#1A1C1D]">
               Current Status

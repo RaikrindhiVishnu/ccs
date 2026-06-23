@@ -60,7 +60,7 @@ export const UploadShortTimelineSidebar: React.FC<UploadShortTimelineSidebarProp
   return (
     <div
       className={cn(
-        "relative box-border bg-white rounded-[clamp(0.8rem,1.67vw,1.8rem)] shadow-[0px_20px_40px_rgba(0,49,50,0.06)] p-[clamp(1rem,2.08vw,2.0rem)] flex flex-col justify-between select-none shrink-0 w-full lg:w-[clamp(13.67rem,28.47vw,28.0rem)] h-auto lg:h-[clamp(14.76rem,30.76vw,30.0rem)]",
+        "relative box-border bg-white rounded-[clamp(0.8rem,1.67vw,1.8rem)] shadow-[0px_20px_40px_rgba(0,49,50,0.06)] p-[clamp(1rem,2.08vw,2.0rem)] flex flex-col justify-between select-none shrink-0 w-full md:w-[clamp(13.67rem,28.47vw,28.0rem)] h-auto md:h-[clamp(14.76rem,30.76vw,30.0rem)]",
         className
       )}
       style={style}

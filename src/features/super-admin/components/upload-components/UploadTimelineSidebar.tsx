@@ -32,7 +32,7 @@ export const UploadTimelineSidebar: React.FC<UploadTimelineSidebarProps> = ({
 }) => {
   return (
     <div 
-      className={`bg-white rounded-[clamp(0.8rem,1.67vw,2.0rem)] shadow-[0px_20px_40px_rgba(0,49,50,0.06)] p-[clamp(1.07rem,2.22vw,2.5rem)] flex flex-col select-none w-full lg:w-[clamp(13.68rem,28.5vw,28.0rem)] shrink-0 ${className}`}
+      className={`bg-white rounded-[clamp(0.8rem,1.67vw,2.0rem)] shadow-[0px_20px_40px_rgba(0,49,50,0.06)] p-[clamp(1.07rem,2.22vw,2.5rem)] flex flex-col select-none w-full md:w-[clamp(13.68rem,28.5vw,28.0rem)] shrink-0 ${className}`}
       style={{
         minHeight: "clamp(27.36rem,57vw,58.0rem)",
         ...style
