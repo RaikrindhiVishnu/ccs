@@ -183,7 +183,7 @@ const Profile = () => {
 
                   {/* Name & Role */}
                   <div className="flex flex-col text-center md:text-left pb-[clamp(0.3312rem,0.69vw,1.0rem)]">
-                    <h2 className="text-[clamp(0.8438rem,1.67vw,2.0rem)] font-bold text-[var(--text-strong)] font-[family-name:var(--font-sans)] leading-[clamp(1.05rem,2.08vw,3.0rem)]">
+                    <h2 className="text-[clamp(0.8438rem,1.67vw,2.004rem)] font-bold text-[var(--text-strong)] font-[family-name:var(--font-sans)] leading-[clamp(1.05rem,2.08vw,3.0rem)]">
                       {fullName}
                     </h2>
                     <span className="text-[clamp(0.6562rem,1.11vw,1.25rem)] font-medium text-[var(--text-strong)] font-[family-name:var(--font-sans)] leading-[clamp(0.6975rem,1.39vw,2.0rem)] opacity-[0.6] mt-[clamp(0.135rem,0.28vw,0.4rem)]">
@@ -214,7 +214,7 @@ const Profile = () => {
                 min-h-[clamp(12rem,19.03vw,21.5rem)]
               "
             >
-              <h3 className="text-[clamp(0.8438rem,1.67vw,2.0rem)] font-semibold text-[var(--text-strong)] font-[family-name:var(--font-sans)]">
+              <h3 className="text-[clamp(0.8438rem,1.67vw,2.004rem)] font-semibold text-[var(--text-strong)] font-[family-name:var(--font-sans)]">
                 Personal details
               </h3>
 
@@ -340,7 +340,7 @@ const Profile = () => {
                 min-h-[clamp(6rem,10.48vw,12.0rem)]
               "
             >
-              <h3 className="text-[clamp(0.8438rem,1.67vw,2.0rem)] font-semibold text-[var(--text-strong)] font-[family-name:var(--font-sans)]">
+              <h3 className="text-[clamp(0.8438rem,1.67vw,2.004rem)] font-semibold text-[var(--text-strong)] font-[family-name:var(--font-sans)]">
                 Alerts
               </h3>
 
@@ -428,7 +428,7 @@ const Profile = () => {
 
             {/* Heading Section */}
             <div className="w-full flex flex-col gap-2 mb-[clamp(1.125rem,2.2vw,3.0rem)] text-left">
-              <h2 className="font-[family-name:var(--font-sans)] font-bold text-[clamp(0.9375rem,1.67vw,2.0rem)] text-[#111827] leading-tight">
+              <h2 className="font-[family-name:var(--font-sans)] font-bold text-[clamp(0.9375rem,1.67vw,2.004rem)] text-[#111827] leading-tight">
                 Update Password
               </h2>
               <p className="font-[family-name:var(--font-sans)] font-normal text-[clamp(0.6375rem,1.11vw,1.25rem)] text-[#6B7280] leading-relaxed">

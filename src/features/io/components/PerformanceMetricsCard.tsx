@@ -197,7 +197,7 @@ export const PerformanceMetricsCard = () => {
               font-[var(--font-sans)]
               leading-[110%]
               text-[var(--text-primary)]
-              text-[clamp(0.888rem,1.85vw,1.6625rem)]
+              text-[clamp(0.888rem,1.85vw,2.22rem)]
             "
           >
             Performance metrics

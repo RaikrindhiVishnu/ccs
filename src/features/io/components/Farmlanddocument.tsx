@@ -440,7 +440,7 @@ const AssetDetailsCard = ({
         variant="h4"
         className="
           font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-          text-[clamp(0.6672rem,1.39vw,1.6625rem)]
+          text-[clamp(0.6672rem,1.39vw,1.668rem)]
           leading-[clamp(0.9375rem,1.94vw,2.33rem)]
         "
       >
@@ -555,7 +555,7 @@ const CurrentStatusCard = ({ data }: { data: FarmlandDetailData }) => (
         variant="h4"
         className="
           font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-          text-[clamp(0.6672rem,1.39vw,1.6625rem)]
+          text-[clamp(0.6672rem,1.39vw,1.668rem)]
           leading-[clamp(0.9375rem,1.94vw,2.33rem)]
         "
       >
@@ -1163,7 +1163,7 @@ const Farmlanddocument: React.FC<FarmlandDetailPageProps> = ({
             >
               {/* Header: Title and Close Button */}
               <div className="pt-[clamp(0.9375rem,1.67vw,2.0rem)] px-[clamp(1.125rem,2.22vw,2.5rem)] flex flex-row justify-between items-center w-full">
-                <h3 className="font-sans font-semibold text-[clamp(0.9375rem,1.67vw,1.75rem)] leading-[clamp(1.2375rem,2.22vw,2.5rem)] tracking-[-0.6px] text-[#1A1C1D]">
+                <h3 className="font-sans font-semibold text-[clamp(0.9375rem,1.67vw,2.004rem)] leading-[clamp(1.2375rem,2.22vw,2.5rem)] tracking-[-0.6px] text-[#1A1C1D]">
                   Turnback
                 </h3>
                 <button

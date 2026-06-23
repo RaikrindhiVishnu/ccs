@@ -938,7 +938,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
 
                   {/* Column 2: Uploaded Files List */}
                   <div className="flex flex-col gap-[clamp(0.6rem,1.11vw,1.8rem)] w-full max-w-[clamp(11.25rem,19.44vw,22.0rem)] justify-self-center">
-                    <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.75rem,1.39vw,1.65rem)] leading-tight text-[var(--text-primary)]">
+                    <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.75rem,1.39vw,1.668rem)] leading-tight text-[var(--text-primary)]">
                       Uploaded Files
                     </span>
 
@@ -1002,7 +1002,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
 
                   {/* Column 3: Updated Comments */}
                   <div className="flex flex-col gap-[clamp(0.6rem,1.11vw,1.8rem)] w-full">
-                    <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.825rem,1.53vw,1.8rem)] leading-tight text-[var(--text-primary)]">
+                    <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(0.825rem,1.53vw,1.836rem)] leading-tight text-[var(--text-primary)]">
                       Updated Comments:
                     </span>
 
@@ -1126,7 +1126,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 {/* If it's mindset, render dropdown selector */}
                 {activeSubTab === "mindset" ? (
                   <div className="flex flex-col gap-[clamp(0.432rem,0.9vw,1.5rem)] w-full max-w-[640px] animate-in fade-in duration-200">
-                    <span className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,1.8rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-black">
+                    <span className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,2.004rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-black">
                       Owner Mindset
                     </span>
                     <div className="relative w-full h-[clamp(2.0625rem,3.75vw,4.5rem)] bg-white border border-[rgba(0,0,0,0.4)] rounded-[8px] flex items-center px-6 pr-12">
@@ -1154,7 +1154,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 ) : activeSubTab === "source" ? (
                   <div className="flex flex-col gap-6 w-full max-w-[640px] animate-in fade-in duration-200">
                     <div className="flex flex-col gap-[clamp(0.432rem,0.9vw,1.5rem)]">
-                      <span className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,1.8rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-black">
+                      <span className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,2.004rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-black">
                         Source Person
                       </span>
                       <div className="relative w-full h-[clamp(2.0625rem,3.75vw,4.5rem)] bg-white border border-[rgba(0,0,0,0.4)] rounded-[8px] flex items-center px-6 pr-12">
@@ -1179,7 +1179,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                     </div>
 
                     <div className="flex flex-col gap-[clamp(0.432rem,0.9vw,1.5rem)]">
-                      <span className="font-sans font-semibold text-[clamp(0.825rem,1.53vw,1.65rem)] leading-[clamp(1.05rem,1.94vw,2.1rem)] text-black">
+                      <span className="font-sans font-semibold text-[clamp(0.825rem,1.53vw,1.836rem)] leading-[clamp(1.05rem,1.94vw,2.1rem)] text-black">
                         Person Contact Details
                       </span>
 
@@ -1271,7 +1271,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                     {/* Conditional Loan Amount Input */}
                     {activeSubTab === "loans" && selections.loans === "Available" && (
                       <div className="flex flex-col gap-[clamp(0.432rem,0.9vw,1.5rem)] w-full max-w-[640px] mt-4 animate-in fade-in duration-200">
-                        <span className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,1.8rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-black">
+                        <span className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,2.004rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-black">
                           Please Enter Loan Amount
                         </span>
                         <div className="relative w-full h-[clamp(2.0625rem,3.75vw,4.5rem)] bg-white border border-[rgba(0,0,0,0.4)] rounded-[8px] flex items-center px-6">
@@ -1289,7 +1289,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                     {activeSubTab === "agreements" && selections.agreements === "Available" && (
                       <div className="flex flex-col gap-6 w-full max-w-[640px] mt-4 animate-in fade-in duration-200">
                         <div className="flex flex-col gap-[clamp(0.432rem,0.9vw,1.5rem)]">
-                          <span className="font-sans font-semibold text-[clamp(0.75rem,1.39vw,1.5rem)] leading-[clamp(0.9375rem,1.74vw,1.875rem)] text-black">
+                          <span className="font-sans font-semibold text-[clamp(0.75rem,1.39vw,1.668rem)] leading-[clamp(0.9375rem,1.74vw,1.875rem)] text-black">
                             Agreement Type
                           </span>
 
@@ -1341,7 +1341,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                         </div>
 
                         <div className="flex flex-col gap-[clamp(0.432rem,0.9vw,1.5rem)]">
-                          <span className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,1.8rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-black">
+                          <span className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,2.004rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-black">
                             Last Price of the land when made agreement?
                           </span>
                           <div className="w-full h-[clamp(2.0625rem,3.75vw,4.5rem)] bg-white border border-[rgba(0,0,0,0.4)] rounded-[8px] flex items-center px-6">
@@ -1359,7 +1359,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                     {/* Conditional Transactions inputs */}
                     {activeSubTab === "transactions" && selections.transactions === "Available" && (
                       <div className="flex flex-col gap-[clamp(0.432rem,0.9vw,1.5rem)] w-full max-w-[640px] mt-4 animate-in fade-in duration-200">
-                        <span className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,1.8rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-black">
+                        <span className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,2.004rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-black">
                           Last Price of the land when made agreement?
                         </span>
                         <div className="w-full h-[clamp(2.0625rem,3.75vw,4.5rem)] bg-white border border-[rgba(0,0,0,0.4)] rounded-[8px] flex items-center px-6">
@@ -1378,7 +1378,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
 
               {/* Right Column: Comments / Mic Button */}
               <div className="flex flex-col gap-[clamp(0.6rem,1.25vw,2.0rem)] w-full">
-                <span className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,1.8rem)] leading-[1.875rem] text-black">
+                <span className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,2.004rem)] leading-[1.875rem] text-black">
                   Add Comments
                 </span>
 
@@ -1539,7 +1539,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
             "
           >
             {/* Header: Verification Completed or Documents Submitted */}
-            <h3 className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,1.8rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-[#000000] text-center mt-2">
+            <h3 className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,2.004rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-[#000000] text-center mt-2">
               {isVO3 ? "Verification Completed" : "Documents Submitted"}
             </h3>
 
@@ -1553,7 +1553,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
             </div>
 
             {/* Success Text */}
-            <p className="font-sans font-bold text-[clamp(0.75rem,1.39vw,1.5rem)] leading-[clamp(0.9375rem,1.74vw,1.875rem)] text-[#3D4949] text-center px-4 max-w-[450px]">
+            <p className="font-sans font-bold text-[clamp(0.75rem,1.39vw,1.668rem)] leading-[clamp(0.9375rem,1.74vw,1.875rem)] text-[#3D4949] text-center px-4 max-w-[450px]">
               {isVO3 ? (
                 <>
                   Farmland ID: <span style={{ color: '#1C75BC', fontWeight: 700 }}>{farmlandId}</span> has been<br />
@@ -1583,7 +1583,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 shadow-md hover:shadow-lg
               "
             >
-              <span className="font-sans font-semibold text-[clamp(0.825rem,1.65vw,1.8rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-white text-center">
+              <span className="font-sans font-semibold text-[clamp(0.825rem,1.65vw,1.98rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-white text-center">
                 Done
               </span>
             </button>
@@ -1606,7 +1606,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
             "
           >
             {/* Header: Customer Information */}
-            <h3 className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,1.8rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-[#000000] text-center mt-2">
+            <h3 className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,2.004rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-[#000000] text-center mt-2">
               Customer Information
             </h3>
 
@@ -1651,7 +1651,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 shadow-md hover:shadow-lg
               "
             >
-              <span className="font-sans font-semibold text-[clamp(0.825rem,1.65vw,1.8rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-white text-center">
+              <span className="font-sans font-semibold text-[clamp(0.825rem,1.65vw,1.98rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-white text-center">
                 Proceed
               </span>
             </button>
@@ -1669,7 +1669,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
           >
             {/* Header: Title and Close Button */}
             <div className="flex flex-row justify-between items-center w-full">
-              <h3 className="font-sans font-semibold text-[clamp(0.9375rem,1.67vw,1.75rem)] leading-[clamp(1.2375rem,2.22vw,2.5rem)] tracking-[-0.6px] text-[#1A1C1D]">
+              <h3 className="font-sans font-semibold text-[clamp(0.9375rem,1.67vw,2.004rem)] leading-[clamp(1.2375rem,2.22vw,2.5rem)] tracking-[-0.6px] text-[#1A1C1D]">
                 Approve
               </h3>
               <button
@@ -1812,7 +1812,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
               p-8 py-[clamp(1.3296rem,2.77vw,3.5rem)]
             "
           >
-            <h3 className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,1.8rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-[#000000] text-center mt-2">
+            <h3 className="font-sans font-semibold text-[clamp(0.9rem,1.67vw,2.004rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-[#000000] text-center mt-2">
               Rejection Resolved
             </h3>
 
@@ -1824,7 +1824,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
               />
             </div>
 
-            <p className="font-sans font-bold text-[clamp(0.75rem,1.39vw,1.5rem)] leading-[clamp(0.9375rem,1.74vw,1.875rem)] text-[#3D4949] text-center px-4 max-w-[450px]">
+            <p className="font-sans font-bold text-[clamp(0.75rem,1.39vw,1.668rem)] leading-[clamp(0.9375rem,1.74vw,1.875rem)] text-[#3D4949] text-center px-4 max-w-[450px]">
               Farmland ID: {farmlandId} has been successfully resolved & submitted
             </p>
 
@@ -1843,7 +1843,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
                 shadow-md hover:shadow-lg
               "
             >
-              <span className="font-sans font-semibold text-[clamp(0.825rem,1.65vw,1.8rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-white text-center">
+              <span className="font-sans font-semibold text-[clamp(0.825rem,1.65vw,1.98rem)] leading-[clamp(1.125rem,2.08vw,2.25rem)] text-white text-center">
                 Done
               </span>
             </button>

@@ -192,7 +192,10 @@ const RequestedInfoList = () => {
           flex
           w-full
           flex-col
-          max-w-[1360px]
+          max-w-full
+          min-[1400px]:max-w-[95%]
+          min-[1800px]:max-w-[96%]
+          min-[2200px]:max-w-[97%]
           gap-[1.25rem]
           md:gap-[1.5rem]
           md:gap-[1.75rem]
@@ -248,7 +251,7 @@ const RequestedInfoList = () => {
                 titleClassName="
                   font-[var(--font-sans)]
                   font-semibold
-                  text-[clamp(18.1248px,2.36vw,48.0px)]
+                  text-[clamp(18.1248px,2.36vw,45.33px)]
                   leading-[clamp(21.3504px,2.78vw,56.0px)]
                   tracking-[-0.9px]
                   text-[var(--text-primary)]

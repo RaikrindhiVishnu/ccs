@@ -268,7 +268,7 @@ const FarmlandCard = ({
           className="
             font-extrabold
             text-[var(--text-strong)]
-            text-[clamp(0.8438rem,1.389vw,1.625rem)]
+            text-[clamp(0.8438rem,1.389vw,1.6668rem)]
             leading-[1.4]
           "
         >

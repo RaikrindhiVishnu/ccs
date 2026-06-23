@@ -543,7 +543,7 @@ const FarmlandsList = () => {
                 font-semibold
                 leading-[110%]
                 tracking-[-0.9px]
-                text-[clamp(1.1333rem,2.361vw,2.8rem)]
+                text-[clamp(1.1333rem,2.361vw,2.8332rem)]
                 text-[var(--text-heading)]
               "
               searchWrapperClassName="!bg-[var(--chart-bg)]"

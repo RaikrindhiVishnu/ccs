@@ -57,7 +57,7 @@ export const IODashboardHeader = ({
               leading-[125%]
               tracking-[0]
 
-              text-[clamp(0.9rem,1.875vw,1.75rem)]
+              text-[clamp(0.9rem,1.875vw,2.25rem)]
 
               text-[var(--text-strong)]
             `

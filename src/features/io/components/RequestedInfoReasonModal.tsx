@@ -172,7 +172,7 @@ export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> =
         >
           {/* Header Section */}
           <div className="flex flex-col gap-2 w-full">
-            <h2 className="font-bold text-[clamp(15px,1.667vw,32.0px)] leading-[1.3] text-[#111827]">
+            <h2 className="font-bold text-[clamp(15px,1.667vw,32.0064px)] leading-[1.3] text-[#111827]">
               Returning Reason
             </h2>
             <div className="text-[clamp(9px,0.972vw,19.0px)] leading-[1.4] font-medium text-[#6B7280]">

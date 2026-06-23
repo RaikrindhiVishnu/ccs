@@ -485,7 +485,7 @@ const FarmlandsListDetailView = () => {
                 <span
                   className="
                     font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-                    text-[clamp(0.6672rem,1.39vw,1.6625rem)]
+                    text-[clamp(0.6672rem,1.39vw,1.668rem)]
                   "
                 >
                   {initials}
@@ -718,7 +718,7 @@ const FarmlandsListDetailView = () => {
                   variant="h4"
                   className="
                     font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-                    text-[clamp(0.6672rem,1.39vw,1.6625rem)]
+                    text-[clamp(0.6672rem,1.39vw,1.668rem)]
                     leading-[clamp(0.9375rem,1.94vw,2.33rem)]
                   "
                 >
@@ -823,7 +823,7 @@ const FarmlandsListDetailView = () => {
                   variant="h4"
                   className="
                     font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-                    text-[clamp(0.6672rem,1.39vw,1.6625rem)]
+                    text-[clamp(0.6672rem,1.39vw,1.668rem)]
                     leading-[clamp(0.9375rem,1.94vw,2.33rem)]
                   "
                 >
@@ -892,7 +892,7 @@ const FarmlandsListDetailView = () => {
                   variant="h4"
                   className="
                     font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-                    text-[clamp(0.6672rem,1.39vw,1.6625rem)]
+                    text-[clamp(0.6672rem,1.39vw,1.668rem)]
                     leading-[clamp(0.9375rem,1.94vw,2.33rem)]
                   "
                 >
@@ -927,7 +927,7 @@ const FarmlandsListDetailView = () => {
                   <span
                     className="
                       font-[family-name:var(--font-sans)] font-bold
-                      text-[clamp(1.5984rem,3.33vw,3.5rem)]
+                      text-[clamp(1.5984rem,3.33vw,3.996rem)]
                       leading-none
                       text-[#1C5F9D]
                     "

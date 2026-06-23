@@ -209,7 +209,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
             as="h2"
             className="
               absolute left-[1.875rem] top-[3.75rem]
-              text-[clamp(1.1664rem,2.43vw,2.9rem)] font-medium text-black leading-[2.75rem]
+              text-[clamp(1.1664rem,2.43vw,2.916rem)] font-medium text-black leading-[2.75rem]
               font-[family-name:var(--font-sans)]
             "
           >
@@ -401,7 +401,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
               <Typography
                 as="h3"
                 className="
-                  text-[clamp(0.8016rem,1.67vw,2.0rem)] font-bold text-[#1A1C1D] leading-tight
+                  text-[clamp(0.8016rem,1.67vw,2.004rem)] font-bold text-[#1A1C1D] leading-tight
                   font-[family-name:var(--font-heading)]
                 "
               >

@@ -188,7 +188,7 @@ export const FamilyTreeDocument: React.FC<FamilyTreeDocumentProps> = ({
             as="h2"
             className="
               absolute left-[1.875rem] top-[3.75rem]
-              text-[clamp(1.1664rem,2.43vw,2.9rem)] font-medium text-[var(--text-primary)] leading-[2.75rem]
+              text-[clamp(1.1664rem,2.43vw,2.916rem)] font-medium text-[var(--text-primary)] leading-[2.75rem]
               font-[family-name:var(--font-sans)]
             "
           >
