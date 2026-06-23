@@ -113,7 +113,7 @@ const IODashboard = () => {
 
                 grid
                 grid-cols-1
-
+                md:grid-cols-[35%_1fr]
                 lg:grid-cols-[28%_1fr]
                 xl:grid-cols-[32%_1fr]
                 2xl:grid-cols-[437px_1fr]
