@@ -25,7 +25,7 @@ export const auditContextData = [
   {
     id: 2,
     label: "Location",
-    value: "17.48, 78.38",
+    value: "West Godavari, Tanuku",
     image: fee2,
   },
   {

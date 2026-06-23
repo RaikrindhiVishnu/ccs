@@ -1,6 +1,6 @@
-import total1 from '@/assets/total-farmland.svg';
-import total2 from '@/assets/pending-farmland.svg';
-import total3 from '@/assets/approved-farmland.svg';
+import total1 from '@/assets/total1.svg';
+import total2 from '@/assets/total2.svg';
+import total3 from '@/assets/total3.svg';
 import total4 from '@/assets/total4.svg';
 
 export const statsData = [

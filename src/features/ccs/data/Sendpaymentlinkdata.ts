@@ -22,7 +22,7 @@ export const PAYMENT_LINK_OWNER_DATA: Record<string, PaymentLinkOwner> = {
     role: "Direct Owner",
     phone: "+91-9123456789",
     email: "ramudu.k@example.com",
-    coordinates: "17.48, 78.38",
+    coordinates: "West Godavari, Tanuku",
     verified: true,
   },
   "GLC SOS 02 | 45 Acres": {

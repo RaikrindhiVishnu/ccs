@@ -11,78 +11,69 @@ import { statsData, activities } from "@/features/ccs/data/ccsDashboardData";
 
 export default function CcsDashboard() {
   return (
-    <div
-      className="
-        flex min-h-full flex-col
-        px-[1.375rem] py-[1.375rem]
-        xl:px-[1.875rem] xl:py-[1.875rem]
-        2xl:px-[2.5rem] 2xl:py-[2.5rem]
-        overflow-visible
-      "
-    >
-      <div className="shrink-0 relative z-50">
+    <div className="flex flex-col w-full h-full px-4 py-4 lg:px-6 lg:py-6 overflow-x-hidden">
+      {/* Header */}
+      <div className="w-full shrink-0 relative z-50 mb-[39px]">
         <DashboardHeader />
       </div>
 
-      <div
-        className="
-          mt-[1.375rem] grid grid-cols-1 items-start
-          lg:grid-cols-[1fr_23.75rem] lg:gap-[0.875rem]
-          xl:grid-cols-[1fr_30.25rem] xl:gap-[1rem] xl:mt-[1.75rem]
-          2xl:grid-cols-[1fr_30.25rem] 2xl:gap-[1.125rem] 2xl:mt-[2.125rem]
-        "
-      >
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_1fr] gap-[19px] items-stretch w-full">
+
         {/* ════ LEFT COLUMN ════ */}
-        <div className="flex flex-col h-full xl:max-w-[582px] w-full">
-          <div className="grid grid-cols-2 gap-[0.75rem] xl:gap-[0.875rem] 2xl:gap-[0.9375rem]">
-            {statsData.slice(0, 3).map((item, index) => (
-              <div key={item.title} className={index === 0 ? "col-span-2" : ""}>
-                <StatsCard
-                  title={item.title}
-                  value={item.value}
-                  icon={item.icon}
-                  large={index === 0}
-                />
-              </div>
-            ))}
+        <div className="flex flex-col w-full h-full justify-between">
+
+          <div className="flex flex-col w-full gap-[36px]">
+            {/* Stats Section */}
+            <div className="grid grid-cols-2 gap-[18px]">
+              {statsData.slice(0, 3).map((item, index) => (
+                <div key={item.title} className={index === 0 ? "col-span-2" : ""}>
+                  <StatsCard
+                    title={item.title}
+                    value={item.value}
+                    icon={item.icon}
+                    large={index === 0}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Pipeline Status */}
+            <div className="flex flex-col">
+              <Typography
+                variant="h2"
+                className="mb-[29px] font-['Plus_Jakarta_Sans'] font-extrabold uppercase leading-[120%] text-[#171717] text-[24px]"
+              >
+                PIPELINE STATUS
+              </Typography>
+              <PipelineStatus />
+            </div>
           </div>
 
-          <div className="mt-[1.75rem] xl:mt-[2rem] 2xl:mt-[2.3125rem]">
-            <Typography
-              variant="h2"
-              className="mb-[0.75rem] font-[family-name:var(--font-sans)] font-extrabold uppercase leading-[120%] text-[#171717] text-[24px]"
-            >
-              Pipeline Status
-            </Typography>
-            <PipelineStatus />
-          </div>
-
-          <div className="mt-[42px]">
+          {/* Alert Banner */}
+          <div className="mt-auto pt-[29px]">
             <AlertBanner />
           </div>
         </div>
 
         {/* ════ RIGHT PANEL ════ */}
         <div
-          className="
-            flex flex-col rounded-[33px] bg-[#FFFFFF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]
-            px-[30px] pt-[30px] pb-[30px] w-full xl:h-[716px]
-          "
+          className="flex flex-col bg-[#FFFFFF] rounded-[33px] px-[31px] pt-[30px] pb-[30px] w-full h-full relative"
         >
-          <div className="flex min-h-0 flex-1 flex-col mt-0">
+          <div className="flex-none mb-[30px]">
             <ScreeningChart />
           </div>
 
-          <div className="shrink-0 mt-[30px]">
+          <div className="flex-1 flex flex-col mt-[15px] min-h-0">
             <Typography
               variant="h3"
-              className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[17px] tracking-[1px] uppercase text-[#000000] mb-[24px]"
+              className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[17px] tracking-[1px] uppercase text-[#000000] mb-[24px] text-center"
             >
-              Recent Activity
+              RECENT ACTIVITY
             </Typography>
-            <div className="flex flex-col gap-[18px]">
+            <div className="flex flex-col gap-[24px] overflow-y-auto pr-2 pb-2 flex-1">
               {activities.map((item, index) => (
-                <div key={index} className="flex flex-col gap-[18px]">
+                <div key={index} className="flex flex-col gap-[24px]">
                   <ActivityCard
                     id={item.id}
                     description={item.description}

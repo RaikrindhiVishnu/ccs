@@ -198,6 +198,9 @@ export const authRoutes: RouteObject[] = [
                 path: '/geospatial-audit',
                 element: <GeospatialAudit />
             }, {
+                path: '/ccs/assigned-farmlands',
+                element: <FarmlandRequest />
+            }, {
                 path: '/farmland-request',
                 element: <FarmlandRequest />
             }, {
@@ -215,6 +218,9 @@ export const authRoutes: RouteObject[] = [
             }, {
                 path: '/farmland-request/payment/:id',
                 element: <FarmlandRequestPayment />
+            }, {
+                path: '/ccs/farmlands-list',
+                element: <FarmlandList />
             }, {
                 path: '/farmland-list',
                 element: <FarmlandList />

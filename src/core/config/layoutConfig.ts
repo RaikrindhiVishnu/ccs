@@ -1,8 +1,8 @@
 // ─── Image imports for CCS_OFFICER nav icons ──────────────────────────────────
 // Replace these paths with your actual asset locations
-import dashboardIcon    from '@/assets/dashboard.svg';
-import farmlandReqIcon  from '@/assets/farmland-request.svg';
-// import farmlandListIcon from '@/assets/farmland-list.svg';
+import dashboardIcon from '@/assets/dashboard-filled.svg';
+import farmlandReqIcon from '@/assets/farmland-request.svg';
+import ccsFarmlandListIcon from '@/assets/farmland-list.svg';
 // import poolIcon         from '@/assets/poolicon.svg';
 import io1 from '@/assets/io1.svg';
 import io2 from '@/assets/io2.svg';
@@ -91,44 +91,44 @@ export const MOCK_USERS: Record<
 // ─── Master Layout Config ─────────────────────────────────────────────────────
 export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
   SUPERADMIN: {
-  layoutVariant: "sidebar-super-admin",
-  roleLabel: "Super Admin",
-  navItems: [
-    {
-      label: "Dashboard",
-      path: "/super-admin/dashboard",
-      iconImg: widgetIcon,
-    },
-    {
-      label: "Assigned Farmlands",
-      path: "/super-admin/farmlands",
-      iconImg: assignedIcon,
-    },
-    {
-      label: "Farmlands List",
-      path: "/super-admin/farmlands-list",
-      iconImg: farmlandListIcon,
-    },
-    {
-      label: "User Management",
-      path: "/super-admin/users-list",
-      iconImg: userIcon,
-    },
-    {
-      label: "Pool Buying",
-      path: "/super-admin/pool-buying",
-      iconImg: poolIcon,
-    },
-  ],
-},
+    layoutVariant: "sidebar-super-admin",
+    roleLabel: "Super Admin",
+    navItems: [
+      {
+        label: "Dashboard",
+        path: "/super-admin/dashboard",
+        iconImg: widgetIcon,
+      },
+      {
+        label: "Assigned Farmlands",
+        path: "/super-admin/farmlands",
+        iconImg: assignedIcon,
+      },
+      {
+        label: "Farmlands List",
+        path: "/super-admin/farmlands-list",
+        iconImg: farmlandListIcon,
+      },
+      {
+        label: "User Management",
+        path: "/super-admin/users-list",
+        iconImg: userIcon,
+      },
+      {
+        label: "Pool Buying",
+        path: "/super-admin/pool-buying",
+        iconImg: poolIcon,
+      },
+    ],
+  },
 
   ROLEMNGR: {
     layoutVariant: 'sidebar-role-manager',
     roleLabel: 'Role Manager',
     navItems: [
-      { label: 'Dashboard',     path: '/role-manager/dashboard',      icon: 'LayoutDashboard' },
+      { label: 'Dashboard', path: '/role-manager/dashboard', icon: 'LayoutDashboard' },
       { label: 'User Directory', path: '/role-manager/user-directory', icon: 'Users' },
-      { label: 'Regions',    path: '/role-manager/region-area-dashboard',   icon: 'Map' },
+      { label: 'Regions', path: '/role-manager/region-area-dashboard', icon: 'Map' },
       { label: 'Agent Approvals', path: '/role-manager/agent-approvals', icon: 'User' },
     ],
   },
@@ -138,9 +138,9 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     roleLabel: 'Field Officer',
     navItems: [
       { label: 'My Tasks', path: '/field-officer/dashboard', icon: 'ClipboardList' },
-      { label: 'Visits',   path: '/visits',                  icon: 'MapPin'        },
-      { label: 'Reports',  path: '/reports',                 icon: 'FileBarChart'  },
-      { label: 'Profile',  path: '/profile',                 icon: 'UserCircle'    },
+      { label: 'Visits', path: '/visits', icon: 'MapPin' },
+      { label: 'Reports', path: '/reports', icon: 'FileBarChart' },
+      { label: 'Profile', path: '/profile', icon: 'UserCircle' },
     ],
   },
 
@@ -148,9 +148,9 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     layoutVariant: 'sidebar-ccs-officer',
     roleLabel: 'CCS Officer',
     navItems: [
-      { label: 'Dashboard',          path: '/ccs/dashboard',                 icon: 'LayoutDashboard', iconImg: dashboardIcon    },
-      { label: 'Assigned Farmlands', path: '/farmland-request', icon: 'CircleDashed',    iconImg: farmlandReqIcon  },
-      { label: 'Farmlands List',     path: '/farmland-list',    icon: 'MapPin',          iconImg: farmlandListIcon },
+      { label: 'Dashboard', path: '/ccs/dashboard', icon: 'LayoutDashboard', iconImg: dashboardIcon },
+      { label: 'Assigned Farmlands', path: '/ccs/assigned-farmlands', icon: 'History', iconImg: farmlandReqIcon },
+      { label: 'Farmlands List', path: '/ccs/farmlands-list', icon: 'MapPin', iconImg: ccsFarmlandListIcon },
     ],
   },
 
@@ -158,10 +158,10 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     layoutVariant: 'sidebar-intelligence-officer',
     roleLabel: 'Intelligence Officer',
     navItems: [
-      { label: 'Dashboard',          path: '/io/dashboard',          icon: 'LayoutDashboard', iconImg: io1 },
-      { label: 'Assigned Farmlands', path: '/io/Assignedfarmland', icon: 'Shield',          iconImg: io2 },
-      { label: 'Requested info',     path: '/io/requested-info',     icon: 'FileText',        iconImg: io3 },
-      { label: 'Farmlands list',     path: '/io/farmlands-list',     icon: 'List',            iconImg: io4 },
+      { label: 'Dashboard', path: '/io/dashboard', icon: 'LayoutDashboard', iconImg: io1 },
+      { label: 'Assigned Farmlands', path: '/io/Assignedfarmland', icon: 'Shield', iconImg: io2 },
+      { label: 'Requested info', path: '/io/requested-info', icon: 'FileText', iconImg: io3 },
+      { label: 'Farmlands list', path: '/io/farmlands-list', icon: 'List', iconImg: io4 },
     ],
   },
 
@@ -169,9 +169,9 @@ export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
     layoutVariant: 'sidebar-regional-officer',
     roleLabel: 'Regional Officer',
     navItems: [
-      { label: 'Dashboard', path: '/regional-officer/dashboard',          icon: 'LayoutDashboard' },
-      { label: 'Farmlands', path: '/regional-officer/assigned-farmlands', icon: 'Map'             },
-      { label: 'Reports',   path: '/regional-officer/reports',            icon: 'FileText'        },
+      { label: 'Dashboard', path: '/regional-officer/dashboard', icon: 'LayoutDashboard' },
+      { label: 'Farmlands', path: '/regional-officer/assigned-farmlands', icon: 'Map' },
+      { label: 'Reports', path: '/regional-officer/reports', icon: 'FileText' },
     ],
   },
 
