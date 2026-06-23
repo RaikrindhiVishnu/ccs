@@ -27,7 +27,7 @@ export const VerificationOfficer3Dashboard: React.FC = () => {
   const displayedCards = sortedAssignedCases.slice(0, 3);
 
   return (
-    <div className=" flex flex-col gap-[clamp(1.5rem,2.22vw,4.5rem)] select-none">
+    <div className=" flex flex-col gap-[clamp(1.125rem,2.22vw,4.5rem)] select-none">
       
       {/* 1. Header component */}
       <VO3Header
@@ -36,7 +36,7 @@ export const VerificationOfficer3Dashboard: React.FC = () => {
       />
 
       {/* 2. Stats summary card row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[clamp(1rem,1.67vw,3.5rem)] w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-[clamp(0.75rem,1.67vw,3.5rem)] w-full">
         <VO3StatsCard
           type="assigned"
           title="Assigned documents"
@@ -72,7 +72,7 @@ export const VerificationOfficer3Dashboard: React.FC = () => {
       />
 
       {/* 5. Bento Grid / Farmland cards section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[clamp(1rem,1.67vw,3.5rem)] w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 md:grid-cols-3 gap-[clamp(0.75rem,1.67vw,3.5rem)] w-full">
         {displayedCards.map((card) => (
           <VO3FarmlandCard
             key={card.id}

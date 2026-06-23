@@ -36,10 +36,10 @@ export const VO3ProgressCard: React.FC<VO3ProgressCardProps> = ({
   const finalImageUrl = imageUrl || `https://picsum.photos/seed/${placeholderId + 200}/600/400`;
 
   return (
-    <div className="flex flex-col select-none bg-white rounded-[clamp(1.5rem,2.22vw,2.5rem)] shadow-[0px_20px_40px_rgba(0,49,50,0.06)] border border-[#E1E2ED]/50 overflow-hidden w-full h-[clamp(22.0rem,27.29vw,33.0rem)] relative transition-all duration-300 hover:shadow-md">
+    <div className="flex flex-col select-none bg-white rounded-[clamp(1.125rem,2.22vw,2.5rem)] shadow-[0px_20px_40px_rgba(0,49,50,0.06)] border border-[#E1E2ED]/50 overflow-hidden w-full h-[clamp(16.5rem,27.29vw,33.0rem)] relative transition-all duration-300 hover:shadow-md">
       
       {/* Top Image Section */}
-      <div className="relative w-full h-[clamp(8.0rem,11.11vw,14.0rem)] shrink-0 bg-gray-100">
+      <div className="relative w-full h-[clamp(6rem,11.11vw,14.0rem)] shrink-0 bg-gray-100">
         <img
           src={finalImageUrl}
           alt={`Farmland ${id}`}
@@ -48,10 +48,10 @@ export const VO3ProgressCard: React.FC<VO3ProgressCardProps> = ({
 
         {/* Status Badge */}
         {status && (
-          <div className="absolute right-[clamp(0.6rem,1.11vw,1.35rem)] top-[clamp(0.6rem,0.97vw,1.25rem)] z-10 px-[clamp(0.6rem,0.83vw,1.2rem)] py-[clamp(0.15rem,0.2vw,0.4rem)] bg-white/95 backdrop-blur-[6px] rounded-full border border-white/10 shadow-sm flex items-center justify-center">
+          <div className="absolute right-[clamp(0.45rem,1.11vw,1.35rem)] top-[clamp(0.45rem,0.97vw,1.25rem)] z-10 px-[clamp(0.45rem,0.83vw,1.2rem)] py-[clamp(0.1125rem,0.2vw,0.4rem)] bg-white/95 backdrop-blur-[6px] rounded-full border border-white/10 shadow-sm flex items-center justify-center">
             <Typography
               as="span"
-              className="font-sans font-bold text-[clamp(0.55rem,0.69vw,1.0rem)] leading-none tracking-[0.5px] uppercase text-[#0F7340]"
+              className="font-sans font-bold text-[clamp(0.4125rem,0.69vw,1.0rem)] leading-none tracking-[0.5px] uppercase text-[#0F7340]"
             >
               {status}
             </Typography>
@@ -62,10 +62,10 @@ export const VO3ProgressCard: React.FC<VO3ProgressCardProps> = ({
         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent pointer-events-none" />
 
         {/* Title and Location */}
-        <div className="absolute flex flex-col gap-[3.5px] left-[clamp(0.8rem,1.11vw,1.65rem)] bottom-[clamp(0.8rem,1.11vw,1.65rem)] z-10 text-white w-[80%]">
+        <div className="absolute flex flex-col gap-[3.5px] left-[clamp(0.6rem,1.11vw,1.65rem)] bottom-[clamp(0.6rem,1.11vw,1.65rem)] z-10 text-white w-[80%]">
           <Typography
             as="h3"
-            className="font-sans font-bold text-[clamp(0.95rem,1.25vw,1.85rem)] leading-none tracking-[-0.45px] m-0 text-white"
+            className="font-sans font-bold text-[clamp(0.7125rem,1.25vw,1.85rem)] leading-none tracking-[-0.45px] m-0 text-white"
           >
             {id}
           </Typography>
@@ -73,7 +73,7 @@ export const VO3ProgressCard: React.FC<VO3ProgressCardProps> = ({
             <MapPin size={12} className="text-white shrink-0 opacity-80" />
             <Typography
               as="span"
-              className="font-sans font-normal text-[clamp(0.65rem,0.83vw,1.2rem)] leading-none truncate"
+              className="font-sans font-normal text-[clamp(0.4875rem,0.83vw,1.2rem)] leading-none truncate"
             >
               {location}
             </Typography>
@@ -82,11 +82,11 @@ export const VO3ProgressCard: React.FC<VO3ProgressCardProps> = ({
       </div>
 
       {/* Bottom Content Body Section */}
-      <div className="flex-1 flex flex-col justify-between p-[clamp(1.0rem,1.67vw,2.0rem)] gap-[clamp(1.0rem,1.67vw,2.0rem)]">
+      <div className="flex-1 flex flex-col justify-between p-[clamp(0.75rem,1.67vw,2.0rem)] gap-[clamp(0.75rem,1.67vw,2.0rem)]">
         
         {/* Agent Info */}
-        <div className="flex items-center gap-[clamp(0.5rem,0.83vw,1.35rem)] w-full">
-          <div className="w-[clamp(2.0rem,2.77vw,3.3rem)] h-[clamp(2.0rem,2.77vw,3.3rem)] rounded-full overflow-hidden shrink-0 border border-white/20 bg-gray-200">
+        <div className="flex items-center gap-[clamp(0.375rem,0.83vw,1.35rem)] w-full">
+          <div className="w-[clamp(1.5rem,2.77vw,3.3rem)] h-[clamp(1.5rem,2.77vw,3.3rem)] rounded-full overflow-hidden shrink-0 border border-white/20 bg-gray-200">
             <img
               src={agentImage || defaultProfileImg}
               alt={agentName}
@@ -96,13 +96,13 @@ export const VO3ProgressCard: React.FC<VO3ProgressCardProps> = ({
           <div className="flex flex-col justify-center gap-[0.125rem]">
             <Typography
               as="span"
-              className="font-sans font-bold text-[#3D4949] text-[clamp(0.55rem,0.76vw,1.1rem)] leading-none tracking-[0.55px] uppercase"
+              className="font-sans font-bold text-[#3D4949] text-[clamp(0.4125rem,0.76vw,1.1rem)] leading-none tracking-[0.55px] uppercase"
             >
               ASSIGNED AGENT
             </Typography>
             <Typography
               as="span"
-              className="font-sans font-normal text-[#1A1C1D] text-[clamp(0.75rem,0.97vw,1.3rem)] leading-tight"
+              className="font-sans font-normal text-[#1A1C1D] text-[clamp(0.5625rem,0.97vw,1.3rem)] leading-tight"
             >
               {agentName}
             </Typography>
@@ -115,13 +115,13 @@ export const VO3ProgressCard: React.FC<VO3ProgressCardProps> = ({
           <div className="flex flex-col gap-[0.25rem]">
             <Typography
               as="span"
-              className="font-sans font-normal text-[#3D4949] text-[clamp(0.55rem,0.76vw,1.1rem)] leading-none"
+              className="font-sans font-normal text-[#3D4949] text-[clamp(0.4125rem,0.76vw,1.1rem)] leading-none"
             >
               Total Area
             </Typography>
             <Typography
               as="span"
-              className="font-sans font-semibold text-black text-[clamp(0.95rem,1.25vw,1.85rem)] leading-none tracking-tight"
+              className="font-sans font-semibold text-black text-[clamp(0.7125rem,1.25vw,1.85rem)] leading-none tracking-tight"
             >
               {totalArea}
             </Typography>
@@ -131,13 +131,13 @@ export const VO3ProgressCard: React.FC<VO3ProgressCardProps> = ({
           <div className="flex flex-col gap-[0.25rem]">
             <Typography
               as="span"
-              className="font-sans font-normal text-[#3D4949] text-[clamp(0.55rem,0.76vw,1.1rem)] leading-none"
+              className="font-sans font-normal text-[#3D4949] text-[clamp(0.4125rem,0.76vw,1.1rem)] leading-none"
             >
               Cost / Acre
             </Typography>
             <Typography
               as="span"
-              className="font-sans font-semibold text-[#1A1C1D] text-[clamp(0.95rem,1.25vw,1.85rem)] leading-none tracking-tight"
+              className="font-sans font-semibold text-[#1A1C1D] text-[clamp(0.7125rem,1.25vw,1.85rem)] leading-none tracking-tight"
             >
               {costPerAcre}
             </Typography>
@@ -147,13 +147,13 @@ export const VO3ProgressCard: React.FC<VO3ProgressCardProps> = ({
           <div className="flex flex-col gap-[0.25rem]">
             <Typography
               as="span"
-              className="font-sans font-normal text-[#3D4949] text-[clamp(0.55rem,0.76vw,1.1rem)] leading-none"
+              className="font-sans font-normal text-[#3D4949] text-[clamp(0.4125rem,0.76vw,1.1rem)] leading-none"
             >
               Est. Value
             </Typography>
             <Typography
               as="span"
-              className="font-sans font-semibold text-[#1A1C1D] text-[clamp(0.95rem,1.25vw,1.85rem)] leading-none tracking-tight"
+              className="font-sans font-semibold text-[#1A1C1D] text-[clamp(0.7125rem,1.25vw,1.85rem)] leading-none tracking-tight"
             >
               {estimatedValue}
             </Typography>
@@ -163,7 +163,7 @@ export const VO3ProgressCard: React.FC<VO3ProgressCardProps> = ({
         {/* Action Button */}
         <Button
           onClick={onActionClick}
-          className="w-full h-[clamp(2.5rem,3.33vw,4.5rem)] bg-[#96C8EC] hover:bg-[#85bfe5] text-black rounded-full font-sans font-bold text-[clamp(0.75rem,0.97vw,1.3rem)] tracking-[0.35px] border-none transition-all duration-300 shadow-sm shrink-0"
+          className="w-full h-[clamp(1.875rem,3.33vw,4.5rem)] bg-[#96C8EC] hover:bg-[#85bfe5] text-black rounded-full font-sans font-bold text-[clamp(0.5625rem,0.97vw,1.3rem)] tracking-[0.35px] border-none transition-all duration-300 shadow-sm shrink-0"
         >
           {actionLabel}
         </Button>
