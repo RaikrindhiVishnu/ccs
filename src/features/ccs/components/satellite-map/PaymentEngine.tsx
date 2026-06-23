@@ -98,7 +98,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                   <div className="w-[18.4px] pt-[1.6px]"><img src={fee2} alt="Location" className="w-[13px] h-[13px] object-contain" /></div>
                   <div className="flex flex-col">
                     <span className="font-['Plus_Jakarta_Sans'] font-bold text-[8.4px] leading-[13px] tracking-[0.4px] uppercase text-[#75777D]">Location</span>
-                    <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[11.75px] leading-[17px] text-[#091426]">17.48, 78.38</span>
+                    <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[11.75px] leading-[17px] text-[#091426]">West Godavari, Tanuku</span>
                   </div>
                 </div>
                 {/* Status */}

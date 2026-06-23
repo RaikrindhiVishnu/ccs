@@ -45,10 +45,10 @@ export default function NotificationsPopover() {
   ];
 
   return (
-    <div className="absolute right-0 top-[60px] w-[449px] h-[594px] bg-[#FFFFFF] shadow-[0px_0px_8.1px_rgba(0,0,0,0.12)] border border-[rgba(0,0,0,0.08)] rounded-[24px] z-50 flex flex-col overflow-hidden">
+    <div className="absolute right-0 top-[60px] w-[90vw] md:w-[380px] xl:w-[449px] max-w-[449px] h-[80vh] max-h-[594px] bg-[#FFFFFF] shadow-[0px_0px_8.1px_rgba(0,0,0,0.12)] border border-[rgba(0,0,0,0.08)] rounded-[24px] z-50 flex flex-col overflow-hidden">
       
       {/* Header */}
-      <div className="flex items-center justify-between w-full h-[60px] px-[22px] pt-[20px] pb-[16px]">
+      <div className="flex items-center justify-between w-full h-[60px] px-[22px] pt-[20px] pb-[16px] shrink-0">
         <span className="font-['Plus_Jakarta_Sans'] font-medium text-[18px] leading-[23px] text-[#000000]">
           Notifications
         </span>
@@ -65,15 +65,15 @@ export default function NotificationsPopover() {
       {/* Notifications List */}
       <div className="flex-1 overflow-y-auto relative scrollbar-hide">
         {/* Custom scrollbar track line - fixed absolute on right side */}
-        <div className="absolute right-[8px] top-[29px] w-[6px] h-[116px] bg-[#89CCFF] rounded-full z-10" />
+        <div className="absolute right-[8px] top-[29px] w-[6px] h-[116px] bg-[#89CCFF] rounded-full z-10 hidden md:block" />
 
         {notifications.map((item, i) => (
           <div 
             key={i} 
-            className="flex items-start justify-between py-[20px] px-[29px]"
+            className="flex items-start justify-between py-[20px] px-[20px] md:px-[29px]"
             style={{ borderTop: `1px solid ${item.borderTop}` }}
           >
-            <div className="flex flex-col gap-[6px] max-w-[347px]">
+            <div className="flex flex-col gap-[6px] flex-1 pr-[12px]">
               <div className="flex items-center gap-[10px]">
                 <span className="font-['Plus_Jakarta_Sans'] font-bold text-[15px] leading-[22px] text-[#1E293B]">
                   {item.title}

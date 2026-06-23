@@ -60,33 +60,29 @@ export default function FarmlandList() {
       <div
         className="
           h-full overflow-y-auto
-          px-6 py-6
-          lg:px-8 lg:py-7
-          xl:px-10 xl:py-8
-          2xl:px-11 2xl:py-9
+          px-4 py-4
+          lg:px-6 lg:py-6
         "
       >
         {/* ── HEADER ── */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 md:gap-0">
           {/* LEFT — icon + title */}
-          <div className="flex items-center gap-2">
-            <img
-              src="/src/assets/farm.svg"
-              alt=""
-              className="h-[1rem] w-[1rem] lg:h-[1.125rem] lg:w-[1.125rem] xl:h-[1.25rem] xl:w-[1.25rem]"
-            />
+          <div className="flex items-center gap-[10px]">
+            <div className="flex shrink-0 h-[38px] w-[38px] rounded-[10px] items-center justify-center">
+              <img src="/src/assets/farmland-list.svg" alt="Farmlands List" className="h-[20px] w-[20px] object-contain" />
+            </div>
             <Typography
               variant="h4"
-              className="text-[var(--text-primary)] text-[0.9375rem] font-normal leading-tight lg:text-[1rem] xl:text-[1.125rem]"
+              className="text-[#647182] font-['Plus_Jakarta_Sans'] font-semibold text-[18px] leading-[23px] tracking-[-0.02em]"
             >
-              Farmland List
+              Farmlands List
             </Typography>
           </div>
 
           {/* RIGHT — search + filter + bell */}
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-[8px] w-full md:w-auto">
             {/* SEARCH BAR */}
-            <div className="flex flex-1 sm:flex-none items-center gap-[8px] rounded-[60px] bg-[#FFFFFF] px-[20px] h-[52px] w-full sm:w-[312px] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] border border-transparent hover:border-gray-100 transition-colors">
+            <div className="flex flex-1 min-w-0 xl:flex-none items-center gap-[8px] rounded-[60px] bg-[#FFFFFF] px-[20px] h-[52px] w-full xl:w-[312px] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] border border-transparent hover:border-gray-100 transition-colors">
               <Search className="h-[24px] w-[24px] shrink-0 text-[#5C5C5C] opacity-50" strokeWidth={1.5} />
               <input
                 placeholder="Search by GLC ID, Agent....."

@@ -64,7 +64,7 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
       </div>
 
       {/* ── DATA GRID ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-6 mb-8">
         <InfoField label="AGENT NAME" value={item.agentName} valueClassName="text-[20px]" />
         <InfoField label="CREATED DATE" value={item.createdDate} />
         <InfoField label="TOTAL ACRES" value={item.totalAcres} />
