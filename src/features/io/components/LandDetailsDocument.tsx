@@ -154,7 +154,7 @@ export const LandDetailsDocument: React.FC<LandDetailsDocumentProps> = ({
       {/* Main Grid Layout */}
       <div
         className="
-          grid grid-cols-1 lg:grid-cols-[clamp(13.6656rem,28.47vw,34.125rem)_1fr]
+          grid grid-cols-1 md:grid-cols-[clamp(13.6656rem,28.47vw,34.125rem)_1fr]
           gap-[clamp(0.8016rem,1.67vw,2.0rem)]
           w-full items-start
         "

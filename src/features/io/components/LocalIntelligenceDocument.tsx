@@ -1120,7 +1120,7 @@ export const LocalIntelligenceDocument: React.FC<LocalIntelligenceDocumentProps>
             </div>
           ) : (
             /* Original Non-Rejection Form Layout */
-            <div className="grid grid-cols-1 lg:grid-cols-[1.035fr_1fr] gap-[clamp(1.536rem,3.2vw,4.0rem)] w-full items-start">
+            <div className="grid grid-cols-1 md:grid-cols-[1.035fr_1fr] gap-[clamp(1.536rem,3.2vw,4.0rem)] w-full items-start">
               {/* Left Column: Radio Buttons / Question / Dropdowns */}
               <div className="flex flex-col gap-[clamp(0.8016rem,1.67vw,2.5rem)] w-full">
                 {/* If it's mindset, render dropdown selector */}
