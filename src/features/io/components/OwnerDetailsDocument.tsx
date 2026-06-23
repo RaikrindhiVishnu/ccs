@@ -192,7 +192,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
             relative bg-white border-none
             rounded-[1.5rem]
             w-[clamp(13.6656rem,28.47vw,34.125rem)]
-            h-[clamp(11.5344rem,24.03vw,28.825rem)]
+            h-[clamp(15.35rem,24.03vw,28.825rem)]
             shadow-[0_1.25rem_2.5rem_rgba(0,49,50,0.06)]
           "
         >
@@ -223,7 +223,7 @@ export const OwnerDetailsDocument: React.FC<OwnerDetailsDocumentProps> = ({
               w-[clamp(6.1344rem,12.78vw,15.3rem)]
               h-[clamp(4.5312rem,9.44vw,11.3rem)]
               left-[calc(50%-clamp(3.0672rem,6.39vw,7.65rem))]
-              top-[calc(50%-clamp(2.2656rem,4.72vw,5.65rem)+clamp(1.632rem,3.4vw,4.08rem))]
+              top-[calc(50%-clamp(3rem,4.72vw,5.65rem)+clamp(2.17rem,3.4vw,4.08rem))]
             "
           >
             {/* Frame 2147239964 */}
