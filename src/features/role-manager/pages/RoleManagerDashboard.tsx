@@ -212,7 +212,7 @@ const RoleManagerDashboard: React.FC = () => {
           </div>
 
           {/* Charts Grid */}
-        <div className="box-border grid grid-cols-2 gap-[clamp(8px,1vw,16px)]">
+        <div className="box-border grid grid-cols-1 xl:grid-cols-2 gap-[clamp(8px,1vw,16px)]">
       {/* Left Column */}
       <div className="flex min-h-[600px] flex-col gap-[clamp(8px,1vw,16px)]">
         <div className="flex min-h-[350px] flex-col overflow-hidden rounded-2xl bg-[var(--surface-card)] shadow-sm">

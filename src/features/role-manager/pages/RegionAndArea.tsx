@@ -29,7 +29,7 @@ const RegionAndArea: React.FC = () => {
   return (
     <div className="flex flex-col p-[clamp(0.375rem,0.83vw,0.75rem)] pt-[clamp(0.75rem,1.5vw,1.5rem)] gap-[clamp(0.75rem,1.5vw,1.5rem)] box-border min-h-full">
       {/* Charts Grid */}
-      <div className="grid grid-cols-2 gap-[clamp(0.75rem,1.5vw,1.5rem)] box-border">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-[clamp(0.75rem,1.5vw,1.5rem)] box-border">
         {/* Left Column */}
         <div className="flex flex-col gap-[clamp(0.75rem,1.5vw,1.5rem)] min-h-[clamp(21.875rem,30vw,31.25rem)]">
           <div className="bg-[var(--surface-card)] rounded-2xl shadow-sm overflow-hidden min-h-[clamp(21.875rem,30vw,31.25rem)] flex flex-col">
