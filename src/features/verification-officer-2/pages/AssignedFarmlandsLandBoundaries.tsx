@@ -1,12 +1,10 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Bell, FileText, Download, Check, BadgeCheck, X } from 'lucide-react';
-import { useViewportScale } from '@/hooks/useViewportScale';
+import { ArrowLeft, Bell, FileText, Download, Check, BadgeCheck, X, ChevronDown } from 'lucide-react';
 
 export const VerificationOfficerAssignedFarmlandsLandBoundaries: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const scale = useViewportScale(1440, 1084);
   const targetId = id || "GLCSOS 01";
 
   // State hooks for sub-tab selection and completion tracking
@@ -175,2107 +173,514 @@ export const VerificationOfficerAssignedFarmlandsLandBoundaries: React.FC = () =
     navigate(`/verification-officer-2/assigned-farmlands-valuation/${targetId}`);
   };
 
-  // Reusable Pill component rendering
-  const renderPill = (pill: typeof pills[0], absIdx: number, extraStyle?: React.CSSProperties) => {
-    const isActive = activeSubTab === absIdx;
-    const isCompleted = completedSubTabs.includes(pill.label);
-
-    return (
-      <button 
-        key={absIdx}
-        onClick={() => setActiveSubTab(absIdx)}
-        style={{
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: '11.6px 16px',
-          gap: '8px',
-          width: pill.width,
-          height: '41.22px',
-          background: '#F9F9F9',
-          border: isActive ? '0.73px solid #0078FA' : isCompleted ? '0.73px solid #A5B767' : '0.72px solid transparent',
-          boxShadow: '0px 42px 17px rgba(0, 0, 0, 0.01)',
-          borderRadius: '72.55px',
-          cursor: 'pointer',
-          outline: 'none',
-          justifyContent: 'center',
-          ...extraStyle
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px', width: '100%', height: '18px', justifyContent: 'center' }}>
-          {!isCompleted && (
-            <div style={{
-              width: '18px',
-              height: '18px',
-              background: '#FFBC8A',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '11px',
-              fontWeight: 'bold',
-              flexShrink: 0
-            }}>!</div>
-          )}
-          <span style={{
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 600,
-            fontSize: '14px',
-            color: isActive ? '#0078FA' : isCompleted ? '#2780C4' : 'rgba(90, 92, 94, 0.74)',
-            whiteSpace: 'nowrap'
-          }}>
-            {pill.label}
-          </span>
-          {isCompleted && (
-            <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
-              <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
-              <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
-            </div>
-          )}
-        </div>
-      </button>
-    );
-  };
-
   const currentFiles = subTabsFilesData[activeSubTab] || { uploadedImages: [] };
-  const currentContainerHeight = activeSubTab === 6 
-    ? (surveyReportType === 'both' ? 1767 : 1345) 
-    : 1084;
 
   return (
-    <div 
-      className="bg-[#F2F2F2] min-h-screen relative flex justify-center overflow-hidden"
-    >
-      <div 
-        style={{
-          width: '1440px',
-          height: `${currentContainerHeight}px`,
-          position: 'relative',
-          background: '#F9F9F9',
-          borderRadius: '32px',
-          transform: `scale(${scale})`,
-          transformOrigin: 'top center',
-          marginBottom: `${(scale - 1) * currentContainerHeight}px`
-        }}
-      >
-        {/* Go back pill button */}
-        <div style={{
-          position: 'absolute',
-          width: '244px',
-          height: '56px',
-          left: '40px',
-          top: '32px',
-          filter: 'drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.12))',
-          zIndex: 10
-        }}>
+    <div className="bg-[#F2F2F2] min-h-screen flex flex-col items-center p-4 md:p-8 overflow-x-hidden font-inter">
+      <div className="w-full max-w-[1440px] flex flex-col gap-6 relative">
+        
+        {/* Header Container */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full z-10 gap-4">
           <button
             onClick={handleBack}
-            style={{
-              width: '244px',
-              height: '52px',
-              background: '#FFFFFF',
-              borderRadius: '60px',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '19px 20px',
-              gap: '8px',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className="bg-white rounded-[60px] flex flex-row items-center px-5 py-[15px] gap-2 shadow-sm shrink-0 border-none cursor-pointer"
           >
             <ArrowLeft className="w-6 h-6 text-[#353535] shrink-0" strokeWidth={1.5} />
-            <span style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '18px',
-              color: '#353535'
-            }}>
+            <span className="font-plus-jakarta font-normal text-[16px] leading-[18px] text-[#353535]">
               Go Back to Dashboard
             </span>
           </button>
-        </div>
 
-        {/* Top Right Profile Header */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: '13.06px',
-          position: 'absolute',
-          width: '117.06px',
-          height: '52px',
-          left: 'calc(50% - 117.06px/2 + 621.53px)',
-          top: '34px',
-          zIndex: 10
-        }}>
-          {/* Bell Container */}
-          <button style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '8px',
-            gap: '10px',
-            width: '52px',
-            height: '52px',
-            background: '#FFFFFF',
-            borderRadius: '40px',
-            border: 'none',
-            cursor: 'pointer',
-            position: 'relative'
-          }}>
-            <Bell className="w-6 h-6 text-[#2C2C2C]" strokeWidth={1.5} />
-            <span style={{
-              position: 'absolute',
-              width: '5px',
-              height: '5px',
-              left: '32.5px',
-              top: '12px',
-              background: '#EF4646',
-              borderRadius: '50%'
-            }} />
-          </button>
-
-          {/* Avatar Container */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '0px',
-            width: '52px',
-            height: '52px',
-            background: '#FFFFFF',
-            borderRadius: '72.5581px',
-            overflow: 'hidden'
-          }}>
-            <img
-              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"
-              alt="User profile avatar"
-              style={{
-                width: '52px',
-                height: '52px',
-                objectFit: 'cover'
-              }}
-            />
+          {/* Top Right Profile Header */}
+          <div className="flex flex-row items-center gap-[13px]">
+            <button className="flex flex-row justify-center items-center p-2 w-[52px] h-[52px] bg-white rounded-full relative shadow-sm border-none cursor-pointer">
+              <Bell className="w-6 h-6 text-[#2C2C2C]" strokeWidth={1.5} />
+              <span className="absolute w-[5px] h-[5px] right-[14px] top-[12px] bg-[#EF4646] rounded-full" />
+            </button>
+            <div className="flex flex-row justify-center items-center w-[52px] h-[52px] bg-white rounded-full overflow-hidden shadow-sm">
+              <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" alt="User profile avatar" className="w-[52px] h-[52px] object-cover" />
+            </div>
           </div>
         </div>
 
-        {/* LEFT COLUMN: Stepper Timeline Card */}
-        <div style={{
-          position: 'absolute',
-          height: '443px',
-          left: '40px',
-          width: '410px',
-          top: '120px',
-          background: '#FFFFFF',
-          borderRadius: '24px'
-        }}>
-          <span style={{
-            position: 'absolute',
-            width: '96px',
-            height: '20px',
-            left: '30px',
-            top: '30px',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 500,
-            fontSize: '16px',
-            color: '#000000'
-          }}>
-            Farmland ID:
-          </span>
-          <span style={{
-            position: 'absolute',
-            left: '30px',
-            top: '60px',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 500,
-            fontSize: '35px',
-            color: '#000000'
-          }}>
-            {targetId}
-          </span>
+        {/* Main Grid: Stepper and Content */}
+        <div className="flex flex-col lg:flex-row w-full gap-6">
+           {/* LEFT COLUMN: Stepper Timeline Card */}
+           <div className="w-full lg:w-[410px] bg-white rounded-[24px] flex flex-col p-8 shrink-0 relative min-h-[443px]">
+             <div className="flex flex-col gap-1 mb-8">
+               <span className="font-plus-jakarta font-medium text-[16px] text-black">Farmland ID:</span>
+               <span className="font-plus-jakarta font-medium text-[35px] text-black">{targetId}</span>
+             </div>
 
-          {/* Stepper Vertical Connector Line */}
-          <div style={{
-            position: 'absolute',
-            width: '244px',
-            height: '0px',
-            left: '110px',
-            top: '136px',
-            border: '1px solid rgba(0, 120, 250, 0.25)',
-            transform: 'rotate(90deg)',
-            transformOrigin: 'top left',
-            zIndex: 1
-          }} />
+             <div className="relative flex flex-col gap-10 pl-[80px]">
+               {/* Vertical Line */}
+               <div className="absolute left-[90px] top-[24px] bottom-[24px] w-[1px] border-l border-[#0078FA] opacity-25"></div>
 
-          {/* Steps */}
-          <div style={{ position: 'absolute', left: '120px', top: '130px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px 0px 32px 24px', gap: '4px', width: '173px', height: '68px', boxSizing: 'content-box' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px', width: '182px', height: '36px' }}>
-              <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#5A5C5E', width: '173px', height: '36px' }}>CUSTOMER INFORMATION</span>
-            </div>
-          </div>
-          <div style={{ position: 'absolute', left: '120px', top: '219px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px 0px 4px 24px', gap: '4px', width: '173px', height: '22px', boxSizing: 'content-box' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px', width: '149px', height: '18px' }}>
-              <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#FFBC8A', width: '149px', height: '18px' }}>LAND & BOUNDARIES</span>
-            </div>
-          </div>
-          <div style={{ position: 'absolute', left: '143px', top: '299px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px', height: '18px' }}>
-            <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#FFBC8A', width: '81px', height: '18px' }}>VALUATION</span>
-          </div>
-          <div style={{ position: 'absolute', left: '143px', top: '377px' }}>
-            <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#FFBC8A', height: '36px', width: '118px' }}>AGRICULTURE &<br/>REPORT</span>
-          </div>
+               {/* Step 1 */}
+               <div className="relative flex items-center h-[36px]">
+                 <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
+                   {localStorage.getItem(`vo2_status_${targetId}_customer`) === 'approved' ? (
+                     <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
+                       <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
+                       <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
+                     </div>
+                   ) : (
+                     <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
+                   )}
+                 </div>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#5A5C5E] uppercase">CUSTOMER INFORMATION</span>
+               </div>
 
-          {/* Step Dots */}
-          {[136, 218, 296, 374].map((top, index) => {
-            const isCustomerApproved = localStorage.getItem(`vo2_status_${targetId}_customer`) === 'approved';
-            const showCheckmark = index === 0 && isCustomerApproved;
+               {/* Step 2 (Active) */}
+               <div className="relative flex items-center h-[36px]">
+                 <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
+                   <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
+                 </div>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#FFBC8A] uppercase">LAND & BOUNDARIES</span>
+               </div>
 
-            return (
-              <div key={index} style={{
-                position: 'absolute',
-                width: '24px',
-                height: '24px',
-                left: '98px',
-                top: `${top}px`,
-                background: '#FFFFFF',
-                border: '0.2px solid rgba(0, 0, 0, 0.15)',
-                borderRadius: '42px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 5
-              }}>
-                {showCheckmark ? (
-                  <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
-                    <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
-                    <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
-                  </div>
-                ) : (
-                  <div style={{
-                    width: '18px',
-                    height: '18px',
-                    background: '#FFBC8A',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '12px',
-                    fontWeight: 'bold'
-                  }}>!</div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+               {/* Step 3 */}
+               <div className="relative flex items-center h-[36px]">
+                 <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
+                   {localStorage.getItem(`vo2_status_${targetId}_valuation`) === 'approved' ? (
+                     <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
+                       <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
+                       <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
+                     </div>
+                   ) : (
+                     <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
+                   )}
+                 </div>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#FFBC8A] uppercase opacity-50">VALUATION</span>
+               </div>
 
-        {/* RIGHT TOP CARD: Bento Grid of Pills */}
-        <div style={{
-          position: 'absolute',
-          height: '443px',
-          left: '466px',
-          right: '40px',
-          top: '120px',
-          background: '#FFFFFF',
-          borderRadius: '24px',
-          boxSizing: 'border-box',
-          padding: '30px'
-        }}>
-          {/* Bento layout wrapper */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '30px',
-            width: '100%',
-            height: '100%',
-            position: 'relative'
-          }}>
-            {/* Row 1 */}
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px', width: '100%', height: '41.22px' }}>
-              {pills.slice(0, 3).map((pill, idx) => renderPill(pill, idx))}
-            </div>
+               {/* Step 4 */}
+               <div className="relative flex items-center h-[36px]">
+                 <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
+                   <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
+                 </div>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#FFBC8A] uppercase opacity-50">AGRICULTURE &<br/>REPORT</span>
+               </div>
+             </div>
+           </div>
 
-            {/* Row 2 */}
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px', width: '100%', height: '41.22px' }}>
-              {pills.slice(3, 6).map((pill, idx) => renderPill(pill, idx + 3))}
-            </div>
-
-            {/* Row 3 */}
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px', width: '100%', height: '41.22px' }}>
-              {pills.slice(6, 10).map((pill, idx) => renderPill(pill, idx + 6))}
-            </div>
-
-            {/* Row 4 (South Boundaries absolute) */}
-            {renderPill(pills[10], 10, {
-              position: 'absolute',
-              left: '0px',
-              top: '214px'
-            })}
-          </div>
-        </div>
-
-        {/* BOTTOM CARD: Uploaded Files & Comments */}
-        <div style={{
-          position: 'absolute',
-          height: activeSubTab === 6
-            ? (surveyReportType === 'both' ? '1126px' : '720px')
-            : '443px',
-          left: '40px',
-          right: '40px',
-          top: '585px',
-          background: '#FFFFFF',
-          borderRadius: '24px',
-          boxSizing: 'border-box',
-          padding: '30px'
-        }}>
-          
-          {activeSubTab === 6 ? (
-            /* SURVEY REPORT SUB-TAB */
-            <>
-              <span style={{
-                position: 'absolute',
-                width: '304px',
-                height: '30px',
-                left: '30px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                lineHeight: '30px',
-                color: '#000000'
-              }}>
-                Select Survey Report Type
-              </span>
-
-              {/* Row 1 selection toggles */}
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '32px', position: 'absolute', width: '478px', height: '38px', left: '30px', top: '97px' }}>
-                {/* Private Button */}
-                <button 
-                  type="button"
-                  onClick={() => setSurveyReportType('private')}
-                  style={{
-                    boxSizing: 'border-box',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    padding: '10px 18px',
-                    gap: '10px',
-                    width: '204px',
-                    height: '38px',
-                    background: surveyReportType === 'private' ? '#2780C4' : '#FFFFFF',
-                    border: surveyReportType === 'private' ? '1px solid #FFFFFF' : '1px solid rgba(0, 0, 0, 0.26)',
-                    borderRadius: '33px',
-                    cursor: 'pointer',
-                    outline: 'none'
-                  }}
-                >
-                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', width: '168px', height: '18px' }}>
-                    <div style={{
-                      boxSizing: 'border-box',
-                      width: '12px',
-                      height: '12px',
-                      background: '#FFFFFF',
-                      border: '2px solid #85BFE5',
-                      borderRadius: '50%',
-                      flexShrink: 0
-                    }} />
-                    <span style={{
-                      width: '146px',
-                      height: '18px',
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      fontWeight: 600,
-                      fontSize: '14px',
-                      lineHeight: '18px',
-                      color: surveyReportType === 'private' ? '#FFFFFF' : '#000000',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      Private Survey Report
-                    </span>
-                  </div>
-                </button>
-
-                {/* Government Button */}
-                <button 
-                  type="button"
-                  onClick={() => setSurveyReportType('government')}
-                  style={{
-                    boxSizing: 'border-box',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    padding: '10px 18px',
-                    gap: '10px',
-                    width: '242px',
-                    height: '38px',
-                    background: surveyReportType === 'government' ? '#2780C4' : '#FFFFFF',
-                    border: surveyReportType === 'government' ? '1px solid #FFFFFF' : '1px solid rgba(0, 0, 0, 0.26)',
-                    borderRadius: '33px',
-                    cursor: 'pointer',
-                    outline: 'none'
-                  }}
-                >
-                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', width: '206px', height: '18px' }}>
-                    <div style={{
-                      boxSizing: 'border-box',
-                      width: '12px',
-                      height: '12px',
-                      background: '#FFFFFF',
-                      border: '2px solid #85BFE5',
-                      borderRadius: '50%',
-                      flexShrink: 0
-                    }} />
-                    <span style={{
-                      width: '184px',
-                      height: '18px',
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      fontWeight: 600,
-                      fontSize: '14px',
-                      lineHeight: '18px',
-                      color: surveyReportType === 'government' ? '#FFFFFF' : '#000000',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      Government Survey Report
-                    </span>
-                  </div>
-                </button>
-              </div>
-
-              {/* Both Button (Row 2) */}
-              <button 
-                type="button"
-                onClick={() => setSurveyReportType('both')}
-                style={{
-                  boxSizing: 'border-box',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '10px 18px',
-                  gap: '10px',
-                  width: '196px',
-                  height: '38px',
-                  background: surveyReportType === 'both' ? '#2780C4' : '#FFFFFF',
-                  border: surveyReportType === 'both' ? '1px solid #FFFFFF' : '1px solid rgba(0, 0, 0, 0.26)',
-                  borderRadius: '33px',
-                  cursor: 'pointer',
-                  outline: 'none',
-                  position: 'absolute',
-                  left: '30px',
-                  top: '156px'
-                }}
-              >
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', width: '160px', height: '18px' }}>
-                  <div style={{
-                    boxSizing: 'border-box',
-                    width: '12px',
-                    height: '12px',
-                    background: '#FFFFFF',
-                    border: '2px solid #85BFE5',
-                    borderRadius: '50%',
-                    flexShrink: 0
-                  }} />
-                  <span style={{
-                    width: '138px',
-                    height: '18px',
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontWeight: 600,
-                    fontSize: '14px',
-                    lineHeight: '18px',
-                    color: surveyReportType === 'both' ? '#FFFFFF' : '#000000',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    Both Survey Reports
-                  </span>
-                </div>
-              </button>
-
-              {/* Private Block */}
-              {(surveyReportType === 'private' || surveyReportType === 'both') && (
-                <div style={{
-                  position: 'absolute',
-                  width: '1319px',
-                  height: '403px',
-                  left: '30px',
-                  top: '241px',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: '19px'
-                }}>
-                  {/* Private Survey Report Card */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', width: '682px', height: '403px' }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', color: '#000000' }}>
-                      Private Survey Report
-                    </span>
-                    <div style={{
-                      width: '682px',
-                      height: '355px',
-                      background: '#FFFFFF',
-                      boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.25)',
-                      borderRadius: '24px',
-                      position: 'relative'
-                    }}>
-                      {/* File 1 */}
-                      <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'space-between',
-                        padding: '12px 16px', 
-                        background: '#E5F1F9', 
-                        borderRadius: '12px',
-                        width: '280px',
-                        height: '59px',
-                        boxSizing: 'border-box',
-                        position: 'absolute',
-                        left: '32px',
-                        top: '30px'
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ width: '29px', height: '29px', background: '#FFFFFF', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <FileText className="w-[17px] h-[17px] text-[#F15642]" />
-                          </div>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px', fontWeight: 400, color: '#000000' }}>
-                              File_name_1.pdf
-                            </span>
-                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '8px', color: 'rgba(0, 0, 0, 0.7)' }}>
-                              8MB
-                            </span>
-                          </div>
-                        </div>
-                        <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                          <Download className="w-[18px] h-[18px] text-[#000000]" />
-                        </button>
-                      </div>
-
-                      {/* File 2 */}
-                      <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'space-between',
-                        padding: '12px 16px', 
-                        background: '#E5F1F9', 
-                        borderRadius: '12px',
-                        width: '280px',
-                        height: '59px',
-                        boxSizing: 'border-box',
-                        position: 'absolute',
-                        left: '32px',
-                        top: '97px'
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ width: '29px', height: '29px', background: '#FFFFFF', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <FileText className="w-[17px] h-[17px] text-[#F15642]" />
-                          </div>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px', fontWeight: 400, color: '#000000' }}>
-                              File_name_1.pdf
-                            </span>
-                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '8px', color: 'rgba(0, 0, 0, 0.7)' }}>
-                              8MB
-                            </span>
-                          </div>
-                        </div>
-                        <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                          <Download className="w-[18px] h-[18px] text-[#000000]" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Comments */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '13px', width: '618px', height: '224px' }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', color: '#000000' }}>
-                      Comments
-                    </span>
-                    <div style={{
-                      boxSizing: 'border-box',
-                      width: '618px',
-                      height: '181px',
-                      background: 'rgba(187, 219, 240, 0.38)',
-                      border: '1px solid #96C9ED',
-                      borderRadius: '18px',
-                      padding: '24px',
-                      position: 'relative'
-                    }}>
-                      <p style={{
-                        fontFamily: "'Poppins', sans-serif",
-                        fontWeight: 400,
-                        fontSize: '14px',
-                        lineHeight: '21px',
-                        color: '#000000',
-                        margin: 0
-                      }}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod. Lorem ipsum dolor sit amet, consectetur adipiscing elit.do eiusmod. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Government Block */}
-              {(surveyReportType === 'government' || surveyReportType === 'both') && (
-                <div style={{
-                  position: 'absolute',
-                  width: '1319px',
-                  height: '403px',
-                  left: '30px',
-                  top: surveyReportType === 'both' ? '675px' : '241px',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: '19px'
-                }}>
-                  {/* Government Survey Report Card */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', width: '682px', height: '403px' }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', color: '#000000' }}>
-                      Government Survey Report
-                    </span>
-                    <div style={{
-                      width: '682px',
-                      height: '355px',
-                      background: '#FFFFFF',
-                      boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.25)',
-                      borderRadius: '24px',
-                      position: 'relative'
-                    }}>
-                      {/* File 1 */}
-                      <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'space-between',
-                        padding: '12px 16px', 
-                        background: '#E5F1F9', 
-                        borderRadius: '12px',
-                        width: '280px',
-                        height: '59px',
-                        boxSizing: 'border-box',
-                        position: 'absolute',
-                        left: '32px',
-                        top: '30px'
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ width: '29px', height: '29px', background: '#FFFFFF', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <FileText className="w-[17px] h-[17px] text-[#F15642]" />
-                          </div>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px', fontWeight: 400, color: '#000000' }}>
-                              File_name_1.pdf
-                            </span>
-                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '8px', color: 'rgba(0, 0, 0, 0.7)' }}>
-                              8MB
-                            </span>
-                          </div>
-                        </div>
-                        <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                          <Download className="w-[18px] h-[18px] text-[#000000]" />
-                        </button>
-                      </div>
-
-                      {/* File 2 */}
-                      <div style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'space-between',
-                        padding: '12px 16px', 
-                        background: '#E5F1F9', 
-                        borderRadius: '12px',
-                        width: '280px',
-                        height: '59px',
-                        boxSizing: 'border-box',
-                        position: 'absolute',
-                        left: '32px',
-                        top: '97px'
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ width: '29px', height: '29px', background: '#FFFFFF', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <FileText className="w-[17px] h-[17px] text-[#F15642]" />
-                          </div>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px', fontWeight: 400, color: '#000000' }}>
-                              File_name_1.pdf
-                            </span>
-                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '8px', color: 'rgba(0, 0, 0, 0.7)' }}>
-                              8MB
-                            </span>
-                          </div>
-                        </div>
-                        <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                          <Download className="w-[18px] h-[18px] text-[#000000]" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Comments */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '13px', width: '618px', height: '224px' }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', color: '#000000' }}>
-                      Comments
-                    </span>
-                    <div style={{
-                      boxSizing: 'border-box',
-                      width: '618px',
-                      height: '181px',
-                      background: 'rgba(187, 219, 240, 0.38)',
-                      border: '1px solid #96C9ED',
-                      borderRadius: '18px',
-                      padding: '24px',
-                      position: 'relative'
-                    }}>
-                      <p style={{
-                        fontFamily: "'Poppins', sans-serif",
-                        fontWeight: 400,
-                        fontSize: '14px',
-                        lineHeight: '21px',
-                        color: '#000000',
-                        margin: 0
-                      }}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod. Lorem ipsum dolor sit amet, consectetur adipiscing elit.do eiusmod. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              {activeSubTab === 3 ? (
-                /* QUESTIONS SELECTORS SECTION FOR WATER & ELECTRICITY */
-                <div style={{
-              position: 'absolute',
-              width: '640px',
-              height: '321px',
-              left: '31px',
-              top: '30px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '30px'
-            }}>
-              {/* Question 1: Select availability Facility */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '640px', height: '87px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '20px', color: '#000000' }}>
-                  Select availability Facility
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '27px' }}>
-                  {/* Water Facility Option */}
-                  <button 
-                    onClick={() => setAvailabilityFacility('water')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '150px',
-                      height: '38px',
-                      border: availabilityFacility === 'water' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      background: availabilityFacility === 'water' ? '#2780C4' : '#FFFFFF',
-                      borderRadius: '33px',
-                      cursor: 'pointer',
-                      outline: 'none'
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', width: '114px', height: '18px' }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%',
-                        flexShrink: 0
-                      }} />
-                      <span style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        color: availabilityFacility === 'water' ? '#FFFFFF' : '#000000',
-                        whiteSpace: 'nowrap'
-                      }}>
-                        Water Facility
+           {/* Content Column */}
+           <div className="flex-1 flex flex-col gap-6 min-w-0">
+             
+             {/* Bento Grid Pills */}
+             <div className="w-full bg-white rounded-[24px] p-6 lg:p-8 flex flex-wrap gap-4 min-h-[150px] content-start">
+               {pills.map((pill, idx) => {
+                  const isActive = activeSubTab === idx;
+                  const isCompleted = completedSubTabs.includes(pill.label);
+                  return (
+                    <button 
+                      key={idx}
+                      onClick={() => setActiveSubTab(idx)}
+                      className="flex flex-row items-center justify-center px-4 py-[11px] gap-2 h-[41px] bg-[#F9F9F9] rounded-[72px] shadow-sm cursor-pointer whitespace-nowrap"
+                      style={{ border: isActive ? '1px solid #0078FA' : isCompleted ? '1px solid #A5B767' : '1px solid transparent' }}
+                    >
+                      {!isCompleted && (
+                        <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0">!</div>
+                      )}
+                      <span className="font-plus-jakarta font-semibold text-[14px]" style={{ color: isActive ? '#0078FA' : isCompleted ? '#2780C4' : 'rgba(90, 92, 94, 0.74)' }}>
+                        {pill.label}
                       </span>
-                    </div>
-                  </button>
-
-                  {/* Electricity Facility Option */}
-                  <button 
-                    onClick={() => setAvailabilityFacility('electricity')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '178px',
-                      height: '38px',
-                      border: availabilityFacility === 'electricity' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      background: availabilityFacility === 'electricity' ? '#2780C4' : '#FFFFFF',
-                      borderRadius: '33px',
-                      cursor: 'pointer',
-                      outline: 'none'
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', width: '142px', height: '18px' }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%',
-                        flexShrink: 0
-                      }} />
-                      <span style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        color: availabilityFacility === 'electricity' ? '#FFFFFF' : '#000000',
-                        whiteSpace: 'nowrap'
-                      }}>
-                        Electricity Facility
-                      </span>
-                    </div>
-                  </button>
-
-                  {/* Both Option */}
-                  <button 
-                    onClick={() => setAvailabilityFacility('both')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '91px',
-                      height: '38px',
-                      border: availabilityFacility === 'both' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      background: availabilityFacility === 'both' ? '#2780C4' : '#FFFFFF',
-                      borderRadius: '33px',
-                      cursor: 'pointer',
-                      outline: 'none'
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', width: '55px', height: '18px' }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%',
-                        flexShrink: 0
-                      }} />
-                      <span style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        color: availabilityFacility === 'both' ? '#FFFFFF' : '#000000',
-                        whiteSpace: 'nowrap'
-                      }}>
-                        Both
-                      </span>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Question 2: Select Water Facility */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '640px', height: '87px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '20px', color: '#000000' }}>
-                  Select Water Facility
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '27px' }}>
-                  {/* Bore Option */}
-                  <button 
-                    onClick={() => setWaterFacility('bore')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '91px',
-                      height: '38px',
-                      border: waterFacility === 'bore' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      background: waterFacility === 'bore' ? '#2780C4' : '#FFFFFF',
-                      borderRadius: '33px',
-                      cursor: 'pointer',
-                      outline: 'none'
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', width: '55px', height: '18px' }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%',
-                        flexShrink: 0
-                      }} />
-                      <span style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        color: waterFacility === 'bore' ? '#FFFFFF' : '#000000',
-                        whiteSpace: 'nowrap'
-                      }}>
-                        Bore
-                      </span>
-                    </div>
-                  </button>
-
-                  {/* Municipal Option */}
-                  <button 
-                    onClick={() => setWaterFacility('municipal')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '120px',
-                      height: '38px',
-                      border: waterFacility === 'municipal' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      background: waterFacility === 'municipal' ? '#2780C4' : '#FFFFFF',
-                      borderRadius: '33px',
-                      cursor: 'pointer',
-                      outline: 'none'
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', width: '84px', height: '18px' }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%',
-                        flexShrink: 0
-                      }} />
-                      <span style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        color: waterFacility === 'municipal' ? '#FFFFFF' : '#000000',
-                        whiteSpace: 'nowrap'
-                      }}>
-                        Muncipal
-                      </span>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Question 3: Select Electricity Facility */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '640px', height: '87px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '20px', color: '#000000' }}>
-                  Select Electricity Facility
-                </span>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '27px' }}>
-                  {/* 2 Phase Option */}
-                  <button 
-                    onClick={() => setElectricityFacility('2phase')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '110px',
-                      height: '38px',
-                      border: electricityFacility === '2phase' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      background: electricityFacility === '2phase' ? '#2780C4' : '#FFFFFF',
-                      borderRadius: '33px',
-                      cursor: 'pointer',
-                      outline: 'none'
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', width: '74px', height: '18px' }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%',
-                        flexShrink: 0
-                      }} />
-                      <span style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        color: electricityFacility === '2phase' ? '#FFFFFF' : '#000000',
-                        whiteSpace: 'nowrap'
-                      }}>
-                        2 Phase
-                      </span>
-                    </div>
-                  </button>
-
-                  {/* 3 Phase Option */}
-                  <button 
-                    onClick={() => setElectricityFacility('3phase')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '111px',
-                      height: '38px',
-                      border: electricityFacility === '3phase' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      background: electricityFacility === '3phase' ? '#2780C4' : '#FFFFFF',
-                      borderRadius: '33px',
-                      cursor: 'pointer',
-                      outline: 'none'
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', width: '75px', height: '18px' }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%',
-                        flexShrink: 0
-                      }} />
-                      <span style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        color: electricityFacility === '3phase' ? '#FFFFFF' : '#000000',
-                        whiteSpace: 'nowrap'
-                      }}>
-                        3 Phase
-                      </span>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          ) : activeSubTab === 4 ? (
-            /* QUESTIONS SELECTORS SECTION FOR ANY EXISTING TREES */
-            <div style={{
-              position: 'absolute',
-              width: '640px',
-              height: '321px',
-              left: '30px',
-              top: '30px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '28px'
-            }}>
-              {/* Question 1: Any Existing Tress available surrounding land? */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', width: '640px', height: '86px' }}>
-                <span style={{ 
-                  fontFamily: "'Plus Jakarta Sans', sans-serif", 
-                  fontWeight: 600, 
-                  fontSize: '24px', 
-                  lineHeight: '30px', 
-                  color: '#000000',
-                  margin: 0
-                }}>
-                  Any Existing Tress available surrounding land?
-                </span>
-                
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '25px', width: '292px', height: '38px' }}>
-                  {/* Available Button */}
-                  <button 
-                    type="button"
-                    onClick={() => {
-                      setTreeAvailability('Available');
-                    }}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '120px',
-                      height: '38px',
-                      background: treeAvailability === 'Available' ? '#3D92D0' : '#FFFFFF',
-                      border: treeAvailability === 'Available' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      borderRadius: '33px',
-                      cursor: 'pointer',
-                      outline: 'none'
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', width: '84px', height: '18px' }}>
-                      {/* Ellipse 488 select dot */}
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: treeAvailability === 'Available' ? '#3D93D1' : '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%',
-                        flexShrink: 0
-                      }} />
-                      <span style={{
-                        width: '62px',
-                        height: '18px',
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '18px',
-                        color: treeAvailability === 'Available' ? '#FFFFFF' : '#000000',
-                        display: 'flex',
-                        alignItems: 'center'
-                      }}>
-                        Available
-                      </span>
-                    </div>
-                  </button>
-
-                  {/* Not Available Button */}
-                  <button 
-                    type="button"
-                    onClick={() => {
-                      setTreeAvailability('Not Available');
-                    }}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '147px',
-                      height: '38px',
-                      background: treeAvailability === 'Not Available' ? '#3D92D0' : '#FFFFFF',
-                      border: treeAvailability === 'Not Available' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      borderRadius: '33px',
-                      cursor: 'pointer',
-                      outline: 'none'
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', width: '111px', height: '18px' }}>
-                      {/* Ellipse 488 select dot */}
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: treeAvailability === 'Not Available' ? '#3D93D1' : '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%',
-                        flexShrink: 0
-                      }} />
-                      <span style={{
-                        width: '89px',
-                        height: '18px',
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '18px',
-                        color: treeAvailability === 'Not Available' ? '#FFFFFF' : '#000000',
-                        display: 'flex',
-                        alignItems: 'center'
-                      }}>
-                        Not Available
-                      </span>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Question 2: Tress count */}
-              <div 
-                style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  gap: '8px', 
-                  width: '640px', 
-                  height: '82px',
-                  position: 'relative',
-                  opacity: treeAvailability === 'Not Available' ? 0.3 : 1,
-                  pointerEvents: treeAvailability === 'Not Available' ? 'none' : 'auto'
-                }}
-              >
-                <span style={{ 
-                  fontFamily: "'Plus Jakarta Sans', sans-serif", 
-                  fontWeight: 600, 
-                  fontSize: '16px', 
-                  lineHeight: '20px', 
-                  color: 'rgba(0, 0, 0, 0.92)' 
-                }}>
-                  Tress count
-                </span>
-                
-                {/* Selector Box */}
-                <div 
-                  onClick={() => setIsTreeCountDropdownOpen(!isTreeCountDropdownOpen)}
-                  style={{
-                    boxSizing: 'border-box',
-                    width: '640px',
-                    height: '54px',
-                    background: '#FFFFFF',
-                    border: '1px solid rgba(0, 0, 0, 0.4)',
-                    borderRadius: '8px',
-                    position: 'relative',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '0 24px'
-                  }}
-                >
-                  <span style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '18px',
-                    lineHeight: '22px',
-                    color: '#000000'
-                  }}>
-                    {treeCount}
-                  </span>
-                  
-                  {/* Chevron Down Arrow Icon */}
-                  <svg 
-                    style={{
-                      position: 'absolute',
-                      right: '26px',
-                      top: 'calc(50% - 4px)',
-                      width: '13px',
-                      height: '8px'
-                    }}
-                    viewBox="0 0 13 8" 
-                    fill="none" 
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M1 1L6.5 6.5L12 1" stroke="#363434" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-
-                {/* Dropdown Options List */}
-                {isTreeCountDropdownOpen && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '86px',
-                    left: '0px',
-                    width: '640px',
-                    background: '#FFFFFF',
-                    border: '1px solid rgba(0, 0, 0, 0.2)',
-                    borderRadius: '8px',
-                    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-                    zIndex: 1000,
-                    maxHeight: '200px',
-                    overflowY: 'auto'
-                  }}>
-                    {['0 - 10', '10 - 20', '20 - 50', '50+'].map((opt) => (
-                      <div 
-                        key={opt}
-                        onClick={() => {
-                          setTreeCount(opt);
-                          setIsTreeCountDropdownOpen(false);
-                        }}
-                        style={{
-                          padding: '12px 24px',
-                          fontFamily: "'Inter', sans-serif",
-                          fontSize: '16px',
-                          color: '#000000',
-                          cursor: 'pointer',
-                          background: treeCount === opt ? '#F3F3F5' : '#FFFFFF',
-                          transition: 'background 0.2s'
-                        }}
-                        onMouseEnter={(e) => {
-                          if (treeCount !== opt) e.currentTarget.style.background = '#F9F9F9';
-                        }}
-                        onMouseLeave={(e) => {
-                          if (treeCount !== opt) e.currentTarget.style.background = '#FFFFFF';
-                        }}
-                      >
-                        {opt}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : activeSubTab >= 7 ? (
-            /* BOUNDARY SELECTORS SECTION FOR EAST, WEST, NORTH, SOUTH */
-            <>
-              {/* Boundary Title & Dropdown */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: 0, gap: '13px', position: 'absolute', width: '640px', height: '97px', left: '30px', top: '30px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', lineHeight: '30px', color: '#000000' }}>
-                  {pills[activeSubTab].label}
-                </span>
-                
-                <div style={{ position: 'relative', width: '100%' }}>
-                  <button
-                    type="button"
-                    onClick={() => setIsBoundaryDropdownOpen(!isBoundaryDropdownOpen)}
-                    style={{ boxSizing: 'border-box', width: '640px', height: '54px', background: '#FFFFFF', border: '1px solid rgba(0, 0, 0, 0.4)', borderRadius: '8px', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', cursor: 'pointer', outline: 'none' }}
-                  >
-                    <span style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', color: boundarySelections[activeSubTab] ? '#000000' : 'rgba(0,0,0,0.4)' }}>
-                      {boundarySelections[activeSubTab] || `What is on the ${pills[activeSubTab].label.toLowerCase().split(' ')[0]} side?`}
-                    </span>
-                    <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1L7 7L13 1" stroke="#363434" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                  
-                  {isBoundaryDropdownOpen && (
-                    <div style={{ position: 'absolute', top: '56px', left: 0, right: 0, background: '#FFFFFF', border: '1px solid rgba(0, 0, 0, 0.1)', borderRadius: '12px', boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
-                      {['Land', 'Road', 'Water Body', 'Tress', 'Other'].map((opt) => (
-                        <div
-                          key={opt}
-                          onClick={() => {
-                            setBoundarySelections(prev => ({ ...prev, [activeSubTab]: opt }));
-                            setIsBoundaryDropdownOpen(false);
-                          }}
-                          style={{ padding: '12px 16px', fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#1A1C1E', cursor: 'pointer', transition: 'background 0.2s', background: boundarySelections[activeSubTab] === opt ? '#E5F1F9' : 'transparent' }}
-                          onMouseEnter={(e) => { if (boundarySelections[activeSubTab] !== opt) e.currentTarget.style.background = '#F9FAFB'; }}
-                          onMouseLeave={(e) => { if (boundarySelections[activeSubTab] !== opt) e.currentTarget.style.background = 'transparent'; }}
-                        >
-                          {opt}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {boundarySelections[activeSubTab] === 'Land' && (
-                <>
-                  <span style={{ position: 'absolute', width: '640px', height: '30px', left: '30px', top: '155px', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', lineHeight: '30px', color: '#000000' }}>
-                    Owner details of land
-                  </span>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: 0, gap: '8px', position: 'absolute', width: '640px', height: '82px', left: '30px', top: '203px' }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '16px', lineHeight: '20px', color: 'rgba(0, 0, 0, 0.92)' }}>Name</span>
-                    <div style={{ boxSizing: 'border-box', width: '640px', height: '54px', background: '#FFFFFF', border: '1px solid rgba(0, 0, 0, 0.4)', borderRadius: '8px', position: 'relative' }}>
-                      <input type="text" placeholder="Krishna" style={{ position: 'absolute', width: '100%', height: '100%', left: 0, top: 0, background: 'transparent', border: 'none', padding: '0 24px', fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', outline: 'none' }} />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: 0, gap: '8px', position: 'absolute', width: '640px', height: '82px', left: '30px', top: '303px' }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '16px', lineHeight: '20px', color: 'rgba(0, 0, 0, 0.92)' }}>Age</span>
-                    <div style={{ boxSizing: 'border-box', width: '640px', height: '54px', background: '#FFFFFF', border: '1px solid rgba(0, 0, 0, 0.4)', borderRadius: '8px', position: 'relative' }}>
-                      <input type="text" placeholder="43" style={{ position: 'absolute', width: '100%', height: '100%', left: 0, top: 0, background: 'transparent', border: 'none', padding: '0 24px', fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', outline: 'none' }} />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {boundarySelections[activeSubTab] === 'Road' && (
-                <>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: 0, gap: '18px', position: 'absolute', width: '640px', height: '86px', left: '30px', top: '155px' }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', lineHeight: '30px', color: '#000000' }}>
-                      Type of Road
-                    </span>
-                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', padding: 0, gap: '25px', width: '364px', height: '38px' }}>
-                      
-                      <div 
-                        onClick={() => setRoadTypeSelections(prev => ({ ...prev, [activeSubTab]: 'Private Road' }))}
-                        style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: '10px 18px', gap: '10px', width: '143px', height: '38px', borderRadius: '33px', cursor: 'pointer', border: roadTypeSelections[activeSubTab] === 'Private Road' ? '1px solid #FFFFFF' : '1px solid rgba(0, 0, 0, 0.26)', background: roadTypeSelections[activeSubTab] === 'Private Road' ? '#2780C4' : 'transparent' }}
-                      >
-                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', padding: 0, gap: '10px' }}>
-                          <div style={{ boxSizing: 'border-box', width: '12px', height: '12px', background: '#FFFFFF', border: '2px solid #85BFE5', borderRadius: '50%', position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            {roadTypeSelections[activeSubTab] === 'Private Road' && <div style={{ width: '4px', height: '4px', background: '#2780C4', borderRadius: '50%' }} />}
-                          </div>
-                          <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '14px', lineHeight: '18px', color: roadTypeSelections[activeSubTab] === 'Private Road' ? '#FFFFFF' : '#000000', whiteSpace: 'nowrap' }}>
-                            Private Road
-                          </span>
-                        </div>
-                      </div>
-
-                      <div 
-                        onClick={() => setRoadTypeSelections(prev => ({ ...prev, [activeSubTab]: 'Government Road' }))}
-                        style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: '10px 18px', gap: '10px', width: '196px', height: '38px', borderRadius: '33px', cursor: 'pointer', border: roadTypeSelections[activeSubTab] === 'Government Road' ? '1px solid #FFFFFF' : '1px solid rgba(0, 0, 0, 0.26)', background: roadTypeSelections[activeSubTab] === 'Government Road' ? '#2780C4' : 'transparent' }}
-                      >
-                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', padding: 0, gap: '10px' }}>
-                          <div style={{ boxSizing: 'border-box', width: '12px', height: '12px', background: '#FFFFFF', border: '2px solid #85BFE5', borderRadius: '50%', position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            {roadTypeSelections[activeSubTab] === 'Government Road' && <div style={{ width: '4px', height: '4px', background: '#2780C4', borderRadius: '50%' }} />}
-                          </div>
-                          <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '14px', lineHeight: '18px', color: roadTypeSelections[activeSubTab] === 'Government Road' ? '#FFFFFF' : '#000000', whiteSpace: 'nowrap' }}>
-                            Government Road
-                          </span>
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: 0, gap: '8px', position: 'absolute', width: '640px', height: '82px', left: '30px', top: '269px' }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '16px', lineHeight: '20px', color: 'rgba(0, 0, 0, 0.92)' }}>
-                      Width of the Road <span style={{ color: 'rgba(0, 0, 0, 0.5)' }}>(in Feet)</span>
-                    </span>
-                    <div style={{ boxSizing: 'border-box', width: '640px', height: '54px', background: '#FFFFFF', border: '1px solid rgba(0, 0, 0, 0.4)', borderRadius: '8px', position: 'relative' }}>
-                      <input type="text" placeholder="100" style={{ position: 'absolute', width: '100%', height: '100%', left: 0, top: 0, background: 'transparent', border: 'none', padding: '0 24px', fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', outline: 'none' }} />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {boundarySelections[activeSubTab] === 'Tress' && (
-                <>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: 0, gap: '8px', position: 'absolute', width: '640px', height: '82px', left: '30px', top: '162px' }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '16px', lineHeight: '20px', color: 'rgba(0, 0, 0, 0.92)' }}>
-                      Trees Count
-                    </span>
-                    <div style={{ position: 'relative', width: '100%' }}>
-                      <button
-                        type="button"
-                        onClick={() => setIsTreesDropdownOpen(!isTreesDropdownOpen)}
-                        style={{ boxSizing: 'border-box', width: '640px', height: '54px', background: '#FFFFFF', border: '1px solid rgba(0, 0, 0, 0.4)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', cursor: 'pointer', outline: 'none' }}
-                      >
-                        <span style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: '18px', color: treesSelections[activeSubTab] ? '#000000' : 'rgba(0,0,0,0.4)' }}>
-                          {treesSelections[activeSubTab] || '1 - 10'}
-                        </span>
-                        <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M1 1L7 7L13 1" stroke="#363434" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                      </button>
-                      
-                      {isTreesDropdownOpen && (
-                        <div style={{ position: 'absolute', top: '56px', left: 0, right: 0, background: '#FFFFFF', border: '1px solid rgba(0, 0, 0, 0.1)', borderRadius: '12px', boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', zIndex: 10 }}>
-                          {['1 - 10', '11 - 50', '51 - 100', '100+'].map((opt) => (
-                            <div
-                              key={opt}
-                              onClick={() => {
-                                setTreesSelections(prev => ({ ...prev, [activeSubTab]: opt }));
-                                setIsTreesDropdownOpen(false);
-                              }}
-                              style={{ padding: '12px 16px', fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#1A1C1E', cursor: 'pointer', transition: 'background 0.2s', background: treesSelections[activeSubTab] === opt ? '#E5F1F9' : 'transparent' }}
-                              onMouseEnter={(e) => { if (treesSelections[activeSubTab] !== opt) e.currentTarget.style.background = '#F9FAFB'; }}
-                              onMouseLeave={(e) => { if (treesSelections[activeSubTab] !== opt) e.currentTarget.style.background = 'transparent'; }}
-                            >
-                              {opt}
-                            </div>
-                          ))}
+                      {isCompleted && (
+                        <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
+                          <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
+                          <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
                         </div>
                       )}
-                    </div>
-                  </div>
-                </>
-              )}
-            </>
-          ) : (
-            /* STANDARD FILES VIEW */
-            <>
-              {/* UPLOADED FILES SECTION */}
-              <span style={{
-                position: 'absolute',
-                width: '173px',
-                height: '30px',
-                left: '30px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Uploaded Files
-              </span>
+                    </button>
+                  );
+               })}
+             </div>
 
-              <div style={{
-                position: 'absolute',
-                left: '18px',
-                top: '73px',
-                width: '682px',
-                height: '355px',
-                background: '#FFFFFF',
-                border: '1.2px solid #E5E7EB',
-                borderRadius: '24px',
-                boxSizing: 'border-box',
-                padding: '24px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '24px',
-                overflowY: 'auto'
-              }} className="custom-scrollbar">
-                {/* Cover image attachment if available */}
-                {currentFiles.coverImage && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '280px' }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 500, fontSize: '12px', color: 'rgba(0, 0, 0, 0.74)' }}>
-                      Cover image
-                    </span>
-                    <div style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      justifyContent: 'space-between',
-                      padding: '12px 16px', 
-                      background: '#E5F1F9', 
-                      borderRadius: '12px',
-                      width: '280px',
-                      height: '59px',
-                      boxSizing: 'border-box'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <div style={{ width: '29px', height: '29px', background: '#FFFFFF', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <FileText className="w-[17px] h-[17px] text-[#F15642]" />
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px', fontWeight: 400, color: '#000000' }}>
-                            {currentFiles.coverImage.name}
-                          </span>
-                          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '8px', color: 'rgba(0, 0, 0, 0.7)' }}>
-                            {currentFiles.coverImage.size}
-                          </span>
-                        </div>
-                      </div>
-                      <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                        <Download className="w-[18px] h-[18px] text-[#000000]" />
-                      </button>
-                    </div>
-                  </div>
-                )}
+             {/* BOTTOM CARD: Sub-tab specific sections */}
+             <div className="w-full bg-white rounded-[24px] p-6 lg:p-8 flex flex-col gap-8 min-h-[443px] relative">
+               
+               <div className="flex flex-col xl:flex-row gap-8 w-full flex-1">
+                 
+                 {/* Left Content Area (Forms/Files) */}
+                 <div className="flex-1 flex flex-col gap-6 min-w-0">
+                   
+                   {activeSubTab === 6 ? (
+                     <div className="flex flex-col gap-6 w-full">
+                       <span className="font-plus-jakarta font-semibold text-[24px] text-black">Select Survey Report Type</span>
+                       <div className="flex flex-row flex-wrap items-center gap-4">
+                         <button onClick={() => setSurveyReportType('private')} className={`flex items-center px-[18px] py-[10px] gap-[10px] rounded-[33px] cursor-pointer ${surveyReportType === 'private' ? 'bg-[#2780C4] border-white' : 'bg-white border-black/25'} border`}>
+                           <div className={`w-3 h-3 rounded-full border-2 border-[#85BFE5] bg-white flex shrink-0`}>
+                             {surveyReportType === 'private' && <div className="w-full h-full bg-[#2780C4] rounded-full" />}
+                           </div>
+                           <span className={`font-plus-jakarta font-semibold text-[14px] ${surveyReportType === 'private' ? 'text-white' : 'text-black'}`}>Private Survey Report</span>
+                         </button>
+                         <button onClick={() => setSurveyReportType('government')} className={`flex items-center px-[18px] py-[10px] gap-[10px] rounded-[33px] cursor-pointer ${surveyReportType === 'government' ? 'bg-[#2780C4] border-white' : 'bg-white border-black/25'} border`}>
+                           <div className={`w-3 h-3 rounded-full border-2 border-[#85BFE5] bg-white flex shrink-0`}>
+                             {surveyReportType === 'government' && <div className="w-full h-full bg-[#2780C4] rounded-full" />}
+                           </div>
+                           <span className={`font-plus-jakarta font-semibold text-[14px] ${surveyReportType === 'government' ? 'text-white' : 'text-black'}`}>Government Survey Report</span>
+                         </button>
+                         <button onClick={() => setSurveyReportType('both')} className={`flex items-center px-[18px] py-[10px] gap-[10px] rounded-[33px] cursor-pointer ${surveyReportType === 'both' ? 'bg-[#2780C4] border-white' : 'bg-white border-black/25'} border`}>
+                           <div className={`w-3 h-3 rounded-full border-2 border-[#85BFE5] bg-white flex shrink-0`}>
+                             {surveyReportType === 'both' && <div className="w-full h-full bg-[#2780C4] rounded-full" />}
+                           </div>
+                           <span className={`font-plus-jakarta font-semibold text-[14px] ${surveyReportType === 'both' ? 'text-white' : 'text-black'}`}>Both Survey Reports</span>
+                         </button>
+                       </div>
 
-                {/* Uploaded files / images list */}
-                {currentFiles.uploadedImages.length > 0 && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '280px' }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 500, fontSize: '12px', color: 'rgba(0, 0, 0, 0.74)' }}>
-                      {activeSubTab === 0 ? "Uploaded images" : "Uploaded files"}
-                    </span>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      {currentFiles.uploadedImages.map((file, fileIdx) => (
-                        <div key={fileIdx} style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'space-between',
-                          padding: '12px 16px', 
-                          background: '#E5F1F9', 
-                          borderRadius: '12px',
-                          width: '280px',
-                          height: '59px',
-                          boxSizing: 'border-box'
-                        }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div style={{ width: '29px', height: '29px', background: '#FFFFFF', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <FileText className="w-[17px] h-[17px] text-[#F15642]" />
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px', fontWeight: 400, color: '#000000' }}>
-                                {file.name}
-                              </span>
-                              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '8px', color: 'rgba(0, 0, 0, 0.7)' }}>
-                                {file.size}
-                              </span>
-                            </div>
-                          </div>
-                          <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                            <Download className="w-[18px] h-[18px] text-[#000000]" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
+                       <div className="flex flex-col lg:flex-row gap-6 w-full mt-4">
+                         {(surveyReportType === 'private' || surveyReportType === 'both') && (
+                           <div className="flex-1 flex flex-col gap-4">
+                             <span className="font-plus-jakarta font-semibold text-[24px] text-black">Private Survey Report</span>
+                             <div className="w-full bg-white shadow-sm border border-black/5 rounded-[24px] p-6 flex flex-col gap-4 min-h-[355px]">
+                               {[{ name: "File_name_1.pdf", size: "8MB" }, { name: "File_name_1.pdf", size: "8MB" }].map((file, fileIdx) => (
+                                 <div key={fileIdx} className="flex items-center justify-between px-4 py-3 bg-[#E5F1F9] rounded-[12px] w-full max-w-[280px]">
+                                   <div className="flex items-center gap-[10px]">
+                                     <div className="w-[29px] h-[29px] bg-white rounded flex items-center justify-center">
+                                       <FileText className="w-[17px] h-[17px] text-[#F15642]" />
+                                     </div>
+                                     <div className="flex flex-col">
+                                       <span className="font-inter text-[14px] text-black">{file.name}</span>
+                                       <span className="font-inter text-[8px] text-black/70">{file.size}</span>
+                                     </div>
+                                   </div>
+                                   <button className="border-none bg-transparent cursor-pointer">
+                                     <Download className="w-[18px] h-[18px] text-black" />
+                                   </button>
+                                 </div>
+                               ))}
+                             </div>
+                           </div>
+                         )}
+                         {(surveyReportType === 'government' || surveyReportType === 'both') && (
+                           <div className="flex-1 flex flex-col gap-4">
+                             <span className="font-plus-jakarta font-semibold text-[24px] text-black">Government Survey Report</span>
+                             <div className="w-full bg-white shadow-sm border border-black/5 rounded-[24px] p-6 flex flex-col gap-4 min-h-[355px]">
+                               {[{ name: "File_name_1.pdf", size: "8MB" }, { name: "File_name_1.pdf", size: "8MB" }].map((file, fileIdx) => (
+                                 <div key={fileIdx} className="flex items-center justify-between px-4 py-3 bg-[#E5F1F9] rounded-[12px] w-full max-w-[280px]">
+                                   <div className="flex items-center gap-[10px]">
+                                     <div className="w-[29px] h-[29px] bg-white rounded flex items-center justify-center">
+                                       <FileText className="w-[17px] h-[17px] text-[#F15642]" />
+                                     </div>
+                                     <div className="flex flex-col">
+                                       <span className="font-inter text-[14px] text-black">{file.name}</span>
+                                       <span className="font-inter text-[8px] text-black/70">{file.size}</span>
+                                     </div>
+                                   </div>
+                                   <button className="border-none bg-transparent cursor-pointer">
+                                     <Download className="w-[18px] h-[18px] text-black" />
+                                   </button>
+                                 </div>
+                               ))}
+                             </div>
+                           </div>
+                         )}
+                       </div>
+                     </div>
+                   ) : activeSubTab === 3 ? (
+                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                       <div className="flex flex-col gap-6">
+                         <span className="font-plus-jakarta font-semibold text-[20px] text-black">Select availability Facility</span>
+                         <div className="flex flex-row flex-wrap items-center gap-4">
+                           {(['water', 'electricity', 'both'] as const).map((type) => (
+                             <button key={type} onClick={() => setAvailabilityFacility(type)} className={`flex items-center px-[18px] py-[10px] gap-[10px] rounded-[33px] cursor-pointer ${availabilityFacility === type ? 'bg-[#2780C4] border-white' : 'bg-white border-black/25'} border`}>
+                               <div className="w-3 h-3 rounded-full border-2 border-[#85BFE5] bg-white flex shrink-0">
+                                 {availabilityFacility === type && <div className="w-full h-full bg-[#2780C4] rounded-full" />}
+                               </div>
+                               <span className={`font-plus-jakarta font-semibold text-[14px] capitalize ${availabilityFacility === type ? 'text-white' : 'text-black'}`}>{type === 'both' ? 'Both' : `${type} Facility`}</span>
+                             </button>
+                           ))}
+                         </div>
+                       </div>
+                       
+                       <div className="flex flex-col gap-6">
+                         <span className="font-plus-jakarta font-semibold text-[20px] text-black">Select Water Facility</span>
+                         <div className="flex flex-row flex-wrap items-center gap-4">
+                           {(['bore', 'municipal'] as const).map((type) => (
+                             <button key={type} onClick={() => setWaterFacility(type)} className={`flex items-center px-[18px] py-[10px] gap-[10px] rounded-[33px] cursor-pointer ${waterFacility === type ? 'bg-[#2780C4] border-white' : 'bg-white border-black/25'} border`}>
+                               <div className="w-3 h-3 rounded-full border-2 border-[#85BFE5] bg-white flex shrink-0">
+                                 {waterFacility === type && <div className="w-full h-full bg-[#2780C4] rounded-full" />}
+                               </div>
+                               <span className={`font-plus-jakarta font-semibold text-[14px] capitalize ${waterFacility === type ? 'text-white' : 'text-black'}`}>{type}</span>
+                             </button>
+                           ))}
+                         </div>
+                       </div>
 
-          {/* COMMENTS SECTION */}
-          <span style={{
-            position: 'absolute',
-            width: '129px',
-            height: '30px',
-            left: '716px',
-            top: '30px',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 600,
-            fontSize: '24px',
-            color: '#000000'
-          }}>
-            Comments
-          </span>
+                       <div className="flex flex-col gap-6">
+                         <span className="font-plus-jakarta font-semibold text-[20px] text-black">Select Electricity Facility</span>
+                         <div className="flex flex-row flex-wrap items-center gap-4">
+                           {(['2phase', '3phase'] as const).map((type) => (
+                             <button key={type} onClick={() => setElectricityFacility(type)} className={`flex items-center px-[18px] py-[10px] gap-[10px] rounded-[33px] cursor-pointer ${electricityFacility === type ? 'bg-[#2780C4] border-white' : 'bg-white border-black/25'} border`}>
+                               <div className="w-3 h-3 rounded-full border-2 border-[#85BFE5] bg-white flex shrink-0">
+                                 {electricityFacility === type && <div className="w-full h-full bg-[#2780C4] rounded-full" />}
+                               </div>
+                               <span className={`font-plus-jakarta font-semibold text-[14px] capitalize ${electricityFacility === type ? 'text-white' : 'text-black'}`}>{type.replace('phase', ' Phase')}</span>
+                             </button>
+                           ))}
+                         </div>
+                       </div>
+                     </div>
+                   ) : activeSubTab === 4 ? (
+                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                       <div className="flex flex-col gap-6">
+                         <span className="font-plus-jakarta font-semibold text-[24px] text-black">Any Existing Tress available surrounding land?</span>
+                         <div className="flex flex-row flex-wrap items-center gap-4">
+                           {(['Available', 'Not Available'] as const).map((type) => (
+                             <button key={type} onClick={() => setTreeAvailability(type)} className={`flex items-center px-[18px] py-[10px] gap-[10px] rounded-[33px] cursor-pointer ${treeAvailability === type ? 'bg-[#2780C4] border-white' : 'bg-white border-black/25'} border`}>
+                               <div className="w-3 h-3 rounded-full border-2 border-[#85BFE5] bg-white flex shrink-0">
+                                 {treeAvailability === type && <div className="w-full h-full bg-[#2780C4] rounded-full" />}
+                               </div>
+                               <span className={`font-plus-jakarta font-semibold text-[14px] ${treeAvailability === type ? 'text-white' : 'text-black'}`}>{type}</span>
+                             </button>
+                           ))}
+                         </div>
+                       </div>
 
-          <div style={{
-            position: 'absolute',
-            width: '618px',
-            height: '181px',
-            left: '716px',
-            top: '73px',
-            boxSizing: 'border-box',
-            background: 'rgba(187, 219, 240, 0.38)',
-            border: '1px solid #96C9ED',
-            borderRadius: '18px',
-            padding: '24px'
-          }}>
-            <p style={{
-              fontFamily: "'Poppins', sans-serif",
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '21px',
-              color: '#000000',
-              margin: 0
-            }}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod. Lorem ipsum dolor sit amet, consectetur adipiscing elit.do eiusmod. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur.
-            </p>
-          </div>
-            </>
-          )}
+                       <div className={`flex flex-col gap-2 ${treeAvailability === 'Not Available' ? 'opacity-30 pointer-events-none' : ''}`}>
+                         <span className="font-plus-jakarta font-semibold text-[16px] text-black/90">Trees Count</span>
+                         <div className="relative w-full">
+                           <button onClick={() => setIsTreeCountDropdownOpen(!isTreeCountDropdownOpen)} className="w-full h-[54px] bg-white border border-black/40 rounded-lg px-6 flex items-center justify-between cursor-pointer">
+                             <span className="font-inter text-[18px] text-black">{treeCount}</span>
+                             <ChevronDown className="w-5 h-5 text-[#363434]" />
+                           </button>
+                           {isTreeCountDropdownOpen && (
+                             <div className="absolute top-[58px] left-0 w-full bg-white border border-black/10 rounded-xl shadow-lg z-50 overflow-hidden">
+                               {['0 - 10', '10 - 20', '20 - 50', '50+'].map(opt => (
+                                 <div key={opt} onClick={() => { setTreeCount(opt); setIsTreeCountDropdownOpen(false); }} className="px-6 py-3 font-inter text-[16px] text-black cursor-pointer hover:bg-[#F9F9F9]" style={{ background: treeCount === opt ? '#F3F3F5' : 'transparent' }}>
+                                   {opt}
+                                 </div>
+                               ))}
+                             </div>
+                           )}
+                         </div>
+                       </div>
+                     </div>
+                   ) : activeSubTab >= 7 ? (
+                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                       <div className="flex flex-col gap-[13px]">
+                         <span className="font-plus-jakarta font-semibold text-[24px] text-black">{pills[activeSubTab].label}</span>
+                         <div className="relative w-full">
+                           <button onClick={() => setIsBoundaryDropdownOpen(!isBoundaryDropdownOpen)} className="w-full h-[54px] bg-white border border-black/40 rounded-lg px-6 flex items-center justify-between cursor-pointer">
+                             <span className="font-inter text-[18px]" style={{ color: boundarySelections[activeSubTab] ? '#000000' : 'rgba(0,0,0,0.4)' }}>
+                               {boundarySelections[activeSubTab] || `What is on the ${pills[activeSubTab].label.toLowerCase().split(' ')[0]} side?`}
+                             </span>
+                             <ChevronDown className="w-5 h-5 text-[#363434]" />
+                           </button>
+                           {isBoundaryDropdownOpen && (
+                             <div className="absolute top-[58px] left-0 w-full bg-white border border-black/10 rounded-xl shadow-lg z-50 overflow-hidden">
+                               {['Land', 'Road', 'Water Body', 'Tress', 'Other'].map(opt => (
+                                 <div key={opt} onClick={() => { setBoundarySelections(prev => ({ ...prev, [activeSubTab]: opt })); setIsBoundaryDropdownOpen(false); }} className="px-6 py-3 font-inter text-[14px] text-black cursor-pointer hover:bg-[#F9F9F9]" style={{ background: boundarySelections[activeSubTab] === opt ? '#E5F1F9' : 'transparent' }}>
+                                   {opt}
+                                 </div>
+                               ))}
+                             </div>
+                           )}
+                         </div>
+                       </div>
 
-          {/* ACTIONS FOOTER BUTTONS */}
-          <div style={{
-            position: 'absolute',
-            width: '254px',
-            height: '38px',
-            right: '25px',
-            bottom: '26px',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: '12px'
-          }}>
-            <button 
-              onClick={handleTurnBack}
-              style={{
-                boxSizing: 'border-box',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '10px',
-                width: '121px',
-                height: '38px',
-                border: '1px solid rgba(0, 0, 0, 0.27)',
-                borderRadius: '33px',
-                background: 'transparent',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 500,
-                fontSize: '14px',
-                color: 'rgba(0, 0, 0, 0.8)',
-                cursor: 'pointer'
-              }}
-            >
-              Turn Back
-            </button>
-            <button 
-              onClick={handleApprove}
-              style={{
-                boxSizing: 'border-box',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '10px',
-                width: '121px',
-                height: '38px',
-                background: '#2780C4',
-                borderRadius: '33px',
-                border: 'none',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '14px',
-                color: '#FFFFFF',
-                cursor: 'pointer'
-              }}
-            >
-              Approve
-            </button>
-          </div>
+                       {boundarySelections[activeSubTab] === 'Land' && (
+                         <div className="flex flex-col gap-8">
+                           <span className="font-plus-jakarta font-semibold text-[24px] text-black">Owner details of land</span>
+                           <div className="flex flex-col gap-2">
+                             <span className="font-plus-jakarta font-semibold text-[16px] text-black/90">Name</span>
+                             <div className="w-full h-[54px] bg-white border border-black/40 rounded-lg relative">
+                               <input type="text" placeholder="Krishna" className="absolute left-6 right-6 top-1/2 -translate-y-1/2 w-[calc(100%-48px)] font-inter text-[18px] text-black border-none outline-none bg-transparent" />
+                             </div>
+                           </div>
+                           <div className="flex flex-col gap-2">
+                             <span className="font-plus-jakarta font-semibold text-[16px] text-black/90">Age</span>
+                             <div className="w-full h-[54px] bg-white border border-black/40 rounded-lg relative">
+                               <input type="text" placeholder="43" className="absolute left-6 right-6 top-1/2 -translate-y-1/2 w-[calc(100%-48px)] font-inter text-[18px] text-black border-none outline-none bg-transparent" />
+                             </div>
+                           </div>
+                         </div>
+                       )}
 
+                       {boundarySelections[activeSubTab] === 'Road' && (
+                         <div className="flex flex-col gap-8">
+                           <span className="font-plus-jakarta font-semibold text-[24px] text-black">Type of Road</span>
+                           <div className="flex flex-row gap-4 flex-wrap">
+                             {['Private Road', 'Government Road'].map(opt => (
+                               <button key={opt} onClick={() => setRoadTypeSelections(prev => ({ ...prev, [activeSubTab]: opt }))} className={`flex items-center px-[18px] py-[10px] gap-[10px] rounded-[33px] cursor-pointer ${roadTypeSelections[activeSubTab] === opt ? 'bg-[#2780C4] border-white' : 'bg-transparent border-black/25'} border`}>
+                                 <div className="w-3 h-3 rounded-full border-2 border-[#85BFE5] bg-white flex justify-center items-center shrink-0">
+                                   {roadTypeSelections[activeSubTab] === opt && <div className="w-1 h-1 bg-[#2780C4] rounded-full" />}
+                                 </div>
+                                 <span className={`font-plus-jakarta font-semibold text-[14px] ${roadTypeSelections[activeSubTab] === opt ? 'text-white' : 'text-black'}`}>{opt}</span>
+                               </button>
+                             ))}
+                           </div>
+                           <div className="flex flex-col gap-2">
+                             <span className="font-plus-jakarta font-semibold text-[16px] text-black/90">Width of the Road <span className="text-black/50">(in Feet)</span></span>
+                             <div className="w-full h-[54px] bg-white border border-black/40 rounded-lg relative">
+                               <input type="text" placeholder="100" className="absolute left-6 right-6 top-1/2 -translate-y-1/2 w-[calc(100%-48px)] font-inter text-[18px] text-black border-none outline-none bg-transparent" />
+                             </div>
+                           </div>
+                         </div>
+                       )}
+
+                       {boundarySelections[activeSubTab] === 'Tress' && (
+                         <div className="flex flex-col gap-2">
+                           <span className="font-plus-jakarta font-semibold text-[16px] text-black/90">Trees Count</span>
+                           <div className="relative w-full">
+                             <button onClick={() => setIsTreesDropdownOpen(!isTreesDropdownOpen)} className="w-full h-[54px] bg-white border border-black/40 rounded-lg px-6 flex items-center justify-between cursor-pointer">
+                               <span className="font-inter text-[18px] text-black">{treesSelections[activeSubTab] || '1 - 10'}</span>
+                               <ChevronDown className="w-5 h-5 text-[#363434]" />
+                             </button>
+                             {isTreesDropdownOpen && (
+                               <div className="absolute top-[58px] left-0 w-full bg-white border border-black/10 rounded-xl shadow-lg z-50 overflow-hidden">
+                                 {['1 - 10', '11 - 50', '51 - 100', '100+'].map(opt => (
+                                   <div key={opt} onClick={() => { setTreesSelections(prev => ({ ...prev, [activeSubTab]: opt })); setIsTreesDropdownOpen(false); }} className="px-6 py-3 font-inter text-[14px] text-black cursor-pointer hover:bg-[#F9F9F9]" style={{ background: treesSelections[activeSubTab] === opt ? '#E5F1F9' : 'transparent' }}>
+                                     {opt}
+                                   </div>
+                                 ))}
+                               </div>
+                             )}
+                           </div>
+                         </div>
+                       )}
+                     </div>
+                   ) : (
+                     <>
+                       <span className="font-plus-jakarta font-semibold text-[24px] text-black">Uploaded Files</span>
+                       <div className="w-full bg-white border border-[#E5E7EB] rounded-[24px] p-6 flex flex-col gap-6 max-h-[355px] overflow-y-auto custom-scrollbar">
+                         {currentFiles.coverImage && (
+                           <div className="flex flex-col gap-2 w-full max-w-[280px]">
+                             <span className="font-plus-jakarta font-medium text-[12px] text-black/70">Cover image</span>
+                             <div className="flex items-center justify-between px-4 py-3 bg-[#E5F1F9] rounded-[12px] w-full h-[59px]">
+                               <div className="flex items-center gap-[10px]">
+                                 <div className="w-[29px] h-[29px] bg-white rounded flex items-center justify-center">
+                                   <FileText className="w-[17px] h-[17px] text-[#F15642]" />
+                                 </div>
+                                 <div className="flex flex-col">
+                                   <span className="font-inter text-[14px] text-black">{currentFiles.coverImage.name}</span>
+                                   <span className="font-inter text-[8px] text-black/70">{currentFiles.coverImage.size}</span>
+                                 </div>
+                               </div>
+                               <button className="border-none bg-transparent cursor-pointer">
+                                 <Download className="w-[18px] h-[18px] text-black" />
+                               </button>
+                             </div>
+                           </div>
+                         )}
+
+                         {currentFiles.uploadedImages && currentFiles.uploadedImages.length > 0 && (
+                           <div className="flex flex-col gap-2 w-full max-w-[280px]">
+                             <span className="font-plus-jakarta font-medium text-[12px] text-black/70">{activeSubTab === 0 ? "Uploaded images" : "Uploaded files"}</span>
+                             <div className="flex flex-col gap-3">
+                               {currentFiles.uploadedImages.map((file, fileIdx) => (
+                                 <div key={fileIdx} className="flex items-center justify-between px-4 py-3 bg-[#E5F1F9] rounded-[12px] w-full h-[59px]">
+                                   <div className="flex items-center gap-[10px]">
+                                     <div className="w-[29px] h-[29px] bg-white rounded flex items-center justify-center">
+                                       <FileText className="w-[17px] h-[17px] text-[#F15642]" />
+                                     </div>
+                                     <div className="flex flex-col">
+                                       <span className="font-inter text-[14px] text-black">{file.name}</span>
+                                       <span className="font-inter text-[8px] text-black/70">{file.size}</span>
+                                     </div>
+                                   </div>
+                                   <button className="border-none bg-transparent cursor-pointer">
+                                     <Download className="w-[18px] h-[18px] text-black" />
+                                   </button>
+                                 </div>
+                               ))}
+                             </div>
+                           </div>
+                         )}
+                       </div>
+                     </>
+                   )}
+
+                 </div>
+
+                 {/* Right Content Area (Comments) */}
+                 <div className="w-full xl:w-[400px] flex flex-col gap-4 shrink-0 mt-8 xl:mt-0">
+                   <span className="font-plus-jakarta font-semibold text-[24px] text-black">Comments</span>
+                   <div className="w-full h-[181px] bg-[rgba(187,219,240,0.38)] border border-[#96C9ED] rounded-[18px] p-6">
+                     <p className="font-poppins font-normal text-[14px] leading-[21px] text-black m-0">
+                       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod. Lorem ipsum dolor sit amet, consectetur adipiscing elit.do eiusmod. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur.
+                     </p>
+                   </div>
+                 </div>
+
+               </div>
+
+               {/* Actions Footer */}
+               <div className="flex flex-row justify-end items-center gap-3 w-full mt-4">
+                 <button onClick={handleTurnBack} className="flex items-center justify-center px-[10px] w-[121px] h-[38px] border border-black/30 rounded-[33px] bg-transparent font-plus-jakarta font-medium text-[14px] text-black/80 cursor-pointer">
+                   Turn Back
+                 </button>
+                 <button onClick={handleApprove} className="flex items-center justify-center px-[10px] w-[121px] h-[38px] bg-[#2780C4] rounded-[33px] border-none font-plus-jakarta font-semibold text-[14px] text-white cursor-pointer">
+                   Approve
+                 </button>
+               </div>
+
+             </div>
+           </div>
         </div>
-
       </div>
 
       {showApproveModal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(255, 255, 255, 0.7)',
-          backdropFilter: 'blur(2px)',
-          WebkitBackdropFilter: 'blur(2px)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 9999
-        }}>
-          <div style={{
-            boxSizing: 'border-box',
-            position: 'relative',
-            width: '610px',
-            height: '477px',
-            background: '#FFFFFF',
-            border: '1px solid rgba(0, 0, 0, 0.2)',
-            boxShadow: '0px 0px 12.5px rgba(0, 0, 0, 0.15)',
-            borderRadius: '24px',
-            transform: `scale(${scale})`,
-            transformOrigin: 'center'
-          }}>
-            {/* Title */}
-            <span style={{
-              position: 'absolute',
-              width: '256px',
-              height: '30px',
-              left: 'calc(50% - 256px/2)',
-              top: '32px',
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontStyle: 'normal',
-              fontWeight: 600,
-              fontSize: '24px',
-              lineHeight: '30px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#000000'
-            }}>
-              Land and Boundaries
-            </span>
-
-            {/* Verification Icon Container */}
-            <div style={{
-              position: 'absolute',
-              width: '180px',
-              height: '180px',
-              left: 'calc(50% - 180px/2)',
-              top: '85px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}>
-              {/* Outer seal (light blue tint) */}
-              <svg width="180" height="180" viewBox="0 0 24 24" fill="rgba(39, 128, 196, 0.08)" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', left: 0, top: 0 }}>
+        <div className="fixed inset-0 bg-white/70 backdrop-blur-sm flex justify-center items-center z-[9999] p-4">
+          <div className="bg-white border border-black/20 shadow-[0px_0px_12.5px_rgba(0,0,0,0.15)] rounded-[24px] w-full max-w-[610px] flex flex-col items-center py-8 px-6 relative">
+            <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black text-center w-full mb-6">Land and Boundaries</span>
+            
+            <div className="relative w-[180px] h-[180px] flex justify-center items-center mb-6">
+              <svg width="180" height="180" viewBox="0 0 24 24" fill="rgba(39, 128, 196, 0.08)" className="absolute inset-0">
                 <path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.7 3.1 5.51l.34 3.69L1 12l2.44 2.79-.34 3.69 3.61.82 1.89 3.2L12 21.04l3.4 1.46 1.89-3.2 3.61-.82-.34-3.69L23 12z"/>
               </svg>
-
-              {/* Inner seal (solid blue with white check) */}
-              <div style={{
-                position: 'absolute',
-                width: '126px',
-                height: '126px',
-                left: '27px',
-                top: '27px'
-              }}>
-                <svg width="126" height="126" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <div className="w-[126px] h-[126px] relative z-10">
+                <svg width="126" height="126" viewBox="0 0 24 24" fill="none">
                   <path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.7 3.1 5.51l.34 3.69L1 12l2.44 2.79-.34 3.69 3.61.82 1.89 3.2L12 21.04l3.4 1.46 1.89-3.2 3.61-.82-.34-3.69L23 12z" fill="#2780C4"/>
                   <path d="M10.09 16.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z" fill="#FFFFFF"/>
                 </svg>
               </div>
             </div>
 
-            {/* Description */}
-            <span style={{
-              position: 'absolute',
-              width: '428px',
-              height: '75px',
-              left: 'calc(50% - 428px/2)',
-              top: '267px',
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontStyle: 'normal',
-              fontWeight: 700,
-              fontSize: '20px',
-              lineHeight: '25px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-              color: '#3D4949'
-            }}>
-              <span>
-                Proceed With <span style={{ color: '#2780C4' }}>‘Valuation’</span> Approval For The Farmland ID: <span style={{ color: '#2780C4' }}>{targetId}</span> to Complete The Verification.
-              </span>
+            <span className="font-plus-jakarta font-bold text-[20px] leading-[25px] text-center text-[#3D4949] max-w-[428px] mb-8">
+              Proceed With <span className="text-[#2780C4]">‘Valuation’</span> Approval For The Farmland ID: <span className="text-[#2780C4]">{targetId}</span> to Complete The Verification.
             </span>
 
-            <button 
-              onClick={handleProceed}
-              style={{
-                boxSizing: 'border-box',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '17px',
-                gap: '17px',
-                position: 'absolute',
-                width: '204px',
-                height: '64px',
-                left: 'calc(50% - 204px/2)',
-                top: '373px',
-                background: '#2780C4',
-                borderRadius: '56.1383px',
-                border: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              <span style={{
-                width: '100px',
-                height: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontStyle: 'normal',
-                fontWeight: 600,
-                fontSize: '23.8px',
-                lineHeight: '30px',
-                display: 'flex',
-                alignItems: 'center',
-                textAlign: 'center',
-                color: '#FFFFFF'
-              }}>
-                Proceed
-              </span>
+            <button onClick={handleProceed} className="flex items-center justify-center bg-[#2780C4] rounded-[56px] border-none px-6 py-4 cursor-pointer min-w-[204px]">
+              <span className="font-plus-jakarta font-semibold text-[23.8px] text-white">Proceed</span>
             </button>
           </div>
         </div>
       )}
 
       {showTurnbackModal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: '#F9F9F9',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 99999
-        }}>
-          {/* Top Right Profile Header inside full page background */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: '13.06px',
-            position: 'absolute',
-            width: '117.06px',
-            height: '52px',
-            right: '40px',
-            top: '34px',
-            zIndex: 100000
-          }}>
-            {/* Bell Container */}
-            <button style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '8px',
-              gap: '10px',
-              width: '52px',
-              height: '52px',
-              background: '#FFFFFF',
-              borderRadius: '40px',
-              border: 'none',
-              cursor: 'pointer',
-              position: 'relative'
-            }}>
+        <div className="fixed inset-0 bg-[#F9F9F9] flex flex-col items-center justify-center z-[9999] p-4">
+          <div className="absolute top-8 right-8 flex flex-row items-center gap-[13px]">
+            <button className="flex flex-row justify-center items-center p-2 w-[52px] h-[52px] bg-white rounded-full relative shadow-sm border-none cursor-pointer">
               <Bell className="w-6 h-6 text-[#2C2C2C]" strokeWidth={1.5} />
-              <span style={{
-                position: 'absolute',
-                width: '5px',
-                height: '5px',
-                left: '32.5px',
-                top: '12px',
-                background: '#EF4646',
-                borderRadius: '50%'
-              }} />
+              <span className="absolute w-[5px] h-[5px] right-[14px] top-[12px] bg-[#EF4646] rounded-full" />
             </button>
-
-            {/* Avatar Container */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '0px',
-              width: '52px',
-              height: '52px',
-              background: '#FFFFFF',
-              borderRadius: '72.5581px',
-              overflow: 'hidden'
-            }}>
-              <img
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"
-                alt="User profile avatar"
-                style={{
-                  width: '52px',
-                  height: '52px',
-                  objectFit: 'cover'
-                }}
-              />
+            <div className="flex flex-row justify-center items-center w-[52px] h-[52px] bg-white rounded-full overflow-hidden shadow-sm">
+              <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" alt="User profile avatar" className="w-[52px] h-[52px] object-cover" />
             </div>
           </div>
 
-          {/* Rejection Reason Card */}
-          <div style={{
-            boxSizing: 'border-box',
-            position: 'relative',
-            width: '672px',
-            height: '433px',
-            background: '#FFFFFF',
-            boxShadow: '0px 20px 40px rgba(0, 49, 50, 0.06)',
-            borderRadius: '32px',
-            transform: `scale(${scale})`,
-            transformOrigin: 'center'
-          }}>
-            {/* Header */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '24px 32px',
-              height: '80px',
-              boxSizing: 'border-box',
-              borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
-            }}>
-              <span style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                lineHeight: '32px',
-                letterSpacing: '-0.6px',
-                color: '#1A1C1D'
-              }}>
-                Turnback
-              </span>
-              <button 
-                onClick={() => setShowTurnbackModal(false)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
+          <div className="w-full max-w-[672px] bg-white shadow-[0px_20px_40px_rgba(0,49,50,0.06)] rounded-[32px] flex flex-col">
+            <div className="flex flex-row justify-between items-center px-8 py-6 border-b border-black/5">
+              <span className="font-plus-jakarta font-semibold text-[24px] leading-[32px] tracking-[-0.6px] text-[#1A1C1D]">Turnback</span>
+              <button onClick={() => setShowTurnbackModal(false)} className="bg-transparent border-none cursor-pointer flex items-center justify-center p-0">
                 <X className="w-[30px] h-[30px] text-black" strokeWidth={1.5} />
               </button>
             </div>
-
-            {/* Body */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              padding: '24px 32px',
-              gap: '12px',
-              boxSizing: 'border-box'
-            }}>
-              <span style={{
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 400,
-                fontSize: '14px',
-                lineHeight: '20px',
-                color: '#3D4949'
-              }}>
-                Provide the reason for turnback:
-              </span>
-              
-              <div style={{
-                boxSizing: 'border-box',
-                width: '608px',
-                height: '200px',
-                background: '#F3F3F5',
-                border: '1px solid #BCC9C9',
-                borderRadius: '16px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={turnbackReason}
-                  onChange={(e) => setTurnbackReason(e.target.value)}
-                  placeholder="Start writing here..."
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '26px',
-                    color: '#1A1C1D',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none'
-                  }}
-                />
+            <div className="flex flex-col p-8 gap-3">
+              <span className="font-inter font-normal text-[14px] leading-[20px] text-[#3D4949]">Provide the reason for turnback:</span>
+              <div className="w-full h-[200px] bg-[#F3F3F5] border border-[#BCC9C9] rounded-[16px] p-6">
+                <textarea value={turnbackReason} onChange={(e) => setTurnbackReason(e.target.value)} placeholder="Start writing here..." className="w-full h-full bg-transparent border-none outline-none resize-none font-plus-jakarta text-[16px] leading-[26px] text-black" />
               </div>
-            </div>
-
-            {/* Footer Buttons */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: '12px',
-              position: 'absolute',
-              width: '254px',
-              height: '38px',
-              left: '386px',
-              top: '360px'
-            }}>
-              <button 
-                onClick={() => setShowTurnbackModal(false)}
-                style={{
-                  boxSizing: 'border-box',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '10px',
-                  width: '121px',
-                  height: '38px',
-                  border: '1px solid rgba(0, 0, 0, 0.27)',
-                  borderRadius: '33px',
-                  background: 'transparent',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 500,
-                  fontSize: '14px',
-                  color: 'rgba(0, 0, 0, 0.8)',
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={confirmTurnBack}
-                style={{
-                  boxSizing: 'border-box',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '10px',
-                  width: '121px',
-                  height: '38px',
-                  background: '#2780C4',
-                  borderRadius: '33px',
-                  border: 'none',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  color: '#FFFFFF',
-                  cursor: 'pointer'
-                }}
-              >
-                Turnback
-              </button>
+              <div className="flex justify-end mt-4 gap-3">
+                <button onClick={() => setShowTurnbackModal(false)} className="bg-transparent border border-black/30 rounded-[33px] px-6 py-2 cursor-pointer text-black/80 font-plus-jakarta font-medium text-[14px]">Cancel</button>
+                <button onClick={confirmTurnBack} className="bg-[#2780C4] rounded-[33px] border-none px-6 py-2 cursor-pointer text-white font-plus-jakarta font-semibold text-[14px]">Turnback</button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 };

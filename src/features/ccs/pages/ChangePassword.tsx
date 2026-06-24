@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Lock, ShieldCheck } from 'lucide-react';
+import { useUpdatePasswordMutation } from '@/features/auth/api/authApi';
 import FrameBg from '@/assets/ccs login.jpg';
 import GlcLogo from '@/assets/glc-logo.svg';
 
@@ -9,7 +10,27 @@ export default function ChangePassword() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPw, setShowNewPw] = useState(false);
   const [showConfirmPw, setShowConfirmPw] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (newPassword !== confirmPassword) {
+      setError("New passwords do not match.");
+      return;
+    }
+
+    try {
+      await updatePassword({ new_password: newPassword }).unwrap();
+      // On success, navigate to dashboard
+      navigate('/ccs/dashboard');
+    } catch (err: any) {
+      setError(err?.data?.message || 'Failed to update password.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] flex items-center justify-center">
@@ -52,9 +73,12 @@ export default function ChangePassword() {
                 <p className="font-['Plus_Jakarta_Sans'] font-normal text-[16px] leading-[24px] text-[#6B7280] m-0">
                   Ensure your account is using a long, random password to stay secure.
                 </p>
+                {error && (
+                  <p className="text-red-500 text-sm mt-2 font-['Plus_Jakarta_Sans']">{error}</p>
+                )}
               </div>
 
-              <form className="flex flex-col gap-[24px] w-full" onSubmit={(e) => { e.preventDefault(); navigate('/ccs/login'); }}>
+              <form className="flex flex-col gap-[24px] w-full" onSubmit={handleSubmit}>
                 <div className="flex flex-col gap-[12px] w-full">
                   <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[16px] leading-[24px] text-[#424751]">
                     New Password
@@ -63,7 +87,7 @@ export default function ChangePassword() {
                     <Lock className="text-[#6D7A7A] w-[13.33px] h-[17.5px] flex-shrink-0" strokeWidth={2} />
                     <input 
                       type={showNewPw ? "text" : "password"} 
-                      placeholder="Enter your password" 
+                      placeholder="Enter your new password" 
                       className="flex-1 bg-transparent border-none outline-none font-['Plus_Jakarta_Sans'] text-[16px] leading-[20px] text-black placeholder:text-[#6D7A7A]/30 w-full"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
@@ -93,8 +117,12 @@ export default function ChangePassword() {
                   </div>
                 </div>
 
-                <button type="submit" className="w-full h-[52px] bg-[#3B75C3] shadow-[0px_10px_15px_-3px_rgba(24,92,168,0.2),0px_4px_6px_-4px_rgba(24,92,168,0.2)] hover:bg-[#2b5a99] rounded-full text-white font-['Plus_Jakarta_Sans'] font-bold text-[16px] flex items-center justify-center border-none cursor-pointer mt-[8px] transition-colors relative isolation-auto">
-                  Update password
+                <button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="w-full h-[52px] bg-[#3B75C3] shadow-[0px_10px_15px_-3px_rgba(24,92,168,0.2),0px_4px_6px_-4px_rgba(24,92,168,0.2)] hover:bg-[#2b5a99] disabled:opacity-50 disabled:cursor-not-allowed rounded-full text-white font-['Plus_Jakarta_Sans'] font-bold text-[16px] flex items-center justify-center border-none cursor-pointer mt-[8px] transition-colors relative isolation-auto"
+                >
+                  {isLoading ? 'Updating...' : 'Update password'}
                 </button>
               </form>
             </div>

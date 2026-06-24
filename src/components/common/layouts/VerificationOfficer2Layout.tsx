@@ -29,7 +29,7 @@ export const VerificationOfficer2Layout = () => {
         </button>
 
         {/* Central Navigation Items */}
-        <nav className="flex items-center gap-[10px] md:gap-[34px] md:absolute md:left-1/2 md:-translate-x-1/2 overflow-x-auto max-w-full no-scrollbar pb-2 md:pb-0">
+        <nav className="flex items-center gap-[10px] md:gap-[12px] xl:gap-[34px] lg:absolute lg:left-1/2 lg:-translate-x-1/2 overflow-x-auto max-w-full no-scrollbar pb-2 md:pb-0 mx-2 md:mx-4 lg:mx-0">
           {VERIFICATION_OFFICER_NAV_ITEMS.map((item) => {
             const isActive = activeItem === item.id;
             return (
@@ -37,8 +37,8 @@ export const VerificationOfficer2Layout = () => {
                 key={item.id}
                 onClick={() => navigate(item.path)}
                 className={`transition-all duration-300 h-[40px] flex items-center justify-center whitespace-nowrap ${isActive
-                    ? 'bg-[#BDD327] rounded-[20px] px-4 text-[#000000] font-normal text-[16px] leading-[20px]'
-                    : 'bg-transparent text-[#000000] font-normal text-[16px] leading-[20px] hover:opacity-70'
+                    ? 'bg-[#BDD327] rounded-[20px] px-3 xl:px-4 text-[#000000] font-normal text-[13px] md:text-[14px] xl:text-[16px] leading-[20px]'
+                    : 'bg-transparent text-[#000000] font-normal text-[13px] md:text-[14px] xl:text-[16px] leading-[20px] hover:opacity-70'
                   }`}
               >
                 {item.label}

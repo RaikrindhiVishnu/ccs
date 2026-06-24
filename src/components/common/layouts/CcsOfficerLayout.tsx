@@ -22,11 +22,25 @@ const NavIcon = ({ name, isActive }: { name: string; isActive?: boolean }) => {
   );
 };
 
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '@/features/auth/store/authSlice';
+import { useGetDashboardUserMutation } from '@/features/ccs/api/dashboardApi';
+
 export const CcsOfficerLayout = () => {
   const { navItems } = useRoleLayout();
   const location = useLocation();
 
-  const fullName = 'Ram Varma';
+  const currentUser = useSelector(selectCurrentUser);
+  const [getUser, { data: user }] = useGetDashboardUserMutation();
+
+  useEffect(() => {
+    if (currentUser?.id) {
+      getUser({ user_id: currentUser.id });
+    }
+  }, [getUser, currentUser?.id]);
+
+  const fullName = user?.name || 'Ram Varma';
 
   const initials = fullName
     .split(' ')

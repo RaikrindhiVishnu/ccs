@@ -1,13 +1,13 @@
-import { useState, useMemo } from "react";
-import { parse, isValid, isBefore, isAfter } from "date-fns";
+import { useState, useEffect } from "react";
 import { Search, Bell, Clock, ListFilter, X as CloseIcon } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import { useNavigate } from "react-router-dom";
 
 import FarmlandRequestCard from "@/features/ccs/components/Farmlandrequestcard";
-import { farmlandRequestDummyData } from "@/features/ccs/data/Farmlandrequestdata";
 import FiltersModal, { type FilterState } from "@/features/ccs/components/FiltersModal";
 import NotificationsPopover from "@/features/ccs/components/NotificationsPopover";
+import { useGetAllAssignedFarmlandsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
+import { farmlandRequestDummyData } from "@/features/ccs/data/Farmlandrequestdata";
 
 /* ── Page ── */
 export default function FarmlandRequest() {
@@ -23,6 +23,14 @@ export default function FarmlandRequest() {
     toDate: "",
   });
 
+  const [getAllFarmlands, { data: apiResponse, isLoading }] = useGetAllAssignedFarmlandsMutation();
+
+  useEffect(() => {
+    // The backend requires 'status_ids' parameter to be present.
+    // Passing an array of typical statuses [1..6] to fetch farmlands.
+    getAllFarmlands({ ...activeFilters, status_ids: [1, 2, 3, 4, 5, 6] });
+  }, [activeFilters, getAllFarmlands]);
+
   const activeFilterEntries = [
     { key: "state", value: activeFilters.state },
     { key: "region", value: activeFilters.region },
@@ -32,36 +40,7 @@ export default function FarmlandRequest() {
     { key: "toDate", value: activeFilters.toDate },
   ].filter((f) => f.value);
 
-  const parseDate = (dateString: string, formatPattern: string) => {
-    const parsed = parse(dateString, formatPattern, new Date());
-    return isValid(parsed) ? parsed : null;
-  };
-
-  const filteredData = useMemo(() => {
-    return farmlandRequestDummyData.filter((item) => {
-      if (activeFilters.priority && item.priority !== activeFilters.priority) return false;
-      if (activeFilters.area && !item.location.toLowerCase().includes(activeFilters.area.toLowerCase())) return false;
-      if (activeFilters.state && !item.location.toLowerCase().includes(activeFilters.state.toLowerCase())) return false;
-      if (activeFilters.region && !item.location.toLowerCase().includes(activeFilters.region.toLowerCase())) return false;
-
-      if (activeFilters.fromDate || activeFilters.toDate) {
-        const itemDate = parseDate(item.createdDate, "dd/MM/yy");
-        if (!itemDate) return false;
-
-        if (activeFilters.fromDate) {
-          const fromDate = parseDate(activeFilters.fromDate, "dd/MM/yyyy");
-          if (fromDate && isBefore(itemDate, fromDate)) return false;
-        }
-
-        if (activeFilters.toDate) {
-          const toDate = parseDate(activeFilters.toDate, "dd/MM/yyyy");
-          if (toDate && isAfter(itemDate, toDate)) return false;
-        }
-      }
-
-      return true;
-    });
-  }, [activeFilters]);
+  const farmlands = apiResponse?.farmlands?.length ? apiResponse.farmlands : farmlandRequestDummyData;
 
   return (
     <div className="relative h-full overflow-hidden">
@@ -154,14 +133,34 @@ export default function FarmlandRequest() {
             2xl:gap-5
           "
         >
-          {filteredData.length > 0 ? (
-            filteredData.map((item) => (
-              <FarmlandRequestCard
-                key={item.id}
-                item={item}
-                onClick={(id) => navigate(`/farmland-request/map/${id}`)}
-              />
-            ))
+          {isLoading ? (
+            <div className="col-span-full py-12 flex flex-col items-center justify-center text-gray-500 font-medium">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#BDD327] mb-4"></div>
+              Loading farmland requests...
+            </div>
+          ) : farmlands.length > 0 ? (
+            farmlands.map((item: any) => {
+              // Map API response to expected card format
+              const mappedItem = {
+                id: item.farmland_id?.toString() || item.id,
+                farmlandId: item.farmland_code || item.glcId || 'N/A',
+                location: item.location || 'Unknown Location',
+                priority: item.farmland_priority === 1 ? 'High' : item.farmland_priority === 2 ? 'Medium' : 'Low',
+                agentName: item.agent_name || item.agentName || 'N/A',
+                createdDate: item.created_on || item.createdDate || 'N/A',
+                totalAcres: item.total_acres ? `${item.total_acres} Acres` : item.totalAcres || 'N/A',
+                valuation: item.price_per_acre ? `₹ ${item.price_per_acre.toLocaleString()}/Acre` : item.valuation || 'N/A',
+                assetValue: item.total_asset_price || item.assetValue || 'N/A',
+              };
+
+              return (
+                <FarmlandRequestCard
+                  key={mappedItem.id}
+                  item={mappedItem as any}
+                  onClick={(id) => navigate(`/farmland-request/map/${id}`)}
+                />
+              );
+            })
           ) : (
             <div className="col-span-full py-12 flex items-center justify-center text-gray-500 font-medium">
               No farmland requests match the selected filters.

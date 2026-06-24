@@ -7,6 +7,7 @@ interface User {
   login_id: string;
   first_name: string;
   last_name: string;
+  profile_url?: string;
   role_id: UserRole;
   role: string;
   is_first_login: number;

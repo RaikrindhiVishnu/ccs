@@ -61,8 +61,10 @@ function ScreeningPaceCard({ value = 76 }: { value?: number }) {
             />
           ))}
         </svg>
-        <div className="absolute bottom-[22px] font-['Plus_Jakarta_Sans'] font-semibold text-[30px] leading-[36px] text-[#0E0D3D] tracking-[-1px]">
-          {value}%
+        <div 
+          className={`absolute bottom-[16px] font-['Plus_Jakarta_Sans'] font-semibold text-[#0E0D3D] tracking-[-1px] ${String(value).length > 3 ? 'text-[24px]' : 'text-[30px]'}`}
+        >
+          {Number.isInteger(value) ? value : Number(value).toFixed(1)}%
         </div>
       </div>
     </Card>
@@ -140,11 +142,39 @@ function AverageReviewTimeCard({ time = "1.2 hr" }: { time?: string }) {
   );
 }
 
-export default function PipelineStatus() {
+import { useEffect } from 'react';
+import { format } from 'date-fns';
+import { useGetDashboardPipelineStatusMutation } from '@/features/ccs/api/dashboardApi';
+
+interface PipelineStatusProps {
+  startDate?: Date | null;
+  endDate?: Date | null;
+}
+
+export default function PipelineStatus({ startDate, endDate }: PipelineStatusProps) {
+  const [getPipelineStatus, { data, isLoading }] = useGetDashboardPipelineStatusMutation();
+
+  useEffect(() => {
+    // If custom dates are selected, pass them. Otherwise omit them.
+    const payload = startDate && endDate ? {
+      startDate: format(startDate, 'yyyy-MM-dd'),
+      endDate: format(endDate, 'yyyy-MM-dd')
+    } : {};
+
+    getPipelineStatus(payload);
+  }, [getPipelineStatus, startDate, endDate]);
+
+  const percentage = data?.["screening Pace"] || data?.screeningPercentage || 0;
+  
+  const avgTimeRaw = data?.AverageReviewTime;
+  const timeStr = avgTimeRaw !== undefined 
+    ? `${(avgTimeRaw / 3600).toFixed(1)} hr` 
+    : data?.totalTimeTakenMinutes ? `${(data.totalTimeTakenMinutes / 60).toFixed(1)} hr` : "0.0 hr";
+
   return (
     <div className="grid grid-cols-2 gap-[19px]">
-      <ScreeningPaceCard value={76} />
-      <AverageReviewTimeCard time="1.2 hr" />
+      <ScreeningPaceCard value={percentage} />
+      <AverageReviewTimeCard time={timeStr} />
     </div>
   );
 }

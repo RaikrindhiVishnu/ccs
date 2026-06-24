@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { format } from "date-fns";
 import { Typography } from "@/components/ui/typography";
 import {
   DashboardHeader,
@@ -7,14 +9,79 @@ import {
   ActivityCard,
   AlertBanner,
 } from "@/features/ccs/components";
-import { statsData, activities } from "@/features/ccs/data/ccsDashboardData";
+import { statsData, activities as dummyActivities } from "@/features/ccs/data/ccsDashboardData";
+import {
+  useGetDashboardAllFarmlandDetailsMutation,
+  useGetDashboardRecentActivitiesMutation
+} from "@/features/ccs/api/dashboardApi";
 
 export default function CcsDashboard() {
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+
+  const [getFarmlandDetails, { data: farmlandStats, isLoading: isFarmlandLoading }] = useGetDashboardAllFarmlandDetailsMutation();
+  const [getRecentActivities, { data: recentActivitiesData }] = useGetDashboardRecentActivitiesMutation();
+
+  useEffect(() => {
+    // get-all-farmland-details still strictly requires dates despite swagger, so we pass a wide range if empty
+    const farmlandPayload = startDate && endDate ? {
+      startDate: format(startDate, 'yyyy-MM-dd'),
+      endDate: format(endDate, 'yyyy-MM-dd')
+    } : {
+      startDate: "2000-01-01",
+      endDate: "2099-12-31"
+    };
+
+    // recent-activities defaults to last 7 days when omitted
+    const activitiesPayload = startDate && endDate ? {
+      startDate: format(startDate, 'yyyy-MM-dd'),
+      endDate: format(endDate, 'yyyy-MM-dd')
+    } : {};
+
+    getFarmlandDetails(farmlandPayload);
+    getRecentActivities(activitiesPayload);
+  }, [getFarmlandDetails, getRecentActivities, startDate, endDate]);
+
+  // Extract the stats object (handle cases where backend wraps it in "data")
+  const stats = (farmlandStats as any)?.data || farmlandStats;
+
+  // Construct dynamic stats based on API response, fallback to dummy data structure
+  const dynamicStats = [
+    {
+      title: statsData[0].title,
+      value: stats?.["total farmlands"]?.toLocaleString() || stats?.total_farmlands?.toLocaleString() || statsData[0].value,
+      icon: statsData[0].icon,
+    },
+    {
+      title: statsData[1].title,
+      value: stats?.["pending farmlands"]?.toLocaleString() || stats?.pending_farmlands?.toLocaleString() || statsData[1].value,
+      icon: statsData[1].icon,
+    },
+    {
+      title: statsData[2].title,
+      value: stats?.["approved farmlands"]?.toLocaleString() || stats?.approved_farmlands?.toLocaleString() || statsData[2].value,
+      icon: statsData[2].icon,
+    },
+  ];
+
+  const activities = recentActivitiesData?.data
+    ? recentActivitiesData.data.map((item: any) => ({
+      id: item.farmland_id,
+      description: `Farmland ${item.farmland_id} was ${item.status}`,
+      timeAgo: "Recently", // The API doesn't provide a timestamp yet
+    }))
+    : dummyActivities;
+
   return (
     <div className="flex flex-col w-full h-full px-4 py-4 lg:px-6 lg:py-6 overflow-x-hidden">
       {/* Header */}
       <div className="w-full shrink-0 relative z-50 mb-[39px]">
-        <DashboardHeader />
+        <DashboardHeader
+          startDate={startDate}
+          endDate={endDate}
+          setStartDate={setStartDate}
+          setEndDate={setEndDate}
+        />
       </div>
 
       {/* Main Content Grid */}
@@ -26,13 +93,14 @@ export default function CcsDashboard() {
           <div className="flex flex-col w-full gap-[36px]">
             {/* Stats Section */}
             <div className="grid grid-cols-2 gap-[18px]">
-              {statsData.slice(0, 3).map((item, index) => (
+              {dynamicStats.map((item, index) => (
                 <div key={item.title} className={index === 0 ? "col-span-2" : ""}>
                   <StatsCard
                     title={item.title}
                     value={item.value}
                     icon={item.icon}
                     large={index === 0}
+                    isLoading={isFarmlandLoading}
                   />
                 </div>
               ))}
@@ -46,7 +114,7 @@ export default function CcsDashboard() {
               >
                 PIPELINE STATUS
               </Typography>
-              <PipelineStatus />
+              <PipelineStatus startDate={startDate} endDate={endDate} />
             </div>
           </div>
 
@@ -72,7 +140,7 @@ export default function CcsDashboard() {
               RECENT ACTIVITY
             </Typography>
             <div className="flex flex-col gap-[24px] overflow-y-auto pr-2 pb-2 flex-1">
-              {activities.map((item, index) => (
+              {activities.map((item: any, index: number) => (
                 <div key={index} className="flex flex-col gap-[24px]">
                   <ActivityCard
                     id={item.id}

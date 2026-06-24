@@ -49,17 +49,17 @@ export const VerificationOfficer3Layout = () => {
         </button>
 
         {/* Central Navigation Items */}
-        <nav className="flex items-center gap-[1rem] md:gap-0 overflow-x-auto md:overflow-visible no-scrollbar max-w-[50%] md:max-w-none md:absolute md:left-[calc(50%-clamp(34.53rem,59.18%,100.0rem)/2+clamp(1.73rem,2.97%,6.0rem))] md:w-[clamp(34.53rem,59.18%,100.0rem)] md:h-[clamp(1.78rem,2.78vw,5.0rem)] md:top-[clamp(0.975rem,1.53vw,3.0rem)]">
+        <nav className="flex items-center gap-[1rem] lg:gap-0 overflow-x-auto lg:overflow-visible no-scrollbar max-w-[50%] lg:max-w-none lg:absolute lg:left-[calc(50%-clamp(34.53rem,59.18%,100.0rem)/2+clamp(1.73rem,2.97%,6.0rem))] lg:w-[clamp(34.53rem,59.18%,100.0rem)] lg:h-[clamp(1.78rem,2.78vw,5.0rem)] lg:top-[clamp(0.975rem,1.53vw,3.0rem)] mx-4 lg:mx-0">
           {/* Active Sliding Background Pill */}
           <div
-            className={`hidden md:block absolute h-full bg-[var(--btn-lime)] rounded-[1.25rem] transition-all duration-300 ease-out z-0 ${getActivePillClasses()}`}
+            className={`hidden lg:block absolute h-full bg-[var(--btn-lime)] rounded-[1.25rem] transition-all duration-300 ease-out z-0 ${getActivePillClasses().replace(/md:/g, 'lg:')}`}
           />
 
           {/* Dashboard */}
           <button
             onClick={() => navigate("/verification-officer-3/dashboard")}
-            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[-0.65%] md:w-[12.49%] ${activeItem === "dashboard"
-              ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
+            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] lg:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans lg:absolute z-10 lg:left-[-0.65%] lg:w-[12.49%] ${activeItem === "dashboard"
+              ? "text-black font-semibold bg-[var(--btn-lime)] lg:bg-transparent rounded-[1.25rem] lg:rounded-none"
               : "bg-transparent text-black font-normal hover:opacity-75"
               }`}
           >
@@ -69,8 +69,8 @@ export const VerificationOfficer3Layout = () => {
           {/* Assigned */}
           <button
             onClick={() => navigate("/verification-officer-3/assigned-farmlands")}
-            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[23.3%] md:w-[9.91%] ${activeItem === "assigned"
-              ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
+            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] lg:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans lg:absolute z-10 lg:left-[23.3%] lg:w-[9.91%] ${activeItem === "assigned"
+              ? "text-black font-semibold bg-[var(--btn-lime)] lg:bg-transparent rounded-[1.25rem] lg:rounded-none"
               : "bg-transparent text-black font-normal hover:opacity-75"
               }`}
           >
@@ -80,8 +80,8 @@ export const VerificationOfficer3Layout = () => {
           {/* In-Progress Farmland */}
           <button
             onClick={() => navigate("/verification-officer-3/in-progress-farmlands")}
-            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[43.5%] md:w-[23.68%] ${activeItem === "in-progress-farmland"
-              ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
+            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] lg:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans lg:absolute z-10 lg:left-[43.5%] lg:w-[23.68%] ${activeItem === "in-progress-farmland"
+              ? "text-black font-semibold bg-[var(--btn-lime)] lg:bg-transparent rounded-[1.25rem] lg:rounded-none"
               : "bg-transparent text-black font-normal hover:opacity-75"
               }`}
           >
@@ -91,8 +91,8 @@ export const VerificationOfficer3Layout = () => {
           {/* Completed Farmlands */}
           <button
             onClick={() => navigate("/verification-officer-3/completed-farmland")}
-            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] md:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans md:absolute z-10 md:left-[77.46%] md:w-[24.57%] ${activeItem === "completed-farmlands"
-              ? "text-black font-semibold bg-[var(--btn-lime)] md:bg-transparent rounded-[1.25rem] md:rounded-none"
+            className={`transition-all duration-300 cursor-pointer border-none font-sans shrink-0 flex items-center justify-center whitespace-nowrap h-full px-[0.625rem] lg:px-0 text-[clamp(0.8125rem,1.25vw,1.5rem)] [@media(min-width:1900px)]:text-[1.5rem] tracking-[-0.02em] font-sans lg:absolute z-10 lg:left-[77.46%] lg:w-[24.57%] ${activeItem === "completed-farmlands"
+              ? "text-black font-semibold bg-[var(--btn-lime)] lg:bg-transparent rounded-[1.25rem] lg:rounded-none"
               : "bg-transparent text-black font-normal hover:opacity-75"
               }`}
           >

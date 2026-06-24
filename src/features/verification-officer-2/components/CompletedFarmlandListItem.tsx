@@ -12,11 +12,11 @@ export const CompletedFarmlandListItem: React.FC<CompletedFarmlandListItemProps>
 
   return (
     <div 
-      className="bg-white flex flex-row items-center justify-between w-full relative"
+      className="bg-white flex flex-row flex-wrap md:flex-nowrap items-center justify-between w-full relative gap-4"
       style={{
-        height: '102px',
+        minHeight: '102px',
         borderRadius: '30px',
-        padding: '0 32px',
+        padding: '24px 32px',
         boxSizing: 'border-box'
       }}
     >

@@ -4,7 +4,7 @@ export const ActiveReviewCard = () => {
   const { title, subtitle, assignee, progress, buttonText } = dashboardMockData.activeReview;
 
   return (
-    <div className="bg-[#F7F8FA] rounded-[30px] p-6 md:p-8 w-full md:max-w-[423px] h-auto min-h-[417px] flex flex-col shadow-sm relative">
+    <div className="bg-[#F7F8FA] rounded-[30px] p-6 md:p-8 w-full flex-1 xl:max-w-[423px] h-auto min-h-[417px] flex flex-col shadow-sm relative">
       {/* Top Labels */}
       <div className="flex gap-3 mb-8">
         <div className="bg-[#E6FFEC] text-[#00801F] text-[15px] font-medium font-poppins px-4 py-2 rounded-full">

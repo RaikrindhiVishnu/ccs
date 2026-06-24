@@ -7,13 +7,16 @@ import bellIconSvg from '@/assets/bellicon.svg';
 import CalendarPopover from './CalendarPopover';
 import NotificationsPopover from './NotificationsPopover';
 
-export default function DashboardHeader() {
+interface DashboardHeaderProps {
+  startDate?: Date | null;
+  endDate?: Date | null;
+  setStartDate?: (date: Date | null) => void;
+  setEndDate?: (date: Date | null) => void;
+}
+
+export default function DashboardHeader({ startDate, endDate, setStartDate, setEndDate }: DashboardHeaderProps) {
   const [showCalendar, setShowCalendar] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-
-  // Date range state
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
 
   const formatRange = () => {
     if (!startDate) return null;
@@ -47,8 +50,8 @@ export default function DashboardHeader() {
             </span>
             <button
               onClick={() => {
-                setStartDate(null);
-                setEndDate(null);
+                if (setStartDate) setStartDate(null);
+                if (setEndDate) setEndDate(null);
               }}
               className="text-[#6F7C8E] hover:text-[#EF4646] transition-colors shrink-0"
             >
@@ -73,8 +76,8 @@ export default function DashboardHeader() {
               endDate={endDate}
               mode="range"
               onChange={(start: Date | null, end: Date | null) => {
-                setStartDate(start);
-                setEndDate(end);
+                if (setStartDate) setStartDate(start);
+                if (setEndDate) setEndDate(end);
               }}
               onClose={() => setShowCalendar(false)}
             />

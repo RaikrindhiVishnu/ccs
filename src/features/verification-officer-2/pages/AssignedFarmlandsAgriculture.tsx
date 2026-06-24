@@ -1,12 +1,9 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Bell, FileText, Download, Check, BadgeCheck, Search, ChevronDown, X } from 'lucide-react';
-import { useViewportScale } from '@/hooks/useViewportScale';
-
 export const VerificationOfficerAssignedFarmlandsAgriculture: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const scale = useViewportScale(1440, 1084);
   const targetId = id || "GLCSOS 01";
 
   // State hooks for sub-tab selection and completion tracking
@@ -172,2312 +169,526 @@ export const VerificationOfficerAssignedFarmlandsAgriculture: React.FC = () => {
     }
   };
 
-  // Reusable Pill component rendering
-  const renderPill = (pill: typeof pills[0], absIdx: number, extraStyle?: React.CSSProperties) => {
-    const isActive = activeSubTab === absIdx;
-    const isCompleted = completedSubTabs.includes(pill.label);
-
-    return (
-      <button 
-        key={absIdx}
-        onClick={() => setActiveSubTab(absIdx)}
-        style={{
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: '11.6px 16px',
-          gap: '8px',
-          width: pill.width,
-          height: '41.22px',
-          background: '#F9F9F9',
-          border: isActive ? '0.73px solid #0078FA' : isCompleted ? '0.73px solid #A5B767' : '0.72px solid transparent',
-          boxShadow: '0px 42px 17px rgba(0, 0, 0, 0.01)',
-          borderRadius: '72.55px',
-          cursor: 'pointer',
-          outline: 'none',
-          justifyContent: 'center',
-          ...extraStyle
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px', width: '100%', height: '18px', justifyContent: 'center' }}>
-          {!isCompleted && (
-            <div style={{
-              width: '18px',
-              height: '18px',
-              background: '#FFBC8A',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '11px',
-              fontWeight: 'bold',
-              flexShrink: 0
-            }}>!</div>
-          )}
-          <span style={{
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 600,
-            fontSize: '14px',
-            color: isActive ? '#0078FA' : isCompleted ? '#2780C4' : 'rgba(90, 92, 94, 0.74)',
-            whiteSpace: 'nowrap'
-          }}>
-            {pill.label}
-          </span>
-          {isCompleted && (
-            <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
-              <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
-              <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
-            </div>
-          )}
-        </div>
-      </button>
-    );
-  };
-
-  const currentComment = comments[activeSubTab] || "";
+  const currentComment = comments[activeSubTab] || '';
 
   return (
-    <div 
-      className="bg-[#F2F2F2] min-h-screen relative flex justify-center overflow-hidden"
-    >
-      <div 
-        style={{
-          width: '1440px',
-          height: '1084px',
-          position: 'relative',
-          background: '#F9F9F9',
-          borderRadius: '32px',
-          transform: `scale(${scale})`,
-          transformOrigin: 'top center',
-          marginBottom: `${(scale - 1) * 1084}px`
-        }}
-      >
-        {/* Go back pill button */}
-        <div style={{
-          position: 'absolute',
-          width: '244px',
-          height: '56px',
-          left: '40px',
-          top: '32px',
-          filter: 'drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.12))',
-          zIndex: 10
-        }}>
+    <div className="bg-[#F2F2F2] min-h-screen flex flex-col items-center p-4 md:p-8 overflow-x-hidden font-inter">
+      <div className="w-full max-w-[1440px] flex flex-col gap-6 relative">
+        
+        {/* Header Container */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full z-10 gap-4">
           <button
             onClick={handleBack}
-            style={{
-              width: '244px',
-              height: '52px',
-              background: '#FFFFFF',
-              borderRadius: '60px',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '19px 20px',
-              gap: '8px',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className="bg-white rounded-[60px] flex flex-row items-center px-5 py-[15px] gap-2 shadow-sm shrink-0 border-none cursor-pointer"
           >
             <ArrowLeft className="w-6 h-6 text-[#353535] shrink-0" strokeWidth={1.5} />
-            <span style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '18px',
-              color: '#353535'
-            }}>
+            <span className="font-plus-jakarta font-normal text-[16px] leading-[18px] text-[#353535]">
               Go Back to Dashboard
             </span>
           </button>
-        </div>
 
-        {/* Top Right Profile Header */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: '13.06px',
-          position: 'absolute',
-          width: '117.06px',
-          height: '52px',
-          left: 'calc(50% - 117.06px/2 + 621.53px)',
-          top: '34px',
-          zIndex: 10
-        }}>
-          {/* Bell Container */}
-          <button style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '8px',
-            gap: '10px',
-            width: '52px',
-            height: '52px',
-            background: '#FFFFFF',
-            borderRadius: '40px',
-            border: 'none',
-            cursor: 'pointer',
-            position: 'relative'
-          }}>
-            <Bell className="w-6 h-6 text-[#2C2C2C]" strokeWidth={1.5} />
-            <span style={{
-              position: 'absolute',
-              width: '5px',
-              height: '5px',
-              left: '32.5px',
-              top: '12px',
-              background: '#EF4646',
-              borderRadius: '50%'
-            }} />
-          </button>
-
-          {/* Avatar Container */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '0px',
-            width: '52px',
-            height: '52px',
-            background: '#FFFFFF',
-            borderRadius: '72.5581px',
-            overflow: 'hidden'
-          }}>
-            <img
-              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"
-              alt="User profile avatar"
-              style={{
-                width: '52px',
-                height: '52px',
-                objectFit: 'cover'
-              }}
-            />
-          </div>
-        </div>
-
-        {/* LEFT COLUMN: Stepper Timeline Card */}
-        <div style={{
-          position: 'absolute',
-          height: '443px',
-          left: '40px',
-          width: '410px',
-          top: '120px',
-          background: '#FFFFFF',
-          borderRadius: '24px'
-        }}>
-          <span style={{
-            position: 'absolute',
-            width: '96px',
-            height: '20px',
-            left: '30px',
-            top: '30px',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 500,
-            fontSize: '16px',
-            color: '#000000'
-          }}>
-            Farmland ID:
-          </span>
-          <span style={{
-            position: 'absolute',
-            left: '30px',
-            top: '60px',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 500,
-            fontSize: '35px',
-            color: '#000000'
-          }}>
-            {targetId}
-          </span>
-
-          {/* Stepper Vertical Connector Line */}
-          <div style={{
-            position: 'absolute',
-            width: '244px',
-            height: '0px',
-            left: '110px',
-            top: '136px',
-            border: '1px solid rgba(0, 120, 250, 0.25)',
-            transform: 'rotate(90deg)',
-            transformOrigin: 'top left',
-            zIndex: 1
-          }} />
-
-          {/* Steps */}
-          <div style={{ position: 'absolute', left: '120px', top: '130px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px 0px 32px 24px', gap: '4px', width: '173px', height: '68px', boxSizing: 'content-box' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px', width: '182px', height: '36px' }}>
-              <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#5A5C5E', width: '173px', height: '36px' }}>CUSTOMER INFORMATION</span>
-            </div>
-          </div>
-          <div style={{ position: 'absolute', left: '120px', top: '219px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px 0px 4px 24px', gap: '4px', width: '173px', height: '22px', boxSizing: 'content-box' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px', width: '149px', height: '18px' }}>
-              <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#5A5C5E', width: '149px', height: '18px' }}>LAND & BOUNDARIES</span>
-            </div>
-          </div>
-          <div style={{ position: 'absolute', left: '120px', top: '299px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px 0px 4px 24px', gap: '4px', width: '173px', height: '22px', boxSizing: 'content-box' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px', width: '149px', height: '18px' }}>
-              <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#5A5C5E', width: '81px', height: '18px' }}>VALUATION</span>
-            </div>
-          </div>
-          <div style={{ position: 'absolute', left: '143px', top: '377px' }}>
-            <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#FFBC8A', height: '36px', width: '118px' }}>AGRICULTURE &<br/>REPORT</span>
-          </div>
-
-          {/* Step Dots */}
-          {[136, 218, 296, 374].map((top, index) => {
-            const isCustomerApproved = localStorage.getItem(`vo2_status_${targetId}_customer`) === 'approved';
-            const isBoundariesApproved = localStorage.getItem(`vo2_status_${targetId}_boundaries`) === 'approved';
-            const isValuationApproved = localStorage.getItem(`vo2_status_${targetId}_valuation`) === 'approved';
-            const showCheckmark = (index === 0 && isCustomerApproved) || 
-                                  (index === 1 && isBoundariesApproved) || 
-                                  (index === 2 && isValuationApproved);
-
-            return (
-              <div key={index} style={{
-                position: 'absolute',
-                width: '24px',
-                height: '24px',
-                left: '98px',
-                top: `${top}px`,
-                background: '#FFFFFF',
-                border: '0.2px solid rgba(0, 0, 0, 0.15)',
-                borderRadius: '42px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 5
-              }}>
-                {showCheckmark ? (
-                  <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
-                    <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
-                    <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
-                  </div>
-                ) : (
-                  <div style={{
-                    width: '18px',
-                    height: '18px',
-                    background: '#FFBC8A',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '12px',
-                    fontWeight: 'bold'
-                  }}>!</div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* RIGHT TOP CARD: Bento Grid of Pills */}
-        <div style={{
-          position: 'absolute',
-          height: '443px',
-          left: '466px',
-          right: '40px',
-          top: '120px',
-          background: '#FFFFFF',
-          borderRadius: '24px',
-          boxSizing: 'border-box',
-          padding: '30px'
-        }}>
-          {/* Bento layout wrapper */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '30px',
-            width: '100%',
-            height: '100%',
-            position: 'relative'
-          }}>
-            {/* Row 1 */}
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px', width: '100%', height: '41.22px' }}>
-              {pills.slice(0, 3).map((pill, idx) => renderPill(pill, idx))}
-            </div>
-
-            {/* Row 2 */}
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px', width: '100%', height: '41.22px' }}>
-              {pills.slice(3, 6).map((pill, idx) => renderPill(pill, idx + 3))}
-            </div>
-
-            {/* Row 3 */}
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px', width: '100%', height: '41.22px' }}>
-              {pills.slice(6, 10).map((pill, idx) => renderPill(pill, idx + 6))}
-            </div>
-
-            {/* Row 4 */}
-            {renderPill(pills[10], 10, {
-              position: 'absolute',
-              left: '0px',
-              top: '214px'
-            })}
-          </div>
-        </div>
-
-        {/* BOTTOM CARD: Sub-tab specific sections */}
-        <div style={{
-          position: 'absolute',
-          height: '443px',
-          left: '40px',
-          right: '40px',
-          top: '585px',
-          background: '#FFFFFF',
-          borderRadius: '24px',
-          boxSizing: 'border-box',
-          padding: '30px'
-        }}>
-          
-          {activeSubTab <= 1 ? (
-            /* TABS 0 - 1: STANDARD FILES VIEW */
-            <>
-              {/* UPLOADED FILES SECTION */}
-              <span style={{
-                position: 'absolute',
-                width: '173px',
-                height: '30px',
-                left: '30px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Uploaded Files
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                left: '18px',
-                top: '73px',
-                width: '682px',
-                height: '355px',
-                background: '#FFFFFF',
-                border: '1.2px solid #E5E7EB',
-                borderRadius: '24px',
-                boxSizing: 'border-box',
-                padding: '24px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '24px',
-                overflowY: 'auto'
-              }} className="custom-scrollbar">
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '280px' }}>
-                  <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 500, fontSize: '12px', color: 'rgba(0, 0, 0, 0.74)' }}>
-                    Uploaded files
-                  </span>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {[{ name: "File_name_1.pdf", size: "8MB" }, { name: "File_name_1.pdf", size: "8MB" }].map((file, fileIdx) => (
-                      <div key={fileIdx} style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'space-between',
-                        padding: '12px 16px', 
-                        background: '#E5F1F9', 
-                        borderRadius: '12px',
-                        width: '280px',
-                        height: '59px',
-                        boxSizing: 'border-box'
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ width: '29px', height: '29px', background: '#FFFFFF', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <FileText className="w-[17px] h-[17px] text-[#F15642]" />
-                          </div>
-                          <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px', fontWeight: 400, color: '#000000' }}>
-                              {file.name}
-                            </span>
-                            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '8px', color: 'rgba(0, 0, 0, 0.7)' }}>
-                              {file.size}
-                            </span>
-                          </div>
-                        </div>
-                        <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                          <Download className="w-[18px] h-[18px] text-[#000000]" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* COMMENTS SECTION */}
-              <span style={{
-                position: 'absolute',
-                width: '129px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 2 ? (
-            /* TAB 2: SOIL */
-            <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '13px', position: 'absolute', width: '640px', left: '30px', top: '30px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', lineHeight: '30px', color: '#000000' }}>
-                  Soil Type
-                </span>
-                <div style={{ position: 'relative', width: '100%' }}>
-                  <button
-                    type="button"
-                    onClick={() => setIsSoilDropdownOpen(!isSoilDropdownOpen)}
-                    style={{
-                      boxSizing: 'border-box',
-                      width: '100%',
-                      height: '54px',
-                      background: '#FFFFFF',
-                      border: '1px solid rgba(0, 0, 0, 0.4)',
-                      borderRadius: '8px',
-                      padding: '0 24px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      outline: 'none'
-                    }}
-                  >
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', color: soilType ? '#000000' : 'rgba(0, 0, 0, 0.4)' }}>
-                      {soilType || 'Select Soil Type'}
-                    </span>
-                    <ChevronDown className="w-5 h-5 text-[#363434]" />
-                  </button>
-
-                  {isSoilDropdownOpen && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '58px',
-                      left: 0,
-                      width: '100%',
-                      background: '#FFFFFF',
-                      border: '1px solid rgba(0, 0, 0, 0.1)',
-                      borderRadius: '12px',
-                      boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-                      zIndex: 100,
-                      maxHeight: '200px',
-                      overflowY: 'auto'
-                    }}>
-                      {soilOptions.map((opt) => (
-                        <div
-                          key={opt}
-                          onClick={() => {
-                            setSoilType(opt);
-                            setIsSoilDropdownOpen(false);
-                          }}
-                          style={{
-                            padding: '12px 16px',
-                            fontFamily: 'Inter, sans-serif',
-                            fontSize: '14px',
-                            color: '#1A1C1E',
-                            cursor: 'pointer',
-                            background: soilType === opt ? '#E5F1F9' : 'transparent'
-                          }}
-                        >
-                          {opt}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* COMMENTS SECTION */}
-              <span style={{
-                position: 'absolute',
-                width: '129px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 3 ? (
-            /* TAB 3: TYPE OF CROP */
-            <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '13px', position: 'absolute', width: '640px', left: '30px', top: '30px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', lineHeight: '30px', color: '#000000' }}>
-                  Types of Crops available present?
-                </span>
-                <div style={{ position: 'relative', width: '100%' }}>
-                  <button
-                    type="button"
-                    onClick={() => setIsCropDropdownOpen(!isCropDropdownOpen)}
-                    style={{
-                      boxSizing: 'border-box',
-                      width: '100%',
-                      height: '54px',
-                      background: '#FFFFFF',
-                      border: '1px solid rgba(0, 0, 0, 0.4)',
-                      borderRadius: '8px',
-                      padding: '0 24px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      outline: 'none'
-                    }}
-                  >
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', color: cropType ? '#000000' : 'rgba(0, 0, 0, 0.4)' }}>
-                      {cropType || 'Select Crop'}
-                    </span>
-                    <ChevronDown className="w-5 h-5 text-[#363434]" />
-                  </button>
-
-                  {isCropDropdownOpen && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '58px',
-                      left: 0,
-                      width: '100%',
-                      background: '#FFFFFF',
-                      border: '1px solid rgba(0, 0, 0, 0.1)',
-                      borderRadius: '12px',
-                      boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-                      zIndex: 100,
-                      maxHeight: '200px',
-                      overflowY: 'auto'
-                    }}>
-                      {cropTypeOptions.map((opt) => (
-                        <div
-                          key={opt}
-                          onClick={() => {
-                            setCropType(opt);
-                            setIsCropDropdownOpen(false);
-                          }}
-                          style={{
-                            padding: '12px 16px',
-                            fontFamily: 'Inter, sans-serif',
-                            fontSize: '14px',
-                            color: '#1A1C1E',
-                            cursor: 'pointer',
-                            background: cropType === opt ? '#E5F1F9' : 'transparent'
-                          }}
-                        >
-                          {opt}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* COMMENTS SECTION */}
-              <span style={{
-                position: 'absolute',
-                width: '129px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 4 ? (
-            /* TAB 4: GROUND WATER LEVEL */
-            <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '13px', position: 'absolute', width: '640px', left: '30px', top: '30px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', lineHeight: '30px', color: '#000000' }}>
-                  Depth of Ground Water Level
-                </span>
-                <div style={{ position: 'relative', width: '100%' }}>
-                  <button
-                    type="button"
-                    onClick={() => setIsWaterDropdownOpen(!isWaterDropdownOpen)}
-                    style={{
-                      boxSizing: 'border-box',
-                      width: '100%',
-                      height: '54px',
-                      background: '#FFFFFF',
-                      border: '1px solid rgba(0, 0, 0, 0.4)',
-                      borderRadius: '8px',
-                      padding: '0 24px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      outline: 'none'
-                    }}
-                  >
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', color: groundWater ? '#000000' : 'rgba(0, 0, 0, 0.4)' }}>
-                      {groundWater || 'Select Depth'}
-                    </span>
-                    <ChevronDown className="w-5 h-5 text-[#363434]" />
-                  </button>
-
-                  {isWaterDropdownOpen && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '58px',
-                      left: 0,
-                      width: '100%',
-                      background: '#FFFFFF',
-                      border: '1px solid rgba(0, 0, 0, 0.1)',
-                      borderRadius: '12px',
-                      boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-                      zIndex: 100,
-                      maxHeight: '200px',
-                      overflowY: 'auto'
-                    }}>
-                      {waterOptions.map((opt) => (
-                        <div
-                          key={opt}
-                          onClick={() => {
-                            setGroundWater(opt);
-                            setIsWaterDropdownOpen(false);
-                          }}
-                          style={{
-                            padding: '12px 16px',
-                            fontFamily: 'Inter, sans-serif',
-                            fontSize: '14px',
-                            color: '#1A1C1E',
-                            cursor: 'pointer',
-                            background: groundWater === opt ? '#E5F1F9' : 'transparent'
-                          }}
-                        >
-                          {opt}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* COMMENTS SECTION */}
-              <span style={{
-                position: 'absolute',
-                width: '129px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 5 ? (
-            /* TAB 5: TYPES OF CROP CAN BE GROWN */
-            <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '13px', position: 'absolute', width: '640px', left: '30px', top: '30px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', lineHeight: '30px', color: '#000000' }}>
-                  Types of Crop can be Grown in Future
-                </span>
-                <div style={{ position: 'relative', width: '640px' }}>
-                  <button
-                    type="button"
-                    onClick={() => setIsCropsDropdownOpen(!isCropsDropdownOpen)}
-                    style={{
-                      boxSizing: 'border-box',
-                      width: '640px',
-                      height: '54px',
-                      background: '#FFFFFF',
-                      border: '1.5px solid rgba(0, 0, 0, 0.4)',
-                      borderRadius: '8px',
-                      padding: '0 24px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      outline: 'none'
-                    }}
-                  >
-                    {cropsGrown.length === 0 ? (
-                      <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: '14px', color: 'rgba(0, 0, 0, 0.4)' }}>
-                        Select types
-                      </span>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'row', gap: '15px', flexWrap: 'wrap' }}>
-                        {cropsGrown.map((crop) => (
-                          <div key={crop} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-                            <div style={{
-                              width: '18px',
-                              height: '18px',
-                              background: '#3D93D1',
-                              border: '1.5px solid #F1F1FF',
-                              borderRadius: '2px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}>
-                              <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                                <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                            </div>
-                            <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '14px', color: '#138FFF' }}>
-                              {crop}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <ChevronDown className="w-5 h-5 text-[#363434] shrink-0" />
-                  </button>
-
-                  {isCropsDropdownOpen && (
-                    <div style={{
-                      boxSizing: 'border-box',
-                      position: 'absolute',
-                      width: '640px',
-                      height: '286px',
-                      left: 0,
-                      top: '63px',
-                      background: '#FFFFFF',
-                      border: '1px solid #999999',
-                      borderRadius: '8px',
-                      zIndex: 100,
-                      padding: '13px 16px'
-                    }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        position: 'relative',
-                        width: '610px',
-                        height: '44px',
-                        background: '#FFFFFF',
-                        border: '1px solid #C5C1C1',
-                        borderRadius: '79px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '0 16px',
-                        marginBottom: '16px'
-                      }}>
-                        <Search className="w-5 h-5 text-[rgba(0,0,0,0.6)] shrink-0" />
-                        <input
-                          type="text"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="Search"
-                          style={{
-                            flex: 1,
-                            background: 'transparent',
-                            border: 'none',
-                            outline: 'none',
-                            marginLeft: '10px',
-                            fontFamily: 'Inter, sans-serif',
-                            fontSize: '16px',
-                            color: '#000000'
-                          }}
-                        />
-                      </div>
-
-                      <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr 1fr',
-                        rowGap: '20px',
-                        columnGap: '10px',
-                        height: '180px',
-                        overflowY: 'auto'
-                      }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                          {filteredCrops.filter(item => item.col === 1).map((item, index) => {
-                            const isChecked = cropsGrown.includes(item.name);
-                            return (
-                              <div
-                                key={`${item.id}-${index}`}
-                                onClick={() => toggleCropSelection(item.name)}
-                                style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-                              >
-                                <div style={{
-                                  boxSizing: 'border-box',
-                                  width: '18px',
-                                  height: '18px',
-                                  background: isChecked ? '#3D93D1' : '#F1F1FF',
-                                  border: isChecked ? '1.5px solid #F1F1FF' : '1.5px solid #85BFE5',
-                                  borderRadius: '2px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center'
-                                }}>
-                                  {isChecked && (
-                                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                                      <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                  )}
-                                </div>
-                                <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '14px', color: '#138FFF' }}>
-                                  {item.name}
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                          {filteredCrops.filter(item => item.col === 2).map((item, index) => {
-                            const isChecked = cropsGrown.includes(item.name);
-                            return (
-                              <div
-                                key={`${item.id}-${index}`}
-                                onClick={() => toggleCropSelection(item.name)}
-                                style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-                              >
-                                <div style={{
-                                  boxSizing: 'border-box',
-                                  width: '18px',
-                                  height: '18px',
-                                  background: isChecked ? '#3D93D1' : '#F1F1FF',
-                                  border: isChecked ? '1.5px solid #F1F1FF' : '1.5px solid #85BFE5',
-                                  borderRadius: '2px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center'
-                                }}>
-                                  {isChecked && (
-                                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                                      <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                  )}
-                                </div>
-                                <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '14px', color: '#138FFF' }}>
-                                  {item.name}
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                          {filteredCrops.filter(item => item.col === 3).map((item, index) => {
-                            const isChecked = cropsGrown.includes(item.name);
-                            return (
-                              <div
-                                key={`${item.id}-${index}`}
-                                onClick={() => toggleCropSelection(item.name)}
-                                style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-                              >
-                                <div style={{
-                                  boxSizing: 'border-box',
-                                  width: '18px',
-                                  height: '18px',
-                                  background: isChecked ? '#3D93D1' : '#F1F1FF',
-                                  border: isChecked ? '1.5px solid #F1F1FF' : '1.5px solid #85BFE5',
-                                  borderRadius: '2px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center'
-                                }}>
-                                  {isChecked && (
-                                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                                      <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                  )}
-                                </div>
-                                <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '14px', color: '#138FFF' }}>
-                                  {item.name}
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* COMMENTS SECTION */}
-              <span style={{
-                position: 'absolute',
-                width: '129px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 6 ? (
-            /* TAB 6: CURRENT YIELD COST */
-            <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '13px', position: 'absolute', width: '640px', left: '30px', top: '30px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', lineHeight: '30px', color: '#000000' }}>
-                  What is the current yielding cost?
-                </span>
-                <div style={{
-                  boxSizing: 'border-box',
-                  width: '640px',
-                  height: '54px',
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(0, 0, 0, 0.4)',
-                  borderRadius: '8px',
-                  position: 'relative'
-                }}>
-                  <input
-                    type="text"
-                    value={yieldCost}
-                    onChange={(e) => setYieldCost(e.target.value)}
-                    style={{
-                      position: 'absolute',
-                      width: '592px',
-                      height: '22px',
-                      left: '24px',
-                      top: 'calc(50% - 22px/2)',
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '18px',
-                      lineHeight: '22px',
-                      color: '#000000',
-                      border: 'none',
-                      outline: 'none',
-                      background: 'transparent'
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '13px', position: 'absolute', width: '640px', left: '30px', top: '144px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', lineHeight: '30px', color: '#000000' }}>
-                  Current returns from yield?
-                </span>
-                <div style={{
-                  boxSizing: 'border-box',
-                  width: '640px',
-                  height: '54px',
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(0, 0, 0, 0.4)',
-                  borderRadius: '8px',
-                  position: 'relative'
-                }}>
-                  <input
-                    type="text"
-                    value={yieldReturns}
-                    onChange={(e) => setYieldReturns(e.target.value)}
-                    style={{
-                      position: 'absolute',
-                      width: '592px',
-                      height: '22px',
-                      left: '24px',
-                      top: 'calc(50% - 22px/2)',
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '18px',
-                      lineHeight: '22px',
-                      color: '#000000',
-                      border: 'none',
-                      outline: 'none',
-                      background: 'transparent'
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* COMMENTS SECTION */}
-              <span style={{
-                position: 'absolute',
-                width: '129px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 7 ? (
-            /* TAB 7: CURRENT CULTIVATION */
-            <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '13px', position: 'absolute', width: '640px', left: '30px', top: '30px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', lineHeight: '30px', color: '#000000' }}>
-                  What is the Current Cultivation Type?
-                </span>
-                <div style={{ display: 'flex', gap: '15px' }}>
-                  <button
-                    type="button"
-                    onClick={() => setCurrentCultivation('Self')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      padding: '8px 24px',
-                      gap: '10px',
-                      background: currentCultivation === 'Self' ? '#2780C4' : '#FFFFFF',
-                      border: currentCultivation === 'Self' ? 'none' : '1px solid rgba(0, 0, 0, 0.4)',
-                      borderRadius: '24px',
-                      cursor: 'pointer',
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      color: currentCultivation === 'Self' ? '#FFFFFF' : '#000000'
-                    }}
-                  >
-                    <div style={{
-                      width: '14px',
-                      height: '14px',
-                      border: currentCultivation === 'Self' ? 'none' : '1.5px solid #2780C4',
-                      background: currentCultivation === 'Self' ? '#FFFFFF' : 'transparent',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      {currentCultivation === 'Self' && (
-                        <div style={{ width: '6px', height: '6px', background: '#2780C4', borderRadius: '50%' }} />
-                      )}
-                    </div>
-                    Self
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setCurrentCultivation('Lease')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      padding: '8px 24px',
-                      gap: '10px',
-                      background: currentCultivation === 'Lease' ? '#2780C4' : '#FFFFFF',
-                      border: currentCultivation === 'Lease' ? 'none' : '1px solid rgba(0, 0, 0, 0.4)',
-                      borderRadius: '24px',
-                      cursor: 'pointer',
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      color: currentCultivation === 'Lease' ? '#FFFFFF' : '#000000'
-                    }}
-                  >
-                    <div style={{
-                      width: '14px',
-                      height: '14px',
-                      border: currentCultivation === 'Lease' ? 'none' : '1.5px solid #2780C4',
-                      background: currentCultivation === 'Lease' ? '#FFFFFF' : 'transparent',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      {currentCultivation === 'Lease' && (
-                        <div style={{ width: '6px', height: '6px', background: '#2780C4', borderRadius: '50%' }} />
-                      )}
-                    </div>
-                    Lease
-                  </button>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'absolute', width: '640px', left: '30px', top: '144px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '18px', color: '#000000' }}>
-                  Name
-                </span>
-                <div style={{
-                  boxSizing: 'border-box',
-                  width: '640px',
-                  height: '54px',
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(0, 0, 0, 0.2)',
-                  borderRadius: '8px',
-                  position: 'relative'
-                }}>
-                  <input
-                    type="text"
-                    value={cultivatorName}
-                    onChange={(e) => setCultivatorName(e.target.value)}
-                    style={{
-                      position: 'absolute',
-                      width: '592px',
-                      height: '22px',
-                      left: '24px',
-                      top: 'calc(50% - 22px/2)',
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '18px',
-                      lineHeight: '22px',
-                      color: '#000000',
-                      border: 'none',
-                      outline: 'none',
-                      background: 'transparent'
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', position: 'absolute', width: '640px', left: '30px', top: '254px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '18px', color: '#000000' }}>
-                  Contact Details
-                </span>
-                <div style={{
-                  boxSizing: 'border-box',
-                  width: '640px',
-                  height: '54px',
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(0, 0, 0, 0.2)',
-                  borderRadius: '8px',
-                  position: 'relative'
-                }}>
-                  <input
-                    type="text"
-                    value={cultivatorContact}
-                    onChange={(e) => setCultivatorContact(e.target.value)}
-                    style={{
-                      position: 'absolute',
-                      width: '592px',
-                      height: '22px',
-                      left: '24px',
-                      top: 'calc(50% - 22px/2)',
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '18px',
-                      lineHeight: '22px',
-                      color: '#000000',
-                      border: 'none',
-                      outline: 'none',
-                      background: 'transparent'
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* COMMENTS SECTION */}
-              <span style={{
-                position: 'absolute',
-                width: '129px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 8 ? (
-            /* TAB 8: FUTURE CROPS */
-            <>
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '13px',
-                position: 'absolute',
-                left: '30px',
-                top: '30px',
-                width: '618px'
-              }}>
-                <span style={{
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontStyle: 'normal',
-                  fontWeight: 600,
-                  fontSize: '24px',
-                  lineHeight: '30px',
-                  color: '#000000'
-                }}>
-                  Future crop plans suggested by Green Land Captial
-                </span>
-
-                {/* Comments textarea box — 618×181px */}
-                <div style={{
-                  boxSizing: 'border-box',
-                  width: '618px',
-                  height: '181px',
-                  background: 'rgba(187, 219, 240, 0.38)',
-                  border: '1px solid #96C9ED',
-                  borderRadius: '18px',
-                  padding: '24px 26px',
-                  position: 'relative'
-                }}>
-                  <textarea
-                    value={futureCrops}
-                    onChange={(e) => setFutureCrops(e.target.value)}
-                    placeholder="Write suggestion"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '17px',
-                      color: 'rgba(0, 0, 0, 0.8)',
-                      background: 'transparent',
-                      border: 'none',
-                      outline: 'none',
-                      resize: 'none'
-                    }}
-                  />
-                </div>
-              </div>
-            </>
-          ) : activeSubTab === 9 ? (
-            /* TAB 9: MAINTENANCE */
-            <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '13px', position: 'absolute', width: '640px', left: '30px', top: '30px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '20px', lineHeight: '25px', color: '#000000' }}>
-                  If Green Land Captial does the maintenace, what will be the suggested crop?
-                </span>
-                <div style={{ position: 'relative', width: '640px' }}>
-                  <button
-                    type="button"
-                    onClick={() => setIsMaintenanceDropdownOpen(!isMaintenanceDropdownOpen)}
-                    style={{
-                      boxSizing: 'border-box',
-                      width: '640px',
-                      height: '54px',
-                      background: '#FFFFFF',
-                      border: '1.5px solid rgba(0, 0, 0, 0.4)',
-                      borderRadius: '8px',
-                      padding: '0 24px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      outline: 'none'
-                    }}
-                  >
-                    {maintenanceCrops.length === 0 ? (
-                      <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: '14px', color: 'rgba(0, 0, 0, 0.4)' }}>
-                        Select Types
-                      </span>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'row', gap: '15px', flexWrap: 'wrap' }}>
-                        {maintenanceCrops.map((crop) => (
-                          <div key={crop} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-                            <div style={{
-                              width: '18px',
-                              height: '18px',
-                              background: '#3D93D1',
-                              border: '1.5px solid #F1F1FF',
-                              borderRadius: '2px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}>
-                              <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                                <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                            </div>
-                            <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '14px', color: '#138FFF' }}>
-                              {crop}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    <ChevronDown className="w-5 h-5 text-[#363434] shrink-0" />
-                  </button>
-
-                  {isMaintenanceDropdownOpen && (
-                    <div style={{
-                      boxSizing: 'border-box',
-                      position: 'absolute',
-                      width: '640px',
-                      height: '286px',
-                      left: 0,
-                      top: '63px',
-                      background: '#FFFFFF',
-                      border: '1px solid #999999',
-                      borderRadius: '8px',
-                      zIndex: 100,
-                      padding: '13px 16px'
-                    }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        position: 'relative',
-                        width: '610px',
-                        height: '44px',
-                        background: '#FFFFFF',
-                        border: '1px solid #C5C1C1',
-                        borderRadius: '79px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '0 16px',
-                        marginBottom: '16px'
-                      }}>
-                        <Search className="w-5 h-5 text-[rgba(0,0,0,0.6)] shrink-0" />
-                        <input
-                          type="text"
-                          value={maintenanceSearchQuery}
-                          onChange={(e) => setMaintenanceSearchQuery(e.target.value)}
-                          placeholder="Search"
-                          style={{
-                            flex: 1,
-                            background: 'transparent',
-                            border: 'none',
-                            outline: 'none',
-                            marginLeft: '10px',
-                            fontFamily: 'Inter, sans-serif',
-                            fontSize: '16px',
-                            color: '#000000'
-                          }}
-                        />
-                      </div>
-
-                      <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr 1fr',
-                        rowGap: '20px',
-                        columnGap: '10px',
-                        height: '180px',
-                        overflowY: 'auto'
-                      }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                          {filteredMaintenanceCrops.filter(item => item.col === 1).map((item, index) => {
-                            const isChecked = maintenanceCrops.includes(item.name);
-                            return (
-                              <div
-                                key={`${item.id}-${index}`}
-                                onClick={() => toggleMaintenanceCropSelection(item.name)}
-                                style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-                              >
-                                <div style={{
-                                  boxSizing: 'border-box',
-                                  width: '18px',
-                                  height: '18px',
-                                  background: isChecked ? '#3D93D1' : '#F1F1FF',
-                                  border: isChecked ? '1.5px solid #F1F1FF' : '1.5px solid #85BFE5',
-                                  borderRadius: '2px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center'
-                                }}>
-                                  {isChecked && (
-                                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                                      <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                  )}
-                                </div>
-                                <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '14px', color: '#138FFF' }}>
-                                  {item.name}
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                          {filteredMaintenanceCrops.filter(item => item.col === 2).map((item, index) => {
-                            const isChecked = maintenanceCrops.includes(item.name);
-                            return (
-                              <div
-                                key={`${item.id}-${index}`}
-                                onClick={() => toggleMaintenanceCropSelection(item.name)}
-                                style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-                              >
-                                <div style={{
-                                  boxSizing: 'border-box',
-                                  width: '18px',
-                                  height: '18px',
-                                  background: isChecked ? '#3D93D1' : '#F1F1FF',
-                                  border: isChecked ? '1.5px solid #F1F1FF' : '1.5px solid #85BFE5',
-                                  borderRadius: '2px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center'
-                                }}>
-                                  {isChecked && (
-                                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                                      <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                  )}
-                                </div>
-                                <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '14px', color: '#138FFF' }}>
-                                  {item.name}
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                          {filteredMaintenanceCrops.filter(item => item.col === 3).map((item, index) => {
-                            const isChecked = maintenanceCrops.includes(item.name);
-                            return (
-                              <div
-                                key={`${item.id}-${index}`}
-                                onClick={() => toggleMaintenanceCropSelection(item.name)}
-                                style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
-                              >
-                                <div style={{
-                                  boxSizing: 'border-box',
-                                  width: '18px',
-                                  height: '18px',
-                                  background: isChecked ? '#3D93D1' : '#F1F1FF',
-                                  border: isChecked ? '1.5px solid #F1F1FF' : '1.5px solid #85BFE5',
-                                  borderRadius: '2px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center'
-                                }}>
-                                  {isChecked && (
-                                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                                      <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                  )}
-                                </div>
-                                <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '14px', color: '#138FFF' }}>
-                                  {item.name}
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'absolute', width: '640px', left: '30px', top: '144px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', color: '#000000' }}>
-                  What will be the best returns?
-                </span>
-                <div style={{
-                  boxSizing: 'border-box',
-                  width: '640px',
-                  height: '54px',
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(0, 0, 0, 0.4)',
-                  borderRadius: '8px',
-                  position: 'relative'
-                }}>
-                  <input
-                    type="text"
-                    value={maintenanceReturns}
-                    onChange={(e) => setMaintenanceReturns(e.target.value)}
-                    style={{
-                      position: 'absolute',
-                      width: '592px',
-                      height: '22px',
-                      left: '24px',
-                      top: 'calc(50% - 22px/2)',
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '18px',
-                      lineHeight: '22px',
-                      color: '#000000',
-                      border: 'none',
-                      outline: 'none',
-                      background: 'transparent'
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* COMMENTS SECTION */}
-              <span style={{
-                position: 'absolute',
-                width: '129px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : (
-            /* TAB 10: NATURAL ADVANTAGES AND DISADVANTAGES */
-            <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '13px', position: 'absolute', width: '640px', left: '30px', top: '30px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', lineHeight: '30px', color: '#000000' }}>
-                  What are the Advantages?
-                </span>
-                <div style={{
-                  boxSizing: 'border-box',
-                  width: '640px',
-                  height: '54px',
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(0, 0, 0, 0.4)',
-                  borderRadius: '8px',
-                  position: 'relative'
-                }}>
-                  <input
-                    type="text"
-                    value={advantages}
-                    onChange={(e) => setAdvantages(e.target.value)}
-                    style={{
-                      position: 'absolute',
-                      width: '592px',
-                      height: '22px',
-                      left: '24px',
-                      top: 'calc(50% - 22px/2)',
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '18px',
-                      lineHeight: '22px',
-                      color: '#000000',
-                      border: 'none',
-                      outline: 'none',
-                      background: 'transparent'
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '13px', position: 'absolute', width: '640px', left: '30px', top: '144px' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: '24px', lineHeight: '30px', color: '#000000' }}>
-                  What are the Disadvantages?
-                </span>
-                <div style={{
-                  boxSizing: 'border-box',
-                  width: '640px',
-                  height: '54px',
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(0, 0, 0, 0.4)',
-                  borderRadius: '8px',
-                  position: 'relative'
-                }}>
-                  <input
-                    type="text"
-                    value={disadvantages}
-                    onChange={(e) => setDisadvantages(e.target.value)}
-                    style={{
-                      position: 'absolute',
-                      width: '592px',
-                      height: '22px',
-                      left: '24px',
-                      top: 'calc(50% - 22px/2)',
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '18px',
-                      lineHeight: '22px',
-                      color: '#000000',
-                      border: 'none',
-                      outline: 'none',
-                      background: 'transparent'
-                    }}
-                  />
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* ACTIONS FOOTER BUTTONS */}
-          <div style={{
-            position: 'absolute',
-            width: '254px',
-            height: '38px',
-            right: '25px',
-            bottom: '26px',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: '12px'
-          }}>
-            <button 
-              onClick={handleTurnBack}
-              style={{
-                boxSizing: 'border-box',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '10px',
-                width: '121px',
-                height: '38px',
-                border: '1px solid rgba(0, 0, 0, 0.27)',
-                borderRadius: '33px',
-                background: 'transparent',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 500,
-                fontSize: '14px',
-                color: 'rgba(0, 0, 0, 0.8)',
-                cursor: 'pointer'
-              }}
-            >
-              Turn Back
+          {/* Top Right Profile Header */}
+          <div className="flex flex-row items-center gap-[13px]">
+            <button className="flex flex-row justify-center items-center p-2 w-[52px] h-[52px] bg-white rounded-full relative shadow-sm border-none cursor-pointer">
+              <Bell className="w-6 h-6 text-[#2C2C2C]" strokeWidth={1.5} />
+              <span className="absolute w-[5px] h-[5px] right-[14px] top-[12px] bg-[#EF4646] rounded-full" />
             </button>
-            <button 
-              onClick={handleApprove}
-              style={{
-                boxSizing: 'border-box',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '10px',
-                width: '121px',
-                height: '38px',
-                background: '#2780C4',
-                borderRadius: '33px',
-                border: 'none',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '14px',
-                color: '#FFFFFF',
-                cursor: 'pointer'
-              }}
-            >
-              Approve
-            </button>
+            <div className="flex flex-row justify-center items-center w-[52px] h-[52px] bg-white rounded-full overflow-hidden shadow-sm">
+              <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" alt="User profile avatar" className="w-[52px] h-[52px] object-cover" />
+            </div>
           </div>
-
         </div>
 
+        {/* Main Grid: Stepper and Content */}
+        <div className="flex flex-col lg:flex-row w-full gap-6">
+           {/* LEFT COLUMN: Stepper Timeline Card */}
+           <div className="w-full lg:w-[410px] bg-white rounded-[24px] flex flex-col p-8 shrink-0 relative min-h-[443px]">
+             <div className="flex flex-col gap-1 mb-8">
+               <span className="font-plus-jakarta font-medium text-[16px] text-black">Farmland ID:</span>
+               <span className="font-plus-jakarta font-medium text-[35px] text-black">{targetId}</span>
+             </div>
+
+             <div className="relative flex flex-col gap-10 pl-[80px]">
+               {/* Vertical Line */}
+               <div className="absolute left-[90px] top-[24px] bottom-[24px] w-[1px] border-l border-[#0078FA] opacity-25"></div>
+
+               {/* Step 1 */}
+               <div className="relative flex items-center h-[36px]">
+                 <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
+                   {localStorage.getItem(`vo2_status_${targetId}_customer`) === 'approved' ? (
+                     <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
+                       <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
+                       <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
+                     </div>
+                   ) : (
+                     <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
+                   )}
+                 </div>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#5A5C5E] uppercase">CUSTOMER INFORMATION</span>
+               </div>
+
+               {/* Step 2 */}
+               <div className="relative flex items-center h-[36px]">
+                 <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
+                   {localStorage.getItem(`vo2_status_${targetId}_boundaries`) === 'approved' ? (
+                     <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
+                       <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
+                       <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
+                     </div>
+                   ) : (
+                     <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
+                   )}
+                 </div>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#5A5C5E] uppercase">LAND & BOUNDARIES</span>
+               </div>
+
+               {/* Step 3 */}
+               <div className="relative flex items-center h-[36px]">
+                 <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
+                   {localStorage.getItem(`vo2_status_${targetId}_valuation`) === 'approved' ? (
+                     <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
+                       <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
+                       <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
+                     </div>
+                   ) : (
+                     <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
+                   )}
+                 </div>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#5A5C5E] uppercase">VALUATION</span>
+               </div>
+
+               {/* Step 4 */}
+               <div className="relative flex items-center h-[36px]">
+                 <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
+                   <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
+                 </div>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#FFBC8A] uppercase">AGRICULTURE &<br/>REPORT</span>
+               </div>
+             </div>
+           </div>
+
+           {/* Content Column */}
+           <div className="flex-1 flex flex-col gap-6 min-w-0">
+             
+             {/* Bento Grid Pills */}
+             <div className="w-full bg-white rounded-[24px] p-6 lg:p-8 flex flex-wrap gap-4 min-h-[150px] content-start">
+               {pills.map((pill, idx) => {
+                  const isActive = activeSubTab === idx;
+                  const isCompleted = completedSubTabs.includes(pill.label);
+                  return (
+                    <button 
+                      key={idx}
+                      onClick={() => setActiveSubTab(idx)}
+                      className="flex flex-row items-center justify-center px-4 py-[11px] gap-2 h-[41px] bg-[#F9F9F9] rounded-[72px] shadow-sm cursor-pointer whitespace-nowrap"
+                      style={{ border: isActive ? '1px solid #0078FA' : isCompleted ? '1px solid #A5B767' : '1px solid transparent' }}
+                    >
+                      {!isCompleted && (
+                        <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0">!</div>
+                      )}
+                      <span className="font-plus-jakarta font-semibold text-[14px]" style={{ color: isActive ? '#0078FA' : isCompleted ? '#2780C4' : 'rgba(90, 92, 94, 0.74)' }}>
+                        {pill.label}
+                      </span>
+                      {isCompleted && (
+                        <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
+                          <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
+                          <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
+                        </div>
+                      )}
+                    </button>
+                  );
+               })}
+             </div>
+
+             {/* BOTTOM CARD: Sub-tab specific sections */}
+             <div className="w-full bg-white rounded-[24px] p-6 lg:p-8 flex flex-col gap-8 min-h-[443px] relative">
+               
+               <div className="flex flex-col xl:flex-row gap-8 w-full flex-1">
+                 
+                 {/* Left Content Area (Forms/Files) */}
+                 <div className="flex-1 flex flex-col gap-6 min-w-0">
+                   
+                   {activeSubTab <= 1 && (
+                     <>
+                       <span className="font-plus-jakarta font-semibold text-[24px] text-black">Uploaded Files</span>
+                       <div className="w-full bg-white border border-[#E5E7EB] rounded-[24px] p-6 flex flex-col gap-6 max-h-[355px] overflow-y-auto custom-scrollbar">
+                         <div className="flex flex-col gap-2 w-full max-w-[280px]">
+                           <span className="font-plus-jakarta font-medium text-[12px] text-black/70">Uploaded files</span>
+                           <div className="flex flex-col gap-3">
+                             {[{ name: "File_name_1.pdf", size: "8MB" }, { name: "File_name_1.pdf", size: "8MB" }].map((file, fileIdx) => (
+                               <div key={fileIdx} className="flex items-center justify-between px-4 py-3 bg-[#E5F1F9] rounded-[12px] w-full h-[59px]">
+                                 <div className="flex items-center gap-[10px]">
+                                   <div className="w-[29px] h-[29px] bg-white rounded flex items-center justify-center">
+                                     <FileText className="w-[17px] h-[17px] text-[#F15642]" />
+                                   </div>
+                                   <div className="flex flex-col">
+                                     <span className="font-inter text-[14px] text-black">{file.name}</span>
+                                     <span className="font-inter text-[8px] text-black/70">{file.size}</span>
+                                   </div>
+                                 </div>
+                                 <button className="border-none bg-transparent cursor-pointer">
+                                   <Download className="w-[18px] h-[18px] text-black" />
+                                 </button>
+                               </div>
+                             ))}
+                           </div>
+                         </div>
+                       </div>
+                     </>
+                   )}
+
+                   {activeSubTab === 2 && (
+                     <div className="flex flex-col gap-[13px] w-full max-w-[640px]">
+                       <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black">Soil Type</span>
+                       <div className="relative w-full">
+                         <button onClick={() => setIsSoilDropdownOpen(!isSoilDropdownOpen)} className="w-full h-[54px] bg-white border border-black/40 rounded-lg px-6 flex items-center justify-between cursor-pointer">
+                           <span className="font-inter text-[16px]" style={{ color: soilType ? 'black' : 'rgba(0,0,0,0.4)' }}>{soilType || 'Select Soil Type'}</span>
+                           <ChevronDown className="w-5 h-5 text-[#363434]" />
+                         </button>
+                         {isSoilDropdownOpen && (
+                           <div className="absolute top-[58px] left-0 w-full bg-white border border-black/10 rounded-xl shadow-lg z-50 max-h-[200px] overflow-y-auto">
+                             {soilOptions.map(opt => (
+                               <div key={opt} onClick={() => { setSoilType(opt); setIsSoilDropdownOpen(false); }} className="px-4 py-3 font-inter text-[14px] text-[#1A1C1E] cursor-pointer hover:bg-gray-50" style={{ background: soilType === opt ? '#E5F1F9' : 'transparent' }}>
+                                 {opt}
+                               </div>
+                             ))}
+                           </div>
+                         )}
+                       </div>
+                     </div>
+                   )}
+
+                   {activeSubTab === 3 && (
+                     <div className="flex flex-col gap-[13px] w-full max-w-[640px]">
+                       <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black">Types of Crops available present?</span>
+                       <div className="relative w-full">
+                         <button onClick={() => setIsCropDropdownOpen(!isCropDropdownOpen)} className="w-full h-[54px] bg-white border border-black/40 rounded-lg px-6 flex items-center justify-between cursor-pointer">
+                           <span className="font-inter text-[16px]" style={{ color: cropType ? 'black' : 'rgba(0,0,0,0.4)' }}>{cropType || 'Select Crop'}</span>
+                           <ChevronDown className="w-5 h-5 text-[#363434]" />
+                         </button>
+                         {isCropDropdownOpen && (
+                           <div className="absolute top-[58px] left-0 w-full bg-white border border-black/10 rounded-xl shadow-lg z-50 max-h-[200px] overflow-y-auto">
+                             {cropTypeOptions.map(opt => (
+                               <div key={opt} onClick={() => { setCropType(opt); setIsCropDropdownOpen(false); }} className="px-4 py-3 font-inter text-[14px] text-[#1A1C1E] cursor-pointer hover:bg-gray-50" style={{ background: cropType === opt ? '#E5F1F9' : 'transparent' }}>
+                                 {opt}
+                               </div>
+                             ))}
+                           </div>
+                         )}
+                       </div>
+                     </div>
+                   )}
+
+                   {activeSubTab === 4 && (
+                     <div className="flex flex-col gap-[13px] w-full max-w-[640px]">
+                       <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black">Depth of Ground Water Level</span>
+                       <div className="relative w-full">
+                         <button onClick={() => setIsWaterDropdownOpen(!isWaterDropdownOpen)} className="w-full h-[54px] bg-white border border-black/40 rounded-lg px-6 flex items-center justify-between cursor-pointer">
+                           <span className="font-inter text-[16px]" style={{ color: groundWater ? 'black' : 'rgba(0,0,0,0.4)' }}>{groundWater || 'Select Depth'}</span>
+                           <ChevronDown className="w-5 h-5 text-[#363434]" />
+                         </button>
+                         {isWaterDropdownOpen && (
+                           <div className="absolute top-[58px] left-0 w-full bg-white border border-black/10 rounded-xl shadow-lg z-50 max-h-[200px] overflow-y-auto">
+                             {waterOptions.map(opt => (
+                               <div key={opt} onClick={() => { setGroundWater(opt); setIsWaterDropdownOpen(false); }} className="px-4 py-3 font-inter text-[14px] text-[#1A1C1E] cursor-pointer hover:bg-gray-50" style={{ background: groundWater === opt ? '#E5F1F9' : 'transparent' }}>
+                                 {opt}
+                               </div>
+                             ))}
+                           </div>
+                         )}
+                       </div>
+                     </div>
+                   )}
+
+                   {activeSubTab === 5 && (
+                     <div className="flex flex-col gap-[13px] w-full max-w-[640px]">
+                       <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black">Types of Crop can be Grown in Future</span>
+                       <div className="relative w-full">
+                         <button onClick={() => setIsCropsDropdownOpen(!isCropsDropdownOpen)} className="w-full min-h-[54px] bg-white border-[1.5px] border-black/40 rounded-lg px-6 py-2 flex items-center justify-between cursor-pointer">
+                           {cropsGrown.length === 0 ? (
+                             <span className="font-poppins text-[14px] text-black/40">Select types</span>
+                           ) : (
+                             <div className="flex flex-row gap-4 flex-wrap">
+                               {cropsGrown.map((crop) => (
+                                 <div key={crop} className="flex items-center gap-2">
+                                   <div className="w-[18px] h-[18px] bg-[#3D93D1] border-[1.5px] border-[#F1F1FF] rounded-[2px] flex items-center justify-center">
+                                     <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+                                       <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                     </svg>
+                                   </div>
+                                   <span className="font-poppins font-medium text-[14px] text-[#138FFF]">{crop}</span>
+                                 </div>
+                               ))}
+                             </div>
+                           )}
+                           <ChevronDown className="w-5 h-5 text-[#363434] shrink-0 ml-2" />
+                         </button>
+                         {isCropsDropdownOpen && (
+                           <div className="absolute top-[100%] mt-2 left-0 w-full bg-white border border-[#999999] rounded-lg z-50 p-4 shadow-lg">
+                             <div className="w-full h-[44px] bg-white border border-[#C5C1C1] rounded-[79px] flex items-center px-4 mb-4">
+                               <Search className="w-5 h-5 text-black/60 shrink-0" />
+                               <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search" className="flex-1 bg-transparent border-none outline-none ml-[10px] font-inter text-[16px] text-black" />
+                             </div>
+                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-5 gap-x-2 h-[180px] overflow-y-auto">
+                               {[1, 2, 3].map(col => (
+                                 <div key={col} className="flex flex-col gap-5">
+                                   {filteredCrops.filter(item => item.col === col).map((item, index) => {
+                                     const isChecked = cropsGrown.includes(item.name);
+                                     return (
+                                       <div key={`${item.id}-${index}`} onClick={() => toggleCropSelection(item.name)} className="flex items-center gap-[10px] cursor-pointer">
+                                         <div className={`w-[18px] h-[18px] rounded-[2px] flex items-center justify-center border-[1.5px] ${isChecked ? 'bg-[#3D93D1] border-[#F1F1FF]' : 'bg-[#F1F1FF] border-[#85BFE5]'}`}>
+                                           {isChecked && (
+                                             <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+                                               <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                             </svg>
+                                           )}
+                                         </div>
+                                         <span className="font-poppins font-medium text-[14px] text-[#138FFF]">{item.name}</span>
+                                       </div>
+                                     );
+                                   })}
+                                 </div>
+                               ))}
+                             </div>
+                           </div>
+                         )}
+                       </div>
+                     </div>
+                   )}
+
+                   {activeSubTab === 6 && (
+                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                       <div className="flex flex-col gap-[13px]">
+                         <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black">What is the current yielding cost?</span>
+                         <div className="w-full h-[54px] bg-white border border-black/40 rounded-lg relative">
+                           <input type="text" value={yieldCost} onChange={(e) => setYieldCost(e.target.value)} className="absolute left-6 right-6 top-1/2 -translate-y-1/2 w-[calc(100%-48px)] font-inter text-[18px] text-black border-none outline-none bg-transparent" />
+                         </div>
+                       </div>
+                       <div className="flex flex-col gap-[13px]">
+                         <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black">Current returns from yield?</span>
+                         <div className="w-full h-[54px] bg-white border border-black/40 rounded-lg relative">
+                           <input type="text" value={yieldReturns} onChange={(e) => setYieldReturns(e.target.value)} className="absolute left-6 right-6 top-1/2 -translate-y-1/2 w-[calc(100%-48px)] font-inter text-[18px] text-black border-none outline-none bg-transparent" />
+                         </div>
+                       </div>
+                     </div>
+                   )}
+
+                   {activeSubTab === 7 && (
+                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                       <div className="flex flex-col gap-[13px]">
+                         <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black">What is the Current Cultivation Type?</span>
+                         <div className="flex gap-[15px]">
+                           <button onClick={() => setCurrentCultivation('Self')} className={`flex items-center px-6 py-2 gap-[10px] rounded-[24px] cursor-pointer font-plus-jakarta font-medium text-[14px] ${currentCultivation === 'Self' ? 'bg-[#2780C4] text-white border-none' : 'bg-white text-black border border-black/40'}`}>
+                             <div className={`w-[14px] h-[14px] rounded-full flex items-center justify-center ${currentCultivation === 'Self' ? 'bg-white border-none' : 'bg-transparent border-[1.5px] border-[#2780C4]'}`}>
+                               {currentCultivation === 'Self' && <div className="w-[6px] h-[6px] bg-[#2780C4] rounded-full" />}
+                             </div>
+                             Self
+                           </button>
+                           <button onClick={() => setCurrentCultivation('Lease')} className={`flex items-center px-6 py-2 gap-[10px] rounded-[24px] cursor-pointer font-plus-jakarta font-medium text-[14px] ${currentCultivation === 'Lease' ? 'bg-[#2780C4] text-white border-none' : 'bg-white text-black border border-black/40'}`}>
+                             <div className={`w-[14px] h-[14px] rounded-full flex items-center justify-center ${currentCultivation === 'Lease' ? 'bg-white border-none' : 'bg-transparent border-[1.5px] border-[#2780C4]'}`}>
+                               {currentCultivation === 'Lease' && <div className="w-[6px] h-[6px] bg-[#2780C4] rounded-full" />}
+                             </div>
+                             Lease
+                           </button>
+                         </div>
+                       </div>
+                       <div className="flex flex-col gap-2">
+                         <span className="font-plus-jakarta font-semibold text-[18px] text-black">Name</span>
+                         <div className="w-full h-[54px] bg-white border border-black/20 rounded-lg relative">
+                           <input type="text" value={cultivatorName} onChange={(e) => setCultivatorName(e.target.value)} className="absolute left-6 right-6 top-1/2 -translate-y-1/2 w-[calc(100%-48px)] font-inter text-[18px] text-black border-none outline-none bg-transparent" />
+                         </div>
+                       </div>
+                       <div className="flex flex-col gap-2">
+                         <span className="font-plus-jakarta font-semibold text-[18px] text-black">Contact Details</span>
+                         <div className="w-full h-[54px] bg-white border border-black/20 rounded-lg relative">
+                           <input type="text" value={cultivatorContact} onChange={(e) => setCultivatorContact(e.target.value)} className="absolute left-6 right-6 top-1/2 -translate-y-1/2 w-[calc(100%-48px)] font-inter text-[18px] text-black border-none outline-none bg-transparent" />
+                         </div>
+                       </div>
+                     </div>
+                   )}
+
+                   {activeSubTab === 8 && (
+                     <div className="flex flex-col gap-[13px] w-full max-w-[618px]">
+                       <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black">Future crop plans suggested by Green Land Captial</span>
+                       <div className="w-full h-[181px] bg-[rgba(187,219,240,0.38)] border border-[#96C9ED] rounded-[18px] p-6">
+                         <textarea value={futureCrops} onChange={(e) => setFutureCrops(e.target.value)} placeholder="Write suggestion" className="w-full h-full font-inter text-[14px] leading-[17px] text-black/80 bg-transparent border-none outline-none resize-none" />
+                       </div>
+                     </div>
+                   )}
+
+                   {activeSubTab === 9 && (
+                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                       <div className="flex flex-col gap-[13px]">
+                         <span className="font-plus-jakarta font-semibold text-[20px] leading-[25px] text-black">If Green Land Captial does the maintenace, what will be the suggested crop?</span>
+                         <div className="relative w-full">
+                           <button onClick={() => setIsMaintenanceDropdownOpen(!isMaintenanceDropdownOpen)} className="w-full min-h-[54px] bg-white border-[1.5px] border-black/40 rounded-lg px-6 py-2 flex items-center justify-between cursor-pointer">
+                             {maintenanceCrops.length === 0 ? (
+                               <span className="font-poppins text-[14px] text-black/40">Select Types</span>
+                             ) : (
+                               <div className="flex flex-row gap-4 flex-wrap">
+                                 {maintenanceCrops.map((crop) => (
+                                   <div key={crop} className="flex items-center gap-2">
+                                     <div className="w-[18px] h-[18px] bg-[#3D93D1] border-[1.5px] border-[#F1F1FF] rounded-[2px] flex items-center justify-center">
+                                       <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+                                         <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                       </svg>
+                                     </div>
+                                     <span className="font-poppins font-medium text-[14px] text-[#138FFF]">{crop}</span>
+                                   </div>
+                                 ))}
+                               </div>
+                             )}
+                             <ChevronDown className="w-5 h-5 text-[#363434] shrink-0 ml-2" />
+                           </button>
+                           {isMaintenanceDropdownOpen && (
+                             <div className="absolute top-[100%] mt-2 left-0 w-full bg-white border border-[#999999] rounded-lg z-50 p-4 shadow-lg">
+                               <div className="w-full h-[44px] bg-white border border-[#C5C1C1] rounded-[79px] flex items-center px-4 mb-4">
+                                 <Search className="w-5 h-5 text-black/60 shrink-0" />
+                                 <input type="text" value={maintenanceSearchQuery} onChange={(e) => setMaintenanceSearchQuery(e.target.value)} placeholder="Search" className="flex-1 bg-transparent border-none outline-none ml-[10px] font-inter text-[16px] text-black" />
+                               </div>
+                               <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-5 gap-x-2 h-[180px] overflow-y-auto">
+                                 {[1, 2, 3].map(col => (
+                                   <div key={col} className="flex flex-col gap-5">
+                                     {filteredMaintenanceCrops.filter(item => item.col === col).map((item, index) => {
+                                       const isChecked = maintenanceCrops.includes(item.name);
+                                       return (
+                                         <div key={`${item.id}-${index}`} onClick={() => toggleMaintenanceCropSelection(item.name)} className="flex items-center gap-[10px] cursor-pointer">
+                                           <div className={`w-[18px] h-[18px] rounded-[2px] flex items-center justify-center border-[1.5px] ${isChecked ? 'bg-[#3D93D1] border-[#F1F1FF]' : 'bg-[#F1F1FF] border-[#85BFE5]'}`}>
+                                             {isChecked && (
+                                               <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
+                                                 <path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                               </svg>
+                                             )}
+                                           </div>
+                                           <span className="font-poppins font-medium text-[14px] text-[#138FFF]">{item.name}</span>
+                                         </div>
+                                       );
+                                     })}
+                                   </div>
+                                 ))}
+                               </div>
+                             </div>
+                           )}
+                         </div>
+                       </div>
+                       <div className="flex flex-col gap-2">
+                         <span className="font-plus-jakarta font-semibold text-[24px] text-black">What will be the best returns?</span>
+                         <div className="w-full h-[54px] bg-white border border-black/40 rounded-lg relative">
+                           <input type="text" value={maintenanceReturns} onChange={(e) => setMaintenanceReturns(e.target.value)} className="absolute left-6 right-6 top-1/2 -translate-y-1/2 w-[calc(100%-48px)] font-inter text-[18px] text-black border-none outline-none bg-transparent" />
+                         </div>
+                       </div>
+                     </div>
+                   )}
+
+                   {activeSubTab === 10 && (
+                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                       <div className="flex flex-col gap-[13px]">
+                         <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black">What are the Advantages?</span>
+                         <div className="w-full h-[54px] bg-white border border-black/40 rounded-lg relative">
+                           <input type="text" value={advantages} onChange={(e) => setAdvantages(e.target.value)} className="absolute left-6 right-6 top-1/2 -translate-y-1/2 w-[calc(100%-48px)] font-inter text-[18px] text-black border-none outline-none bg-transparent" />
+                         </div>
+                       </div>
+                       <div className="flex flex-col gap-[13px]">
+                         <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black">What are the Disadvantages?</span>
+                         <div className="w-full h-[54px] bg-white border border-black/40 rounded-lg relative">
+                           <input type="text" value={disadvantages} onChange={(e) => setDisadvantages(e.target.value)} className="absolute left-6 right-6 top-1/2 -translate-y-1/2 w-[calc(100%-48px)] font-inter text-[18px] text-black border-none outline-none bg-transparent" />
+                         </div>
+                       </div>
+                     </div>
+                   )}
+
+                 </div>
+
+                 {/* Right Content Area (Comments) */}
+                 {activeSubTab !== 8 && (
+                   <div className="w-full xl:w-[400px] flex flex-col gap-4 shrink-0">
+                     <span className="font-plus-jakarta font-semibold text-[24px] text-black">Comments</span>
+                     <div className="w-full h-[181px] bg-[rgba(187,219,240,0.38)] border border-[#96C9ED] rounded-[18px] p-6">
+                       <textarea
+                         value={currentComment}
+                         onChange={(e) => handleCommentChange(e.target.value)}
+                         className="w-full h-full bg-transparent border-none outline-none resize-none font-poppins font-normal text-[14px] leading-[21px] text-black"
+                       />
+                     </div>
+                   </div>
+                 )}
+
+               </div>
+
+               {/* Actions Footer */}
+               <div className="flex flex-row justify-end items-center gap-3 w-full mt-4">
+                 <button onClick={handleTurnBack} className="flex items-center justify-center px-[10px] w-[121px] h-[38px] border border-black/30 rounded-[33px] bg-transparent font-plus-jakarta font-medium text-[14px] text-black/80 cursor-pointer">
+                   Turn Back
+                 </button>
+                 <button onClick={handleApprove} className="flex items-center justify-center px-[10px] w-[121px] h-[38px] bg-[#2780C4] rounded-[33px] border-none font-plus-jakarta font-semibold text-[14px] text-white cursor-pointer">
+                   Approve
+                 </button>
+               </div>
+
+             </div>
+           </div>
+        </div>
       </div>
 
       {showApproveModal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(255, 255, 255, 0.7)',
-          backdropFilter: 'blur(2px)',
-          WebkitBackdropFilter: 'blur(2px)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 9999
-        }}>
-          <div style={{
-            boxSizing: 'border-box',
-            position: 'relative',
-            width: '610px',
-            height: '477px',
-            background: '#FFFFFF',
-            border: '1px solid rgba(0, 0, 0, 0.2)',
-            boxShadow: '0px 0px 12.5px rgba(0, 0, 0, 0.15)',
-            borderRadius: '24px',
-            transform: `scale(${scale})`,
-            transformOrigin: 'center'
-          }}>
-            {/* Title */}
-            <span style={{
-              position: 'absolute',
-              width: '280px',
-              height: '30px',
-              left: 'calc(50% - 280px/2)',
-              top: '32px',
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontStyle: 'normal',
-              fontWeight: 600,
-              fontSize: '24px',
-              lineHeight: '30px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#000000'
-            }}>
-              Agriculture & Report
-            </span>
-
-            {/* Verification Icon Container */}
-            <div style={{
-              position: 'absolute',
-              width: '180px',
-              height: '180px',
-              left: 'calc(50% - 180px/2)',
-              top: '85px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}>
-              {/* Outer seal (light blue tint) */}
-              <svg width="180" height="180" viewBox="0 0 24 24" fill="rgba(39, 128, 196, 0.08)" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', left: 0, top: 0 }}>
+        <div className="fixed inset-0 bg-white/70 backdrop-blur-sm flex justify-center items-center z-[9999] p-4">
+          <div className="bg-white border border-black/20 shadow-[0px_0px_12.5px_rgba(0,0,0,0.15)] rounded-[24px] w-full max-w-[610px] flex flex-col items-center py-8 px-6 relative">
+            <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black text-center w-full mb-6">Agriculture & Report</span>
+            
+            <div className="relative w-[180px] h-[180px] flex justify-center items-center mb-6">
+              <svg width="180" height="180" viewBox="0 0 24 24" fill="rgba(39, 128, 196, 0.08)" className="absolute inset-0">
                 <path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.7 3.1 5.51l.34 3.69L1 12l2.44 2.79-.34 3.69 3.61.82 1.89 3.2L12 21.04l3.4 1.46 1.89-3.2 3.61-.82-.34-3.69L23 12z"/>
               </svg>
-
-              {/* Inner seal (solid blue with white check) */}
-              <div style={{
-                position: 'absolute',
-                width: '126px',
-                height: '126px',
-                left: '27px',
-                top: '27px'
-              }}>
-                <svg width="126" height="126" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <div className="w-[126px] h-[126px] relative z-10">
+                <svg width="126" height="126" viewBox="0 0 24 24" fill="none">
                   <path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.7 3.1 5.51l.34 3.69L1 12l2.44 2.79-.34 3.69 3.61.82 1.89 3.2L12 21.04l3.4 1.46 1.89-3.2 3.61-.82-.34-3.69L23 12z" fill="#2780C4"/>
                   <path d="M10.09 16.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z" fill="#FFFFFF"/>
                 </svg>
               </div>
             </div>
 
-            {/* Description */}
-            <span style={{
-              position: 'absolute',
-              width: '428px',
-              height: '75px',
-              left: 'calc(50% - 428px/2)',
-              top: '267px',
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontStyle: 'normal',
-              fontWeight: 700,
-              fontSize: '20px',
-              lineHeight: '25px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-              color: '#3D4949'
-            }}>
-              <span>
-                Proceed With <span style={{ color: '#2780C4' }}>‘Agriculture & Report’</span> Approval For The Farmland ID: <span style={{ color: '#2780C4' }}>{targetId}</span> to Complete The Verification.
-              </span>
+            <span className="font-plus-jakarta font-bold text-[20px] leading-[25px] text-center text-[#3D4949] max-w-[428px] mb-8">
+              Proceed With <span className="text-[#2780C4]">‘Agriculture & Report’</span> Approval For The Farmland ID: <span className="text-[#2780C4]">{targetId}</span> to Complete The Verification.
             </span>
 
-            <button 
-              onClick={handleProceed}
-              style={{
-                boxSizing: 'border-box',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '17px',
-                gap: '17px',
-                position: 'absolute',
-                width: '204px',
-                height: '64px',
-                left: 'calc(50% - 204px/2)',
-                top: '373px',
-                background: '#2780C4',
-                borderRadius: '56.1383px',
-                border: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              <span style={{
-                width: '100px',
-                height: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontStyle: 'normal',
-                fontWeight: 600,
-                fontSize: '23.8px',
-                lineHeight: '30px',
-                display: 'flex',
-                alignItems: 'center',
-                textAlign: 'center',
-                color: '#FFFFFF'
-              }}>
-                Proceed
-              </span>
+            <button onClick={handleProceed} className="flex items-center justify-center bg-[#2780C4] rounded-[56px] border-none px-6 py-4 cursor-pointer min-w-[204px]">
+              <span className="font-plus-jakarta font-semibold text-[23.8px] text-white">Proceed</span>
             </button>
           </div>
         </div>
       )}
 
       {showTurnbackModal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: '#F9F9F9',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 99999
-        }}>
-          {/* Top Right Profile Header inside full page background */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: '13.06px',
-            position: 'absolute',
-            width: '117.06px',
-            height: '52px',
-            right: '40px',
-            top: '34px',
-            zIndex: 100000
-          }}>
-            {/* Bell Container */}
-            <button style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '8px',
-              gap: '10px',
-              width: '52px',
-              height: '52px',
-              background: '#FFFFFF',
-              borderRadius: '40px',
-              border: 'none',
-              cursor: 'pointer',
-              position: 'relative'
-            }}>
+        <div className="fixed inset-0 bg-[#F9F9F9] flex flex-col items-center justify-center z-[9999] p-4">
+          <div className="absolute top-8 right-8 flex flex-row items-center gap-[13px]">
+            <button className="flex flex-row justify-center items-center p-2 w-[52px] h-[52px] bg-white rounded-full relative shadow-sm border-none cursor-pointer">
               <Bell className="w-6 h-6 text-[#2C2C2C]" strokeWidth={1.5} />
-              <span style={{
-                position: 'absolute',
-                width: '5px',
-                height: '5px',
-                left: '32.5px',
-                top: '12px',
-                background: '#EF4646',
-                borderRadius: '50%'
-              }} />
+              <span className="absolute w-[5px] h-[5px] right-[14px] top-[12px] bg-[#EF4646] rounded-full" />
             </button>
-
-            {/* Avatar Container */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '0px',
-              width: '52px',
-              height: '52px',
-              background: '#FFFFFF',
-              borderRadius: '72.5581px',
-              overflow: 'hidden'
-            }}>
-              <img
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"
-                alt="User profile avatar"
-                style={{
-                  width: '52px',
-                  height: '52px',
-                  objectFit: 'cover'
-                }}
-              />
+            <div className="flex flex-row justify-center items-center w-[52px] h-[52px] bg-white rounded-full overflow-hidden shadow-sm">
+              <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" alt="User profile avatar" className="w-[52px] h-[52px] object-cover" />
             </div>
           </div>
 
-          {/* Rejection Reason Card */}
-          <div style={{
-            boxSizing: 'border-box',
-            position: 'relative',
-            width: '672px',
-            height: '433px',
-            background: '#FFFFFF',
-            boxShadow: '0px 20px 40px rgba(0, 49, 50, 0.06)',
-            borderRadius: '32px',
-            transform: `scale(${scale})`,
-            transformOrigin: 'center'
-          }}>
-            {/* Header */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '24px 32px',
-              height: '80px',
-              boxSizing: 'border-box',
-              borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
-            }}>
-              <span style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                lineHeight: '32px',
-                letterSpacing: '-0.6px',
-                color: '#1A1C1D'
-              }}>
-                Turnback
-              </span>
-              <button 
-                onClick={() => setShowTurnbackModal(false)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
+          <div className="w-full max-w-[672px] bg-white shadow-[0px_20px_40px_rgba(0,49,50,0.06)] rounded-[32px] flex flex-col">
+            <div className="flex flex-row justify-between items-center px-8 py-6 border-b border-black/5">
+              <span className="font-plus-jakarta font-semibold text-[24px] leading-[32px] tracking-[-0.6px] text-[#1A1C1D]">Turnback</span>
+              <button onClick={() => setShowTurnbackModal(false)} className="bg-transparent border-none cursor-pointer flex items-center justify-center p-0">
                 <X className="w-[30px] h-[30px] text-black" strokeWidth={1.5} />
               </button>
             </div>
-
-            {/* Body */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              padding: '24px 32px',
-              gap: '12px',
-              boxSizing: 'border-box'
-            }}>
-              <span style={{
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 400,
-                fontSize: '14px',
-                lineHeight: '20px',
-                color: '#3D4949'
-              }}>
-                Provide the reason for turnback:
-              </span>
-              
-              <div style={{
-                boxSizing: 'border-box',
-                width: '608px',
-                height: '200px',
-                background: '#F3F3F5',
-                border: '1px solid #BCC9C9',
-                borderRadius: '16px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={turnbackReason}
-                  onChange={(e) => setTurnbackReason(e.target.value)}
-                  placeholder="Start writing here..."
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '26px',
-                    color: '#1A1C1D',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none'
-                  }}
-                />
+            <div className="flex flex-col p-8 gap-3">
+              <span className="font-inter font-normal text-[14px] leading-[20px] text-[#3D4949]">Provide the reason for turnback:</span>
+              <div className="w-full h-[200px] bg-[#F3F3F5] border border-[#BCC9C9] rounded-[16px] p-6">
+                <textarea value={turnbackReason} onChange={(e) => setTurnbackReason(e.target.value)} placeholder="Reason..." className="w-full h-full bg-transparent border-none outline-none resize-none font-inter text-[14px] leading-[20px] text-black" />
               </div>
-            </div>
-
-            {/* Footer Buttons */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: '12px',
-              position: 'absolute',
-              width: '254px',
-              height: '38px',
-              left: '386px',
-              top: '360px'
-            }}>
-              <button 
-                onClick={() => setShowTurnbackModal(false)}
-                style={{
-                  boxSizing: 'border-box',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '10px',
-                  width: '121px',
-                  height: '38px',
-                  border: '1px solid rgba(0, 0, 0, 0.27)',
-                  borderRadius: '33px',
-                  background: 'transparent',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 500,
-                  fontSize: '14px',
-                  color: 'rgba(0, 0, 0, 0.8)',
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={confirmTurnBack}
-                style={{
-                  boxSizing: 'border-box',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '10px',
-                  width: '121px',
-                  height: '38px',
-                  background: '#2780C4',
-                  borderRadius: '33px',
-                  border: 'none',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  color: '#FFFFFF',
-                  cursor: 'pointer'
-                }}
-              >
-                Turnback
-              </button>
+              <div className="flex justify-end mt-4">
+                <button onClick={confirmTurnBack} className="bg-[#2780C4] rounded-[56px] border-none px-6 py-3 cursor-pointer text-white font-plus-jakarta font-semibold text-[16px]">Submit</button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 };

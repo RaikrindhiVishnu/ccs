@@ -352,7 +352,7 @@ export default function AgentForm({
             setHierarchy(res.data);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   }, [isEdit, agentData, initialData, getLocationHierarchyDetails]);
 
@@ -550,26 +550,26 @@ export default function AgentForm({
       const existingMandalId = agentData?.data?.mandal_id || existingGeo?.mandal_id;
 
       const selectedStateObj = states.find((s: any) => s.desc === values.state);
-      const stateIdVal = selectedStateObj?.id 
-        ? Number(selectedStateObj.id) 
+      const stateIdVal = selectedStateObj?.id
+        ? Number(selectedStateObj.id)
         : (agentData?.data?.state_id || existingGeo?.state_id || 1);
 
       const selectedRegionObj = regionsData?.data?.find((r: any) => r.region_name === values.region);
-      const regionIdVal = selectedRegionObj?.id 
-        ? Number(selectedRegionObj.id) 
+      const regionIdVal = selectedRegionObj?.id
+        ? Number(selectedRegionObj.id)
         : (hierarchy?.region?.id ? Number(hierarchy.region.id) : (agentData?.data?.region_id || existingGeo?.region_id || 1));
 
       const selectedAreaObj = areasData?.data?.find((a: any) => a.area_name === values.area);
-      const areaIdVal = selectedAreaObj?.area_id 
-        ? Number(selectedAreaObj.area_id) 
+      const areaIdVal = selectedAreaObj?.area_id
+        ? Number(selectedAreaObj.area_id)
         : (hierarchy?.area?.id ? Number(hierarchy.area.id) : (agentData?.data?.areas_id || existingGeo?.areas_id || 1));
 
-      const districtIdVal = selectedAreaObj?.district_ids?.[0] 
-        ? Number(selectedAreaObj.district_ids[0]) 
+      const districtIdVal = selectedAreaObj?.district_ids?.[0]
+        ? Number(selectedAreaObj.district_ids[0])
         : (existingDistrictId ? Number(existingDistrictId) : 1);
 
-      const mandalIdVal = selectedAreaObj?.mandal_ids?.[0] 
-        ? Number(selectedAreaObj.mandal_ids[0]) 
+      const mandalIdVal = selectedAreaObj?.mandal_ids?.[0]
+        ? Number(selectedAreaObj.mandal_ids[0])
         : (existingMandalId ? Number(existingMandalId) : 1);
 
       // 1. Resolve S3 keys (either existing string URLs/keys or default fallbacks)
@@ -801,12 +801,12 @@ export default function AgentForm({
             } else {
               setViewHierarchyData(res.data);
               setViewTerritoryStatus("not_assigned");
-              setViewTerritoryError({ 
-                district: false, 
-                area: false, 
-                hierarchy: !hasRegion && !hasArea, 
-                missingRegion: !hasRegion && hasArea, 
-                missingArea: hasRegion && !hasArea 
+              setViewTerritoryError({
+                district: false,
+                area: false,
+                hierarchy: !hasRegion && !hasArea,
+                missingRegion: !hasRegion && hasArea,
+                missingArea: hasRegion && !hasArea
               });
             }
           } else {
@@ -875,13 +875,13 @@ export default function AgentForm({
       return geoField;
     };
     const geo = parseGeo(data?.geo_assignments);
-    
+
     const districtId = data?.district_id || geo?.district_id;
     const mandalId = data?.mandal_id || geo?.mandal_id;
-    
+
     const districtObj = geoMasterData?.districts?.find((d: any) => d.id === Number(districtId));
     const districtName = districtObj?.desc || "N/A";
-    
+
     const mandalObj = geoMasterData?.mandals?.find((m: any) => m.id === Number(mandalId));
     const mandalName = mandalObj?.desc || "N/A";
 
@@ -937,7 +937,7 @@ export default function AgentForm({
                 {viewTerritoryStatus === "assigned" && viewHierarchyData && (
                   <div className="col-span-2 xl:col-span-3 flex flex-col gap-1">
                     <span className="inline-flex items-center gap-1.5 text-[0.8125rem] lg:text-[0.875rem] font-semibold text-[#16a34a]">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
                       Territory Assigned
                     </span>
                     {viewHierarchyData.regional_officer && (
@@ -961,7 +961,7 @@ export default function AgentForm({
                 {viewTerritoryStatus === "not_assigned" && (
                   <div className="col-span-2 xl:col-span-3 flex flex-col gap-1.5">
                     <span className="inline-flex items-center gap-1.5 text-[0.8125rem] lg:text-[0.875rem] font-semibold text-[#dc2626]">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
                       Territory Not Assigned
                     </span>
                     {viewTerritoryError.district && (
@@ -1028,11 +1028,10 @@ export default function AgentForm({
                   onClick={viewTerritoryStatus === "assigned" ? handleBackToDirectory : undefined}
                   disabled={viewTerritoryStatus !== "assigned"}
                   title={viewTerritoryStatus !== "assigned" ? "Cannot approve — territory is not assigned" : "Approve this agent"}
-                  className={`font-medium font-[family-name:'Inter',sans-serif] text-white px-[1.75rem] lg:px-[2rem] py-[0.5rem] rounded-full text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] transition-all duration-150 ${
-                    viewTerritoryStatus === "assigned"
-                      ? "bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)] hover:opacity-90 active:scale-[0.97] cursor-pointer"
-                      : "bg-gray-300 cursor-not-allowed opacity-60"
-                  }`}
+                  className={`font-medium font-[family-name:'Inter',sans-serif] text-white px-[1.75rem] lg:px-[2rem] py-[0.5rem] rounded-full text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[1rem] transition-all duration-150 ${viewTerritoryStatus === "assigned"
+                    ? "bg-[linear-gradient(110.22deg,#2680C4_0%,#4A7BBB_100%)] hover:opacity-90 active:scale-[0.97] cursor-pointer"
+                    : "bg-gray-300 cursor-not-allowed opacity-60"
+                    }`}
                 >
                   Approve
                 </button>

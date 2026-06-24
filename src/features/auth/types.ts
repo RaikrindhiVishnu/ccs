@@ -44,6 +44,7 @@ export interface LoginResponse {
   login_id: string;
   first_name: string;
   last_name: string;
+  profile_url: string;
   role_id: UserRole;
   is_first_login: number;
   token: string;
