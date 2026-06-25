@@ -95,7 +95,7 @@ export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> =
         className="
           relative w-full min-h-full max-w-[1920px] mx-auto
           flex flex-col items-center justify-start
-          p-[clamp(1.5rem,4vw,3.5rem)]
+          p-[clamp(1.92rem,4.0vw,3.5rem)]
         "
         onClick={(e) => e.stopPropagation()}
       >
@@ -103,7 +103,7 @@ export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> =
         <div 
           className="
             w-full flex justify-end items-center 
-            gap-[clamp(10px,0.9vw,18px)]
+            gap-[clamp(7.5px,0.9vw,18.0px)]
             mb-[clamp(1.5rem,4vh,4.5rem)]
             shrink-0
           "
@@ -113,7 +113,7 @@ export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> =
             className="
               relative
               flex items-center justify-center
-              w-[clamp(44px,3.61vw,69px)] h-[clamp(44px,3.61vw,69px)]
+              w-[clamp(33px,3.61vw,69.0px)] h-[clamp(33px,3.61vw,69.0px)]
               bg-white rounded-full
               shadow-[0px_4px_10px_rgba(0,0,0,0.04)]
               hover:opacity-90 transition-opacity
@@ -121,8 +121,8 @@ export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> =
             "
             aria-label="Notifications"
           >
-            <Bell className="w-[clamp(20px,1.67vw,32px)] h-[clamp(20px,1.67vw,32px)] text-[#2C2C2C]" strokeWidth={1.5} />
-            <span className="absolute top-[23%] right-[23%] w-[clamp(4px,0.35vw,7px)] h-[clamp(4px,0.35vw,7px)] bg-[#EF4646] rounded-full" />
+            <Bell className="w-[clamp(15px,1.67vw,32.0px)] h-[clamp(15px,1.67vw,32.0px)] text-[#2C2C2C]" strokeWidth={1.5} />
+            <span className="absolute top-[23%] right-[23%] w-[clamp(3px,0.35vw,7.0px)] h-[clamp(3px,0.35vw,7.0px)] bg-[#EF4646] rounded-full" />
           </button>
 
           {/* Avatar */}
@@ -135,7 +135,7 @@ export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> =
             className="
               relative overflow-hidden
               flex items-center justify-center
-              w-[clamp(44px,3.61vw,69px)] h-[clamp(44px,3.61vw,69px)]
+              w-[clamp(33px,3.61vw,69.0px)] h-[clamp(33px,3.61vw,69.0px)]
               bg-white rounded-full
               shadow-[0px_4px_10px_rgba(0,0,0,0.04)]
               hover:opacity-90 transition-opacity
@@ -149,7 +149,7 @@ export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> =
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (
-              <span className="font-bold text-[#191B1C] text-[clamp(13px,1.04vw,20px)]">
+              <span className="font-bold text-[#191B1C] text-[clamp(9.75px,1.04vw,20.0px)]">
                 {initials}
               </span>
             )}
@@ -161,9 +161,9 @@ export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> =
           className="
             relative
             bg-white
-            rounded-[clamp(1.5rem,2.78vw,3.5rem)]
-            p-[clamp(1.25rem,2.78vw,3.5rem)]
-            w-full max-w-[clamp(600px,62.5vw,1200px)]
+            rounded-[clamp(1.3344rem,2.78vw,3.5rem)]
+            p-[clamp(1.3344rem,2.78vw,3.5rem)]
+            w-full max-w-[clamp(480px,62.5vw,1200.0px)]
             shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)]
             flex flex-col
             my-auto
@@ -172,38 +172,38 @@ export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> =
         >
           {/* Header Section */}
           <div className="flex flex-col gap-2 w-full">
-            <h2 className="font-bold text-[clamp(20px,1.667vw,32px)] leading-[1.3] text-[#111827]">
+            <h2 className="font-bold text-[clamp(15px,1.667vw,32.0064px)] leading-[1.3] text-[#111827]">
               Returning Reason
             </h2>
-            <div className="text-[clamp(12px,0.972vw,19px)] leading-[1.4] font-medium text-[#6B7280]">
+            <div className="text-[clamp(9px,0.972vw,19.0px)] leading-[1.4] font-medium text-[#6B7280]">
               Returned by: <span className="font-semibold">{rejectedBy}</span>
             </div>
           </div>
 
           {/* Missing Information Section */}
           <div className="mt-8 flex flex-col gap-4 flex-1">
-            <span className="text-[clamp(10px,0.833vw,16px)] font-bold tracking-[0.6px] text-[#9CA3AF] uppercase">
+            <span className="text-[clamp(7.5px,0.833vw,16.0px)] font-bold tracking-[0.6px] text-[#9CA3AF] uppercase">
               Missing Information
             </span>
 
             {/* Horizontal Cards Container - Wrap on smaller viewports */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(12px,1.14vw,22px)] w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[clamp(9px,1.14vw,22.0px)] w-full">
               {/* Card 1: Local Liabilities */}
               <div
                 className="
-                  flex flex-col items-start p-[clamp(16px,1.667vw,32px)] gap-4
+                  flex flex-col items-start p-[clamp(12.8026px,1.667vw,32.0px)] gap-4
                   bg-[#F9FAFB] border border-[#F3F4F6]
-                  rounded-[24px] min-h-[clamp(220px,18.28vw,350px)]
+                  rounded-[24px] min-h-[clamp(165px,18.28vw,350.0px)]
                 "
               >
                 {/* Badge */}
                 <div className="inline-flex justify-center items-center px-4 py-1.5 bg-[#EFF6FF] border border-[#DBEAFE] rounded-full">
-                  <span className="text-[clamp(9px,0.764vw,15px)] font-bold text-[#2D82C4] whitespace-nowrap">
+                  <span className="text-[clamp(6.75px,0.764vw,15.0px)] font-bold text-[#2D82C4] whitespace-nowrap">
                     Local Intelligence &gt; Local Liabilities
                   </span>
                 </div>
                 {/* Content */}
-                <div className="flex flex-col gap-2 text-[clamp(12px,0.972vw,19px)] leading-[clamp(18px,1.597vw,31px)] text-[#4B5563]">
+                <div className="flex flex-col gap-2 text-[clamp(9px,0.972vw,19.0px)] leading-[clamp(13.5px,1.597vw,31.0px)] text-[#4B5563]">
                   <p>
                     The documentation provided does not adequately cover potential local liabilities or outstanding encumbrances.
                   </p>
@@ -216,19 +216,19 @@ export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> =
               {/* Card 2: Pending Loans */}
               <div
                 className="
-                  flex flex-col items-start p-[clamp(16px,1.667vw,32px)] gap-4
+                  flex flex-col items-start p-[clamp(12.8026px,1.667vw,32.0px)] gap-4
                   bg-[#F9FAFB] border border-[#F3F4F6]
-                  rounded-[24px] min-h-[clamp(220px,18.28vw,350px)]
+                  rounded-[24px] min-h-[clamp(165px,18.28vw,350.0px)]
                 "
               >
                 {/* Badge */}
                 <div className="inline-flex justify-center items-center px-4 py-1.5 bg-[#EFF6FF] border border-[#DBEAFE] rounded-full">
-                  <span className="text-[clamp(9px,0.764vw,15px)] font-bold text-[#2D82C4] whitespace-nowrap">
+                  <span className="text-[clamp(6.75px,0.764vw,15.0px)] font-bold text-[#2D82C4] whitespace-nowrap">
                     Local Intelligence &gt; Pending Loans
                   </span>
                 </div>
                 {/* Content */}
-                <div className="text-[clamp(12px,0.972vw,19px)] leading-[clamp(18px,1.597vw,31px)] text-[#4B5563]">
+                <div className="text-[clamp(9px,0.972vw,19.0px)] leading-[clamp(13.5px,1.597vw,31.0px)] text-[#4B5563]">
                   <p>
                     The verification team requires an updated clearance certificate from the primary lender to rule out any active liens on the property.
                   </p>
@@ -238,20 +238,20 @@ export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> =
               {/* Card 3: Source Person */}
               <div
                 className="
-                  flex flex-col items-start p-[clamp(16px,1.667vw,32px)] gap-4
+                  flex flex-col items-start p-[clamp(12.8026px,1.667vw,32.0px)] gap-4
                   bg-[#F9FAFB] border border-[#F3F4F6]
-                  rounded-[24px] min-h-[clamp(220px,18.28vw,350px)]
+                  rounded-[24px] min-h-[clamp(165px,18.28vw,350.0px)]
                   md:col-span-2 xl:col-span-1
                 "
               >
                 {/* Badge */}
                 <div className="inline-flex justify-center items-center px-4 py-1.5 bg-[#EFF6FF] border border-[#DBEAFE] rounded-full">
-                  <span className="text-[clamp(9px,0.764vw,15px)] font-bold text-[#2D82C4] whitespace-nowrap">
+                  <span className="text-[clamp(6.75px,0.764vw,15.0px)] font-bold text-[#2D82C4] whitespace-nowrap">
                     Local Intelligence &gt; Source Person
                   </span>
                 </div>
                 {/* Content */}
-                <div className="text-[clamp(12px,0.972vw,19px)] leading-[clamp(18px,1.597vw,31px)] text-[#4B5563]">
+                <div className="text-[clamp(9px,0.972vw,19.0px)] leading-[clamp(13.5px,1.597vw,31.0px)] text-[#4B5563]">
                   <p>
                     The identity verification for the source person is incomplete. Please provide a clear, high-resolution scan of their official government-issued ID.
                   </p>
@@ -266,9 +266,9 @@ export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> =
               onClick={onClose}
               className="
                 flex justify-center items-center
-                w-[clamp(110px,9.23vw,178px)] h-[clamp(38px,2.92vw,56px)]
+                w-[clamp(82.5px,9.23vw,178.0px)] h-[clamp(28.5px,2.92vw,56.0px)]
                 bg-white border border-[#2D82C4] rounded-full
-                font-bold text-[clamp(12px,0.972vw,18px)] text-[#2D82C4]
+                font-bold text-[clamp(9px,0.972vw,18.0px)] text-[#2D82C4]
                 hover:bg-slate-50 transition-all active:scale-[0.98]
                 cursor-pointer
               "
@@ -280,9 +280,9 @@ export const RequestedInfoReasonModal: React.FC<RequestedInfoReasonModalProps> =
                 onClick={onUpload}
                 className="
                   flex justify-center items-center
-                  w-[clamp(120px,10.13vw,195px)] h-[clamp(38px,2.92vw,56px)]
+                  w-[clamp(90px,10.13vw,195.0px)] h-[clamp(28.5px,2.92vw,56.0px)]
                   bg-[#2D82C4] rounded-full
-                  font-bold text-[clamp(12px,0.972vw,18px)] text-white
+                  font-bold text-[clamp(9px,0.972vw,18.0px)] text-white
                   hover:bg-[#1f6da9] transition-all active:scale-[0.98]
                   cursor-pointer
                 "

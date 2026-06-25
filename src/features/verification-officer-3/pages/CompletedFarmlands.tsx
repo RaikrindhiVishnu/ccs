@@ -14,13 +14,13 @@ export const CompletedFarmlands = () => {
   return (
     <div className="w-full flex flex-col ">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4 mb-[clamp(1.5rem,2.5vw,4.5rem)]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between w-full gap-4 mb-[clamp(1.125rem,2.5vw,4.5rem)]">
         {/* Title and Subtitle */}
-        <div className="flex flex-col gap-[clamp(0.125rem,0.25vw,1.0rem)]">
-          <h1 className="font-plus-jakarta font-bold text-[#1A1C1D] text-[clamp(1.3rem,1.8vw,2.5rem)] tracking-[-1.2px] leading-[clamp(2.2rem,3.33vw,4.0rem)] m-0">
+        <div className="flex flex-col gap-[clamp(0.0938rem,0.25vw,1.0rem)]">
+          <h1 className="font-plus-jakarta font-bold text-[#1A1C1D] text-[clamp(0.975rem,1.8vw,2.5rem)] tracking-[-1.2px] leading-[clamp(1.65rem,3.33vw,4.0rem)] m-0">
             Completed Farmlands
           </h1>
-          <p className="font-plus-jakarta font-normal text-[#3D4949] text-[clamp(0.85rem,1.11vw,1.5rem)] leading-[clamp(1.4rem,1.94vw,2.5rem)] m-0">
+          <p className="font-plus-jakarta font-normal text-[#3D4949] text-[clamp(0.6375rem,1.11vw,1.5rem)] leading-[clamp(1.05rem,1.94vw,2.5rem)] m-0">
             Fully audited and verified farmland assets.
           </p>
         </div>
@@ -29,7 +29,7 @@ export const CompletedFarmlands = () => {
 
       {/* Grid of Cards */}
       {completedCases.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[clamp(0.8rem,1.11vw,1.5rem)] gap-y-[clamp(1.0rem,1.52vw,2.0rem)] w-full pb-[40px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[clamp(0.6rem,1.11vw,1.5rem)] gap-y-[clamp(0.75rem,1.52vw,2.0rem)] w-full pb-[40px]">
           {completedCases.map((farmland) => (
             <VO3CompleteCard
               key={farmland.id}

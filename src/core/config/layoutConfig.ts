@@ -16,6 +16,7 @@ import assignedIcon from "/public/super-admin/icons/assignedicon.svg";
 import farmlandListIcon from "/public/super-admin/icons/farmlisticon.svg";
 import userIcon from "/public/super-admin/icons/usericon.svg";
 import poolIcon from "/public/super-admin/icons/poolicon.svg";
+import uploadIcon from "@/assets/uploadicon.svg";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 export type LayoutVariant =
@@ -78,7 +79,7 @@ export const MOCK_USERS: Record<
     email: 'superadmin@glc.com',
     password: 'superadmin@123',
     name: 'Super Admin',
-    role: 'SUPERADMIN',
+    role: 'SADMIN',
   },
   VO3_OFFICER: {
     email: 'vo3@glc.com',
@@ -90,37 +91,42 @@ export const MOCK_USERS: Record<
 
 // ─── Master Layout Config ─────────────────────────────────────────────────────
 export const ROLE_LAYOUT_CONFIG: Record<string, RoleLayoutConfig> = {
-  SUPERADMIN: {
+  SADMIN: {
     layoutVariant: "sidebar-super-admin",
     roleLabel: "Super Admin",
     navItems: [
-      {
-        label: "Dashboard",
-        path: "/super-admin/dashboard",
-        iconImg: widgetIcon,
-      },
-      {
-        label: "Assigned Farmlands",
-        path: "/super-admin/farmlands",
-        iconImg: assignedIcon,
-      },
-      {
-        label: "Farmlands List",
-        path: "/super-admin/farmlands-list",
-        iconImg: farmlandListIcon,
-      },
-      {
-        label: "User Management",
-        path: "/super-admin/users-list",
-        iconImg: userIcon,
-      },
-      {
-        label: "Pool Buying",
-        path: "/super-admin/pool-buying",
-        iconImg: poolIcon,
-      },
-    ],
-  },
+    {
+      label: "Dashboard",
+      path: "/super-admin/dashboard",
+      iconImg: widgetIcon,
+    },
+    {
+      label: "Assigned Farmlands",
+      path: "/super-admin/farmlands",
+      iconImg: assignedIcon,
+    },
+    {
+      label: "Farmlands List",
+      path: "/super-admin/farmlands-list",
+      iconImg: farmlandListIcon,
+    },
+    {
+      label: "User Management",
+      path: "/super-admin/users-list",
+      iconImg: userIcon,
+    },
+    {
+      label: "Pool Buying",
+      path: "/super-admin/pool-buying",
+      iconImg: poolIcon,
+    },
+    {
+      label: "Upload",
+      path: "/super-admin/upload",
+      iconImg: uploadIcon,
+    },
+  ],
+},
 
   ROLEMNGR: {
     layoutVariant: 'sidebar-role-manager',

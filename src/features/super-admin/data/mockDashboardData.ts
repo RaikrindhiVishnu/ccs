@@ -416,7 +416,7 @@ export const mockDashboardData: DashboardData = {
         query: "3rd Oct - 4:13",
         actions: "Requested an enquiry",
         comments: "Lorem ipsum dolor...",
-        commentsHighlight: "Lorem ipsum dolor...",
+        commentsHighlight: "Active Deal",
         subscriptions: "Subscribed"
       },
       {
@@ -428,7 +428,7 @@ export const mockDashboardData: DashboardData = {
         phone: "+91 912 345 6789",
         query: "3rd Oct - 4:13",
         actions: "Visited",
-        comments: "N/A",
+        commentsHighlight: "Awaiting Response",
         subscriptions: "Subscribed"
       },
       {
@@ -441,7 +441,7 @@ export const mockDashboardData: DashboardData = {
         query: "3rd Oct - 4:13",
         actions: "Documents Unlocked",
         comments: "Lorem ipsum dolor...",
-        commentsHighlight: "Lorem ipsum dolor...",
+        commentsHighlight: "Follow-up Scheduled",
         subscriptions: "Subscribed"
       },
       {
@@ -454,7 +454,7 @@ export const mockDashboardData: DashboardData = {
         query: "3rd Oct - 4:13",
         actions: "Requested an enquiry",
         comments: "Lorem ipsum dolor...",
-        commentsHighlight: "Lorem ipsum dolor...",
+        commentsHighlight: "Interested",
         subscriptions: "N/A"
       },
       {

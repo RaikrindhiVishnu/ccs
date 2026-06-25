@@ -33,15 +33,15 @@ const FarmlandStatCard = ({
       flex flex-col justify-between
       min-w-0
 
-      rounded-[clamp(1rem,1.46vw,1.875rem)]
+      rounded-[clamp(0.75rem,1.46vw,1.875rem)]
 
       border border-[var(--border-soft)]
       bg-[var(--surface-card)]
       shadow-[var(--shadow-card)]
 
-      p-[clamp(1rem,1.46vw,1.875rem)]
+      p-[clamp(0.75rem,1.46vw,1.875rem)]
 
-      gap-[clamp(0.5rem,0.69vw,1rem)]
+      gap-[clamp(0.375rem,0.69vw,1.0rem)]
       `,
       className,
     )}
@@ -53,16 +53,16 @@ const FarmlandStatCard = ({
         rounded-[0.5rem]
         xl:rounded-[0.625rem]
         bg-[var(--surface-page)]
-        w-[clamp(1.75rem,2.57vw,3.25rem)]
-        h-[clamp(1.75rem,2.57vw,3.25rem)]
+        w-[clamp(1.3125rem,2.57vw,3.25rem)]
+        h-[clamp(1.3125rem,2.57vw,3.25rem)]
       "
     >
       <img
         src={icon}
         alt={label}
         className="
-          w-[clamp(0.875rem,1.32vw,1.75rem)]
-          h-[clamp(0.875rem,1.32vw,1.75rem)]
+          w-[clamp(0.6562rem,1.32vw,1.75rem)]
+          h-[clamp(0.6562rem,1.32vw,1.75rem)]
           object-contain
         "
       />
@@ -78,7 +78,7 @@ const FarmlandStatCard = ({
         font-semibold
         leading-snug
         opacity-70
-        text-[clamp(0.875rem,1.25vw,1.5rem)]
+        text-[clamp(0.6562rem,1.25vw,1.5rem)]
       "
     >
       {label}
@@ -94,7 +94,7 @@ const FarmlandStatCard = ({
         font-bold
         tracking-[0.0625rem]
         leading-none
-        text-[clamp(1.75rem,3.06vw,3.75rem)]
+        text-[clamp(1.4688rem,3.06vw,3.75rem)]
       "
     >
       {typeof value === "number" ? value.toLocaleString() : value}
@@ -119,10 +119,10 @@ export const FarmlandStatsCards = ({
       grid
       grid-cols-1
       sm:grid-cols-2
-      lg:grid-cols-4
+      md:grid-cols-4
       xl:grid-cols-4
 
-      gap-[clamp(1rem,1.53vw,2rem)]
+      gap-[clamp(0.75rem,1.53vw,2.0rem)]
       `,
       className,
     )}

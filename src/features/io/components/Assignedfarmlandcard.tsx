@@ -45,8 +45,8 @@ const AgentAvatar = ({
       className="
         flex items-center justify-center shrink-0 overflow-hidden rounded-full
         bg-[var(--tag-pill-bg)]
-        w-[clamp(2.25rem,2.778vw,3rem)]
-        h-[clamp(2.25rem,2.778vw,3rem)]
+        w-[clamp(1.6875rem,2.778vw,3.0rem)]
+        h-[clamp(1.6875rem,2.778vw,3.0rem)]
       "
     >
       {avatarUrl ? (
@@ -60,7 +60,7 @@ const AgentAvatar = ({
           className="
             font-bold
             text-[var(--text-primary)]
-            text-[clamp(0.75rem,0.972vw,1rem)]
+            text-[clamp(0.5625rem,0.972vw,1.0rem)]
           "
         >
           {initials}
@@ -88,7 +88,7 @@ const MetricItem = ({
       className="
         font-medium uppercase tracking-[0.6px]
         text-[var(--text-secondary)]
-        text-[clamp(0.6875rem,0.833vw,0.875rem)]
+        text-[clamp(0.5156rem,0.833vw,0.875rem)]
         leading-4
       "
     >
@@ -100,7 +100,7 @@ const MetricItem = ({
         className="
           font-bold
           text-[var(--text-primary)]
-          text-[clamp(1rem,1.25vw,1.375rem)]
+          text-[clamp(0.75rem,1.25vw,1.375rem)]
           leading-[1.56]
         "
       >
@@ -111,7 +111,7 @@ const MetricItem = ({
           className="
             font-normal
             text-[var(--text-secondary)]
-            text-[clamp(0.75rem,0.972vw,0.9375rem)]
+            text-[clamp(0.5625rem,0.972vw,0.9375rem)]
             leading-[1.43]
           "
         >
@@ -132,7 +132,7 @@ const CreatedTime = ({ value }: { value: string }) => (
       className="
         font-medium uppercase tracking-[0.6px]
         text-[var(--text-secondary)]
-        text-[clamp(0.6875rem,0.833vw,0.875rem)]
+        text-[clamp(0.5156rem,0.833vw,0.875rem)]
         leading-4
       "
     >
@@ -144,8 +144,8 @@ const CreatedTime = ({ value }: { value: string }) => (
         className="
           shrink-0
           text-[var(--brand-500)]
-          w-[clamp(0.625rem,0.694vw,0.8125rem)]
-          h-[clamp(0.625rem,0.694vw,0.8125rem)]
+          w-[clamp(0.4688rem,0.694vw,0.8125rem)]
+          h-[clamp(0.4688rem,0.694vw,0.8125rem)]
         "
         strokeWidth={2}
       />
@@ -153,7 +153,7 @@ const CreatedTime = ({ value }: { value: string }) => (
         className="
           font-medium
           text-[var(--text-primary)]
-          text-[clamp(0.8125rem,0.972vw,1rem)]
+          text-[clamp(0.6094rem,0.972vw,1.0rem)]
           leading-[1.43]
         "
       >
@@ -182,9 +182,9 @@ const FarmlandCard = ({
         bg-[var(--surface-card)]
         border border-[var(--border-soft)]
         shadow-[var(--shadow-card-sm)]
-        rounded-[clamp(1.25rem,2.222vw,2rem)]
-        p-[clamp(1rem,1.667vw,2.5rem)]
-        gap-[clamp(0.875rem,1.111vw,1.75rem)]
+        rounded-[clamp(1.0666rem,2.222vw,2.0rem)]
+        p-[clamp(0.8002rem,1.667vw,2.5rem)]
+        gap-[clamp(0.6562rem,1.111vw,1.75rem)]
       "
     >
       {/* ── HEADER ── */}
@@ -192,11 +192,11 @@ const FarmlandCard = ({
         className="
           relative z-[1]
           flex items-start justify-between
-          gap-[clamp(0.5rem,0.694vw,1rem)]
+          gap-[clamp(0.375rem,0.694vw,1.0rem)]
         "
       >
         {/* Agent info */}
-        <div className="flex items-center gap-[clamp(0.5rem,0.833vw,1rem)]">
+        <div className="flex items-center gap-[clamp(0.3998rem,0.833vw,1.0rem)]">
           <AgentAvatar name={data.agentName} avatarUrl={data.agentAvatar} />
 
           <div className="flex flex-col gap-0.5">
@@ -204,7 +204,7 @@ const FarmlandCard = ({
               className="
                 font-bold
                 text-[var(--text-primary)]
-                text-[clamp(0.875rem,1.111vw,1.25rem)]
+                text-[clamp(0.6562rem,1.111vw,1.25rem)]
                 leading-[1.5]
               "
             >
@@ -214,7 +214,7 @@ const FarmlandCard = ({
               className="
                 font-normal
                 text-[var(--text-secondary)]
-                text-[clamp(0.6875rem,0.833vw,0.9375rem)]
+                text-[clamp(0.5156rem,0.833vw,0.9375rem)]
                 leading-[1.33]
               "
             >
@@ -228,16 +228,16 @@ const FarmlandCard = ({
           className="
             inline-flex items-center shrink-0 rounded-full
             bg-[var(--status-pending-bg)]
-            gap-[clamp(0.25rem,0.417vw,0.375rem)]
-            px-[clamp(0.5rem,0.833vw,0.875rem)]
-            py-[clamp(0.1875rem,0.278vw,0.3125rem)]
+            gap-[clamp(0.2002rem,0.417vw,0.375rem)]
+            px-[clamp(0.3998rem,0.833vw,0.875rem)]
+            py-[clamp(0.1406rem,0.278vw,0.3125rem)]
           "
         >
           <span
             className={`
               rounded-full shrink-0
-              w-[clamp(0.3125rem,0.417vw,0.4375rem)]
-              h-[clamp(0.3125rem,0.417vw,0.4375rem)]
+              w-[clamp(0.2344rem,0.417vw,0.4375rem)]
+              h-[clamp(0.2344rem,0.417vw,0.4375rem)]
               ${
                 data.agentStatus === "Active"
                   ? "bg-[var(--status-success)]"
@@ -249,7 +249,7 @@ const FarmlandCard = ({
             className="
               font-semibold leading-none
               text-[var(--text-subtle)]
-              text-[clamp(0.6875rem,0.694vw,0.875rem)]
+              text-[clamp(0.5156rem,0.694vw,0.875rem)]
             "
           >
             {data.agentStatus}
@@ -261,27 +261,27 @@ const FarmlandCard = ({
       <div
         className="
           relative z-[1] flex flex-col
-          gap-[clamp(2px,0.278vw,4px)]
+          gap-[clamp(2.135px,0.278vw,4.0px)]
         "
       >
         <span
           className="
             font-extrabold
             text-[var(--text-strong)]
-            text-[clamp(1.125rem,1.389vw,1.625rem)]
+            text-[clamp(0.8438rem,1.389vw,1.6668rem)]
             leading-[1.4]
           "
         >
           {data.farmlandId}
         </span>
 
-        <div className="flex items-center gap-[clamp(0.25rem,0.417vw,0.375rem)]">
+        <div className="flex items-center gap-[clamp(0.2002rem,0.417vw,0.375rem)]">
           <MapPin
             className="
               shrink-0
               text-[var(--text-secondary)]
-              w-[clamp(0.75rem,0.833vw,1rem)]
-              h-[clamp(0.75rem,0.833vw,1rem)]
+              w-[clamp(0.5625rem,0.833vw,1.0rem)]
+              h-[clamp(0.5625rem,0.833vw,1.0rem)]
             "
             strokeWidth={1.8}
           />
@@ -289,7 +289,7 @@ const FarmlandCard = ({
             className="
               font-normal
               text-[var(--text-secondary)]
-              text-[clamp(0.75rem,0.972vw,1.0625rem)]
+              text-[clamp(0.5625rem,0.972vw,1.0625rem)]
               leading-[1.43]
             "
           >
@@ -303,8 +303,8 @@ const FarmlandCard = ({
         className="
           relative z-[1]
           grid grid-cols-2
-          gap-x-[clamp(1rem,2.222vw,2.5rem)]
-          gap-y-[clamp(1rem,1.667vw,2rem)]
+          gap-x-[clamp(1.0666rem,2.222vw,2.5rem)]
+          gap-y-[clamp(0.8002rem,1.667vw,2.0rem)]
         "
       >
         <MetricItem
@@ -326,7 +326,7 @@ const FarmlandCard = ({
         className="
           relative z-[1]
           border-t border-[var(--border-soft)]
-          pt-[clamp(0.875rem,1.111vw,1.25rem)]
+          pt-[clamp(0.6562rem,1.111vw,1.25rem)]
         "
       >
         <Button
@@ -338,8 +338,8 @@ const FarmlandCard = ({
             text-[var(--text-button)]
             transition-opacity duration-150
             hover:opacity-80 active:opacity-70
-            h-[clamp(2.5rem,3.056vw,3.25rem)]
-            text-[clamp(0.8125rem,0.972vw,1rem)]
+            h-[clamp(1.875rem,3.056vw,3.25rem)]
+            text-[clamp(0.6094rem,0.972vw,1.0rem)]
           "
           onClick={() => onView?.(data.id)}
         >
@@ -362,7 +362,7 @@ export const AssignedFarmlandCards = ({
   onView?: (id: string) => void;
 }) => {
   return (
-    <div className="grid grid-cols-3 w-full gap-[clamp(0.875rem,1.389vw,2rem)]">
+    <div className="grid grid-cols-3 w-full gap-[clamp(0.6667rem,1.389vw,2.0rem)]">
       {data.map((item) => (
         <FarmlandCard key={item.id} data={item} onView={onView} />
       ))}

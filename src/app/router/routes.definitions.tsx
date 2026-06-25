@@ -121,6 +121,7 @@ import {
     SuperAdminDashboard,
     SuperAdminLogin,
     SuperAdminFarmlands,
+    UploadSuperAdmin,
     SuperAdminAssignedFarmlandsList,
     SuperAdminFarmlandsListPreview,
     SuperAdminFarmlandsListFull,
@@ -138,8 +139,18 @@ import {
     SuperAdminPoolBuyingAll,
     SuperAdminPoolCreate,
     SuperAdminPoolCreated,
+    SuperAdminPoolPublished,
     SuperAdminPoolDetails,
-    SuperAdminPoolInvestorDetails
+    SuperAdminPoolInvestorDetails,
+    SuperAdminLegalDocuments,
+    SuperAdminAgricultureReport,
+    SuperAdminLandBoundaries,
+    SuperAdminValuation,
+    SuperAdminLocalIntelligence,
+    SuperAdminUploadLandDetails,
+    SuperAdminUploadViewMaps,
+    SuperAdminUploadCustomerInformation,
+    LegalUploadDocument,
 } from './routes.config';
 
 
@@ -329,6 +340,9 @@ export const authRoutes: RouteObject[] = [
                 path: '/super-admin/dashboard',
                 element: <SuperAdminDashboard />
             }, {
+                path: '/super-admin/upload',
+                element: <UploadSuperAdmin />
+            }, {
                 path: '/super-admin/farmlands',
                 element: <SuperAdminFarmlands />
             }, {
@@ -356,6 +370,18 @@ export const authRoutes: RouteObject[] = [
                 path: '/super-admin/assigned-farmlands/:id/customer-information',
                 element: <SuperAdminCustomerInformation />
             }, {
+                path: '/super-admin/upload/land-details/:id',
+                element: <SuperAdminUploadLandDetails />
+            }, {
+                path: '/super-admin/upload/view-maps/:id',
+                element: <SuperAdminUploadViewMaps />
+            }, {
+                path: '/super-admin/upload/customer-information/:id',
+                element: <SuperAdminUploadCustomerInformation />
+            }, {
+                path: '/super-admin/upload/documents/:step/:id',
+                element: <LegalUploadDocument />
+            }, {
                 path: '/super-admin/user-profile/:id',
                 element: <SuperAdminUserProfile />
             }, {
@@ -380,6 +406,9 @@ export const authRoutes: RouteObject[] = [
                 path: '/super-admin/pool-buying/created',
                 element: <SuperAdminPoolCreated />
             }, {
+                path: '/super-admin/pool-buying/published',
+                element: <SuperAdminPoolPublished />
+            }, {
                 path: '/super-admin/pool-buying/all',
                 element: <SuperAdminPoolBuyingAll />
             }, {
@@ -389,6 +418,27 @@ export const authRoutes: RouteObject[] = [
                 path: '/super-admin/pool-buying/:id/investor/:investorId',
                 element: <SuperAdminPoolInvestorDetails />
             },
+
+            {
+  path: '/super-admin/Documents/legal-documents/:id',
+  element: <SuperAdminLegalDocuments />,
+},
+{
+  path: '/super-admin/Documents/agriculture-report/:id',
+  element: <SuperAdminAgricultureReport />,
+},
+{
+  path: '/super-admin/Documents/land-boundaries/:id',
+  element: <SuperAdminLandBoundaries />,
+},
+{
+  path: '/super-admin/Documents/valuation/:id',
+  element: <SuperAdminValuation />,
+},
+{
+  path: '/super-admin/Documents/local-intelligence/:id',
+  element: <SuperAdminLocalIntelligence />,
+},
         ]
 
     },

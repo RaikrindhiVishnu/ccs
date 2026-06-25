@@ -35,11 +35,11 @@ export const VerificationOfficer3Layout = () => {
   return (
     <div className={`min-h-screen ${bgClass} flex flex-col font-sans pb-12`}>
       {/* Top Header Bar */}
-      <header className="bg-[var(--surface-card)] mx-auto flex items-center justify-between shadow-[0px_0px_40px_rgba(0,0,0,0.12)] relative z-50 transition-all duration-300 w-[clamp(58.35rem,91.18%,180.0rem)] h-[clamp(3.68rem,5.76vw,10.0rem)] mt-[clamp(1.25rem,1.94vw,4.5rem)] px-[clamp(1.06rem,1.67vw,3.5rem)] rounded-[clamp(0.7rem,1.11vw,2.5rem)]">
+      <header className="bg-[var(--surface-card)] mx-auto flex items-center justify-between shadow-[0px_0px_40px_rgba(0,0,0,0.12)] relative z-50 transition-all duration-300 w-[clamp(43.7625rem,91.18%,180.0rem)] h-[clamp(2.76rem,5.76vw,10.0rem)] mt-[clamp(0.9375rem,1.94vw,4.5rem)] px-[clamp(0.795rem,1.67vw,3.5rem)] rounded-[clamp(0.525rem,1.11vw,2.5rem)]">
         {/* Logo Section */}
         <button
           onClick={() => navigate("/verification-officer-3/dashboard")}
-          className="flex items-center justify-center border-none bg-transparent cursor-pointer select-none shrink-0 w-[clamp(4.53rem,7.76%,15.0rem)] h-[clamp(2.18rem,3.4vw,6.0rem)]"
+          className="flex items-center justify-center border-none bg-transparent cursor-pointer select-none shrink-0 w-[clamp(3.3975rem,7.76%,15.0rem)] h-[clamp(1.635rem,3.4vw,6.0rem)]"
         >
           <img
             src={voLogo}
@@ -101,7 +101,7 @@ export const VerificationOfficer3Layout = () => {
         </nav>
 
         {/* Right Action Section */}
-        <div className="flex items-center shrink-0 w-[clamp(5.19rem,8.92%,15.0rem)] h-[clamp(2.31rem,3.61vw,6.0rem)] gap-[clamp(0.58rem,0.81vw,2.0rem)]">
+        <div className="flex items-center shrink-0 w-[clamp(3.8925rem,8.92%,15.0rem)] h-[clamp(1.7325rem,3.61vw,6.0rem)] gap-[clamp(0.435rem,0.81vw,2.0rem)]">
           {/* Bell Container */}
           <div className="relative flex items-center justify-center">
             <button
@@ -109,7 +109,7 @@ export const VerificationOfficer3Layout = () => {
                 e.stopPropagation();
                 setShowNotifications((prev) => !prev);
               }}
-              className={`rounded-full flex items-center justify-center relative transition-colors border-none cursor-pointer p-0 w-[clamp(2.31rem,3.61vw,6.0rem)] h-[clamp(2.31rem,3.61vw,6.0rem)] ${showNotifications ? "bg-[#BDD327] hover:bg-[#a8bd21]" : "bg-white hover:bg-gray-50"
+              className={`rounded-full flex items-center justify-center relative transition-colors border-none cursor-pointer p-0 w-[clamp(1.7325rem,3.61vw,6.0rem)] h-[clamp(1.7325rem,3.61vw,6.0rem)] ${showNotifications ? "bg-[#BDD327] hover:bg-[#a8bd21]" : "bg-white hover:bg-gray-50"
                 }`}
               aria-label="Notifications"
             >
@@ -159,7 +159,7 @@ export const VerificationOfficer3Layout = () => {
           {/* Avatar Profile */}
           <button
             onClick={() => navigate("/verification-officer-3/profile")}
-            className="rounded-full overflow-hidden border border-gray-100 shadow-sm cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center p-0 bg-white w-[clamp(2.31rem,3.61vw,6.0rem)] h-[clamp(2.31rem,3.61vw,6.0rem)]"
+            className="rounded-full overflow-hidden border border-gray-100 shadow-sm cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center p-0 bg-white w-[clamp(1.7325rem,3.61vw,6.0rem)] h-[clamp(1.7325rem,3.61vw,6.0rem)]"
           >
             <img
               src={profileImg}
@@ -171,7 +171,7 @@ export const VerificationOfficer3Layout = () => {
       </header>
 
       {/* Main Content Area */}
-      <main className="mx-auto px-4 xl:px-0 flex-1 flex flex-col justify-start w-[clamp(58.35rem,91.18%,180.0rem)] mt-[clamp(1.78rem,2.78vw,5.0rem)]">
+      <main className="mx-auto px-4 xl:px-0 flex-1 flex flex-col justify-start w-[clamp(43.7625rem,91.18%,180.0rem)] mt-[clamp(1.335rem,2.78vw,5.0rem)]">
         <Outlet />
       </main>
     </div>
