@@ -133,7 +133,7 @@ const Drafts: React.FC = () => {
   };
 
   return (
-    <div className="pt-2 pb-16 font-plus-jakarta max-w-[1407px] mx-auto">
+    <div className="pt-2 pb-16 font-plus-jakarta w-full lg:max-w-[1407px] mx-auto">
       {/* Header Banner Section */}
       <div className="mb-6">
         <h1 className="text-[27px] font-semibold text-black uppercase tracking-wide leading-tight">

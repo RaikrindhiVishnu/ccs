@@ -30,7 +30,7 @@ const RequestedInfoDetails: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] flex flex-col font-plus-jakarta px-8 py-8 items-center justify-center overflow-hidden">
-      <div className="w-full max-w-[1407px] requested-info-container animate-in fade-in duration-300">
+      <div className="w-full w-full lg:max-w-[1407px] requested-info-container animate-in fade-in duration-300">
         {/* Go back to dashboard Button */}
         <button
           onClick={() => navigate('/regional-officer/requested-info')}

@@ -160,7 +160,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
 
   return (
     <div className="bg-[#F2F2F2] min-h-screen flex flex-col items-center p-4 md:p-8 overflow-x-hidden font-inter">
-      <div className="w-full max-w-[1440px] flex flex-col gap-6 relative">
+      <div className="w-full w-full lg:max-w-[1440px] flex flex-col gap-6 relative">
         
         {/* Header Container */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full z-10 gap-4">
@@ -317,7 +317,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
                        </div>
                      </>
                    ) : activeSubTab === 4 ? (
-                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
                        <div className="flex flex-col gap-[18px]">
                          <span className="font-plus-jakarta font-semibold text-[24px] text-black">Type of Road Approach</span>
                          <div className="flex flex-row flex-wrap gap-4">
@@ -339,7 +339,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
                        </div>
                      </div>
                    ) : activeSubTab === 5 ? (
-                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
                        <div className="flex flex-col gap-[18px]">
                          <span className="font-plus-jakarta font-semibold text-[24px] text-black">Any recent transaction in surrounding lands?</span>
                          <div className="flex flex-row flex-wrap gap-4">
@@ -367,7 +367,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
                        </div>
                      </div>
                    ) : activeSubTab === 6 ? (
-                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
                        <div className="flex flex-col gap-[24px]">
                          <span className="font-plus-jakarta font-semibold text-[24px] text-black">Any Surrounding Mines & Geological Advantages?</span>
                          <div className="flex flex-row flex-wrap gap-4">
@@ -383,15 +383,15 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
                        </div>
                      </div>
                    ) : activeSubTab === 7 ? (
-                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
                        <span className="font-plus-jakarta font-semibold text-[24px] text-black">Future Plans of Geographical Advantages</span>
                      </div>
                    ) : activeSubTab === 8 ? (
-                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
                        <span className="font-plus-jakarta font-semibold text-[24px] text-black">Validating the Disadvantages of the Land</span>
                      </div>
                    ) : activeSubTab === 9 ? (
-                     <div className="flex flex-col gap-[13px] w-full max-w-[640px]">
+                     <div className="flex flex-col gap-[13px] w-full w-full lg:max-w-[640px]">
                        <span className="font-plus-jakarta font-semibold text-[24px] text-black">Upcoming Infrastructures</span>
                        <div className="relative w-full">
                          <select value={upcomingInfra} onChange={(e) => setUpcomingInfra(e.target.value)} className="w-full h-[54px] bg-white border border-black/40 rounded-lg px-6 font-plus-jakarta text-[16px] text-black appearance-none outline-none cursor-pointer">
@@ -405,7 +405,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
                        </div>
                      </div>
                    ) : activeSubTab === 10 ? (
-                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
                        <div className="flex flex-col gap-[24px]">
                          <span className="font-plus-jakarta font-semibold text-[24px] text-black">Any Railway Track Connectivity?</span>
                          <div className="flex flex-row flex-wrap gap-4">
@@ -433,7 +433,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
                        </div>
                      </div>
                    ) : (
-                     <div className="flex flex-col gap-8 w-full max-w-[640px]">
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
                        <div className="flex flex-col gap-[24px]">
                          <span className="font-plus-jakarta font-semibold text-[24px] text-black">Any Airport Connectivity?</span>
                          <div className="flex flex-row flex-wrap gap-4">
@@ -491,7 +491,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
 
       {showApproveModal && (
         <div className="fixed inset-0 bg-white/70 backdrop-blur-sm flex justify-center items-center z-[9999] p-4">
-          <div className="bg-white border border-black/20 shadow-[0px_0px_12.5px_rgba(0,0,0,0.15)] rounded-[24px] w-full max-w-[610px] flex flex-col items-center py-8 px-6 relative">
+          <div className="bg-white border border-black/20 shadow-[0px_0px_12.5px_rgba(0,0,0,0.15)] rounded-[24px] w-full w-full lg:max-w-[610px] flex flex-col items-center py-8 px-6 relative">
             <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black text-center w-full mb-6">Valuation</span>
             
             <div className="relative w-[180px] h-[180px] flex justify-center items-center mb-6">
@@ -506,7 +506,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
               </div>
             </div>
 
-            <span className="font-plus-jakarta font-bold text-[20px] leading-[25px] text-center text-[#3D4949] max-w-[428px] mb-8">
+            <span className="font-plus-jakarta font-bold text-[20px] leading-[25px] text-center text-[#3D4949] w-full lg:max-w-[428px] mb-8">
               Proceed With <span className="text-[#2780C4]">‘Valuation’</span> Approval For The Farmland ID: <span className="text-[#2780C4]">{targetId}</span> to Complete The Verification.
             </span>
 
@@ -529,7 +529,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
             </div>
           </div>
 
-          <div className="w-full max-w-[672px] bg-white shadow-[0px_20px_40px_rgba(0,49,50,0.06)] rounded-[32px] flex flex-col">
+          <div className="w-full w-full lg:max-w-[672px] bg-white shadow-[0px_20px_40px_rgba(0,49,50,0.06)] rounded-[32px] flex flex-col">
             <div className="flex flex-row justify-between items-center px-8 py-6 border-b border-black/5">
               <span className="font-plus-jakarta font-semibold text-[24px] leading-[32px] tracking-[-0.6px] text-[#1A1C1D]">Turnback</span>
               <button onClick={() => setShowTurnbackModal(false)} className="bg-transparent border-none cursor-pointer flex items-center justify-center p-0">

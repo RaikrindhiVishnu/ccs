@@ -57,7 +57,7 @@ export const CcsOfficerLayout = () => {
     <div className="flex h-screen w-full overflow-hidden bg-[#FFFFFF] rounded-none">
 
       {/* ───────────────── SIDEBAR ───────────────── */}
-      <aside className="hidden md:flex flex-col shrink-0 w-[291px] h-full min-h-0 bg-[#FFFFFF] pt-[30px]">
+      <aside className="hidden md:flex flex-col shrink-0 w-full lg:w-[291px] h-full min-h-0 bg-[#FFFFFF] pt-[30px]">
 
         {/* Logo */}
         <div className="shrink-0 flex justify-start pl-[38px] pt-[3px] pb-[70px]">

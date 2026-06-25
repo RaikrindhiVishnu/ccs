@@ -14,7 +14,7 @@ export const VerificationOfficer2Layout = () => {
     <div className="min-h-screen bg-[#EBEBEB] flex flex-col font-plus-jakarta pb-12">
 
       {/* Top Header Bar */}
-      <header className="bg-white rounded-[22px] w-full max-w-[1327px] h-auto min-h-[83px] py-4 mx-auto mt-4 md:mt-10 px-4 md:px-8 flex flex-col md:flex-row items-center justify-between shadow-sm relative z-10 gap-4 md:gap-0">
+      <header className="bg-white rounded-[22px] w-full w-full lg:max-w-[1327px] h-auto min-h-[83px] py-4 mx-auto mt-4 md:mt-10 px-4 md:px-8 flex flex-col md:flex-row items-center justify-between shadow-sm relative z-10 gap-4 md:gap-0">
 
         {/* Logo Section */}
         <button
@@ -78,7 +78,7 @@ export const VerificationOfficer2Layout = () => {
       </header>
 
       {/* Main Content Area */}
-      <main className="w-full max-w-[1327px] mx-auto mt-8 px-4 md:px-0">
+      <main className="w-full w-full lg:max-w-[1327px] mx-auto mt-8 px-4 md:px-0">
         <Outlet />
       </main>
     </div>
