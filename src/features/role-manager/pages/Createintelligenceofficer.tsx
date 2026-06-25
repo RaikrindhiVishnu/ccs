@@ -680,7 +680,7 @@ export default function CreateIntelligenceOfficer() {
         <CardContent className="p-0 flex flex-col gap-[clamp(1rem,1.67vw,1.5rem)]">
           {/* ── Section 1 ── */}
           <SectionPanel title="Enter Intelligence Officer Information">
-            <div className="grid grid-cols-3 gap-x-[clamp(1rem,2.7vw,2.4375rem)] gap-y-[clamp(0.75rem,1.67vw,1.5rem)]">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-[clamp(1rem,2.7vw,2.4375rem)] gap-y-[clamp(0.75rem,1.67vw,1.5rem)]">
               <RHFTextField
                 name="firstName"
                 control={control}
@@ -766,7 +766,7 @@ export default function CreateIntelligenceOfficer() {
 
           {/* ── Section 3 ── only change: pass name + control ── */}
           <SectionPanel title="Upload Documents">
-            <div className="grid grid-cols-3 gap-x-[clamp(1rem,2.7vw,2.4375rem)] gap-y-[clamp(0.75rem,1.67vw,1.5rem)]">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-[clamp(1rem,2.7vw,2.4375rem)] gap-y-[clamp(0.75rem,1.67vw,1.5rem)]">
               <DocUploadField
                 label="Aadhar Card Front"
                 name="aadharFront"
