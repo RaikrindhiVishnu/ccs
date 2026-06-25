@@ -11,7 +11,7 @@ export const AssignedFarmlands = () => {
     <div className="w-full flex flex-col pt-[10px]">
       
       {/* Header Section */}
-      <div className="flex items-center justify-between w-full" style={{ marginBottom: '40px', height: '52px' }}>
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between w-full gap-4 md:gap-0" style={{ marginBottom: '40px', minHeight: '52px' }}>
         
         {/* Title and Subtitle */}
         <div className="flex flex-col gap-[4px]">
@@ -24,12 +24,12 @@ export const AssignedFarmlands = () => {
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center" style={{ gap: '12px' }}>
+        <div className="flex items-center w-full md:w-auto" style={{ gap: '12px' }}>
           
           {/* Search Bar */}
           <div 
-            className="relative bg-white flex items-center"
-            style={{ width: '384px', height: '49px', border: '1px solid #E1E2ED', boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)', borderRadius: '9999px', padding: '14px 16px 14px 48px' }}
+            className="relative bg-white flex items-center w-full md:w-[384px]"
+            style={{ height: '49px', border: '1px solid #E1E2ED', boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)', borderRadius: '9999px', padding: '14px 16px 14px 48px' }}
           >
             <Search size={18} className="text-[#737686] absolute" style={{ left: '16px' }} />
             <input 

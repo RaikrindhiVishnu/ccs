@@ -86,7 +86,7 @@ const FarmlandRowCard: React.FC<{
       <div className="hidden xl:block h-[70px] w-px bg-[#E7E8E9] self-center shrink-0 mx-2" />
 
       {/* Columns Grid Container for Stats Metrics */}
-      <div className="grid grid-cols-3 gap-8 w-full xl:w-auto flex-1 max-w-xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full xl:w-auto flex-1 max-w-xl">
         {/* Metric 1: Area */}
         <div className="flex flex-col">
           <span className="text-[10px] font-bold text-[#75777D] uppercase tracking-[0.5px]">
@@ -158,7 +158,7 @@ const FarmlandsList: React.FC = () => {
   };
 
   return (
-    <div className="pt-2 pb-16 font-plus-jakarta max-w-[1407px] mx-auto">
+    <div className="pt-2 pb-16 font-plus-jakarta w-full lg:max-w-[1407px] mx-auto">
       {/* Core Header Area */}
       <div className="mb-6">
         <h1 className="text-[27px] font-semibold text-black uppercase tracking-wide leading-tight">

@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import { Eye, EyeOff, Lock, User, ShieldCheck } from 'lucide-react';
 import { setCredentials } from "@/features/auth/store/authSlice";
-import { UserRole, ROLE_CODES } from "@/features/auth/types";
+import { ROLE_CODES, UserRole } from "@/features/auth/types";
+import { useLoginMutation } from "@/features/auth/api/authApi";
+import { env } from "@/core/config/env";
 import FrameBg from '@/assets/ccs login.jpg';
 import GlcLogo from '@/assets/glc-logo.svg';
 
@@ -14,33 +16,62 @@ export default function CCSLogin() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [login, { isLoading }] = useLoginMutation();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    const mockUser = { login_id: "ccs@glc.com", password: "ccs@123456", role_id: UserRole.CCS, first_name: "CCS", last_name: "Officer", id: 103 };
+    // Mock backdoor for development if real credentials aren't available yet
+    if (env.ENABLE_MOCKS && loginId === 'ccs@glc.com' && password === 'ccs@123456') {
+      dispatch(
+        setCredentials({
+          user: {
+            id: 103,
+            login_id: 'ccs@glc.com',
+            first_name: 'CCS',
+            last_name: 'Officer',
+            role_id: UserRole.CCS,
+            role: 'CCS',
+            is_first_login: 0,
+          },
+          accessToken: 'mock-token-ccs',
+          refreshToken: 'mock-refresh-ccs',
+        })
+      );
+      navigate('/ccs/dashboard');
+      return;
+    }
 
-    if (loginId === mockUser.login_id && password === mockUser.password) {
-      const roleCode = ROLE_CODES[mockUser.role_id];
+    try {
+      const response = await login({ login_id: loginId, password }).unwrap();
+
+      const roleCode = ROLE_CODES[response.role_id];
       dispatch(
           setCredentials({
             user: {
-              id: mockUser.id,
-              login_id: mockUser.login_id,
-              first_name: mockUser.first_name,
-              last_name: mockUser.last_name,
-              role_id: mockUser.role_id,
+              id: response.id,
+              login_id: response.login_id,
+              first_name: response.first_name,
+              last_name: response.last_name,
+              profile_url: response.profile_url,
+              role_id: response.role_id,
               role: roleCode,
-              is_first_login: 0,
+              is_first_login: response.is_first_login,
             },
-            accessToken: "mock-token-" + roleCode.toLowerCase(),
-            refreshToken: "mock-refresh-" + roleCode.toLowerCase(),
+            accessToken: response.token,
+            refreshToken: response.refreshToken,
           })
       );
-      navigate('/ccs/dashboard');
-    } else {
-      setError('Invalid login ID or password.');
+      
+      // If user requires default password update
+      if (response.is_first_login === 1) {
+         navigate('/ccs/update-default-password');
+      } else {
+         navigate('/ccs/dashboard');
+      }
+    } catch (err: any) {
+      setError(err?.data?.message || 'Invalid login ID or password.');
     }
   };
 
@@ -93,6 +124,7 @@ export default function CCSLogin() {
                     <input 
                       type="text" 
                       placeholder="Enter your assigned ID" 
+                      autoComplete="username"
                       className="flex-1 bg-transparent border-none outline-none font-['Plus_Jakarta_Sans'] text-[16px] text-black placeholder:text-[#6D7A7A]/30 w-full"
                       value={loginId}
                       onChange={(e) => setLoginId(e.target.value)}
@@ -109,6 +141,7 @@ export default function CCSLogin() {
                     <input 
                       type={showPw ? "text" : "password"} 
                       placeholder="Enter Password" 
+                      autoComplete="current-password"
                       className="flex-1 bg-transparent border-none outline-none font-['Plus_Jakarta_Sans'] text-[16px] text-black placeholder:text-[#6D7A7A]/30 w-full"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -124,8 +157,12 @@ export default function CCSLogin() {
                   </div>
                 </div>
 
-                <button type="submit" className="w-full h-[52px] bg-[#2780C4] hover:bg-[#206aa3] rounded-[48px] text-white font-['Plus_Jakarta_Sans'] font-bold text-[16px] flex items-center justify-center border-none cursor-pointer mt-[8px] transition-colors">
-                  Login
+                <button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="w-full h-[52px] bg-[#2780C4] hover:bg-[#206aa3] disabled:opacity-50 disabled:cursor-not-allowed rounded-[48px] text-white font-['Plus_Jakarta_Sans'] font-bold text-[16px] flex items-center justify-center border-none cursor-pointer mt-[8px] transition-colors"
+                >
+                  {isLoading ? 'Logging in...' : 'Login'}
                 </button>
               </form>
             </div>

@@ -150,7 +150,7 @@ const RegionalOfficerDashboard: React.FC = () => {
         <div className="flex flex-col gap-6 w-full xl:w-[555px] shrink-0">
           <div className="flex flex-col sm:flex-row gap-6 w-full">
             {/* Verification Queue */}
-            <div className="bg-white rounded-[22.5px] p-6 shadow-sm border border-gray-50 flex-1 w-full sm:w-[270px] h-[324px] flex flex-col justify-between shrink-0">
+            <div className="bg-white rounded-[22.5px] p-6 shadow-sm border border-gray-50 flex-1 w-full sm:w-[270px] h-auto lg:h-[324px] flex flex-col justify-between shrink-0">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-[12.75px] font-plus-jakarta font-normal text-black">Verification Queue</h3>
                 <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center">
@@ -180,7 +180,7 @@ const RegionalOfficerDashboard: React.FC = () => {
             </div>
 
             {/* Active Field Deployments */}
-            <div className="bg-white rounded-[22.5px] p-6 shadow-sm border border-gray-50 flex-1 w-full sm:w-[270px] h-[324px] flex flex-col justify-between shrink-0">
+            <div className="bg-white rounded-[22.5px] p-6 shadow-sm border border-gray-50 flex-1 w-full sm:w-[270px] h-auto lg:h-[324px] flex flex-col justify-between shrink-0">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-[12.75px] font-plus-jakarta font-normal text-black">Active Field Deployments</h3>
@@ -264,7 +264,7 @@ const RegionalOfficerDashboard: React.FC = () => {
           </div>
 
           {/* Recent Activity / Transaction History */}
-          <div className="bg-white rounded-[22.5px] p-6 shadow-sm border border-gray-50 h-[435px] overflow-y-auto w-full shrink-0 flex flex-col">
+          <div className="bg-white rounded-[22.5px] p-6 shadow-sm border border-gray-50 h-auto lg:h-[435px] overflow-y-auto w-full shrink-0 flex flex-col">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-[12.75px] font-plus-jakarta text-black">Recent Activity</h3>
               <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center">
@@ -371,7 +371,7 @@ const RegionalOfficerDashboard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-[#F7F9FC] rounded-xl p-4 grid grid-cols-3 gap-2">
+              <div className="bg-[#F7F9FC] rounded-xl p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 <div>
                   <div className="text-[12px] text-[#6B7280] mb-1">Area</div>
                   <div className="text-sm font-semibold text-[#0F1724]">{item.area}</div>

@@ -23,7 +23,7 @@ export const VerificationOfficerDashboard = () => {
       </div>
 
       {/* Right Column (Unified Sidebar) */}
-      <div className="bg-[#F7F8FA] rounded-[30px] p-6 w-full xl:max-w-[420px] h-auto min-h-[831px] shadow-sm flex flex-col gap-6 xl:justify-between">
+      <div className="bg-[#F7F8FA] rounded-[30px] p-6 w-full xl:max-w-[420px] h-auto md:min-h-0 xl:min-h-[831px] shadow-sm flex flex-col md:flex-row xl:flex-col gap-6 xl:justify-between">
         <WeeklyAssetCertification />
         <RejectionBreakdown />
       </div>

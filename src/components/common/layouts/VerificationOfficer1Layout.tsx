@@ -32,16 +32,16 @@ export const VerificationOfficer1Layout = () => {
         </button>
 
         {/* Central Navigation Items */}
-        <nav className="flex items-center gap-[10px] md:gap-[34px] md:absolute md:left-1/2 md:-translate-x-1/2 overflow-x-auto max-w-full no-scrollbar pb-2 md:pb-0">
+        <nav className="flex items-center gap-[10px] md:gap-[12px] xl:gap-[34px] lg:absolute lg:left-1/2 lg:-translate-x-1/2 overflow-x-auto max-w-full no-scrollbar pb-2 md:pb-0 mx-2 md:mx-4 lg:mx-0">
           {VERIFICATION_OFFICER_1_NAV_ITEMS.map((item) => {
             const isActive = activeItem === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => navigate(item.path)}
-                className={`transition-all duration-300 h-[40px] flex items-center justify-center whitespace-nowrap cursor-pointer border-none bg-transparent ${isActive
-                  ? 'text-[#1A1C1D] font-extrabold text-[16px] leading-[20px]'
-                  : 'text-[#5D6B6B] font-semibold text-[16px] leading-[20px] hover:opacity-75'
+                className={`transition-all duration-300 h-[40px] flex items-center justify-center whitespace-nowrap cursor-pointer border-none bg-transparent px-3 xl:px-4 ${isActive
+                  ? 'text-[#1A1C1D] font-extrabold text-[13px] md:text-[14px] xl:text-[16px] leading-[20px]'
+                  : 'text-[#5D6B6B] font-semibold text-[13px] md:text-[14px] xl:text-[16px] leading-[20px] hover:opacity-75'
                   }`}
               >
                 {item.label}

@@ -72,7 +72,7 @@ export const RegionalOfficerLayout = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 w-full px-6 pt-4 pb-12">
-        <div className="w-[98%] max-w-[1800px] mx-auto">
+        <div className="w-[98%] w-full lg:max-w-[1800px] mx-auto">
           <Outlet />
         </div>
       </main>

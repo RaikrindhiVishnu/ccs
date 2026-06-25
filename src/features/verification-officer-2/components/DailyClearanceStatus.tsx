@@ -14,7 +14,7 @@ export const DailyClearanceStatus = () => {
   };
 
   return (
-    <div className="bg-white rounded-[30px] p-6 md:p-8 w-full md:max-w-[423px] h-auto min-h-[417px] flex flex-col shadow-sm">
+    <div className="bg-white rounded-[30px] p-6 md:p-8 w-full flex-1 xl:max-w-[423px] h-auto min-h-[417px] flex flex-col shadow-sm">
       <h2 className="text-[#202020] text-2xl font-medium font-plus-jakarta mb-6">
         Daily Clearance Status
       </h2>

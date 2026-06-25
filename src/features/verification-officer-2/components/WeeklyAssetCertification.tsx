@@ -5,7 +5,7 @@ export const WeeklyAssetCertification = () => {
   const { totalCleared, period, selectedDayData, chartData } = dashboardMockData.weeklyAssetCertification;
 
   return (
-    <div className="flex flex-col w-full h-auto min-h-[417px] relative">
+    <div className="flex flex-col flex-1 w-full h-auto min-h-[417px] relative">
       <div className="flex justify-between items-start mb-6">
         <h2 className="text-[#202020] text-2xl font-medium font-plus-jakarta capitalize max-w-[200px]">
           Weekly Asset Certification

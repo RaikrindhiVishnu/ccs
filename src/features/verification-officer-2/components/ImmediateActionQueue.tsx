@@ -4,7 +4,7 @@ export const ImmediateActionQueue = () => {
   const queue = dashboardMockData.immediateActionQueue;
 
   return (
-    <div className="bg-white rounded-[30px] p-6 md:p-8 w-full h-auto min-h-[384px] xl:max-w-[876px] shadow-sm flex flex-col">
+    <div className="bg-white rounded-[30px] p-6 md:p-8 w-full h-auto min-h-[384px] shadow-sm flex flex-col">
       <h2 className="text-[#202020] text-2xl font-medium font-plus-jakarta text-left mb-8">
         Immediate Action Queue
       </h2>

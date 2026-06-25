@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Bell, FileText, Download, Check, BadgeCheck, X } from 'lucide-react';
+import { ArrowLeft, Bell, FileText, Download, Check, BadgeCheck, X, ChevronDown } from 'lucide-react';
 import { useViewportScale } from '@/hooks/useViewportScale';
 
 export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
@@ -156,2452 +156,400 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
     }));
   };
 
-  // Reusable Pill component rendering
-  const renderPill = (pill: typeof pills[0], absIdx: number, extraStyle?: React.CSSProperties) => {
-    const isActive = activeSubTab === absIdx;
-    const isCompleted = completedSubTabs.includes(pill.label);
-
-    return (
-      <button 
-        key={absIdx}
-        onClick={() => setActiveSubTab(absIdx)}
-        style={{
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          padding: '11.6px 16px',
-          gap: '8px',
-          width: pill.width,
-          height: '41.22px',
-          background: '#F9F9F9',
-          border: isActive ? '0.73px solid #0078FA' : isCompleted ? '0.73px solid #A5B767' : '0.72px solid transparent',
-          boxShadow: '0px 42px 17px rgba(0, 0, 0, 0.01)',
-          borderRadius: '72.55px',
-          cursor: 'pointer',
-          outline: 'none',
-          justifyContent: 'center',
-          ...extraStyle
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px', width: '100%', height: '18px', justifyContent: 'center' }}>
-          {!isCompleted && (
-            <div style={{
-              width: '18px',
-              height: '18px',
-              background: '#FFBC8A',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '11px',
-              fontWeight: 'bold',
-              flexShrink: 0
-            }}>!</div>
-          )}
-          <span style={{
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 600,
-            fontSize: '14px',
-            color: isActive ? '#0078FA' : isCompleted ? '#2780C4' : 'rgba(90, 92, 94, 0.74)',
-            whiteSpace: 'nowrap'
-          }}>
-            {pill.label}
-          </span>
-          {isCompleted && (
-            <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
-              <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
-              <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
-            </div>
-          )}
-        </div>
-      </button>
-    );
-  };
-
-  const currentFiles = subTabsFilesData[activeSubTab] || { uploadedFiles: [] };
-  const currentComment = comments[activeSubTab] || "";
+  const currentComment = comments[activeSubTab] || '';
 
   return (
-    <div 
-      className="bg-[#F2F2F2] min-h-screen relative flex justify-center overflow-hidden"
-    >
-      <div 
-        style={{
-          width: '1440px',
-          height: '1084px',
-          position: 'relative',
-          background: '#F9F9F9',
-          borderRadius: '32px',
-          transform: `scale(${scale})`,
-          transformOrigin: 'top center',
-          marginBottom: `${(scale - 1) * 1084}px`
-        }}
-      >
-        {/* Go back pill button */}
-        <div style={{
-          position: 'absolute',
-          width: '244px',
-          height: '56px',
-          left: '40px',
-          top: '32px',
-          filter: 'drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.12))',
-          zIndex: 10
-        }}>
+    <div className="bg-[#F2F2F2] min-h-screen flex flex-col items-center p-4 md:p-8 overflow-x-hidden font-inter">
+      <div className="w-full w-full lg:max-w-[1440px] flex flex-col gap-6 relative">
+        
+        {/* Header Container */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full z-10 gap-4">
           <button
             onClick={handleBack}
-            style={{
-              width: '244px',
-              height: '52px',
-              background: '#FFFFFF',
-              borderRadius: '60px',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: '19px 20px',
-              gap: '8px',
-              border: 'none',
-              cursor: 'pointer'
-            }}
+            className="bg-white rounded-[60px] flex flex-row items-center px-5 py-[15px] gap-2 shadow-sm shrink-0 border-none cursor-pointer"
           >
             <ArrowLeft className="w-6 h-6 text-[#353535] shrink-0" strokeWidth={1.5} />
-            <span style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '18px',
-              color: '#353535'
-            }}>
+            <span className="font-plus-jakarta font-normal text-[16px] leading-[18px] text-[#353535]">
               Go Back to Dashboard
             </span>
           </button>
-        </div>
 
-        {/* Top Right Profile Header */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: '13.06px',
-          position: 'absolute',
-          width: '117.06px',
-          height: '52px',
-          left: 'calc(50% - 117.06px/2 + 621.53px)',
-          top: '34px',
-          zIndex: 10
-        }}>
-          {/* Bell Container */}
-          <button style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '8px',
-            gap: '10px',
-            width: '52px',
-            height: '52px',
-            background: '#FFFFFF',
-            borderRadius: '40px',
-            border: 'none',
-            cursor: 'pointer',
-            position: 'relative'
-          }}>
-            <Bell className="w-6 h-6 text-[#2C2C2C]" strokeWidth={1.5} />
-            <span style={{
-              position: 'absolute',
-              width: '5px',
-              height: '5px',
-              left: '32.5px',
-              top: '12px',
-              background: '#EF4646',
-              borderRadius: '50%'
-            }} />
-          </button>
-
-          {/* Avatar Container */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '0px',
-            width: '52px',
-            height: '52px',
-            background: '#FFFFFF',
-            borderRadius: '72.5581px',
-            overflow: 'hidden'
-          }}>
-            <img
-              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"
-              alt="User profile avatar"
-              style={{
-                width: '52px',
-                height: '52px',
-                objectFit: 'cover'
-              }}
-            />
-          </div>
-        </div>
-
-        {/* LEFT COLUMN: Stepper Timeline Card */}
-        <div style={{
-          position: 'absolute',
-          height: '443px',
-          left: '40px',
-          width: '410px',
-          top: '120px',
-          background: '#FFFFFF',
-          borderRadius: '24px'
-        }}>
-          <span style={{
-            position: 'absolute',
-            width: '96px',
-            height: '20px',
-            left: '30px',
-            top: '30px',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 500,
-            fontSize: '16px',
-            color: '#000000'
-          }}>
-            Farmland ID:
-          </span>
-          <span style={{
-            position: 'absolute',
-            left: '30px',
-            top: '60px',
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontWeight: 500,
-            fontSize: '35px',
-            color: '#000000'
-          }}>
-            {targetId}
-          </span>
-
-          {/* Stepper Vertical Connector Line */}
-          <div style={{
-            position: 'absolute',
-            width: '244px',
-            height: '0px',
-            left: '110px',
-            top: '136px',
-            border: '1px solid rgba(0, 120, 250, 0.25)',
-            transform: 'rotate(90deg)',
-            transformOrigin: 'top left',
-            zIndex: 1
-          }} />
-
-          {/* Steps */}
-          <div style={{ position: 'absolute', left: '120px', top: '130px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px 0px 32px 24px', gap: '4px', width: '173px', height: '68px', boxSizing: 'content-box' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px', width: '182px', height: '36px' }}>
-              <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#5A5C5E', width: '173px', height: '36px' }}>CUSTOMER INFORMATION</span>
-            </div>
-          </div>
-          <div style={{ position: 'absolute', left: '120px', top: '219px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px 0px 4px 24px', gap: '4px', width: '173px', height: '22px', boxSizing: 'content-box' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px', width: '149px', height: '18px' }}>
-              <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#5A5C5E', width: '149px', height: '18px' }}>LAND & BOUNDARIES</span>
-            </div>
-          </div>
-          <div style={{ position: 'absolute', left: '143px', top: '299px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0px', height: '18px' }}>
-            <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#FFBC8A', width: '81px', height: '18px' }}>VALUATION</span>
-          </div>
-          <div style={{ position: 'absolute', left: '143px', top: '377px' }}>
-            <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontStyle: 'normal', fontWeight: 600, fontSize: '14px', lineHeight: '18px', display: 'flex', alignItems: 'center', textTransform: 'uppercase', color: '#FFBC8A', height: '36px', width: '118px' }}>AGRICULTURE &<br/>REPORT</span>
-          </div>
-
-          {/* Step Dots */}
-          {[136, 218, 296, 374].map((top, index) => {
-            const isCustomerApproved = localStorage.getItem(`vo2_status_${targetId}_customer`) === 'approved';
-            const isBoundariesApproved = localStorage.getItem(`vo2_status_${targetId}_boundaries`) === 'approved';
-            const showCheckmark = (index === 0 && isCustomerApproved) || (index === 1 && isBoundariesApproved);
-
-            return (
-              <div key={index} style={{
-                position: 'absolute',
-                width: '24px',
-                height: '24px',
-                left: '98px',
-                top: `${top}px`,
-                background: '#FFFFFF',
-                border: '0.2px solid rgba(0, 0, 0, 0.15)',
-                borderRadius: '42px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 5
-              }}>
-                {showCheckmark ? (
-                  <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
-                    <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
-                    <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
-                  </div>
-                ) : (
-                  <div style={{
-                    width: '18px',
-                    height: '18px',
-                    background: '#FFBC8A',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontSize: '12px',
-                    fontWeight: 'bold'
-                  }}>!</div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* RIGHT TOP CARD: Bento Grid of Pills */}
-        <div style={{
-          position: 'absolute',
-          height: '443px',
-          left: '466px',
-          right: '40px',
-          top: '120px',
-          background: '#FFFFFF',
-          borderRadius: '24px',
-          boxSizing: 'border-box',
-          padding: '30px'
-        }}>
-          {/* Bento layout wrapper */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '30px',
-            width: '100%',
-            height: '100%',
-            position: 'relative'
-          }}>
-            {/* Row 1 */}
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px', width: '100%', height: '41.22px' }}>
-              {pills.slice(0, 3).map((pill, idx) => renderPill(pill, idx))}
-            </div>
-
-            {/* Row 2 */}
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px', width: '100%', height: '41.22px' }}>
-              {pills.slice(3, 6).map((pill, idx) => renderPill(pill, idx + 3))}
-            </div>
-
-            {/* Row 3 */}
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px', width: '100%', height: '41.22px' }}>
-              {pills.slice(6, 9).map((pill, idx) => renderPill(pill, idx + 6))}
-            </div>
-
-            {/* Row 4 */}
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '16px', width: '100%', height: '41.22px' }}>
-              {pills.slice(9, 12).map((pill, idx) => renderPill(pill, idx + 9))}
+          {/* Top Right Profile Header */}
+          <div className="flex flex-row items-center gap-[13px]">
+            <button className="flex flex-row justify-center items-center p-2 w-[52px] h-[52px] bg-white rounded-full relative shadow-sm border-none cursor-pointer">
+              <Bell className="w-6 h-6 text-[#2C2C2C]" strokeWidth={1.5} />
+              <span className="absolute w-[5px] h-[5px] right-[14px] top-[12px] bg-[#EF4646] rounded-full" />
+            </button>
+            <div className="flex flex-row justify-center items-center w-[52px] h-[52px] bg-white rounded-full overflow-hidden shadow-sm">
+              <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" alt="User profile avatar" className="w-[52px] h-[52px] object-cover" />
             </div>
           </div>
         </div>
 
-        {/* BOTTOM CARD: Sub-tab specific sections */}
-        <div style={{
-          position: 'absolute',
-          height: '443px',
-          left: '40px',
-          right: '40px',
-          top: '585px',
-          background: '#FFFFFF',
-          borderRadius: '24px',
-          boxSizing: 'border-box',
-          padding: '30px'
-        }}>
-          
-          {activeSubTab <= 3 ? (
-            /* TABS 0 - 3: STANDARD FILES VIEW */
-            <>
-              {/* UPLOADED FILES SECTION */}
-              <span style={{
-                position: 'absolute',
-                width: '173px',
-                height: '30px',
-                left: '30px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Uploaded Files
-              </span>
+        {/* Main Grid: Stepper and Content */}
+        <div className="flex flex-col lg:flex-row w-full gap-6">
+           {/* LEFT COLUMN: Stepper Timeline Card */}
+           <div className="w-full lg:w-[410px] bg-white rounded-[24px] flex flex-col p-8 shrink-0 relative min-h-[443px]">
+             <div className="flex flex-col gap-1 mb-8">
+               <span className="font-plus-jakarta font-medium text-[16px] text-black">Farmland ID:</span>
+               <span className="font-plus-jakarta font-medium text-[35px] text-black">{targetId}</span>
+             </div>
 
-              <div style={{
-                position: 'absolute',
-                left: '18px',
-                top: '73px',
-                width: '682px',
-                height: '355px',
-                background: '#FFFFFF',
-                border: '1.2px solid #E5E7EB',
-                borderRadius: '24px',
-                boxSizing: 'border-box',
-                padding: '24px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '24px',
-                overflowY: 'auto'
-              }} className="custom-scrollbar">
-                {currentFiles.uploadedFiles.length > 0 && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '280px' }}>
-                    <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 500, fontSize: '12px', color: 'rgba(0, 0, 0, 0.74)' }}>
-                      Uploaded files
-                    </span>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      {currentFiles.uploadedFiles.map((file, fileIdx) => (
-                        <div key={fileIdx} style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'space-between',
-                          padding: '12px 16px', 
-                          background: '#E5F1F9', 
-                          borderRadius: '12px',
-                          width: '280px',
-                          height: '59px',
-                          boxSizing: 'border-box'
-                        }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div style={{ width: '29px', height: '29px', background: '#FFFFFF', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <FileText className="w-[17px] h-[17px] text-[#F15642]" />
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px', fontWeight: 400, color: '#000000' }}>
-                                {file.name}
-                              </span>
-                              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '8px', color: 'rgba(0, 0, 0, 0.7)' }}>
-                                {file.size}
-                              </span>
-                            </div>
-                          </div>
-                          <button style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                            <Download className="w-[18px] h-[18px] text-[#000000]" />
-                          </button>
+             <div className="relative flex flex-col gap-10 pl-[80px]">
+               {/* Vertical Line */}
+               <div className="absolute left-[90px] top-[24px] bottom-[24px] w-[1px] border-l border-[#0078FA] opacity-25"></div>
+
+               {/* Step 1 */}
+               <div className="relative flex items-center h-[36px]">
+                 <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
+                   {localStorage.getItem(`vo2_status_${targetId}_customer`) === 'approved' ? (
+                     <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
+                       <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
+                       <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
+                     </div>
+                   ) : (
+                     <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
+                   )}
+                 </div>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#5A5C5E] uppercase">CUSTOMER INFORMATION</span>
+               </div>
+
+               {/* Step 2 */}
+               <div className="relative flex items-center h-[36px]">
+                 <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
+                   {localStorage.getItem(`vo2_status_${targetId}_boundaries`) === 'approved' ? (
+                     <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
+                       <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
+                       <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
+                     </div>
+                   ) : (
+                     <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
+                   )}
+                 </div>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#5A5C5E] uppercase">LAND & BOUNDARIES</span>
+               </div>
+
+               {/* Step 3 (Active) */}
+               <div className="relative flex items-center h-[36px]">
+                 <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
+                   <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
+                 </div>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#FFBC8A] uppercase">VALUATION</span>
+               </div>
+
+               {/* Step 4 */}
+               <div className="relative flex items-center h-[36px]">
+                 <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
+                   <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
+                 </div>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#FFBC8A] uppercase opacity-50">AGRICULTURE &<br/>REPORT</span>
+               </div>
+             </div>
+           </div>
+
+           {/* Content Column */}
+           <div className="flex-1 flex flex-col gap-6 min-w-0">
+             
+             {/* Bento Grid Pills */}
+             <div className="w-full bg-white rounded-[24px] p-6 lg:p-8 flex flex-wrap gap-4 min-h-[150px] content-start">
+               {pills.map((pill, idx) => {
+                  const isActive = activeSubTab === idx;
+                  const isCompleted = completedSubTabs.includes(pill.label);
+                  return (
+                    <button 
+                      key={idx}
+                      onClick={() => setActiveSubTab(idx)}
+                      className="flex flex-row items-center justify-center px-4 py-[11px] gap-2 h-[41px] bg-[#F9F9F9] rounded-[72px] shadow-sm cursor-pointer whitespace-nowrap"
+                      style={{ border: isActive ? '1px solid #0078FA' : isCompleted ? '1px solid #A5B767' : '1px solid transparent' }}
+                    >
+                      {!isCompleted && (
+                        <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0">!</div>
+                      )}
+                      <span className="font-plus-jakarta font-semibold text-[14px]" style={{ color: isActive ? '#0078FA' : isCompleted ? '#2780C4' : 'rgba(90, 92, 94, 0.74)' }}>
+                        {pill.label}
+                      </span>
+                      {isCompleted && (
+                        <div className="relative w-[18px] h-[18px] flex items-center justify-center shrink-0">
+                          <BadgeCheck className="w-[18px] h-[18px] text-[#3D93D1]" fill="#3D93D1" />
+                          <Check className="absolute w-[10px] h-[10px] text-white" strokeWidth={4} />
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+                      )}
+                    </button>
+                  );
+               })}
+             </div>
 
-              {/* COMMENTS SECTION */}
-              <span style={{
-                position: 'absolute',
-                width: '129px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Comments
-              </span>
+             {/* BOTTOM CARD: Sub-tab specific sections */}
+             <div className="w-full bg-white rounded-[24px] p-6 lg:p-8 flex flex-col gap-8 min-h-[443px] relative">
+               
+               <div className="flex flex-col xl:flex-row gap-8 w-full flex-1">
+                 
+                 {/* Left Content Area (Forms/Files) */}
+                 <div className="flex-1 flex flex-col gap-6 min-w-0">
+                   
+                   {activeSubTab <= 3 ? (
+                     <>
+                       <span className="font-plus-jakarta font-semibold text-[24px] text-black">Uploaded Files</span>
+                       <div className="w-full bg-white border border-[#E5E7EB] rounded-[24px] p-6 flex flex-col gap-6 max-h-[355px] overflow-y-auto custom-scrollbar">
+                         {currentFiles.uploadedFiles && currentFiles.uploadedFiles.length > 0 && (
+                           <div className="flex flex-col gap-2 w-full max-w-[280px]">
+                             <span className="font-plus-jakarta font-medium text-[12px] text-black/70">Uploaded files</span>
+                             <div className="flex flex-col gap-3">
+                               {currentFiles.uploadedFiles.map((file, fileIdx) => (
+                                 <div key={fileIdx} className="flex items-center justify-between px-4 py-3 bg-[#E5F1F9] rounded-[12px] w-full h-[59px]">
+                                   <div className="flex items-center gap-[10px]">
+                                     <div className="w-[29px] h-[29px] bg-white rounded flex items-center justify-center">
+                                       <FileText className="w-[17px] h-[17px] text-[#F15642]" />
+                                     </div>
+                                     <div className="flex flex-col">
+                                       <span className="font-inter text-[14px] text-black">{file.name}</span>
+                                       <span className="font-inter text-[8px] text-black/70">{file.size}</span>
+                                     </div>
+                                   </div>
+                                   <button className="border-none bg-transparent cursor-pointer">
+                                     <Download className="w-[18px] h-[18px] text-black" />
+                                   </button>
+                                 </div>
+                               ))}
+                             </div>
+                           </div>
+                         )}
+                       </div>
+                     </>
+                   ) : activeSubTab === 4 ? (
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
+                       <div className="flex flex-col gap-[18px]">
+                         <span className="font-plus-jakarta font-semibold text-[24px] text-black">Type of Road Approach</span>
+                         <div className="flex flex-row flex-wrap gap-4">
+                           {['Private Road', 'Government Road'].map(opt => (
+                             <button key={opt} onClick={() => setRoadType(opt)} className={`flex items-center px-[18px] py-[10px] gap-[10px] rounded-[33px] cursor-pointer ${roadType === opt ? 'bg-[#2B2D2F] border-black' : 'bg-white border-black/25'} border`}>
+                               <div className="w-3 h-3 rounded-full border-2 border-[#85BFE5] bg-white flex items-center justify-center shrink-0">
+                                 {roadType === opt && <div className="w-full h-full bg-[#3D93D1] rounded-full" />}
+                               </div>
+                               <span className={`font-plus-jakarta font-semibold text-[14px] ${roadType === opt ? 'text-white' : 'text-black'}`}>{opt}</span>
+                             </button>
+                           ))}
+                         </div>
+                       </div>
+                       <div className="flex flex-col gap-2">
+                         <span className="font-plus-jakarta font-semibold text-[16px] text-black/90">Width of the Road (in Feet)</span>
+                         <div className="w-full h-[54px] bg-white border border-black/40 rounded-lg relative">
+                           <input type="text" value={roadWidth} onChange={(e) => setRoadWidth(e.target.value)} className="absolute left-6 right-6 top-1/2 -translate-y-1/2 w-[calc(100%-48px)] font-inter text-[18px] text-black border-none outline-none bg-transparent" />
+                         </div>
+                       </div>
+                     </div>
+                   ) : activeSubTab === 5 ? (
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
+                       <div className="flex flex-col gap-[18px]">
+                         <span className="font-plus-jakarta font-semibold text-[24px] text-black">Any recent transaction in surrounding lands?</span>
+                         <div className="flex flex-row flex-wrap gap-4">
+                           {['Available', 'Not Available'].map(opt => (
+                             <button key={opt} onClick={() => setTxAvailability(opt)} className={`flex items-center px-[18px] py-[10px] gap-[10px] rounded-[33px] cursor-pointer ${txAvailability === opt ? 'bg-[#2B2D2F] border-black' : 'bg-white border-black/25'} border`}>
+                               <div className="w-3 h-3 rounded-full border-2 border-[#85BFE5] bg-white flex items-center justify-center shrink-0">
+                                 {txAvailability === opt && <div className="w-full h-full bg-[#3D93D1] rounded-full" />}
+                               </div>
+                               <span className={`font-plus-jakarta font-semibold text-[14px] ${txAvailability === opt ? 'text-white' : 'text-black'}`}>{opt}</span>
+                             </button>
+                           ))}
+                         </div>
+                       </div>
+                       <div className={`flex flex-col gap-2 ${txAvailability === 'Not Available' ? 'opacity-30 pointer-events-none' : ''}`}>
+                         <span className="font-plus-jakarta font-semibold text-[16px] text-black/90">Valuation Per Acre</span>
+                         <div className="w-full h-[54px] bg-white border border-black/40 rounded-lg relative">
+                           <input type="text" value={valuationPerAcre} onChange={(e) => setValuationPerAcre(e.target.value)} className="absolute left-6 right-6 top-1/2 -translate-y-1/2 w-[calc(100%-48px)] font-inter text-[18px] text-black border-none outline-none bg-transparent" />
+                         </div>
+                       </div>
+                       <div className={`flex flex-col gap-2 ${txAvailability === 'Not Available' ? 'opacity-30 pointer-events-none' : ''}`}>
+                         <span className="font-plus-jakarta font-semibold text-[16px] text-black/90">Local Market Acre Price</span>
+                         <div className="w-full h-[54px] bg-white border border-black/40 rounded-lg relative">
+                           <input type="text" value={localMarketAcrePrice} onChange={(e) => setLocalMarketAcrePrice(e.target.value)} className="absolute left-6 right-6 top-1/2 -translate-y-1/2 w-[calc(100%-48px)] font-inter text-[18px] text-black border-none outline-none bg-transparent" />
+                         </div>
+                       </div>
+                     </div>
+                   ) : activeSubTab === 6 ? (
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
+                       <div className="flex flex-col gap-[24px]">
+                         <span className="font-plus-jakarta font-semibold text-[24px] text-black">Any Surrounding Mines & Geological Advantages?</span>
+                         <div className="flex flex-row flex-wrap gap-4">
+                           {['Available', 'Not Available'].map(opt => (
+                             <button key={opt} onClick={() => setGeoAvailability(opt)} className={`flex items-center px-[18px] py-[10px] gap-[10px] rounded-[33px] cursor-pointer ${geoAvailability === opt ? 'bg-[#2B2D2F] border-black' : 'bg-white border-black/25'} border`}>
+                               <div className="w-3 h-3 rounded-full border-2 border-[#85BFE5] bg-white flex items-center justify-center shrink-0">
+                                 {geoAvailability === opt && <div className="w-full h-full bg-[#3D93D1] rounded-full" />}
+                               </div>
+                               <span className={`font-plus-jakarta font-semibold text-[14px] ${geoAvailability === opt ? 'text-white' : 'text-black'}`}>{opt}</span>
+                             </button>
+                           ))}
+                         </div>
+                       </div>
+                     </div>
+                   ) : activeSubTab === 7 ? (
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
+                       <span className="font-plus-jakarta font-semibold text-[24px] text-black">Future Plans of Geographical Advantages</span>
+                     </div>
+                   ) : activeSubTab === 8 ? (
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
+                       <span className="font-plus-jakarta font-semibold text-[24px] text-black">Validating the Disadvantages of the Land</span>
+                     </div>
+                   ) : activeSubTab === 9 ? (
+                     <div className="flex flex-col gap-[13px] w-full w-full lg:max-w-[640px]">
+                       <span className="font-plus-jakarta font-semibold text-[24px] text-black">Upcoming Infrastructures</span>
+                       <div className="relative w-full">
+                         <select value={upcomingInfra} onChange={(e) => setUpcomingInfra(e.target.value)} className="w-full h-[54px] bg-white border border-black/40 rounded-lg px-6 font-plus-jakarta text-[16px] text-black appearance-none outline-none cursor-pointer">
+                           <option value="" disabled hidden>Select Upcoming Infrastructure</option>
+                           <option value="Highway Expansion">Highway Expansion</option>
+                           <option value="Metro/Railway Project">Metro/Railway Project</option>
+                           <option value="Industrial Corridor">Industrial Corridor</option>
+                           <option value="No Major Project Planned">No Major Project Planned</option>
+                         </select>
+                         <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-[#363434] pointer-events-none" />
+                       </div>
+                     </div>
+                   ) : activeSubTab === 10 ? (
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
+                       <div className="flex flex-col gap-[24px]">
+                         <span className="font-plus-jakarta font-semibold text-[24px] text-black">Any Railway Track Connectivity?</span>
+                         <div className="flex flex-row flex-wrap gap-4">
+                           {['Available', 'Not Available'].map(opt => (
+                             <button key={opt} onClick={() => setRailwayAvailability(opt)} className={`flex items-center px-[18px] py-[10px] gap-[10px] rounded-[33px] cursor-pointer ${railwayAvailability === opt ? 'bg-[#2B2D2F] border-black' : 'bg-white border-black/25'} border`}>
+                               <div className="w-3 h-3 rounded-full border-2 border-[#85BFE5] bg-white flex items-center justify-center shrink-0">
+                                 {railwayAvailability === opt && <div className="w-full h-full bg-[#3D93D1] rounded-full" />}
+                               </div>
+                               <span className={`font-plus-jakarta font-semibold text-[14px] ${railwayAvailability === opt ? 'text-white' : 'text-black'}`}>{opt}</span>
+                             </button>
+                           ))}
+                         </div>
+                       </div>
+                       <div className="flex flex-col gap-[13px] w-full">
+                         <span className="font-plus-jakarta font-semibold text-[24px] text-black">Select distance</span>
+                         <div className="relative w-full">
+                           <select disabled={railwayAvailability === 'Not Available'} value={railwayDistance} onChange={(e) => setRailwayDistance(e.target.value)} className={`w-full h-[54px] border border-black/40 rounded-lg px-6 font-inter text-[18px] appearance-none outline-none ${railwayAvailability === 'Not Available' ? 'bg-[#F5F5F5] text-black/40 cursor-not-allowed' : 'bg-white text-black cursor-pointer'}`}>
+                             <option value="0 - 10 kms">0 - 10 kms</option>
+                             <option value="10 - 20 kms">10 - 20 kms</option>
+                             <option value="20 - 50 kms">20 - 50 kms</option>
+                             <option value="50+ kms">50+ kms</option>
+                           </select>
+                           <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-[#363434] pointer-events-none" />
+                         </div>
+                       </div>
+                     </div>
+                   ) : (
+                     <div className="flex flex-col gap-8 w-full w-full lg:max-w-[640px]">
+                       <div className="flex flex-col gap-[24px]">
+                         <span className="font-plus-jakarta font-semibold text-[24px] text-black">Any Airport Connectivity?</span>
+                         <div className="flex flex-row flex-wrap gap-4">
+                           {['Available', 'Not Available'].map(opt => (
+                             <button key={opt} onClick={() => setAirportAvailability(opt)} className={`flex items-center px-[18px] py-[10px] gap-[10px] rounded-[33px] cursor-pointer ${airportAvailability === opt ? 'bg-[#2B2D2F] border-black' : 'bg-white border-black/25'} border`}>
+                               <div className="w-3 h-3 rounded-full border-2 border-[#85BFE5] bg-white flex items-center justify-center shrink-0">
+                                 {airportAvailability === opt && <div className="w-full h-full bg-[#3D93D1] rounded-full" />}
+                               </div>
+                               <span className={`font-plus-jakarta font-semibold text-[14px] ${airportAvailability === opt ? 'text-white' : 'text-black'}`}>{opt}</span>
+                             </button>
+                           ))}
+                         </div>
+                       </div>
+                       <div className="flex flex-col gap-[13px] w-full">
+                         <span className="font-plus-jakarta font-semibold text-[24px] text-black">Select distance</span>
+                         <div className="relative w-full">
+                           <select disabled={airportAvailability === 'Not Available'} value={airportDistance} onChange={(e) => setAirportDistance(e.target.value)} className={`w-full h-[54px] border border-black/40 rounded-lg px-6 font-inter text-[18px] appearance-none outline-none ${airportAvailability === 'Not Available' ? 'bg-[#F5F5F5] text-black/40 cursor-not-allowed' : 'bg-white text-black cursor-pointer'}`}>
+                             <option value="0 - 10 kms">0 - 10 kms</option>
+                             <option value="10 - 20 kms">10 - 20 kms</option>
+                             <option value="20 - 50 kms">20 - 50 kms</option>
+                             <option value="50+ kms">50+ kms</option>
+                           </select>
+                           <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-[#363434] pointer-events-none" />
+                         </div>
+                       </div>
+                     </div>
+                   )}
 
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 4 ? (
-            /* TAB 4: ROAD APPROACH */
-            <>
-              {/* Type of Road Approach */}
-              <div style={{
-                position: 'absolute',
-                width: '640px',
-                height: '86px',
-                left: '30px',
-                top: '30px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: '18px'
-              }}>
-                <span style={{
-                  width: '640px',
-                  height: '30px',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontStyle: 'normal',
-                  fontWeight: 600,
-                  fontSize: '24px',
-                  lineHeight: '30px',
-                  color: '#000000'
-                }}>
-                  Type of Road Approach
-                </span>
+                 </div>
 
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: '25px',
-                  width: '364px',
-                  height: '38px'
-                }}>
-                  {/* Private Road button */}
-                  <button
-                    onClick={() => setRoadType('Private Road')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '143px',
-                      height: '38px',
-                      background: roadType === 'Private Road' ? '#2B2D2F' : '#FFFFFF',
-                      border: roadType === 'Private Road' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      borderRadius: '33px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: '10px',
-                      width: '107px',
-                      height: '18px'
-                    }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: roadType === 'Private Road' ? '#3D93D1' : '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%'
-                      }} />
-                      <span style={{
-                        width: '85px',
-                        height: '18px',
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontStyle: 'normal',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '18px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        color: roadType === 'Private Road' ? '#FFFFFF' : '#000000'
-                      }}>
-                        Private Road
-                      </span>
-                    </div>
-                  </button>
+                 {/* Right Content Area (Comments) */}
+                 <div className="w-full xl:w-[400px] flex flex-col gap-4 shrink-0 mt-8 xl:mt-0">
+                   <span className="font-plus-jakarta font-semibold text-[24px] text-black">{activeSubTab >= 7 && activeSubTab <= 8 ? 'Write a comment' : 'Add Comments'}</span>
+                   <div className="w-full h-[181px] bg-[rgba(187,219,240,0.38)] border border-[#96C9ED] rounded-[18px] p-6">
+                     <textarea value={currentComment} onChange={(e) => handleCommentChange(e.target.value)} placeholder={activeSubTab >= 7 && activeSubTab <= 8 ? "Write a comment" : ""} className="w-full h-full bg-transparent border-none outline-none resize-none font-poppins text-[14px] leading-[21px] text-black" />
+                   </div>
+                 </div>
 
-                  {/* Government Road button */}
-                  <button
-                    onClick={() => setRoadType('Government Road')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '196px',
-                      height: '38px',
-                      background: roadType === 'Government Road' ? '#2B2D2F' : '#FFFFFF',
-                      border: roadType === 'Government Road' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      borderRadius: '33px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: '10px',
-                      width: '160px',
-                      height: '18px'
-                    }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: roadType === 'Government Road' ? '#3D93D1' : '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%'
-                      }} />
-                      <span style={{
-                        width: '138px',
-                        height: '18px',
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontStyle: 'normal',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '18px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        color: roadType === 'Government Road' ? '#FFFFFF' : '#000000'
-                      }}>
-                        Governement Road
-                      </span>
-                    </div>
-                  </button>
-                </div>
-              </div>
+               </div>
 
-              {/* Width of the Road (in Feet) */}
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '0px',
-                gap: '8px',
-                position: 'absolute',
-                width: '640px',
-                height: '82px',
-                left: '30px',
-                top: '144px'
-              }}>
-                <span style={{
-                  width: '640px',
-                  height: '20px',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontStyle: 'normal',
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  lineHeight: '20px',
-                  color: 'rgba(0, 0, 0, 0.92)'
-                }}>
-                  Width of the Road (in Feet)
-                </span>
-                <div style={{
-                  boxSizing: 'border-box',
-                  width: '640px',
-                  height: '54px',
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(0, 0, 0, 0.4)',
-                  borderRadius: '8px',
-                  position: 'relative'
-                }}>
-                  <input
-                    type="text"
-                    value={roadWidth}
-                    onChange={(e) => setRoadWidth(e.target.value)}
-                    style={{
-                      position: 'absolute',
-                      width: '592px',
-                      height: '22px',
-                      left: '24px',
-                      top: 'calc(50% - 22px/2)',
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '18px',
-                      lineHeight: '22px',
-                      color: '#000000',
-                      border: 'none',
-                      outline: 'none',
-                      background: 'transparent'
-                    }}
-                  />
-                </div>
-              </div>
+               {/* Actions Footer */}
+               <div className="flex flex-row justify-end items-center gap-3 w-full mt-4">
+                 <button onClick={handleTurnBack} className="flex items-center justify-center px-[10px] w-[121px] h-[38px] border border-black/30 rounded-[33px] bg-transparent font-plus-jakarta font-medium text-[14px] text-black/80 cursor-pointer">
+                   Turn Back
+                 </button>
+                 <button onClick={handleApprove} className="flex items-center justify-center px-[10px] w-[121px] h-[38px] bg-[#2780C4] rounded-[33px] border-none font-plus-jakarta font-semibold text-[14px] text-white cursor-pointer">
+                   Approve
+                 </button>
+               </div>
 
-              {/* Comments */}
-              <span style={{
-                position: 'absolute',
-                width: '182px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Add Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 5 ? (
-            /* TAB 5: RECENT TRANSACTIONS */
-            <>
-              {/* Any recent transaction in surrounding lands? */}
-              <div style={{
-                position: 'absolute',
-                width: '640px',
-                height: '86px',
-                left: '30px',
-                top: '30px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: '18px'
-              }}>
-                <span style={{
-                  width: '640px',
-                  height: '30px',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontStyle: 'normal',
-                  fontWeight: 600,
-                  fontSize: '24px',
-                  lineHeight: '30px',
-                  color: '#000000'
-                }}>
-                  Any recent transaction in surrounding lands?
-                </span>
-
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: '25px',
-                  width: '292px',
-                  height: '38px'
-                }}>
-                  {/* Available button */}
-                  <button
-                    onClick={() => setTxAvailability('Available')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '120px',
-                      height: '38px',
-                      background: txAvailability === 'Available' ? '#2B2D2F' : '#FFFFFF',
-                      border: txAvailability === 'Available' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      borderRadius: '33px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: '10px',
-                      width: '84px',
-                      height: '18px'
-                    }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: txAvailability === 'Available' ? '#3D93D1' : '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%'
-                      }} />
-                      <span style={{
-                        width: '62px',
-                        height: '18px',
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontStyle: 'normal',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '18px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        color: txAvailability === 'Available' ? '#FFFFFF' : '#000000'
-                      }}>
-                        Available
-                      </span>
-                    </div>
-                  </button>
-
-                  {/* Not Available button */}
-                  <button
-                    onClick={() => setTxAvailability('Not Available')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '147px',
-                      height: '38px',
-                      background: txAvailability === 'Not Available' ? '#2B2D2F' : '#FFFFFF',
-                      border: txAvailability === 'Not Available' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      borderRadius: '33px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: '10px',
-                      width: '111px',
-                      height: '18px'
-                    }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: txAvailability === 'Not Available' ? '#3D93D1' : '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%'
-                      }} />
-                      <span style={{
-                        width: '89px',
-                        height: '18px',
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontStyle: 'normal',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '18px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        color: txAvailability === 'Not Available' ? '#FFFFFF' : '#000000'
-                      }}>
-                        Not Available
-                      </span>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Valuation Per Acre */}
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '0px',
-                gap: '8px',
-                position: 'absolute',
-                width: '640px',
-                height: '82px',
-                left: '30px',
-                top: '144px',
-                opacity: txAvailability === 'Not Available' ? 0.3 : 1,
-                pointerEvents: txAvailability === 'Not Available' ? 'none' : 'auto'
-              }}>
-                <span style={{
-                  width: '640px',
-                  height: '20px',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontStyle: 'normal',
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  lineHeight: '20px',
-                  color: 'rgba(0, 0, 0, 0.92)'
-                }}>
-                  Valuation Per Acre
-                </span>
-                <div style={{
-                  boxSizing: 'border-box',
-                  width: '640px',
-                  height: '54px',
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(0, 0, 0, 0.4)',
-                  borderRadius: '8px',
-                  position: 'relative'
-                }}>
-                  <input
-                    type="text"
-                    value={valuationPerAcre}
-                    onChange={(e) => setValuationPerAcre(e.target.value)}
-                    style={{
-                      position: 'absolute',
-                      width: '592px',
-                      height: '22px',
-                      left: '24px',
-                      top: 'calc(50% - 22px/2)',
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '18px',
-                      lineHeight: '22px',
-                      color: '#000000',
-                      border: 'none',
-                      outline: 'none',
-                      background: 'transparent'
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Local Market Acre Price */}
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '0px',
-                gap: '8px',
-                position: 'absolute',
-                width: '640px',
-                height: '82px',
-                left: '30px',
-                top: '254px',
-                opacity: txAvailability === 'Not Available' ? 0.3 : 1,
-                pointerEvents: txAvailability === 'Not Available' ? 'none' : 'auto'
-              }}>
-                <span style={{
-                  width: '640px',
-                  height: '20px',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontStyle: 'normal',
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  lineHeight: '20px',
-                  color: 'rgba(0, 0, 0, 0.92)'
-                }}>
-                  Locall Market Acre Price
-                </span>
-                <div style={{
-                  boxSizing: 'border-box',
-                  width: '640px',
-                  height: '54px',
-                  background: '#FFFFFF',
-                  border: '1px solid rgba(0, 0, 0, 0.4)',
-                  borderRadius: '8px',
-                  position: 'relative'
-                }}>
-                  <input
-                    type="text"
-                    value={localMarketAcrePrice}
-                    onChange={(e) => setLocalMarketAcrePrice(e.target.value)}
-                    style={{
-                      position: 'absolute',
-                      width: '592px',
-                      height: '22px',
-                      left: '24px',
-                      top: 'calc(50% - 22px/2)',
-                      fontFamily: "'Inter', sans-serif",
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '18px',
-                      lineHeight: '22px',
-                      color: '#000000',
-                      border: 'none',
-                      outline: 'none',
-                      background: 'transparent'
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Comments */}
-              <span style={{
-                position: 'absolute',
-                width: '182px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Add Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 6 ? (
-            /* TAB 6: GEOLOGICAL ADVANTAGES */
-            <>
-              {/* Any Surrounding Mines & Geological Advantages? */}
-              <div style={{
-                position: 'absolute',
-                width: '640px',
-                height: '92px',
-                left: '30px',
-                top: '30px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: '24px'
-              }}>
-                <span style={{
-                  width: '640px',
-                  height: '30px',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontStyle: 'normal',
-                  fontWeight: 600,
-                  fontSize: '24px',
-                  lineHeight: '30px',
-                  color: '#000000'
-                }}>
-                  Any Surrounding Mines & Geological Advantages?
-                </span>
-
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: '25px',
-                  width: '307px',
-                  height: '38px'
-                }}>
-                  {/* Available button */}
-                  <button
-                    onClick={() => setGeoAvailability('Available')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '135px',
-                      height: '38px',
-                      background: geoAvailability === 'Available' ? '#2B2D2F' : '#FFFFFF',
-                      border: geoAvailability === 'Available' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      borderRadius: '33px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: '10px',
-                      width: '97px',
-                      height: '18px'
-                    }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: geoAvailability === 'Available' ? '#3D93D1' : '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%'
-                      }} />
-                      <span style={{
-                        width: '89px',
-                        height: '18px',
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontStyle: 'normal',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '18px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        color: geoAvailability === 'Available' ? '#FFFFFF' : '#000000'
-                      }}>
-                        Available
-                      </span>
-                    </div>
-                  </button>
-
-                  {/* Not Available button */}
-                  <button
-                    onClick={() => setGeoAvailability('Not Available')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '147px',
-                      height: '38px',
-                      background: geoAvailability === 'Not Available' ? '#2B2D2F' : '#FFFFFF',
-                      border: geoAvailability === 'Not Available' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      borderRadius: '33px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: '10px',
-                      width: '111px',
-                      height: '18px'
-                    }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: geoAvailability === 'Not Available' ? '#3D93D1' : '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%'
-                      }} />
-                      <span style={{
-                        width: '89px',
-                        height: '18px',
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontStyle: 'normal',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '18px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        color: geoAvailability === 'Not Available' ? '#FFFFFF' : '#000000'
-                      }}>
-                        Not Available
-                      </span>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Comments */}
-              <span style={{
-                position: 'absolute',
-                width: '182px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Add Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 7 ? (
-            /* TAB 7: FUTURE PLANS */
-            <>
-              {/* Future Plans of Geographical Advantages */}
-              <span style={{
-                position: 'absolute',
-                width: '476px',
-                height: '30px',
-                left: '30px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontStyle: 'normal',
-                fontWeight: 600,
-                fontSize: '24px',
-                lineHeight: '30px',
-                color: '#000000'
-              }}>
-                Future Plans of Geographical Advantages
-              </span>
-
-              {/* Comments textarea box — left:30, top:73, 618×181px */}
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '30px',
-                top: '73px'
-              }}>
-                <div style={{
-                  boxSizing: 'border-box',
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'rgba(187, 219, 240, 0.38)',
-                  border: '1px solid #96C9ED',
-                  borderRadius: '18px'
-                }} />
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  placeholder="Write a comment"
-                  style={{
-                    position: 'absolute',
-                    width: '566px',
-                    height: '133px',
-                    left: '26px',
-                    top: '24px',
-                    fontFamily: "'Inter', sans-serif",
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '17px',
-                    color: 'rgba(0, 0, 0, 0.8)',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none'
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 8 ? (
-            /* TAB 8: VALIDATING DISADVANTAGES */
-            <>
-              {/* Validating the Disadvantages of the Land */}
-              <span style={{
-                position: 'absolute',
-                width: '550px',
-                height: '30px',
-                left: '30px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontStyle: 'normal',
-                fontWeight: 600,
-                fontSize: '24px',
-                lineHeight: '30px',
-                color: '#000000'
-              }}>
-                Validating the Disadvantages of the Land
-              </span>
-
-              {/* Comments textarea box — left:30, top:73, 618×181px */}
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '30px',
-                top: '73px'
-              }}>
-                <div style={{
-                  boxSizing: 'border-box',
-                  position: 'absolute',
-                  inset: 0,
-                  background: 'rgba(187, 219, 240, 0.38)',
-                  border: '1px solid #96C9ED',
-                  borderRadius: '18px'
-                }} />
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  placeholder="Write a comment"
-                  style={{
-                    position: 'absolute',
-                    width: '566px',
-                    height: '133px',
-                    left: '26px',
-                    top: '24px',
-                    fontFamily: "'Inter', sans-serif",
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '17px',
-                    color: 'rgba(0, 0, 0, 0.8)',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none'
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 9 ? (
-            /* TAB 9: UPCOMING INFRASTRUCTURES */
-            <>
-              {/* Upcoming Infrastructures */}
-              <div style={{
-                position: 'absolute',
-                width: '640px',
-                height: '97px',
-                left: '30px',
-                top: '30px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: '13px'
-              }}>
-                <span style={{
-                  width: '640px',
-                  height: '30px',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontStyle: 'normal',
-                  fontWeight: 600,
-                  fontSize: '24px',
-                  lineHeight: '30px',
-                  color: '#000000'
-                }}>
-                  Upcoming Infrastructures
-                </span>
-
-                <div style={{
-                  position: 'relative',
-                  width: '640px',
-                  height: '54px'
-                }}>
-                  <select
-                    value={upcomingInfra}
-                    onChange={(e) => setUpcomingInfra(e.target.value)}
-                    style={{
-                      boxSizing: 'border-box',
-                      width: '640px',
-                      height: '54px',
-                      background: '#FFFFFF',
-                      border: '1px solid rgba(0, 0, 0, 0.4)',
-                      borderRadius: '8px',
-                      padding: '0 45px 0 20px',
-                      fontFamily: "'Plus Jakarta Sans', sans-serif",
-                      fontSize: '16px',
-                      color: upcomingInfra ? '#000000' : 'rgba(0, 0, 0, 0.4)',
-                      cursor: 'pointer',
-                      appearance: 'none',
-                      WebkitAppearance: 'none',
-                      MozAppearance: 'none'
-                    }}
-                  >
-                    <option value="" disabled hidden>Select Upcoming Infrastructure</option>
-                    <option value="Highway Expansion">Highway Expansion</option>
-                    <option value="Metro/Railway Project">Metro/Railway Project</option>
-                    <option value="Industrial Corridor">Industrial Corridor</option>
-                    <option value="No Major Project Planned">No Major Project Planned</option>
-                  </select>
-                  {/* Custom dropdown arrow */}
-                  <div style={{
-                    position: 'absolute',
-                    right: '25px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    pointerEvents: 'none',
-                    width: '12px',
-                    height: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1L7 7L13 1" stroke="#363434" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* Comments */}
-              <span style={{
-                position: 'absolute',
-                width: '182px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Add Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : activeSubTab === 10 ? (
-            /* TAB 10: RAILWAY CONNECTIVITY */
-            <>
-              {/* Any Railway Track Connectivity? */}
-              <div style={{
-                position: 'absolute',
-                width: '640px',
-                height: '92px',
-                left: '30px',
-                top: '30px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: '24px'
-              }}>
-                <span style={{
-                  width: '640px',
-                  height: '30px',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontStyle: 'normal',
-                  fontWeight: 600,
-                  fontSize: '24px',
-                  lineHeight: '30px',
-                  color: '#000000'
-                }}>
-                  Any Railway Track Connectivity?
-                </span>
-
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: '25px',
-                  width: '292px',
-                  height: '38px'
-                }}>
-                  {/* Available button */}
-                  <button
-                    onClick={() => setRailwayAvailability('Available')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '120px',
-                      height: '38px',
-                      background: railwayAvailability === 'Available' ? '#2B2D2F' : '#FFFFFF',
-                      border: railwayAvailability === 'Available' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      borderRadius: '33px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: '10px',
-                      width: '84px',
-                      height: '18px'
-                    }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: railwayAvailability === 'Available' ? '#3D93D1' : '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%'
-                      }} />
-                      <span style={{
-                        width: '62px',
-                        height: '18px',
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontStyle: 'normal',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '18px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        color: railwayAvailability === 'Available' ? '#FFFFFF' : '#000000'
-                      }}>
-                        Available
-                      </span>
-                    </div>
-                  </button>
-
-                  {/* Not Available button */}
-                  <button
-                    onClick={() => setRailwayAvailability('Not Available')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '147px',
-                      height: '38px',
-                      background: railwayAvailability === 'Not Available' ? '#2B2D2F' : '#FFFFFF',
-                      border: railwayAvailability === 'Not Available' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      borderRadius: '33px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: '10px',
-                      width: '111px',
-                      height: '18px'
-                    }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: railwayAvailability === 'Not Available' ? '#3D93D1' : '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%'
-                      }} />
-                      <span style={{
-                        width: '89px',
-                        height: '18px',
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontStyle: 'normal',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '18px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        color: railwayAvailability === 'Not Available' ? '#FFFFFF' : '#000000'
-                      }}>
-                        Not Available
-                      </span>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Select distance block */}
-              <div style={{
-                position: 'absolute',
-                width: '640px',
-                height: '97px',
-                left: '30px',
-                top: '156px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: '13px'
-              }}>
-                <span style={{
-                  width: '640px',
-                  height: '30px',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontStyle: 'normal',
-                  fontWeight: 600,
-                  fontSize: '24px',
-                  lineHeight: '30px',
-                  color: '#000000'
-                }}>
-                  Select distance
-                </span>
-
-                <div style={{
-                  position: 'relative',
-                  width: '640px',
-                  height: '54px'
-                }}>
-                  <select
-                    disabled={railwayAvailability === 'Not Available'}
-                    value={railwayDistance}
-                    onChange={(e) => setRailwayDistance(e.target.value)}
-                    style={{
-                      boxSizing: 'border-box',
-                      width: '640px',
-                      height: '54px',
-                      background: railwayAvailability === 'Not Available' ? '#F5F5F5' : '#FFFFFF',
-                      border: '1px solid rgba(0, 0, 0, 0.4)',
-                      borderRadius: '8px',
-                      padding: '0 45px 0 24px',
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: '18px',
-                      color: railwayAvailability === 'Not Available' ? 'rgba(0, 0, 0, 0.38)' : '#000000',
-                      cursor: railwayAvailability === 'Not Available' ? 'not-allowed' : 'pointer',
-                      appearance: 'none',
-                      WebkitAppearance: 'none',
-                      MozAppearance: 'none'
-                    }}
-                  >
-                    <option value="0 - 10 kms">0 - 10 kms</option>
-                    <option value="10 - 20 kms">10 - 20 kms</option>
-                    <option value="20 - 50 kms">20 - 50 kms</option>
-                    <option value="50+ kms">50+ kms</option>
-                  </select>
-                  {/* Arrow vector */}
-                  <div style={{
-                    position: 'absolute',
-                    right: '25px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    pointerEvents: 'none',
-                    width: '12px',
-                    height: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1L7 7L13 1" stroke="#363434" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* Comments */}
-              <span style={{
-                position: 'absolute',
-                width: '182px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Add Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          ) : (
-            /* TAB 11: AIRPORT CONNECTIVITY */
-            <>
-              {/* Any Airport Connectivity? */}
-              <div style={{
-                position: 'absolute',
-                width: '640px',
-                height: '92px',
-                left: '30px',
-                top: '30px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: '24px'
-              }}>
-                <span style={{
-                  width: '640px',
-                  height: '30px',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontStyle: 'normal',
-                  fontWeight: 600,
-                  fontSize: '24px',
-                  lineHeight: '30px',
-                  color: '#000000'
-                }}>
-                  Any Airpot Connectivity?
-                </span>
-
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: '25px',
-                  width: '292px',
-                  height: '38px'
-                }}>
-                  {/* Available button */}
-                  <button
-                    onClick={() => setAirportAvailability('Available')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '120px',
-                      height: '38px',
-                      background: airportAvailability === 'Available' ? '#2B2D2F' : '#FFFFFF',
-                      border: airportAvailability === 'Available' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      borderRadius: '33px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: '10px',
-                      width: '84px',
-                      height: '18px'
-                    }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: airportAvailability === 'Available' ? '#3D93D1' : '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%'
-                      }} />
-                      <span style={{
-                        width: '62px',
-                        height: '18px',
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontStyle: 'normal',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '18px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        color: airportAvailability === 'Available' ? '#FFFFFF' : '#000000'
-                      }}>
-                        Available
-                      </span>
-                    </div>
-                  </button>
-
-                  {/* Not Available button */}
-                  <button
-                    onClick={() => setAirportAvailability('Not Available')}
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '10px 18px',
-                      gap: '10px',
-                      width: '147px',
-                      height: '38px',
-                      background: airportAvailability === 'Not Available' ? '#2B2D2F' : '#FFFFFF',
-                      border: airportAvailability === 'Not Available' ? '1px solid #000000' : '1px solid rgba(0, 0, 0, 0.26)',
-                      borderRadius: '33px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: '10px',
-                      width: '111px',
-                      height: '18px'
-                    }}>
-                      <div style={{
-                        boxSizing: 'border-box',
-                        width: '12px',
-                        height: '12px',
-                        background: airportAvailability === 'Not Available' ? '#3D93D1' : '#FFFFFF',
-                        border: '2px solid #85BFE5',
-                        borderRadius: '50%'
-                      }} />
-                      <span style={{
-                        width: '89px',
-                        height: '18px',
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontStyle: 'normal',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '18px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        color: airportAvailability === 'Not Available' ? '#FFFFFF' : '#000000'
-                      }}>
-                        Not Available
-                      </span>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Select distance block */}
-              <div style={{
-                position: 'absolute',
-                width: '640px',
-                height: '97px',
-                left: '30px',
-                top: '156px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: '13px'
-              }}>
-                <span style={{
-                  width: '640px',
-                  height: '30px',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontStyle: 'normal',
-                  fontWeight: 600,
-                  fontSize: '24px',
-                  lineHeight: '30px',
-                  color: '#000000'
-                }}>
-                  Select distance
-                </span>
-
-                <div style={{
-                  position: 'relative',
-                  width: '640px',
-                  height: '54px'
-                }}>
-                  <select
-                    disabled={airportAvailability === 'Not Available'}
-                    value={airportDistance}
-                    onChange={(e) => setAirportDistance(e.target.value)}
-                    style={{
-                      boxSizing: 'border-box',
-                      width: '640px',
-                      height: '54px',
-                      background: airportAvailability === 'Not Available' ? '#F5F5F5' : '#FFFFFF',
-                      border: '1px solid rgba(0, 0, 0, 0.4)',
-                      borderRadius: '8px',
-                      padding: '0 45px 0 24px',
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: '18px',
-                      color: airportAvailability === 'Not Available' ? 'rgba(0, 0, 0, 0.38)' : '#000000',
-                      cursor: airportAvailability === 'Not Available' ? 'not-allowed' : 'pointer',
-                      appearance: 'none',
-                      WebkitAppearance: 'none',
-                      MozAppearance: 'none'
-                    }}
-                  >
-                    <option value="0 - 10 kms">0 - 10 kms</option>
-                    <option value="10 - 20 kms">10 - 20 kms</option>
-                    <option value="20 - 50 kms">20 - 50 kms</option>
-                    <option value="50+ kms">50+ kms</option>
-                  </select>
-                  {/* Arrow vector */}
-                  <div style={{
-                    position: 'absolute',
-                    right: '25px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    pointerEvents: 'none',
-                    width: '12px',
-                    height: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1L7 7L13 1" stroke="#363434" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* Comments */}
-              <span style={{
-                position: 'absolute',
-                width: '182px',
-                height: '30px',
-                left: '716px',
-                top: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                color: '#000000'
-              }}>
-                Add Comments
-              </span>
-
-              <div style={{
-                position: 'absolute',
-                width: '618px',
-                height: '181px',
-                left: '716px',
-                top: '73px',
-                boxSizing: 'border-box',
-                background: 'rgba(187, 219, 240, 0.38)',
-                border: '1px solid #96C9ED',
-                borderRadius: '18px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={currentComment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: '#000000',
-                    margin: 0
-                  }}
-                />
-              </div>
-            </>
-          )}
-
-          {/* ACTIONS FOOTER BUTTONS */}
-          <div style={{
-            position: 'absolute',
-            width: '254px',
-            height: '38px',
-            right: '25px',
-            bottom: '26px',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: '12px'
-          }}>
-            <button 
-              onClick={handleTurnBack}
-              style={{
-                boxSizing: 'border-box',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '10px',
-                width: '121px',
-                height: '38px',
-                border: '1px solid rgba(0, 0, 0, 0.27)',
-                borderRadius: '33px',
-                background: 'transparent',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 500,
-                fontSize: '14px',
-                color: 'rgba(0, 0, 0, 0.8)',
-                cursor: 'pointer'
-              }}
-            >
-              Turn Back
-            </button>
-            <button 
-              onClick={handleApprove}
-              style={{
-                boxSizing: 'border-box',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '10px',
-                width: '121px',
-                height: '38px',
-                background: '#2780C4',
-                borderRadius: '33px',
-                border: 'none',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '14px',
-                color: '#FFFFFF',
-                cursor: 'pointer'
-              }}
-            >
-              Approve
-            </button>
-          </div>
-
+             </div>
+           </div>
         </div>
-
       </div>
 
       {showApproveModal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(255, 255, 255, 0.7)',
-          backdropFilter: 'blur(2px)',
-          WebkitBackdropFilter: 'blur(2px)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 9999
-        }}>
-          <div style={{
-            boxSizing: 'border-box',
-            position: 'relative',
-            width: '610px',
-            height: '477px',
-            background: '#FFFFFF',
-            border: '1px solid rgba(0, 0, 0, 0.2)',
-            boxShadow: '0px 0px 12.5px rgba(0, 0, 0, 0.15)',
-            borderRadius: '24px',
-            transform: `scale(${scale})`,
-            transformOrigin: 'center'
-          }}>
-            {/* Title */}
-            <span style={{
-              position: 'absolute',
-              width: '256px',
-              height: '30px',
-              left: 'calc(50% - 256px/2)',
-              top: '32px',
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontStyle: 'normal',
-              fontWeight: 600,
-              fontSize: '24px',
-              lineHeight: '30px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#000000'
-            }}>
-              Valuation
-            </span>
-
-            {/* Verification Icon Container */}
-            <div style={{
-              position: 'absolute',
-              width: '180px',
-              height: '180px',
-              left: 'calc(50% - 180px/2)',
-              top: '85px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}>
-              {/* Outer seal (light blue tint) */}
-              <svg width="180" height="180" viewBox="0 0 24 24" fill="rgba(39, 128, 196, 0.08)" xmlns="http://www.w3.org/2000/svg" style={{ position: 'absolute', left: 0, top: 0 }}>
+        <div className="fixed inset-0 bg-white/70 backdrop-blur-sm flex justify-center items-center z-[9999] p-4">
+          <div className="bg-white border border-black/20 shadow-[0px_0px_12.5px_rgba(0,0,0,0.15)] rounded-[24px] w-full w-full lg:max-w-[610px] flex flex-col items-center py-8 px-6 relative">
+            <span className="font-plus-jakarta font-semibold text-[24px] leading-[30px] text-black text-center w-full mb-6">Valuation</span>
+            
+            <div className="relative w-[180px] h-[180px] flex justify-center items-center mb-6">
+              <svg width="180" height="180" viewBox="0 0 24 24" fill="rgba(39, 128, 196, 0.08)" className="absolute inset-0">
                 <path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.7 3.1 5.51l.34 3.69L1 12l2.44 2.79-.34 3.69 3.61.82 1.89 3.2L12 21.04l3.4 1.46 1.89-3.2 3.61-.82-.34-3.69L23 12z"/>
               </svg>
-
-              {/* Inner seal (solid blue with white check) */}
-              <div style={{
-                position: 'absolute',
-                width: '126px',
-                height: '126px',
-                left: '27px',
-                top: '27px'
-              }}>
-                <svg width="126" height="126" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <div className="w-[126px] h-[126px] relative z-10">
+                <svg width="126" height="126" viewBox="0 0 24 24" fill="none">
                   <path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.7 3.1 5.51l.34 3.69L1 12l2.44 2.79-.34 3.69 3.61.82 1.89 3.2L12 21.04l3.4 1.46 1.89-3.2 3.61-.82-.34-3.69L23 12z" fill="#2780C4"/>
                   <path d="M10.09 16.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z" fill="#FFFFFF"/>
                 </svg>
               </div>
             </div>
 
-            {/* Description */}
-            <span style={{
-              position: 'absolute',
-              width: '428px',
-              height: '75px',
-              left: 'calc(50% - 428px/2)',
-              top: '267px',
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontStyle: 'normal',
-              fontWeight: 700,
-              fontSize: '20px',
-              lineHeight: '25px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-              color: '#3D4949'
-            }}>
-              <span>
-                Proceed With <span style={{ color: '#2780C4' }}>‘Valuation’</span> Approval For The Farmland ID: <span style={{ color: '#2780C4' }}>{targetId}</span> to Complete The Verification.
-              </span>
+            <span className="font-plus-jakarta font-bold text-[20px] leading-[25px] text-center text-[#3D4949] w-full lg:max-w-[428px] mb-8">
+              Proceed With <span className="text-[#2780C4]">‘Valuation’</span> Approval For The Farmland ID: <span className="text-[#2780C4]">{targetId}</span> to Complete The Verification.
             </span>
 
-            <button 
-              onClick={handleProceed}
-              style={{
-                boxSizing: 'border-box',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '17px',
-                gap: '17px',
-                position: 'absolute',
-                width: '204px',
-                height: '64px',
-                left: 'calc(50% - 204px/2)',
-                top: '373px',
-                background: '#2780C4',
-                borderRadius: '56.1383px',
-                border: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              <span style={{
-                width: '100px',
-                height: '30px',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontStyle: 'normal',
-                fontWeight: 600,
-                fontSize: '23.8px',
-                lineHeight: '30px',
-                display: 'flex',
-                alignItems: 'center',
-                textAlign: 'center',
-                color: '#FFFFFF'
-              }}>
-                Proceed
-              </span>
+            <button onClick={handleProceed} className="flex items-center justify-center bg-[#2780C4] rounded-[56px] border-none px-6 py-4 cursor-pointer min-w-[204px]">
+              <span className="font-plus-jakarta font-semibold text-[23.8px] text-white">Proceed</span>
             </button>
           </div>
         </div>
       )}
 
       {showTurnbackModal && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: '#F9F9F9',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 99999
-        }}>
-          {/* Top Right Profile Header inside full page background */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: '13.06px',
-            position: 'absolute',
-            width: '117.06px',
-            height: '52px',
-            right: '40px',
-            top: '34px',
-            zIndex: 100000
-          }}>
-            {/* Bell Container */}
-            <button style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '8px',
-              gap: '10px',
-              width: '52px',
-              height: '52px',
-              background: '#FFFFFF',
-              borderRadius: '40px',
-              border: 'none',
-              cursor: 'pointer',
-              position: 'relative'
-            }}>
+        <div className="fixed inset-0 bg-[#F9F9F9] flex flex-col items-center justify-center z-[9999] p-4">
+          <div className="absolute top-8 right-8 flex flex-row items-center gap-[13px]">
+            <button className="flex flex-row justify-center items-center p-2 w-[52px] h-[52px] bg-white rounded-full relative shadow-sm border-none cursor-pointer">
               <Bell className="w-6 h-6 text-[#2C2C2C]" strokeWidth={1.5} />
-              <span style={{
-                position: 'absolute',
-                width: '5px',
-                height: '5px',
-                left: '32.5px',
-                top: '12px',
-                background: '#EF4646',
-                borderRadius: '50%'
-              }} />
+              <span className="absolute w-[5px] h-[5px] right-[14px] top-[12px] bg-[#EF4646] rounded-full" />
             </button>
-
-            {/* Avatar Container */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '0px',
-              width: '52px',
-              height: '52px',
-              background: '#FFFFFF',
-              borderRadius: '72.5581px',
-              overflow: 'hidden'
-            }}>
-              <img
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80"
-                alt="User profile avatar"
-                style={{
-                  width: '52px',
-                  height: '52px',
-                  objectFit: 'cover'
-                }}
-              />
+            <div className="flex flex-row justify-center items-center w-[52px] h-[52px] bg-white rounded-full overflow-hidden shadow-sm">
+              <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" alt="User profile avatar" className="w-[52px] h-[52px] object-cover" />
             </div>
           </div>
 
-          {/* Rejection Reason Card */}
-          <div style={{
-            boxSizing: 'border-box',
-            position: 'relative',
-            width: '672px',
-            height: '433px',
-            background: '#FFFFFF',
-            boxShadow: '0px 20px 40px rgba(0, 49, 50, 0.06)',
-            borderRadius: '32px',
-            transform: `scale(${scale})`,
-            transformOrigin: 'center'
-          }}>
-            {/* Header */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '24px 32px',
-              height: '80px',
-              boxSizing: 'border-box',
-              borderBottom: '1px solid rgba(0, 0, 0, 0.05)'
-            }}>
-              <span style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontWeight: 600,
-                fontSize: '24px',
-                lineHeight: '32px',
-                letterSpacing: '-0.6px',
-                color: '#1A1C1D'
-              }}>
-                Turnback
-              </span>
-              <button 
-                onClick={() => setShowTurnbackModal(false)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
+          <div className="w-full w-full lg:max-w-[672px] bg-white shadow-[0px_20px_40px_rgba(0,49,50,0.06)] rounded-[32px] flex flex-col">
+            <div className="flex flex-row justify-between items-center px-8 py-6 border-b border-black/5">
+              <span className="font-plus-jakarta font-semibold text-[24px] leading-[32px] tracking-[-0.6px] text-[#1A1C1D]">Turnback</span>
+              <button onClick={() => setShowTurnbackModal(false)} className="bg-transparent border-none cursor-pointer flex items-center justify-center p-0">
                 <X className="w-[30px] h-[30px] text-black" strokeWidth={1.5} />
               </button>
             </div>
-
-            {/* Body */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              padding: '24px 32px',
-              gap: '12px',
-              boxSizing: 'border-box'
-            }}>
-              <span style={{
-                fontFamily: "'Inter', sans-serif",
-                fontWeight: 400,
-                fontSize: '14px',
-                lineHeight: '20px',
-                color: '#3D4949'
-              }}>
-                Provide the reason for turnback:
-              </span>
-              
-              <div style={{
-                boxSizing: 'border-box',
-                width: '608px',
-                height: '200px',
-                background: '#F3F3F5',
-                border: '1px solid #BCC9C9',
-                borderRadius: '16px',
-                padding: '24px'
-              }}>
-                <textarea
-                  value={turnbackReason}
-                  onChange={(e) => setTurnbackReason(e.target.value)}
-                  placeholder="Start writing here..."
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '26px',
-                    color: '#1A1C1D',
-                    background: 'transparent',
-                    border: 'none',
-                    outline: 'none',
-                    resize: 'none'
-                  }}
-                />
+            <div className="flex flex-col p-8 gap-3">
+              <span className="font-inter font-normal text-[14px] leading-[20px] text-[#3D4949]">Provide the reason for turnback:</span>
+              <div className="w-full h-[200px] bg-[#F3F3F5] border border-[#BCC9C9] rounded-[16px] p-6">
+                <textarea value={turnbackReason} onChange={(e) => setTurnbackReason(e.target.value)} placeholder="Start writing here..." className="w-full h-full bg-transparent border-none outline-none resize-none font-plus-jakarta text-[16px] leading-[26px] text-black" />
               </div>
-            </div>
-
-            {/* Footer Buttons */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: '12px',
-              position: 'absolute',
-              width: '254px',
-              height: '38px',
-              left: '386px',
-              top: '360px'
-            }}>
-              <button 
-                onClick={() => setShowTurnbackModal(false)}
-                style={{
-                  boxSizing: 'border-box',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '10px',
-                  width: '121px',
-                  height: '38px',
-                  border: '1px solid rgba(0, 0, 0, 0.27)',
-                  borderRadius: '33px',
-                  background: 'transparent',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 500,
-                  fontSize: '14px',
-                  color: 'rgba(0, 0, 0, 0.8)',
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={confirmTurnBack}
-                style={{
-                  boxSizing: 'border-box',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '10px',
-                  width: '121px',
-                  height: '38px',
-                  background: '#2780C4',
-                  borderRadius: '33px',
-                  border: 'none',
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  color: '#FFFFFF',
-                  cursor: 'pointer'
-                }}
-              >
-                Turnback
-              </button>
+              <div className="flex justify-end mt-4 gap-3">
+                <button onClick={() => setShowTurnbackModal(false)} className="bg-transparent border border-black/30 rounded-[33px] px-6 py-2 cursor-pointer text-black/80 font-plus-jakarta font-medium text-[14px]">Cancel</button>
+                <button onClick={confirmTurnBack} className="bg-[#2780C4] rounded-[33px] border-none px-6 py-2 cursor-pointer text-white font-plus-jakarta font-semibold text-[14px]">Turnback</button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 };

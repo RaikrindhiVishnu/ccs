@@ -46,7 +46,7 @@ const AssignedFarmlands: React.FC = () => {
   ];
 
   return (
-    <div className="pt-2 pb-16 font-plus-jakarta max-w-[1407px] mx-auto">
+    <div className="pt-2 pb-16 font-plus-jakarta w-full lg:max-w-[1407px] mx-auto">
       {/* Welcome Section */}
       <div className="mb-6">
         <h1 className="text-[27px] font-semibold text-black uppercase tracking-wide leading-tight">
@@ -91,7 +91,7 @@ const AssignedFarmlands: React.FC = () => {
         <div className="flex flex-col xl:flex-row gap-[19.38px] w-full items-stretch">
           
           {/* Article - Focus Card (Large Span) */}
-          <div className="relative w-full xl:w-[558px] h-[461px] rounded-[29px] overflow-hidden group shadow-sm shrink-0 bg-[#091426]">
+          <div className="relative w-full xl:w-[558px] h-auto lg:h-[461px] rounded-[29px] overflow-hidden group shadow-sm shrink-0 bg-[#091426]">
             <img
               src={containerSvg}
               alt="Premium Farmland Aerial"
@@ -123,7 +123,7 @@ const AssignedFarmlands: React.FC = () => {
           </div>
 
           {/* Article - Standard Card 1 */}
-          <div className="bg-white rounded-[23.25px] overflow-hidden shadow-sm border border-gray-100 flex flex-col shrink-0 flex-1 xl:w-[263.5px] h-[461px]">
+          <div className="bg-white rounded-[23.25px] overflow-hidden shadow-sm border border-gray-100 flex flex-col shrink-0 flex-1 xl:w-[263.5px] h-auto lg:h-[461px]">
             <div className="w-full h-[186px] relative overflow-hidden bg-gray-50 shrink-0 flex items-center justify-center">
               <img
                 src={vineyardRowsSvg}
@@ -165,7 +165,7 @@ const AssignedFarmlands: React.FC = () => {
           </div>
 
           {/* Article - Standard Card 2 */}
-          <div className="bg-white rounded-[24px] overflow-hidden shadow-sm border border-gray-100 flex flex-col shrink-0 flex-1 xl:w-[264px] h-[461px]">
+          <div className="bg-white rounded-[24px] overflow-hidden shadow-sm border border-gray-100 flex flex-col shrink-0 flex-1 xl:w-[264px] h-auto lg:h-[461px]">
             <div className="w-full h-[186px] relative overflow-hidden bg-gray-50 shrink-0 flex items-center justify-center">
               <img
                 src={wheatFieldSvg}
@@ -211,7 +211,7 @@ const AssignedFarmlands: React.FC = () => {
           </div>
 
           {/* Article - Standard Card 3 */}
-          <div className="bg-white rounded-[24px] overflow-hidden shadow-sm border border-gray-100 flex flex-col shrink-0 flex-1 xl:w-[263px] h-[461px]">
+          <div className="bg-white rounded-[24px] overflow-hidden shadow-sm border border-gray-100 flex flex-col shrink-0 flex-1 xl:w-[263px] h-auto lg:h-[461px]">
             <div className="w-full h-[186px] relative overflow-hidden bg-gray-50 shrink-0 flex items-center justify-center">
               <img
                 src={vineyardRows1Svg}
@@ -260,7 +260,7 @@ const AssignedFarmlands: React.FC = () => {
         {/* ROW 2: 4 More Beautiful Standard Cards matching the interface bottom overflow */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-[19.38px] w-full mt-2">
           {row2Lands.map((item, idx) => (
-            <div key={idx} className="bg-white rounded-[24px] overflow-hidden shadow-sm border border-gray-100 flex flex-col h-[461px]">
+            <div key={idx} className="bg-white rounded-[24px] overflow-hidden shadow-sm border border-gray-100 flex flex-col h-auto lg:h-[461px]">
               <div className="w-full h-[186px] relative overflow-hidden bg-gray-50 shrink-0 flex items-center justify-center">
                 <img
                   src={item.image}

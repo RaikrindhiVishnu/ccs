@@ -30,7 +30,7 @@ function CustomSelect({
   }, []);
 
   return (
-    <div className="flex flex-col gap-[8px] relative" ref={ref}>
+    <div className={`flex flex-col gap-[8px] relative ${isOpen ? 'z-[100]' : 'z-10'}`} ref={ref}>
       <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[21px] text-[#0F172A]">
         {label}
       </label>
@@ -243,7 +243,7 @@ export default function FiltersModal({
                 {/* Form Date */}
                 <div className="flex flex-col gap-[8px]" ref={fromDateRef}>
                   <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[21px] text-[#0F172A]">
-                    Form Date
+                    From Date
                   </label>
                   <div
                     onClick={() => {
@@ -271,10 +271,10 @@ export default function FiltersModal({
                   )}
                 </div>
 
-                {/* Too Date */}
+                {/* To Date */}
                 <div className="flex flex-col gap-[8px]" ref={toDateRef}>
                   <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[21px] text-[#0F172A]">
-                    Too Date
+                    To Date
                   </label>
                   <div
                     onClick={() => {
