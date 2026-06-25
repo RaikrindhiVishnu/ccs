@@ -283,8 +283,8 @@ const AgentAvatar = ({ name, avatarUrl }: { name: string; avatarUrl?: string }) 
     <div
       className="
         flex items-center justify-center rounded-full shrink-0 bg-[var(--border-subtle)]
-        w-[clamp(1.775rem,2.78vw,3.325rem)]
-        h-[clamp(1.775rem,2.78vw,3.325rem)]
+        w-[clamp(1.3344rem,2.78vw,3.325rem)]
+        h-[clamp(1.3344rem,2.78vw,3.325rem)]
       "
     >
       {avatarUrl ? (
@@ -297,7 +297,7 @@ const AgentAvatar = ({ name, avatarUrl }: { name: string; avatarUrl?: string }) 
         <span
           className="
             font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-            text-[clamp(0.66rem,1.04vw,1.25rem)]
+            text-[clamp(0.4992rem,1.04vw,1.25rem)]
           "
         >
           {initials}
@@ -309,14 +309,14 @@ const AgentAvatar = ({ name, avatarUrl }: { name: string; avatarUrl?: string }) 
 
 const InfoField = ({
   label,
-  fontSizeClass = "text-[clamp(0.53rem,0.83vw,1rem)] leading-[clamp(0.71rem,1.11vw,1.33rem)]",
+  fontSizeClass = "text-[clamp(0.3984rem,0.83vw,1.0rem)] leading-[clamp(0.5328rem,1.11vw,1.33rem)]",
   children,
 }: {
   label: string;
   fontSizeClass?: string;
   children: React.ReactNode;
 }) => (
-  <div className="flex flex-col gap-[clamp(0.177rem,0.28vw,0.33rem)]">
+  <div className="flex flex-col gap-[clamp(0.1344rem,0.28vw,0.33rem)]">
     <span
       className={`
         font-normal uppercase tracking-[0.6px]
@@ -345,18 +345,18 @@ const StatusBox = ({
       flex flex-row justify-between items-center
       bg-[var(--status-pending-bg)]
       border border-[var(--border-default)]
-      rounded-[clamp(1.42rem,2.22vw,2.66rem)]
-      p-[clamp(1.0625rem,1.67vw,2rem)]
+      rounded-[clamp(1.0656rem,2.22vw,2.66rem)]
+      p-[clamp(0.8016rem,1.67vw,2.0rem)]
       w-full
     "
   >
-    <div className="flex flex-col gap-[clamp(0.177rem,0.28vw,0.33rem)]">
+    <div className="flex flex-col gap-[clamp(0.1344rem,0.28vw,0.33rem)]">
       <span
         className="
           font-normal uppercase tracking-[0.6px]
           text-[var(--text-secondary)]
-          text-[clamp(0.53rem,0.83vw,1rem)]
-          leading-[clamp(0.71rem,1.11vw,1.33rem)]
+          text-[clamp(0.3984rem,0.83vw,1.0rem)]
+          leading-[clamp(0.5328rem,1.11vw,1.33rem)]
           font-[family-name:var(--font-sans)]
         "
       >
@@ -365,8 +365,8 @@ const StatusBox = ({
       <span
         className="
           font-medium text-[var(--text-primary)]
-          text-[clamp(0.8rem,1.25vw,1.5rem)]
-          leading-[clamp(1.25rem,1.94vw,2.33rem)]
+          text-[clamp(0.6rem,1.25vw,1.5rem)]
+          leading-[clamp(0.9375rem,1.94vw,2.33rem)]
           font-[family-name:var(--font-sans)]
         "
       >
@@ -420,37 +420,37 @@ const FarmlandsListDetailView = () => {
         className="
           mx-auto w-full
           max-w-full
-          pt-[clamp(1.5rem,2.36vw,2.81rem)]
+          pt-[clamp(1.1328rem,2.36vw,2.81rem)]
           pb-0
           flex flex-col
         "
       >
         {/* Top nav header (Go Back & Profile / Notification) */}
-        <div className="px-[clamp(1.775rem,2.78vw,3.3rem)] w-full flex items-center justify-between">
+        <div className="px-[clamp(1.3344rem,2.78vw,3.3rem)] w-full flex items-center justify-between">
           <BackButton
             label="Go Back to Dashboard"
             variant="light"
             size="default"
             onClick={handleBack}
             className="
-              w-[clamp(15.5rem,16.94vw,20.3rem)]
-              h-[clamp(2.31rem,3.61vw,4.3rem)]
-              text-[clamp(0.71rem,1.11vw,1.33rem)]
-              py-[clamp(0.84rem,1.32vw,1.56rem)]
-              px-[clamp(0.8875rem,1.39vw,1.66rem)]
+              w-[clamp(11.625rem,16.94vw,20.3rem)]
+              h-[clamp(1.7328rem,3.61vw,4.3rem)]
+              text-[clamp(0.5328rem,1.11vw,1.33rem)]
+              py-[clamp(0.6336rem,1.32vw,1.56rem)]
+              px-[clamp(0.6672rem,1.39vw,1.66rem)]
               font-[family-name:var(--font-sans)]
               text-[var(--text-button)]
             "
           />
 
           {/* Right side notifications and user profile */}
-          <div className="flex items-center gap-[clamp(0.5rem,0.9vw,0.8125rem)]">
+          <div className="flex items-center gap-[clamp(0.432rem,0.9vw,0.8125rem)]">
             <button
               className="
                 relative
                 flex items-center justify-center bg-[var(--surface-card)] rounded-full shrink-0
-                w-[clamp(2.25rem,3.61vw,3.25rem)]
-                h-[clamp(2.25rem,3.61vw,3.25rem)]
+                w-[clamp(1.7328rem,3.61vw,3.25rem)]
+                h-[clamp(1.7328rem,3.61vw,3.25rem)]
                 shadow-sm
                 border border-[var(--border)]
                 hover:opacity-85 transition-opacity
@@ -458,8 +458,8 @@ const FarmlandsListDetailView = () => {
               "
               aria-label="Notifications"
             >
-              <Bell className="w-[clamp(1rem,1.67vw,1.5rem)] h-[clamp(1rem,1.67vw,1.5rem)] text-[var(--text-primary)]" />
-              <span className="absolute top-[clamp(0.44rem,0.69vw,0.625rem)] right-[clamp(0.44rem,0.69vw,0.625rem)] w-[clamp(0.35rem,0.56vw,0.5rem)] h-[clamp(0.35rem,0.56vw,0.5rem)] bg-red-500 rounded-full" />
+              <Bell className="w-[clamp(0.8016rem,1.67vw,1.5rem)] h-[clamp(0.8016rem,1.67vw,1.5rem)] text-[var(--text-primary)]" />
+              <span className="absolute top-[clamp(0.3312rem,0.69vw,0.625rem)] right-[clamp(0.3312rem,0.69vw,0.625rem)] w-[clamp(0.2688rem,0.56vw,0.5rem)] h-[clamp(0.2688rem,0.56vw,0.5rem)] bg-red-500 rounded-full" />
             </button>
 
             {/* Avatar / Profile Dropdown / Logout button */}
@@ -469,8 +469,8 @@ const FarmlandsListDetailView = () => {
               className="
                 relative overflow-hidden
                 flex items-center justify-center rounded-full bg-[var(--surface-card)] shrink-0
-                w-[clamp(2.25rem,3.61vw,3.25rem)]
-                h-[clamp(2.25rem,3.61vw,3.25rem)]
+                w-[clamp(1.7328rem,3.61vw,3.25rem)]
+                h-[clamp(1.7328rem,3.61vw,3.25rem)]
                 hover:opacity-90 transition-opacity
                 cursor-pointer
               "
@@ -485,7 +485,7 @@ const FarmlandsListDetailView = () => {
                 <span
                   className="
                     font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-                    text-[clamp(0.8875rem,1.39vw,1.6625rem)]
+                    text-[clamp(0.6672rem,1.39vw,1.668rem)]
                   "
                 >
                   {initials}
@@ -499,18 +499,18 @@ const FarmlandsListDetailView = () => {
         <div
           className="
             flex flex-col w-full
-            px-[clamp(4.25rem,6.67vw,8rem)]
+            px-[clamp(3.2016rem,6.67vw,8.0rem)]
           "
         >
           {/* Page Heading */}
-          <div className="flex flex-col gap-2 mt-[clamp(1.33rem,2.08vw,2.5rem)]">
+          <div className="flex flex-col gap-2 mt-[clamp(0.9984rem,2.08vw,2.5rem)]">
             <Typography
               as="h1"
               className="
                 font-extrabold tracking-[-1.2px] text-[var(--text-primary)]
                 font-[family-name:var(--font-heading)]
-                text-[clamp(1.25rem,1.94vw,2.33rem)]
-                leading-[clamp(2.125rem,3.33vw,4rem)]
+                text-[clamp(0.9375rem,1.94vw,2.33rem)]
+                leading-[clamp(1.5984rem,3.33vw,4.0rem)]
               "
             >
               Farmlands List
@@ -522,13 +522,13 @@ const FarmlandsListDetailView = () => {
             className="
               relative overflow-hidden flex flex-col justify-end items-start
               w-full
-              h-[clamp(18.15rem,28.4vw,34rem)]
+              h-[clamp(13.632rem,28.4vw,34.0rem)]
               min-h-[300px]
               bg-[var(--border-default)]
-              rounded-[clamp(1.42rem,2.22vw,2.66rem)]
+              rounded-[clamp(1.0656rem,2.22vw,2.66rem)]
               shadow-[0px_20px_40px_rgba(0,49,50,0.04)]
-              mt-[clamp(1.25rem,1.94vw,2.33rem)]
-              pb-[clamp(1.775rem,2.81vw,3.325rem)]
+              mt-[clamp(0.9375rem,1.94vw,2.33rem)]
+              pb-[clamp(1.3488rem,2.81vw,3.325rem)]
             "
           >
             {/* Background Image */}
@@ -545,26 +545,26 @@ const FarmlandsListDetailView = () => {
             <div
               className="
                 relative z-10 flex flex-row justify-between items-center w-full
-                px-[clamp(3.125rem,5.14vw,6.25rem)]
+                px-[clamp(2.4672rem,5.14vw,6.25rem)]
               "
             >
               {/* Left: badge + name + location */}
-              <div className="flex flex-col gap-[clamp(0.356rem,0.56vw,0.665rem)]">
+              <div className="flex flex-col gap-[clamp(0.2688rem,0.56vw,0.665rem)]">
                 {/* Badge pill */}
                 <div
                   className="
                     inline-flex items-center self-start
                     bg-[rgba(255,255,255,0.2)] border border-[rgba(255,255,255,0.1)]
                     backdrop-filter backdrop-blur-[6px] rounded-full
-                    px-[clamp(0.53rem,0.83vw,1rem)]
-                    py-[clamp(0.177rem,0.28vw,0.33rem)]
+                    px-[clamp(0.3984rem,0.83vw,1.0rem)]
+                    py-[clamp(0.1344rem,0.28vw,0.33rem)]
                   "
                 >
                   <span
                     className="
                       font-bold uppercase tracking-[0.6px] text-white
-                      text-[clamp(0.53rem,0.83vw,1rem)]
-                      leading-[clamp(0.71rem,1.11vw,1.33rem)]
+                      text-[clamp(0.3984rem,0.83vw,1.0rem)]
+                      leading-[clamp(0.5328rem,1.11vw,1.33rem)]
                       font-[family-name:var(--font-sans)]
                     "
                   >
@@ -576,8 +576,8 @@ const FarmlandsListDetailView = () => {
                 <h2
                   className="
                     font-extrabold text-white tracking-[-1.2px]
-                    text-[clamp(2.125rem,3.33vw,4rem)]
-                    leading-[clamp(2.125rem,3.33vw,4rem)]
+                    text-[clamp(1.5984rem,3.33vw,4.0rem)]
+                    leading-[clamp(1.5984rem,3.33vw,4.0rem)]
                     drop-shadow-[0px_2px_2px_rgba(0,0,0,0.06)]
                     font-[family-name:var(--font-sans)]
                   "
@@ -586,13 +586,13 @@ const FarmlandsListDetailView = () => {
                 </h2>
 
                 {/* Location */}
-                <div className="flex items-center gap-[clamp(0.177rem,0.28vw,0.33rem)]">
+                <div className="flex items-center gap-[clamp(0.1344rem,0.28vw,0.33rem)]">
                   <MapPinIcon />
                   <span
                     className="
                       font-normal text-[var(--border-subtle)]
-                      text-[clamp(0.71rem,1.11vw,1.33rem)]
-                      leading-[clamp(1.0625rem,1.67vw,2rem)]
+                      text-[clamp(0.5328rem,1.11vw,1.33rem)]
+                      leading-[clamp(0.8016rem,1.67vw,2.0rem)]
                       font-[family-name:var(--font-sans)]
                     "
                   >
@@ -602,7 +602,7 @@ const FarmlandsListDetailView = () => {
               </div>
 
               {/* Right: Land Extend & Total Amount side-by-side */}
-              <div className="flex flex-row gap-[clamp(0.71rem,1.11vw,1.33rem)] items-center">
+              <div className="flex flex-row gap-[clamp(0.5328rem,1.11vw,1.33rem)] items-center">
                 {/* Land Extend Card */}
                 <div
                   className="
@@ -610,10 +610,10 @@ const FarmlandsListDetailView = () => {
                     bg-white border border-[rgba(255,255,255,0.2)]
                     backdrop-blur-[10px]
                     rounded-[16px]
-                    p-[clamp(1.125rem,1.67vw,2rem)]
-                    gap-[clamp(0.1875rem,0.28vw,0.33rem)]
-                    w-[clamp(8.8125rem,13.06vw,15.67rem)]
-                    h-[clamp(4.97rem,7.36vw,8.83rem)]
+                    p-[clamp(0.8438rem,1.67vw,2.0rem)]
+                    gap-[clamp(0.1406rem,0.28vw,0.33rem)]
+                    w-[clamp(6.6094rem,13.06vw,15.67rem)]
+                    h-[clamp(3.7275rem,7.36vw,8.83rem)]
                     shrink-0
                   "
                 >
@@ -621,8 +621,8 @@ const FarmlandsListDetailView = () => {
                     className="
                       font-semibold uppercase tracking-[0.6px] text-left
                       text-[#3D4949]
-                      text-[clamp(0.5625rem,0.83vw,1rem)]
-                      leading-[clamp(0.75rem,1.11vw,1.33rem)]
+                      text-[clamp(0.4219rem,0.83vw,1.0rem)]
+                      leading-[clamp(0.5625rem,1.11vw,1.33rem)]
                       font-[family-name:var(--font-sans)]
                     "
                   >
@@ -631,8 +631,8 @@ const FarmlandsListDetailView = () => {
                   <span
                     className="
                       font-bold text-black text-left
-                      text-[clamp(1.4rem,2.08vw,2.5rem)]
-                      leading-[clamp(1.6875rem,2.5vw,3rem)]
+                      text-[clamp(1.05rem,2.08vw,2.5rem)]
+                      leading-[clamp(1.2656rem,2.5vw,3.0rem)]
                       font-[family-name:var(--font-sans)]
                     "
                   >
@@ -647,10 +647,10 @@ const FarmlandsListDetailView = () => {
                     bg-white border border-[rgba(255,255,255,0.2)]
                     backdrop-blur-[10px]
                     rounded-[16px]
-                    p-[clamp(1.125rem,1.67vw,2rem)]
-                    gap-[clamp(0.1875rem,0.28vw,0.33rem)]
-                    w-[clamp(7.875rem,11.67vw,14rem)]
-                    h-[clamp(4.97rem,7.36vw,8.83rem)]
+                    p-[clamp(0.8438rem,1.67vw,2.0rem)]
+                    gap-[clamp(0.1406rem,0.28vw,0.33rem)]
+                    w-[clamp(5.9062rem,11.67vw,14.0rem)]
+                    h-[clamp(3.7275rem,7.36vw,8.83rem)]
                     shrink-0
                   "
                 >
@@ -658,8 +658,8 @@ const FarmlandsListDetailView = () => {
                     className="
                       font-semibold uppercase tracking-[0.6px] text-left
                       text-[#3D4949]
-                      text-[clamp(0.5625rem,0.83vw,1rem)]
-                      leading-[clamp(0.75rem,1.11vw,1.33rem)]
+                      text-[clamp(0.4219rem,0.83vw,1.0rem)]
+                      leading-[clamp(0.5625rem,1.11vw,1.33rem)]
                       font-[family-name:var(--font-sans)]
                     "
                   >
@@ -668,8 +668,8 @@ const FarmlandsListDetailView = () => {
                   <span
                     className="
                       font-bold text-black text-left
-                      text-[clamp(1.4rem,2.08vw,2.5rem)]
-                      leading-[clamp(1.6875rem,2.5vw,3rem)]
+                      text-[clamp(1.05rem,2.08vw,2.5rem)]
+                      leading-[clamp(1.2656rem,2.5vw,3.0rem)]
                       font-[family-name:var(--font-sans)]
                     "
                   >
@@ -686,9 +686,9 @@ const FarmlandsListDetailView = () => {
               grid
               grid-cols-1
               md:grid-cols-2
-              lg:grid-cols-3
-              gap-[clamp(1.7rem,2.7vw,3.22rem)]
-              mt-[clamp(2.125rem,3.33vw,4rem)]
+              md:grid-cols-3
+              gap-[clamp(1.296rem,2.7vw,3.22rem)]
+              mt-[clamp(1.5984rem,3.33vw,4.0rem)]
             "
           >
             {/* Card 1: Asset Details */}
@@ -699,17 +699,17 @@ const FarmlandsListDetailView = () => {
                 border border-[rgba(188,201,201,0.15)]
                 shadow-[0px_20px_40px_rgba(0,49,50,0.02)]
                 rounded-[32px]
-                pt-[clamp(1.42rem,2.22vw,2.66rem)]
-                px-[clamp(1.42rem,2.22vw,2.66rem)]
-                pb-[clamp(3.33rem,5.21vw,6.25rem)]
-                gap-[clamp(1.42rem,2.22vw,2.66rem)]
+                pt-[clamp(1.0656rem,2.22vw,2.66rem)]
+                px-[clamp(1.0656rem,2.22vw,2.66rem)]
+                pb-[clamp(2.5008rem,5.21vw,6.25rem)]
+                gap-[clamp(1.0656rem,2.22vw,2.66rem)]
                 h-full
               "
             >
               {/* Heading */}
               <div
                 className="
-                  pb-[clamp(0.71rem,1.11vw,1.33rem)]
+                  pb-[clamp(0.5328rem,1.11vw,1.33rem)]
                   border-b border-[var(--border-subtle)]
                 "
               >
@@ -718,8 +718,8 @@ const FarmlandsListDetailView = () => {
                   variant="h4"
                   className="
                     font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-                    text-[clamp(0.8875rem,1.39vw,1.6625rem)]
-                    leading-[clamp(1.25rem,1.94vw,2.33rem)]
+                    text-[clamp(0.6672rem,1.39vw,1.668rem)]
+                    leading-[clamp(0.9375rem,1.94vw,2.33rem)]
                   "
                 >
                   Asset Details
@@ -727,14 +727,14 @@ const FarmlandsListDetailView = () => {
               </div>
 
               {/* Fields */}
-              <div className="flex flex-col gap-[clamp(0.8875rem,1.39vw,1.6625rem)]">
+              <div className="flex flex-col gap-[clamp(0.6672rem,1.39vw,1.6625rem)]">
                 {/* Farmland ID */}
                 <InfoField label="FARMLAND ID">
                   <span
                     className="
                       font-medium text-[var(--text-primary)]
-                      text-[clamp(0.71rem,1.11vw,1.33rem)]
-                      leading-[clamp(1.0625rem,1.67vw,2rem)]
+                      text-[clamp(0.5328rem,1.11vw,1.33rem)]
+                      leading-[clamp(0.8016rem,1.67vw,2.0rem)]
                       font-[family-name:var(--font-sans)]
                     "
                   >
@@ -744,7 +744,7 @@ const FarmlandsListDetailView = () => {
 
                 {/* Assigned Agent */}
                 <InfoField label="ASSIGNED AGENT">
-                  <div className="flex items-center gap-[clamp(0.53rem,0.83vw,1rem)]">
+                  <div className="flex items-center gap-[clamp(0.3984rem,0.83vw,1.0rem)]">
                     <AgentAvatar
                       name={item.agentName}
                       avatarUrl={item.agentAvatar}
@@ -752,8 +752,8 @@ const FarmlandsListDetailView = () => {
                     <span
                       className="
                         font-medium text-[var(--text-primary)]
-                        text-[clamp(0.71rem,1.11vw,1.33rem)]
-                        leading-[clamp(1.0625rem,1.67vw,2rem)]
+                        text-[clamp(0.5328rem,1.11vw,1.33rem)]
+                        leading-[clamp(0.8016rem,1.67vw,2.0rem)]
                         font-[family-name:var(--font-sans)]
                       "
                     >
@@ -763,16 +763,16 @@ const FarmlandsListDetailView = () => {
                 </InfoField>
 
                 {/* Creation Time + Last Updated */}
-                <div className="grid grid-cols-2 gap-x-[clamp(1.275rem,2vw,2.4rem)]">
+                <div className="grid grid-cols-2 gap-x-[clamp(0.96rem,2.0vw,2.4rem)]">
                   <InfoField
                     label="CREATION TIME"
-                    fontSizeClass="text-[clamp(0.44rem,0.69vw,0.83rem)] leading-[clamp(0.66rem,1.04vw,1.25rem)]"
+                    fontSizeClass="text-[clamp(0.3312rem,0.69vw,0.83rem)] leading-[clamp(0.4992rem,1.04vw,1.25rem)]"
                   >
                     <span
                       className="
                         font-normal text-[var(--text-primary)]
-                        text-[clamp(0.625rem,0.97vw,1.1625rem)]
-                        leading-[clamp(0.8875rem,1.39vw,1.6625rem)]
+                        text-[clamp(0.4688rem,0.97vw,1.1625rem)]
+                        leading-[clamp(0.6672rem,1.39vw,1.6625rem)]
                         font-[family-name:var(--font-sans)]
                       "
                     >
@@ -781,13 +781,13 @@ const FarmlandsListDetailView = () => {
                   </InfoField>
                   <InfoField
                     label="LAST UPDATED"
-                    fontSizeClass="text-[clamp(0.44rem,0.69vw,0.83rem)] leading-[clamp(0.66rem,1.04vw,1.25rem)]"
+                    fontSizeClass="text-[clamp(0.3312rem,0.69vw,0.83rem)] leading-[clamp(0.4992rem,1.04vw,1.25rem)]"
                   >
                     <span
                       className="
                         font-normal text-[var(--text-primary)]
-                        text-[clamp(0.625rem,0.97vw,1.1625rem)]
-                        leading-[clamp(0.8875rem,1.39vw,1.6625rem)]
+                        text-[clamp(0.4688rem,0.97vw,1.1625rem)]
+                        leading-[clamp(0.6672rem,1.39vw,1.6625rem)]
                         font-[family-name:var(--font-sans)]
                       "
                     >
@@ -806,15 +806,15 @@ const FarmlandsListDetailView = () => {
                 border border-[rgba(188,201,201,0.15)]
                 shadow-[0px_20px_40px_rgba(0,49,50,0.02)]
                 rounded-[32px]
-                p-[clamp(1.42rem,2.22vw,2.66rem)]
-                gap-[clamp(1.42rem,2.22vw,2.66rem)]
+                p-[clamp(1.0656rem,2.22vw,2.66rem)]
+                gap-[clamp(1.0656rem,2.22vw,2.66rem)]
                 h-full
               "
             >
               {/* Heading */}
               <div
                 className="
-                  pb-[clamp(0.71rem,1.11vw,1.33rem)]
+                  pb-[clamp(0.5328rem,1.11vw,1.33rem)]
                   border-b border-[var(--border-subtle)]
                 "
               >
@@ -823,8 +823,8 @@ const FarmlandsListDetailView = () => {
                   variant="h4"
                   className="
                     font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-                    text-[clamp(0.8875rem,1.39vw,1.6625rem)]
-                    leading-[clamp(1.25rem,1.94vw,2.33rem)]
+                    text-[clamp(0.6672rem,1.39vw,1.668rem)]
+                    leading-[clamp(0.9375rem,1.94vw,2.33rem)]
                   "
                 >
                   Current Status
@@ -835,7 +835,7 @@ const FarmlandsListDetailView = () => {
               <div
                 className="
                   flex flex-col
-                  gap-[clamp(1.42rem,2.22vw,2.66rem)]
+                  gap-[clamp(1.0656rem,2.22vw,2.66rem)]
                   flex-1 justify-center
                 "
               >
@@ -844,7 +844,7 @@ const FarmlandsListDetailView = () => {
                   label="SYSTEM STATUS"
                   value={item.status}
                   rightContent={
-                    <div className="text-[var(--status-success)] w-[clamp(1.2rem,1.67vw,2.2rem)] h-[clamp(1.2rem,1.67vw,2.2rem)] opacity-70">
+                    <div className="text-[var(--status-success)] w-[clamp(0.9rem,1.67vw,2.2rem)] h-[clamp(0.9rem,1.67vw,2.2rem)] opacity-70">
                       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
@@ -857,7 +857,7 @@ const FarmlandsListDetailView = () => {
                   label="LIVE STATUS"
                   value={item.status === "Completed" ? "Live on Website" : "NA"}
                   rightContent={
-                    <div className="text-[var(--text-secondary)] w-[clamp(1.2rem,1.67vw,2.2rem)] h-[clamp(1.2rem,1.67vw,2.2rem)] opacity-50">
+                    <div className="text-[var(--text-secondary)] w-[clamp(0.9rem,1.67vw,2.2rem)] h-[clamp(0.9rem,1.67vw,2.2rem)] opacity-50">
                       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                       </svg>
@@ -875,15 +875,15 @@ const FarmlandsListDetailView = () => {
                 border border-[rgba(188,201,201,0.15)]
                 shadow-[0px_20px_40px_rgba(0,49,50,0.02)]
                 rounded-[32px]
-                p-[clamp(1.42rem,2.22vw,2.66rem)]
-                gap-[clamp(1.42rem,2.22vw,2.66rem)]
+                p-[clamp(1.0656rem,2.22vw,2.66rem)]
+                gap-[clamp(1.0656rem,2.22vw,2.66rem)]
                 h-full
               "
             >
               {/* Heading */}
               <div
                 className="
-                  pb-[clamp(0.71rem,1.11vw,1.33rem)]
+                  pb-[clamp(0.5328rem,1.11vw,1.33rem)]
                   border-b border-[var(--border-subtle)]
                 "
               >
@@ -892,8 +892,8 @@ const FarmlandsListDetailView = () => {
                   variant="h4"
                   className="
                     font-bold text-[var(--text-primary)] font-[family-name:var(--font-sans)]
-                    text-[clamp(0.8875rem,1.39vw,1.6625rem)]
-                    leading-[clamp(1.25rem,1.94vw,2.33rem)]
+                    text-[clamp(0.6672rem,1.39vw,1.668rem)]
+                    leading-[clamp(0.9375rem,1.94vw,2.33rem)]
                   "
                 >
                   Performance Metrics
@@ -901,7 +901,7 @@ const FarmlandsListDetailView = () => {
               </div>
 
               {/* Content */}
-              <div className="flex flex-col gap-[clamp(1rem,1.67vw,2.2rem)] flex-1 justify-center">
+              <div className="flex flex-col gap-[clamp(0.8016rem,1.67vw,2.2rem)] flex-1 justify-center">
                 {/* Yield Index custom component */}
                 <div
                   className="
@@ -910,15 +910,15 @@ const FarmlandsListDetailView = () => {
                     border border-[rgba(188,201,201,0.15)]
                     shadow-[0px_20px_40px_rgba(0,49,50,0.04)]
                     rounded-[32px]
-                    p-[clamp(1.0625rem,1.67vw,2rem)]
-                    gap-[clamp(0.2rem,0.28vw,0.5rem)]
+                    p-[clamp(0.8016rem,1.67vw,2.0rem)]
+                    gap-[clamp(0.15rem,0.28vw,0.5rem)]
                   "
                 >
                   <span
                     className="
                       font-[family-name:var(--font-sans)] font-normal
-                      text-[clamp(0.625rem,0.97vw,1.1625rem)]
-                      leading-[clamp(0.8875rem,1.39vw,1.6625rem)]
+                      text-[clamp(0.4688rem,0.97vw,1.1625rem)]
+                      leading-[clamp(0.6672rem,1.39vw,1.6625rem)]
                       text-[var(--text-secondary)]
                     "
                   >
@@ -927,7 +927,7 @@ const FarmlandsListDetailView = () => {
                   <span
                     className="
                       font-[family-name:var(--font-sans)] font-bold
-                      text-[clamp(1.8rem,3.33vw,3.5rem)]
+                      text-[clamp(1.5984rem,3.33vw,3.996rem)]
                       leading-none
                       text-[#1C5F9D]
                     "
@@ -937,20 +937,20 @@ const FarmlandsListDetailView = () => {
                 </div>
 
                 {/* Attributes List */}
-                <div className="flex flex-col gap-[clamp(0.8rem,1.25vw,1.6rem)]">
+                <div className="flex flex-col gap-[clamp(0.6rem,1.25vw,1.6rem)]">
                   {/* Soil Type */}
-                  <div className="flex items-center gap-[clamp(0.53rem,0.83vw,1.1rem)]">
+                  <div className="flex items-center gap-[clamp(0.3984rem,0.83vw,1.1rem)]">
                     <div
                       className="
                         flex items-center justify-center shrink-0 rounded-full
                         bg-[var(--border-subtle)]
-                        w-[clamp(1.775rem,2.78vw,3.325rem)]
-                        h-[clamp(1.775rem,2.78vw,3.325rem)]
+                        w-[clamp(1.3344rem,2.78vw,3.325rem)]
+                        h-[clamp(1.3344rem,2.78vw,3.325rem)]
                       "
                     >
                       {/* Soil Type Icon */}
                       <svg
-                        className="w-[clamp(1rem,1.53vw,1.825rem)] h-[clamp(1rem,1.53vw,1.825rem)] text-[#00696B]"
+                        className="w-[clamp(0.75rem,1.53vw,1.825rem)] h-[clamp(0.75rem,1.53vw,1.825rem)] text-[#00696B]"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -963,13 +963,13 @@ const FarmlandsListDetailView = () => {
                         />
                       </svg>
                     </div>
-                    <div className="flex flex-col gap-[clamp(0.1rem,0.14vw,0.3rem)]">
+                    <div className="flex flex-col gap-[clamp(0.075rem,0.14vw,0.3rem)]">
                       <span
                         className="
                           font-normal uppercase tracking-[0.6px]
                           text-[var(--text-secondary)]
-                          text-[clamp(0.53rem,0.83vw,1rem)]
-                          leading-[clamp(0.71rem,1.11vw,1.33rem)]
+                          text-[clamp(0.3984rem,0.83vw,1.0rem)]
+                          leading-[clamp(0.5328rem,1.11vw,1.33rem)]
                           font-[family-name:var(--font-sans)]
                         "
                       >
@@ -978,8 +978,8 @@ const FarmlandsListDetailView = () => {
                       <span
                         className="
                           font-medium text-[var(--text-primary)]
-                          text-[clamp(0.71rem,1.11vw,1.33rem)]
-                          leading-[clamp(1.0625rem,1.67vw,2rem)]
+                          text-[clamp(0.5328rem,1.11vw,1.33rem)]
+                          leading-[clamp(0.8016rem,1.67vw,2.0rem)]
                           font-[family-name:var(--font-sans)]
                         "
                       >
@@ -989,18 +989,18 @@ const FarmlandsListDetailView = () => {
                   </div>
 
                   {/* Geo-reference */}
-                  <div className="flex items-center gap-[clamp(0.53rem,0.83vw,1.1rem)]">
+                  <div className="flex items-center gap-[clamp(0.3984rem,0.83vw,1.1rem)]">
                     <div
                       className="
                         flex items-center justify-center shrink-0 rounded-full
                         bg-[var(--border-subtle)]
-                        w-[clamp(1.775rem,2.78vw,3.325rem)]
-                        h-[clamp(1.775rem,2.78vw,3.325rem)]
+                        w-[clamp(1.3344rem,2.78vw,3.325rem)]
+                        h-[clamp(1.3344rem,2.78vw,3.325rem)]
                       "
                     >
                       {/* Geo-reference Icon */}
                       <svg
-                        className="w-[clamp(1rem,1.53vw,1.825rem)] h-[clamp(1rem,1.53vw,1.825rem)] text-[#00696B]"
+                        className="w-[clamp(0.75rem,1.53vw,1.825rem)] h-[clamp(0.75rem,1.53vw,1.825rem)] text-[#00696B]"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -1018,13 +1018,13 @@ const FarmlandsListDetailView = () => {
                         />
                       </svg>
                     </div>
-                    <div className="flex flex-col gap-[clamp(0.1rem,0.14vw,0.3rem)]">
+                    <div className="flex flex-col gap-[clamp(0.075rem,0.14vw,0.3rem)]">
                       <span
                         className="
                           font-normal uppercase tracking-[0.6px]
                           text-[var(--text-secondary)]
-                          text-[clamp(0.53rem,0.83vw,1rem)]
-                          leading-[clamp(0.71rem,1.11vw,1.33rem)]
+                          text-[clamp(0.3984rem,0.83vw,1.0rem)]
+                          leading-[clamp(0.5328rem,1.11vw,1.33rem)]
                           font-[family-name:var(--font-sans)]
                         "
                       >
@@ -1033,8 +1033,8 @@ const FarmlandsListDetailView = () => {
                       <span
                         className="
                           font-medium text-[var(--text-primary)]
-                          text-[clamp(0.71rem,1.11vw,1.33rem)]
-                          leading-[clamp(1.0625rem,1.67vw,2rem)]
+                          text-[clamp(0.5328rem,1.11vw,1.33rem)]
+                          leading-[clamp(0.8016rem,1.67vw,2.0rem)]
                           font-[family-name:var(--font-sans)]
                         "
                       >
@@ -1051,8 +1051,8 @@ const FarmlandsListDetailView = () => {
           <div
             className="
               flex flex-row justify-end items-center
-              pt-[clamp(2.125rem,3.33vw,4rem)]
-              pb-[clamp(2.125rem,3.33vw,4rem)]
+              pt-[clamp(1.5984rem,3.33vw,4.0rem)]
+              pb-[clamp(1.5984rem,3.33vw,4.0rem)]
             "
           >
             <button
@@ -1061,9 +1061,9 @@ const FarmlandsListDetailView = () => {
                 inline-flex items-center justify-center
                 rounded-full bg-[#2780C4] hover:opacity-90
                 font-semibold text-white
-                w-[clamp(6.5rem,8.4vw,10rem)]
-                h-[clamp(1.6875rem,2.64vw,3.16rem)]
-                text-[clamp(0.625rem,0.97vw,1.1625rem)]
+                w-[clamp(4.875rem,8.4vw,10.0rem)]
+                h-[clamp(1.2672rem,2.64vw,3.16rem)]
+                text-[clamp(0.4688rem,0.97vw,1.1625rem)]
                 font-[family-name:var(--font-sans)]
                 transition-opacity duration-150
               "

@@ -5,14 +5,16 @@ import type { FarmlandStats } from "../types/dashboard";
 
 interface Props {
   stats: FarmlandStats;
+  bgClass?: string;
 }
 
-const FarmlandStatsCard: React.FC<Props> = ({ stats }) => {
+const FarmlandStatsCard: React.FC<Props> = ({ stats, bgClass }) => {
   return (
     <div
       className={cn(
         "flex items-center gap-0 divide-x divide-[var(--border-soft)]",
-        "bg-white/20 backdrop-blur-md rounded-[20px] shadow-sm border border-white/30",
+        bgClass || "bg-white/20 backdrop-blur-md border border-white/30",
+        "rounded-[20px] shadow-sm",
         "px-4 lg:px-5 py-3 lg:py-4 justify-center",
         "w-[301px] h-[92px]",
         "self-start shrink-0",

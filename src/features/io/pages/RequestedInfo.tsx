@@ -62,7 +62,7 @@ const RequestedInfo = () => {
         md:px-[1.25rem]
         md:pt-[1.25rem]
 
-        lg:px-[1.5rem]
+        md:px-[1.5rem]
         lg:pt-[1.5rem]
 
         xl:px-[1.75rem]
@@ -96,7 +96,7 @@ const RequestedInfo = () => {
 
           md:gap-[1.5rem]
 
-          lg:gap-[1.75rem]
+          md:gap-[1.75rem]
 
           xl:gap-[2rem]
 
@@ -110,15 +110,15 @@ const RequestedInfo = () => {
           className="
             w-full
             bg-white
-            rounded-[clamp(16px,2.22vw,32px)]
+            rounded-[clamp(17.0496px,2.22vw,32.0px)]
             shadow-[0px_20px_40px_rgba(0,49,50,0.04)]
             flex
             flex-col
-            pl-[clamp(16px,2.36vw,34px)]
-            pr-[clamp(16px,1.53vw,22px)]
-            pt-[clamp(20px,2.15vw,31px)]
-            pb-[clamp(20px,2.15vw,31px)]
-            gap-[clamp(16px,2vw,32px)]
+            pl-[clamp(18.1248px,2.36vw,34.0px)]
+            pr-[clamp(12px,1.53vw,22.0px)]
+            pt-[clamp(16.512px,2.15vw,31.0px)]
+            pb-[clamp(16.512px,2.15vw,31.0px)]
+            gap-[clamp(15.36px,2.0vw,32.0px)]
           "
         >
           {/* Reusing Farmland stats card */}
@@ -137,8 +137,8 @@ const RequestedInfo = () => {
               titleClassName="
                 font-[var(--font-sans)]
                 font-semibold
-                text-[clamp(24px,2.36vw,48px)]
-                leading-[clamp(28px,2.78vw,56px)]
+                text-[clamp(18.1248px,2.36vw,45.33px)]
+                leading-[clamp(21.3504px,2.78vw,56.0px)]
                 tracking-[-0.9px]
                 text-[var(--text-primary)]
                 normal-case
@@ -147,9 +147,9 @@ const RequestedInfo = () => {
                 !bg-[#F9F9F9]
                 border
                 border-[var(--border-subtle)]
-                !h-[clamp(40px,3.61vw,68px)]
+                !h-[clamp(30px,3.61vw,68.0px)]
                 !rounded-[60px]
-                !px-[clamp(14px,1.39vw,28px)]
+                !px-[clamp(10.6752px,1.39vw,28.0px)]
               "
             />
           </section>
@@ -172,8 +172,8 @@ const RequestedInfo = () => {
               bg-white
               border-t
               border-[rgba(226,226,228,0.3)]
-              rounded-[clamp(12px,1.67vw,24px)]
-              h-[clamp(50px,5.28vw,90px)]
+              rounded-[clamp(12.8256px,1.67vw,24.0px)]
+              h-[clamp(40.5504px,5.28vw,90.0px)]
               cursor-pointer
               hover:bg-[rgba(243,243,245,0.3)]
               transition-colors
@@ -185,7 +185,7 @@ const RequestedInfo = () => {
               className="
                 font-[var(--font-sans)]
                 font-semibold
-                text-[clamp(14px,1.25vw,22px)]
+                text-[clamp(10.5px,1.25vw,22.0px)]
                 text-[var(--text-primary)]
               "
             >

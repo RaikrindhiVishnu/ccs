@@ -12,7 +12,7 @@ export const BackButton: React.FC<BackButtonProps> = ({ onClick }) => {
       className="
         flex items-center gap-2
         px-5 py-3
-        mb-[clamp(1.5rem,2.5vw,2.375rem)]
+        mb-[clamp(1.2rem,2.5vw,2.375rem)]
         bg-[color:var(--surface-card)]
         rounded-full
         shadow-[0px_0px_4px_rgba(0,0,0,0.12)]

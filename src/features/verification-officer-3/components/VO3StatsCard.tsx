@@ -40,20 +40,20 @@ export const VO3StatsCard: React.FC<VO3StatsCardProps> = ({
 
   return (
     <div
-      className={`flex flex-col justify-start select-none w-full min-h-[clamp(8.625rem,13.47vw,24.0rem)] rounded-[clamp(0.7rem,1.11vw,2.0rem)] p-[clamp(1.06rem,1.67vw,3.0rem)] transition-all duration-300 hover:shadow-md ${cardBgClass} ${cardBorderClass}`}
+      className={`flex flex-col justify-start select-none w-full min-h-[clamp(6.4688rem,13.47vw,24.0rem)] rounded-[clamp(0.525rem,1.11vw,2.0rem)] p-[clamp(0.795rem,1.67vw,3.0rem)] transition-all duration-300 hover:shadow-md ${cardBgClass} ${cardBorderClass}`}
     >
       {/* Title */}
-      <h3 className="font-sans font-semibold text-[var(--text-primary)] text-[clamp(0.89rem,1.39vw,2.5rem)] leading-[clamp(1.11rem,1.74vw,3.0rem)] tracking-tight capitalize m-0 mb-[clamp(1.06rem,1.67vw,3.0rem)]">
+      <h3 className="font-sans font-semibold text-[var(--text-primary)] text-[clamp(0.6675rem,1.39vw,2.5rem)] leading-[clamp(0.8325rem,1.74vw,3.0rem)] tracking-tight capitalize m-0 mb-[clamp(0.795rem,1.67vw,3.0rem)]">
         {title}
       </h3>
 
       {/* Metric Value */}
-      <div className="font-sans font-bold text-[var(--text-strong)] text-[clamp(1.24rem,1.94vw,3.5rem)] leading-[clamp(1.56rem,2.43vw,4.0rem)] tracking-tight capitalize mb-[clamp(1.06rem,1.67vw,3.0rem)]">
+      <div className="font-sans font-bold text-[var(--text-strong)] text-[clamp(0.93rem,1.94vw,3.5rem)] leading-[clamp(1.17rem,2.43vw,4.0rem)] tracking-tight capitalize mb-[clamp(0.795rem,1.67vw,3.0rem)]">
         {value}
       </div>
 
       {/* Description */}
-      <p className="font-sans font-normal text-[var(--text-subtle)] text-[clamp(0.71rem,1.11vw,2.0rem)] leading-[clamp(0.89rem,1.39vw,2.5rem)] capitalize m-0 mt-auto">
+      <p className="font-sans font-normal text-[var(--text-subtle)] text-[clamp(0.5325rem,1.11vw,2.0rem)] leading-[clamp(0.6675rem,1.39vw,2.5rem)] capitalize m-0 mt-auto">
         {description}
       </p>
     </div>

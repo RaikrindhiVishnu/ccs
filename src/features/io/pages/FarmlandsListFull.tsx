@@ -504,7 +504,7 @@ const FarmlandsListFull = () => {
 
         px-[0.75rem]
         sm:px-[1rem]
-        lg:px-[1.25rem]
+        md:px-[1.25rem]
         xl:px-[1.8rem]
         2xl:px-[2.3rem]
 
@@ -528,7 +528,7 @@ const FarmlandsListFull = () => {
             shadow-[0px_20px_40px_rgba(0,49,50,0.02)]
             pt-[1.5rem] md:pt-[2rem]
             px-[1.5rem] md:px-[2rem]
-            pb-[clamp(2px,0.28vw,6px)]
+            pb-[clamp(2.1504px,0.28vw,6.0px)]
             gap-[1.5rem]
             md:gap-[2rem]
             relative
@@ -565,7 +565,7 @@ const FarmlandsListFull = () => {
                 font-semibold
                 leading-[110%]
                 tracking-[-0.9px]
-                text-[clamp(1.5rem,2.361vw,2.8rem)]
+                text-[clamp(1.1333rem,2.361vw,2.8332rem)]
                 text-[var(--text-heading)]
               "
               searchWrapperClassName="!bg-[var(--chart-bg)]"
@@ -610,7 +610,7 @@ const FarmlandsListFull = () => {
                 </div>
 
                 {/* LIST CONTAINER (ROWS) */}
-                <div className="flex flex-col w-full gap-[clamp(8px,1.11vw,22px)]">
+                <div className="flex flex-col w-full gap-[clamp(8.5248px,1.11vw,22.0px)]">
                   {visibleData.map((row) => (
                     <div
                       key={row.id}
@@ -618,12 +618,12 @@ const FarmlandsListFull = () => {
                         group
                         flex
                         w-full
-                        h-[clamp(76px,7.014vw,135px)]
+                        h-[clamp(57px,7.014vw,135.0px)]
                         bg-[var(--surface-card)]
                         shadow-[0px_8px_24px_rgba(0,49,50,0.03)]
                         border border-[var(--border-soft)]
                         rounded-[24px] md:rounded-[32px]
-                        px-[clamp(16px,2.22vw,43px)]
+                        px-[clamp(17.0496px,2.22vw,43.0px)]
                         items-center
                         justify-between
                         relative
@@ -643,34 +643,34 @@ const FarmlandsListFull = () => {
                       />
 
                       {/* Agent & ID */}
-                      <div className="w-[22%] flex items-center gap-[clamp(8px,1.11vw,22px)]">
+                      <div className="w-[22%] flex items-center gap-[clamp(8.5248px,1.11vw,22.0px)]">
                         {row.agentAvatar ? (
                           <img
                             src={row.agentAvatar}
                             alt={row.agentName}
-                            className="w-[clamp(36px,3.33vw,64px)] h-[clamp(36px,3.33vw,64px)] rounded-full object-cover shrink-0"
+                            className="w-[clamp(27px,3.33vw,64.0px)] h-[clamp(27px,3.33vw,64.0px)] rounded-full object-cover shrink-0"
                           />
                         ) : (
-                          <div className="w-[clamp(36px,3.33vw,64px)] h-[clamp(36px,3.33vw,64px)] rounded-full bg-[var(--surface-page)] flex items-center justify-center font-bold text-[var(--text-primary)] text-[clamp(11px,0.97vw,19px)] shrink-0">
+                          <div className="w-[clamp(27px,3.33vw,64.0px)] h-[clamp(27px,3.33vw,64.0px)] rounded-full bg-[var(--surface-page)] flex items-center justify-center font-bold text-[var(--text-primary)] text-[clamp(8.25px,0.97vw,19.0px)] shrink-0">
                             {row.agentName.slice(0, 2).toUpperCase()}
                           </div>
                         )}
-                        <div className="flex flex-col gap-[clamp(2px,0.28vw,6px)] min-w-0">
-                          <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(13px,1.11vw,22px)] text-[var(--text-primary)] leading-none truncate">
+                        <div className="flex flex-col gap-[clamp(2.1504px,0.28vw,6.0px)] min-w-0">
+                          <span className="font-[family-name:var(--font-sans)] font-semibold text-[clamp(9.75px,1.11vw,22.0px)] text-[var(--text-primary)] leading-none truncate">
                             {row.agentName}
                           </span>
                           <span
                             className="
                               inline-block
                               w-fit
-                              text-[clamp(8px,0.69vw,14px)]
+                              text-[clamp(6px,0.69vw,14.0px)]
                               font-[family-name:var(--font-inter)]
                               font-normal
                               tracking-[0.5px]
                               text-[var(--text-secondary)]
                               bg-[var(--surface-page)]
-                              px-[clamp(6px,0.56vw,11px)]
-                              py-[clamp(1px,0.14vw,3px)]
+                              px-[clamp(4.5px,0.56vw,11.0px)]
+                              py-[clamp(1.0752px,0.14vw,3.0px)]
                               rounded-[9999px]
                               uppercase
                               leading-[1.5]
@@ -682,30 +682,30 @@ const FarmlandsListFull = () => {
                       </div>
 
                       {/* Location */}
-                      <div className="w-[15%] flex flex-col gap-[clamp(2px,0.28vw,6px)]">
-                        <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(12px,0.97vw,19px)] text-[var(--text-primary)] leading-none">
+                      <div className="w-[15%] flex flex-col gap-[clamp(2.1504px,0.28vw,6.0px)]">
+                        <span className="font-[family-name:var(--font-sans)] font-medium text-[clamp(9px,0.97vw,19.0px)] text-[var(--text-primary)] leading-none">
                           {row.location}
                         </span>
-                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(10px,0.83vw,16px)] text-[var(--text-secondary)] leading-none">
+                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(7.5px,0.83vw,16.0px)] text-[var(--text-secondary)] leading-none">
                           {row.state}
                         </span>
                       </div>
 
                       {/* Details */}
-                      <div className="w-[12%] flex flex-col gap-[clamp(1px,0.14vw,4px)]">
-                        <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(14px,1.25vw,24px)] text-[var(--brand-600)] leading-none">
+                      <div className="w-[12%] flex flex-col gap-[clamp(1.0752px,0.14vw,4.0px)]">
+                        <span className="font-[family-name:var(--font-sans)] font-bold text-[clamp(10.5px,1.25vw,24.0px)] text-[var(--brand-600)] leading-none">
                           {row.totalAmount}
                         </span>
-                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(10px,0.83vw,16px)] text-[var(--text-secondary)] leading-none">
+                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(7.5px,0.83vw,16.0px)] text-[var(--text-secondary)] leading-none">
                           {row.landExtend} {row.landUnit}
                         </span>
                       </div>
 
                       {/* Status badge + dot context */}
-                      <div className="w-[16%] flex flex-col items-start gap-[clamp(4px,0.42vw,8px)]">
+                      <div className="w-[16%] flex flex-col items-start gap-[clamp(3.2256px,0.42vw,8.0px)]">
                         <span
                           className={cn(
-                            "inline-flex items-center justify-center px-[clamp(8px,1.11vw,22px)] py-[clamp(1px,0.14vw,3px)] rounded-full text-[clamp(10px,0.83vw,16px)] font-semibold font-[family-name:var(--font-sans)] h-[clamp(20px,1.8vw,35px)]",
+                            "inline-flex items-center justify-center px-[clamp(8.5248px,1.11vw,22.0px)] py-[clamp(1.0752px,0.14vw,3.0px)] rounded-full text-[clamp(7.5px,0.83vw,16.0px)] font-semibold font-[family-name:var(--font-sans)] h-[clamp(15px,1.8vw,35.0px)]",
                             row.status === "Completed" && "bg-[var(--status-success-soft)] border border-[rgba(22,163,74,0.1)] text-[var(--status-success)]",
                             row.status === "Rejected" && "bg-[var(--status-danger-soft)] border border-[rgba(220,38,38,0.1)] text-[var(--status-danger)]",
                             row.status === "Pending" && "bg-[var(--brand-tint)] border border-[rgba(39,128,196,0.1)] text-[var(--status-pending)]"
@@ -713,38 +713,38 @@ const FarmlandsListFull = () => {
                         >
                           {row.status}
                         </span>
-                        <div className="flex items-center gap-[clamp(4px,0.42vw,8px)] pl-[clamp(4px,0.42vw,8px)]">
+                        <div className="flex items-center gap-[clamp(3.2256px,0.42vw,8.0px)] pl-[clamp(3.2256px,0.42vw,8.0px)]">
                           <span
                             className={cn(
-                              "w-[clamp(4px,0.42vw,8px)] h-[clamp(4px,0.42vw,8px)] rounded-full",
+                              "w-[clamp(3.2256px,0.42vw,8.0px)] h-[clamp(3.2256px,0.42vw,8.0px)] rounded-full",
                               row.status === "Completed" && "bg-[var(--status-success)]",
                               row.status === "Rejected" && "bg-[var(--status-danger)]",
                               row.status === "Pending" && "bg-[var(--status-pending)]"
                             )}
                           />
-                          <span className="font-[family-name:var(--font-inter)] font-normal text-[clamp(9px,0.76vw,15px)] text-[var(--text-secondary)] leading-none">
+                          <span className="font-[family-name:var(--font-inter)] font-normal text-[clamp(6.75px,0.76vw,15.0px)] text-[var(--text-secondary)] leading-none">
                             {row.statusReason}
                           </span>
                         </div>
                       </div>
 
                       {/* Created On */}
-                      <div className="w-[15%] flex flex-col gap-[clamp(2px,0.28vw,6px)]">
-                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(12px,0.97vw,19px)] text-[var(--text-primary)] leading-none">
+                      <div className="w-[15%] flex flex-col gap-[clamp(2.1504px,0.28vw,6.0px)]">
+                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(9px,0.97vw,19.0px)] text-[var(--text-primary)] leading-none">
                           {row.createdDate}
                         </span>
-                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(10px,0.83vw,16px)] text-[var(--text-secondary)] leading-none">
+                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(7.5px,0.83vw,16.0px)] text-[var(--text-secondary)] leading-none">
                           {row.createdTime}
                         </span>
                       </div>
 
                       {/* Published On */}
-                      <div className="w-[12%] flex flex-col gap-[clamp(2px,0.28vw,6px)]">
-                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(12px,0.97vw,19px)] text-[var(--text-primary)] leading-none">
+                      <div className="w-[12%] flex flex-col gap-[clamp(2.1504px,0.28vw,6.0px)]">
+                        <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(9px,0.97vw,19.0px)] text-[var(--text-primary)] leading-none">
                           {row.publishedDate}
                         </span>
                         {row.publishedTime && (
-                          <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(10px,0.83vw,16px)] text-[var(--text-secondary)] leading-none">
+                          <span className="font-[family-name:var(--font-sans)] font-normal text-[clamp(7.5px,0.83vw,16.0px)] text-[var(--text-secondary)] leading-none">
                             {row.publishedTime}
                           </span>
                         )}
@@ -759,10 +759,10 @@ const FarmlandsListFull = () => {
                             bg-[var(--btn-secondary)]
                             hover:opacity-90
                             text-[var(--text-strong)]
-                            font-[family-name:var(--font-sans)] font-bold text-[clamp(10px,0.83vw,16px)] uppercase tracking-[0.6px]
+                            font-[family-name:var(--font-sans)] font-bold text-[clamp(7.5px,0.83vw,16.0px)] uppercase tracking-[0.6px]
                             rounded-[9999px]
-                            h-[clamp(24px,1.94vw,38px)]
-                            w-[clamp(52px,4.51vw,87px)]
+                            h-[clamp(18px,1.94vw,38.0px)]
+                            w-[clamp(39px,4.51vw,87.0px)]
                             transition-opacity duration-150
                           "
                         >
@@ -791,10 +791,10 @@ const FarmlandsListFull = () => {
             py-[1rem]
             sm:px-[1.25rem]
             lg:min-h-[4.75rem]
-            lg:flex-row
+            md:flex-row
             lg:items-center
             lg:justify-between
-            lg:px-[1.5rem]
+            md:px-[1.5rem]
             xl:px-[2rem]
             2xl:min-h-[5rem]
             mt-2
