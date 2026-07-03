@@ -42,7 +42,7 @@ export default function FarmlandList() {
 
   useEffect(() => {
     const payload: any = { 
-      status_ids: [2, 3], // Approved (2) and Rejected (3)
+      status_ids: [3, 5], // Approved (3) and Rejected (5) based on swagger
       offset: 0,
       state_id: activeFilters.state_id || null,
       region_id: activeFilters.region_id || null,
@@ -93,7 +93,10 @@ export default function FarmlandList() {
     const formattedAsset = asset ? Number(asset).toLocaleString() : '0';
 
     let location = fd.location || od.location || fd.village || od.village || item.location || 'Unknown Location';
-    
+    let resolvedState = fd.state || item.state || 'N/A';
+    let resolvedRegion = fd.region || item.region || 'N/A';
+    let resolvedArea = fd.area || item.area || 'N/A';
+
     const locDetails = item.location_details || fd.location_details;
     if (locDetails) {
       const stateObj = geoData.states.find((s: any) => s.id === locDetails.state_id);
@@ -103,6 +106,10 @@ export default function FarmlandList() {
       const stateName = stateObj?.description || stateObj?.name;
       const districtName = districtObj?.description || districtObj?.name;
       const mandalName = mandalObj?.description || mandalObj?.name;
+
+      if (stateName && resolvedState === 'N/A') resolvedState = stateName;
+      if (districtName && resolvedRegion === 'N/A') resolvedRegion = districtName;
+      if (mandalName && resolvedArea === 'N/A') resolvedArea = mandalName;
 
       const parts = [];
       if (mandalName) parts.push(mandalName);
@@ -126,18 +133,18 @@ export default function FarmlandList() {
 
     const agentName = od.owner_name || od.agent_name || fd.agent_name || fd.owner_name || item.agent_name || item.agentName || 'N/A';
     
-    // Status mapping: 2 -> APPROVED -> "ACTIVE" or "COMPLETED", 3 -> REJECTED -> "REJECTED"
+    // Status mapping based on Swagger: 3 -> APPROVED, 5 -> REJECTED
     let statusText: "COMPLETED" | "PENDING" | "ACTIVE" | "REJECTED" = "PENDING";
-    if (fd.status_id === 2 || fd.status === "APPROVED" || item.status === "APPROVED") statusText = "ACTIVE";
-    else if (fd.status_id === 3 || fd.status === "REJECTED" || item.status === "REJECTED") statusText = "REJECTED";
+    if (fd.status_id === 3 || fd.status_id === 2 || fd.status === "APPROVED" || item.status === "APPROVED") statusText = "ACTIVE";
+    else if (fd.status_id === 5 || fd.status === "REJECTED" || item.status === "REJECTED") statusText = "REJECTED";
 
     const mappedItem: FarmlandListItem = {
       id: fd.farmland_id?.toString() || item.id || item.farmland_id?.toString(),
       farmlandId: fd.farmland_code || item.glcId || item.farmland_code || 'N/A',
       location: location,
-      state: fd.state || item.state || 'N/A',
-      region: fd.region || item.region || 'N/A',
-      area: fd.area || item.area || 'N/A',
+      state: resolvedState,
+      region: resolvedRegion,
+      area: resolvedArea,
       image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80",
       agentName: agentName,
       listedOn: formattedDate,

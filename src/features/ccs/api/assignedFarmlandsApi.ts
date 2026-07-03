@@ -31,6 +31,14 @@ export const assignedFarmlandsApi = ccsApi.injectEndpoints({
       }),
       invalidatesTags: ["Farmland", "Dashboard"],
     }),
+    rejectAssignedFarmland: builder.mutation<SuccessResponse<any>, ApproveFarmlandRequest>({
+      query: (body) => ({
+        url: "/assigned-farmlands/reject-farmland",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Farmland", "Dashboard"],
+    }),
   }),
 });
 
@@ -38,4 +46,5 @@ export const {
   useGetAssignedFarmlandDetailsMutation,
   useGetAllAssignedFarmlandsMutation,
   useApproveAssignedFarmlandMutation,
+  useRejectAssignedFarmlandMutation,
 } = assignedFarmlandsApi;
