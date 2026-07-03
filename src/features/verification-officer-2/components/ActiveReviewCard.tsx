@@ -56,7 +56,7 @@ export const ActiveReviewCard = () => {
             RO Document Audit
           </span>
           <div className="bg-[#C6DB83]/60 rounded-[10px] w-full h-8 flex relative overflow-hidden mt-2">
-            <div 
+            <div
               className="bg-[#C0D545] h-full absolute left-0 top-0 rounded-[10px] flex items-center px-3"
               style={{ width: `${progress}%` }}
             >

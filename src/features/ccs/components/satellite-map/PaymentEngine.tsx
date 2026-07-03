@@ -31,10 +31,10 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
         </button>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-[32px] w-full max-w-[1050px] mx-auto min-h-min pb-[40px]">
+      <div className="flex flex-col xl:flex-row gap-[32px] w-full max-w-[1050px] mx-auto min-h-min pb-[40px]">
         
         {/* ASIDE - LEFT PANE: User Identity & Context */}
-        <div className="flex flex-col gap-[24px] w-full lg:w-[362px] shrink-0">
+        <div className="flex flex-col gap-[24px] w-full xl:w-[362px] shrink-0">
           
           {/* User Profile Card */}
           <div className="relative bg-[#FFFFFF] border-[0.84px] border-[rgba(255,255,255,0.5)] rounded-[40px] shadow-[0px_20.9px_41.9px_-10px_rgba(9,20,38,0.05)] p-[26px] flex flex-col items-center">
@@ -182,7 +182,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
               </span>
               
               {/* Fee Amount */}
-              <span className="relative z-10 font-['Plus_Jakarta_Sans'] font-extrabold text-[60.4px] leading-[60px] tracking-[-3px] text-[#FFFFFF]">
+              <span className="relative z-10 font-['Plus_Jakarta_Sans'] font-extrabold text-[40px] md:text-[50px] xl:text-[60.4px] leading-[60px] tracking-[-3px] text-[#FFFFFF] truncate w-full text-center">
                 ₹15,000
               </span>
             </div>

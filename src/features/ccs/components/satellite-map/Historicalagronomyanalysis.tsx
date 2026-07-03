@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import { SatelliteMap } from "@/features/satellite-history/components/SatelliteMap";
+import type { SatelliteMapHandle } from "@/features/satellite-history/components/SatelliteMap";
 import { useWaybackSource } from "@/features/satellite-history/hooks/useWaybackSource";
 import "@/features/satellite-history/satellite-history.css";
 
@@ -235,7 +236,7 @@ function TemporalRibbon({
 }) {
   return (
     <div
-      className="absolute bottom-[20px] md:bottom-[30px] lg:bottom-[67px] left-[20px] lg:left-1/2 lg:-translate-x-1/2 w-[calc(100%-40px)] md:w-[calc(100%-340px)] lg:w-[calc(100%-40px)] max-w-[625px] h-[80px] md:h-[90px] lg:h-[114px] flex items-center justify-between px-[20px] md:px-[24px] lg:px-[47px] z-30 overflow-x-auto custom-scrollbar"
+      className="absolute bottom-[20px] md:bottom-[30px] xl:bottom-[67px] left-[20px] xl:left-1/2 xl:-translate-x-1/2 w-[calc(100%-40px)] md:w-[calc(100%-340px)] xl:w-[calc(100%-40px)] max-w-[625px] h-[80px] md:h-[90px] xl:h-[114px] flex items-center justify-between px-[20px] md:px-[24px] xl:px-[47px] z-30 overflow-x-auto custom-scrollbar"
     >
       {/* Shadow layer */}
       <div className="absolute top-[0px] bottom-[0.44px] left-[0px] right-[-0.32px] bg-[#FFFFFF] rounded-[36.88px] shadow-[0px_28.81px_57.62px_-13.83px_rgba(0,0,0,0.25)] z-[-2]"></div>
@@ -562,27 +563,49 @@ function VerificationVerdictPanel({ onAuthorize }: { onAuthorize?: () => void })
 export type HistoricalAgronomyAnalysisProps = {
   onBack?: () => void;
   onAuthorize?: () => void;
+  polygon?: any;
 };
 
 export default function HistoricalAgronomyAnalysis({
   onBack,
   onAuthorize,
+  polygon,
 }: HistoricalAgronomyAnalysisProps) {
   const [activeYear, setActiveYear] = useState<Year>("2020");
   const [activeNav, setActiveNav] = useState("soil");
+  const mapRef = React.useRef<SatelliteMapHandle>(null);
 
   const date = `${activeYear}-01-01`;
-  const { sourceConfig } = useWaybackSource(date);
+  const { sourceConfig, isLoading } = useWaybackSource(date);
+
+  // Recenter polygon when the year changes
+  React.useEffect(() => {
+    if (mapRef.current) {
+      mapRef.current.recenterPolygon();
+    }
+  }, [activeYear]);
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-[#131600]">
       {/* Map */}
       <div className="absolute inset-0 z-0">
         <SatelliteMap
+          ref={mapRef}
           tileUrl={sourceConfig?.url ?? ""}
           maxzoom={sourceConfig?.maxzoom ?? 18}
           coords={{ lat: 17.014366, lon: 78.423866 }} // Defaulting to Hyderabad area as in the dummy map text
+          polygon={polygon}
         />
+
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#131600]/40 backdrop-blur-[2px] pointer-events-none transition-opacity duration-300">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#2780C4] mb-3"></div>
+            <span className="text-white/80 font-['Plus_Jakarta_Sans'] font-medium text-xs tracking-wide">
+              Fetching historical imagery...
+            </span>
+          </div>
+        )}
 
         {/* Bottom stats overlay from dummy map */}
         <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-black/40 px-4 py-1 z-10">

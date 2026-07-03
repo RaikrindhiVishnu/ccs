@@ -2,8 +2,10 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import FarmlandDetailPanel from "@/features/ccs/components/FarmlandDetailPanel";
 import type { FarmlandDetail } from "@/features/ccs/components/FarmlandDetailPanel";
-import DummyMap from "@/features/ccs/components/satellite-map/DummyMap";
+import { SatelliteMap } from "@/features/satellite-history/components/SatelliteMap";
+import { useWaybackSource } from "@/features/satellite-history/hooks/useWaybackSource";
 import { useGetAssignedFarmlandDetailsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
+import "@/features/satellite-history/satellite-history.css";
 
 export default function FarmlandRequestMap() {
   const { id } = useParams<{ id: string }>();
@@ -19,35 +21,106 @@ export default function FarmlandRequestMap() {
 
   // Extract the real data from the API response
   const rawData = apiResponse?.data || apiResponse;
+  
+  // Handle the nested structure of the new API response format
+  const farmlandDetails = rawData?.farmland_details || rawData;
+  const ownerDetails = rawData?.owner_details || rawData;
+
+  // Use a default date to fetch the satellite tile URL for the background, exactly as in Analysis
+  const { sourceConfig } = useWaybackSource("2020-01-01");
+  let initialCoords = { lat: 17.014366, lon: 78.423866 }; // default fallback
+
+  // Helper to format coordinates to DMS (Degrees, Minutes, Seconds)
+  const formatDMS = (lat: number, lon: number) => {
+    const toDMS = (deg: number, isLat: boolean) => {
+      const absolute = Math.abs(deg);
+      const degrees = Math.floor(absolute);
+      const minutesNotTruncated = (absolute - degrees) * 60;
+      const minutes = Math.floor(minutesNotTruncated);
+      const seconds = ((minutesNotTruncated - minutes) * 60).toFixed(2);
+      const direction = isLat ? (deg >= 0 ? "N" : "S") : (deg >= 0 ? "E" : "W");
+      return `${degrees}°${minutes}′${seconds}″${direction}`;
+    };
+    return `${toDMS(lat, true)} ${toDMS(lon, false)}`;
+  };
+
+  let displayCoords = "17°00′51.72″N 78°25′25.92″E"; // default fallback
+  
+  if (farmlandDetails?.farmland_polygon) {
+    try {
+      let polyObj = farmlandDetails.farmland_polygon;
+      if (typeof polyObj === 'string') polyObj = JSON.parse(polyObj);
+      const geom = polyObj.type === 'Feature' ? polyObj.geometry : polyObj;
+      if (geom && geom.coordinates && geom.coordinates[0] && geom.coordinates[0][0]) {
+        // Handle both Polygon (geom.coordinates[0][0]) and MultiPolygon (geom.coordinates[0][0][0])
+        const firstCoord = Array.isArray(geom.coordinates[0][0][0]) 
+          ? geom.coordinates[0][0][0] 
+          : geom.coordinates[0][0];
+        
+        if (firstCoord && firstCoord.length >= 2) {
+          const [lon, lat] = firstCoord;
+          initialCoords = { lat, lon };
+          displayCoords = formatDMS(lat, lon);
+        }
+      }
+    } catch (e) {
+      // Ignore parse errors for display
+    }
+  }
 
   let detail: FarmlandDetail | null = null;
 
   if (rawData && !isLoading) {
     // Map backend keys to expected UI keys
     detail = {
-      id: rawData.farmland_id?.toString() || id || "",
-      farmlandId: rawData.farmland_code || rawData.glcId || "N/A",
-      ownerName: rawData.owner_name || rawData.agent_name || rawData.ownerName || "N/A",
-      number: rawData.contact_number || rawData.number || "N/A",
-      email: rawData.email || "N/A",
-      dateOfBirth: rawData.dob || rawData.dateOfBirth || "N/A",
-      religion: rawData.religion || "N/A",
-      caste: rawData.caste || "N/A",
-      valuation: rawData.price_per_acre ? `₹ ${rawData.price_per_acre.toLocaleString()}/Acre` : rawData.valuation || "N/A",
-      totalArea: rawData.total_acres ? `${rawData.total_acres} Acres` : rawData.totalArea || "N/A",
-      assetValue: rawData.total_asset_price || rawData.assetValue || "N/A",
-      status: rawData.status === "COMPLETED" ? "COMPLETED" : rawData.status === "REJECTED" ? "REJECTED" : rawData.status === "ACTIVE" ? "ACTIVE" : "PENDING",
-      liveOnWebsite: rawData.live_on_website || false,
-      fieldNotes: rawData.field_notes || rawData.fieldNotes || undefined,
+      id: farmlandDetails.farmland_id?.toString() || id || "",
+      farmlandId: farmlandDetails.farmland_code || farmlandDetails.glcId || "N/A",
+      ownerName: ownerDetails.owner_name || ownerDetails.agent_name || ownerDetails.ownerName || "N/A",
+      number: ownerDetails["phone number"] || ownerDetails.contact_number || ownerDetails.number || "N/A",
+      email: ownerDetails["Email address"] || ownerDetails.email || "N/A",
+      dateOfBirth: ownerDetails.dob || ownerDetails.dateOfBirth || "N/A",
+      religion: ownerDetails.religion || "N/A",
+      caste: ownerDetails.caste || "N/A",
+      valuation: farmlandDetails.per_acre_value ? `₹ ${parseFloat(farmlandDetails.per_acre_value).toLocaleString()}/Acre` : farmlandDetails.price_per_acre ? `₹ ${farmlandDetails.price_per_acre.toLocaleString()}/Acre` : farmlandDetails.valuation || "N/A",
+      totalArea: farmlandDetails.Total_acres ? `${farmlandDetails.Total_acres} Acres` : farmlandDetails.total_acres ? `${farmlandDetails.total_acres} Acres` : farmlandDetails.totalArea || "N/A",
+      assetValue: farmlandDetails.Assest_value || farmlandDetails.total_asset_price || farmlandDetails.assetValue || "N/A",
+      status: farmlandDetails.status_id === 1 ? "PENDING" : farmlandDetails.status === "COMPLETED" ? "COMPLETED" : farmlandDetails.status === "REJECTED" ? "REJECTED" : farmlandDetails.status === "ACTIVE" ? "ACTIVE" : "PENDING",
+      liveOnWebsite: farmlandDetails.live_on_website || false,
+      fieldNotes: farmlandDetails.field_notes || farmlandDetails.fieldNotes || undefined,
     };
   }
 
   return (
     <div className="relative h-full overflow-hidden">
       <div className="fixed inset-0 w-screen h-screen flex items-center justify-center bg-[#FFFFFF] z-[100] opacity-100 pointer-events-auto">
-        <div className="relative w-full h-full overflow-hidden bg-[#E5E7EB]">
+        <div className="relative w-full h-full overflow-hidden bg-[#131600]">
           {/* The Map */}
-          <DummyMap />
+          {!isLoading && farmlandDetails && (
+            <div className="absolute inset-0 z-0">
+              <SatelliteMap
+                tileUrl={sourceConfig?.url ?? ""}
+                maxzoom={sourceConfig?.maxzoom ?? 18}
+                coords={initialCoords}
+                interactive={true}
+                polygon={farmlandDetails.farmland_polygon}
+                label={farmlandDetails.total_acres ? `${farmlandDetails.total_acres} Acres` : undefined}
+              />
+              
+              {/* Map controls (bottom right) */}
+              <div className="absolute bottom-6 right-4 flex flex-col items-center gap-1 z-10 pointer-events-none">
+                <div className="flex items-center gap-1 rounded-full bg-black/50 px-3 py-1">
+                  <span className="text-[0.65rem] font-medium text-white">3D</span>
+                </div>
+              </div>
+
+              {/* Bottom stats overlay for coordinates */}
+              <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-black/40 px-4 py-1 z-10 pointer-events-none">
+                <span className="text-[0.6rem] text-white/70">Camera: 991 m</span>
+                <span className="text-[0.6rem] text-white/70">{displayCoords}</span>
+                <span className="text-[0.6rem] text-white/70">704 m</span>
+              </div>
+            </div>
+          )}
 
           {/* The Detail Panel */}
           <FarmlandDetailPanel

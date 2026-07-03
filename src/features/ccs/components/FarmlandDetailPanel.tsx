@@ -62,7 +62,7 @@ export default function FarmlandDetailPanel({
       {open && (
         <button
           onClick={onClose}
-          className="absolute z-50 left-[36px] top-[37px] w-[135px] h-[52px] bg-[#FFFFFF] rounded-[60px] flex items-center justify-center gap-[8px] shadow-[0px_0px_4px_rgba(0,0,0,0.12)] hover:bg-gray-50 transition-colors"
+          className="absolute z-50 left-[16px] md:left-[36px] top-[16px] md:top-[37px] w-[135px] h-[52px] bg-[#FFFFFF] rounded-[60px] flex items-center justify-center gap-[8px] shadow-[0px_0px_4px_rgba(0,0,0,0.12)] hover:bg-gray-50 transition-colors"
         >
           <ArrowLeft className="w-[24px] h-[24px] text-[#353535]" strokeWidth={1.4} />
           <span className="font-['Inter'] font-normal text-[16px] leading-[18px] text-[#353535]">
@@ -73,7 +73,7 @@ export default function FarmlandDetailPanel({
 
       {/* ── RIGHT PANEL ── */}
       <div
-        className={`absolute z-50 right-[49px] top-[52px] w-[411px] h-[682px] max-h-[calc(100vh-104px)] bg-[#FFFFFF] shadow-[0px_20px_25px_-5px_rgba(0,0,0,0.1),0px_8px_10px_-6px_rgba(0,0,0,0.1)] border border-transparent rounded-[12px] flex flex-col transition-transform duration-300 ease-in-out ${
+        className={`absolute z-50 right-[16px] md:right-[49px] top-[80px] md:top-[52px] w-[calc(100%-32px)] md:w-[411px] h-[682px] max-h-[calc(100vh-100px)] md:max-h-[calc(100vh-104px)] bg-[#FFFFFF] shadow-[0px_20px_25px_-5px_rgba(0,0,0,0.1),0px_8px_10px_-6px_rgba(0,0,0,0.1)] border border-transparent rounded-[12px] flex flex-col transition-transform duration-300 ease-in-out ${
           open ? "translate-x-0" : "translate-x-[calc(100%+49px)]"
         }`}
       >

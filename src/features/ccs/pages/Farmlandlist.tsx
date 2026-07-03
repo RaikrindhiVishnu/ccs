@@ -1,11 +1,14 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search, Bell, ListFilter, X as CloseIcon } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import { useNavigate } from "react-router-dom";
 import { farmlandListDummyData } from "@/features/ccs/data/Farmlandlistdata";
-import FarmlandListCard from "@/features/ccs/components/Farmlandlistcard";
+import FarmlandListCard, { type FarmlandListItem } from "@/features/ccs/components/Farmlandlistcard";
 import FiltersModal, { type FilterState } from "@/features/ccs/components/FiltersModal";
 import NotificationsPopover from "@/features/ccs/components/NotificationsPopover";
+import { useGetAllAssignedFarmlandsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
+import { useGetAllGeoMasterDataMutation } from "@/features/ccs/api/masterDataApi";
+import { transformTable } from "@/features/role-manager/utils/utils";
 
 /* ── page ── */
 export default function FarmlandList() {
@@ -21,6 +24,44 @@ export default function FarmlandList() {
     toDate: "",
   });
 
+  const [getAllFarmlands, { data: apiResponse, isLoading }] = useGetAllAssignedFarmlandsMutation();
+  const [getGeoMasterData, { data: geoDataResponse }] = useGetAllGeoMasterDataMutation();
+
+  useEffect(() => {
+    getGeoMasterData({});
+  }, [getGeoMasterData]);
+
+  const geoData = useMemo(() => {
+    const rawGeoData = geoDataResponse?.data || geoDataResponse || {};
+    return {
+      states: transformTable(rawGeoData.states || []),
+      districts: transformTable(rawGeoData.districts || []),
+      mandals: transformTable(rawGeoData.mandals || [])
+    };
+  }, [geoDataResponse]);
+
+  useEffect(() => {
+    const payload: any = { 
+      status_ids: [2, 3], // Approved (2) and Rejected (3)
+      offset: 0,
+      state_id: activeFilters.state_id || null,
+      region_id: activeFilters.region_id || null,
+      area_id: activeFilters.area_id || null,
+      priority_id: activeFilters.priority_id || null,
+    };
+    
+    if (activeFilters.fromDate) {
+      const [d, m, y] = activeFilters.fromDate.split('/');
+      if (d && m && y) payload.from_date = `${y}-${m}-${d}`;
+    }
+    if (activeFilters.toDate) {
+      const [d, m, y] = activeFilters.toDate.split('/');
+      if (d && m && y) payload.to_date = `${y}-${m}-${d}`;
+    }
+
+    getAllFarmlands(payload);
+  }, [activeFilters, getAllFarmlands]);
+
   /* active filter chips */
   const activeFilterEntries = [
     { key: "state",    value: activeFilters.state    },
@@ -31,22 +72,103 @@ export default function FarmlandList() {
     { key: "toDate",   value: activeFilters.toDate   },
   ].filter((f) => f.value);
 
-  /* filtered list */
-  const filteredData = useMemo(() => {
-    return farmlandListDummyData.filter((item) => {
-      if (activeFilters.priority && item.status !== activeFilters.priority.toUpperCase()) return false;
+  // Map API response to expected card format
+  const rawFarmlands = apiResponse ? (apiResponse.farmlands || []) : [];
+  
+  let listData = rawFarmlands.length > 0 ? rawFarmlands.map((item: any) => {
+    const fd = item.farmland_details || item;
+    const od = item.owner_details || item;
+
+    const dateStr = fd.created_on || fd.createdAt || item.createdDate || fd.createdDate;
+    const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A';
+
+    const acres = fd.Total_acres || fd.total_acres || item.totalAcres || item.total_acres;
+    const formattedAcres = acres ? `${acres} Acres` : 'N/A';
+
+    const valuation = fd.per_acre_value || fd.price_per_acre || item.valuation || item.price_per_acre;
+    const formattedValuation = valuation ? `${Number(valuation).toLocaleString()}` : '0';
+    const formattedCostPerAc = valuation ? `₹ ${Number(valuation).toLocaleString()}` : '0';
+
+    const asset = fd.Assest_value || fd.total_asset_price || item.assetValue || item.total_asset_price;
+    const formattedAsset = asset ? Number(asset).toLocaleString() : '0';
+
+    let location = fd.location || od.location || fd.village || od.village || item.location || 'Unknown Location';
+    
+    const locDetails = item.location_details || fd.location_details;
+    if (locDetails) {
+      const stateObj = geoData.states.find((s: any) => s.id === locDetails.state_id);
+      const districtObj = geoData.districts.find((d: any) => d.id === (locDetails.district_id || locDetails.region_id));
+      const mandalObj = geoData.mandals.find((m: any) => m.id === (locDetails.mandal_id || locDetails.area_id));
+
+      const stateName = stateObj?.description || stateObj?.name;
+      const districtName = districtObj?.description || districtObj?.name;
+      const mandalName = mandalObj?.description || mandalObj?.name;
+
+      const parts = [];
+      if (mandalName) parts.push(mandalName);
+      if (districtName) {
+        const dName = districtName.toLowerCase();
+        if (dName === "west godavari") parts.push("WG");
+        else if (dName === "east godavari") parts.push("EG");
+        else parts.push(districtName);
+      }
+      if (stateName) {
+        const sName = stateName.toLowerCase();
+        if (sName === "andhra pradesh") parts.push("A.P.");
+        else if (sName === "telangana") parts.push("T.S.");
+        else parts.push(stateName);
+      }
+
+      if (parts.length > 0) {
+        location = parts.join(', ');
+      }
+    }
+
+    const agentName = od.owner_name || od.agent_name || fd.agent_name || fd.owner_name || item.agent_name || item.agentName || 'N/A';
+    
+    // Status mapping: 2 -> APPROVED -> "ACTIVE" or "COMPLETED", 3 -> REJECTED -> "REJECTED"
+    let statusText: "COMPLETED" | "PENDING" | "ACTIVE" | "REJECTED" = "PENDING";
+    if (fd.status_id === 2 || fd.status === "APPROVED" || item.status === "APPROVED") statusText = "ACTIVE";
+    else if (fd.status_id === 3 || fd.status === "REJECTED" || item.status === "REJECTED") statusText = "REJECTED";
+
+    const mappedItem: FarmlandListItem = {
+      id: fd.farmland_id?.toString() || item.id || item.farmland_id?.toString(),
+      farmlandId: fd.farmland_code || item.glcId || item.farmland_code || 'N/A',
+      location: location,
+      state: fd.state || item.state || 'N/A',
+      region: fd.region || item.region || 'N/A',
+      area: fd.area || item.area || 'N/A',
+      image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80",
+      agentName: agentName,
+      listedOn: formattedDate,
+      totalArea: formattedAcres,
+      valuation: formattedValuation,
+      assetValue: formattedAsset,
+      costPerAc: formattedCostPerAc,
+      status: statusText,
+      liveOnWebsite: statusText === "ACTIVE",
+    };
+    return mappedItem;
+  }) : (!apiResponse ? farmlandListDummyData : []); // fallback to dummy data if initial load
+
+  // Client side fallback for filtering priority if backend doesn't handle it
+  const filteredData = listData.filter((item) => {
+    // Basic filter checks
+    if (activeFilters.priority) {
+      if (activeFilters.priority.toUpperCase() === "HIGH" && item.status !== "ACTIVE") return true; // just an example mapping, if priority mapping is needed
+      // For now, let the backend handle the priority using priority_id, but if needed we can add local filter.
+    }
+    // Location filters are handled by backend via IDs, but for dummy data:
+    if (!apiResponse) {
       if (activeFilters.area   && !item.location.toLowerCase().includes(activeFilters.area.toLowerCase()))   return false;
       if (activeFilters.state  && !item.location.toLowerCase().includes(activeFilters.state.toLowerCase()))  return false;
       if (activeFilters.region && !item.location.toLowerCase().includes(activeFilters.region.toLowerCase())) return false;
-      return true;
-    });
-  }, [activeFilters]);
+    }
+    return true;
+  });
 
   return (
     <>
-      {/* ════════════════════════════════════════════════
-          FILTERS MODAL
-          ════════════════════════════════════════════════ */}
       <FiltersModal
         isOpen={filtersOpen}
         onClose={() => setFiltersOpen(false)}
@@ -54,9 +176,6 @@ export default function FarmlandList() {
         onApply={(newFilters) => setActiveFilters(newFilters)}
       />
 
-      {/* ════════════════════════════════════════════════
-          FARMLAND LIST PAGE
-          ════════════════════════════════════════════════ */}
       <div
         className="
           h-full overflow-y-auto
@@ -64,9 +183,7 @@ export default function FarmlandList() {
           lg:px-6 lg:py-6
         "
       >
-        {/* ── HEADER ── */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 md:gap-0">
-          {/* LEFT — icon + title */}
           <div className="flex items-center gap-[10px]">
             <div className="flex shrink-0 h-[38px] w-[38px] rounded-[10px] items-center justify-center">
               <img src="/src/assets/farmland-list.svg" alt="Farmlands List" className="h-[20px] w-[20px] object-contain" />
@@ -79,9 +196,7 @@ export default function FarmlandList() {
             </Typography>
           </div>
 
-          {/* RIGHT — search + filter + bell */}
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-[8px] w-full md:w-auto">
-            {/* SEARCH BAR */}
             <div className="flex flex-1 min-w-0 xl:flex-none items-center gap-[8px] rounded-[60px] bg-[#FFFFFF] px-[20px] h-[52px] w-full xl:w-[312px] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] border border-transparent hover:border-gray-100 transition-colors">
               <Search className="h-[24px] w-[24px] shrink-0 text-[#5C5C5C] opacity-50" strokeWidth={1.5} />
               <input
@@ -90,7 +205,6 @@ export default function FarmlandList() {
               />
             </div>
 
-            {/* FILTER BUTTON */}
             <button
               onClick={() => setFiltersOpen(true)}
               className="flex shrink-0 h-[52px] w-[52px] items-center justify-center rounded-[40px] bg-[#FFFFFF] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] hover:bg-gray-50 transition-colors"
@@ -98,7 +212,6 @@ export default function FarmlandList() {
               <ListFilter className="h-[24px] w-[24px] text-[#000000]" strokeWidth={2} />
             </button>
 
-            {/* BELL */}
             <div className="relative">
               <button 
                 onClick={() => setShowNotifications(!showNotifications)}
@@ -115,7 +228,6 @@ export default function FarmlandList() {
           </div>
         </div>
 
-        {/* ── ACTIVE FILTER CHIPS ── */}
         {activeFilterEntries.length > 0 && (
           <div className="flex flex-wrap gap-[12px] mb-6">
             {activeFilterEntries.map((filter) => (
@@ -133,9 +245,13 @@ export default function FarmlandList() {
           </div>
         )}
 
-        {/* ── FARMLAND CARDS ── */}
         <div className="flex flex-col gap-3 xl:gap-4">
-          {filteredData.length > 0 ? (
+          {isLoading ? (
+            <div className="py-12 flex flex-col items-center justify-center text-gray-500 font-medium">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#BDD327] mb-4"></div>
+              Loading farmland list...
+            </div>
+          ) : filteredData.length > 0 ? (
             filteredData.map((item) => (
               <FarmlandListCard
                 key={item.id}

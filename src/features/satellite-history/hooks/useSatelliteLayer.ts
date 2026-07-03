@@ -25,6 +25,7 @@ export function useSatelliteLayer({
   tileSize = 256,
 }: UseSatelliteLayerOptions): void {
   const renderedUrlRef = useRef<string | null>(null);
+  const layerIdsRef = useRef<string[]>([]);
 
   useEffect(() => {
     if (!map || !tileUrl) return;
@@ -33,16 +34,12 @@ export function useSatelliteLayer({
       // Skip if already rendered this exact URL
       if (renderedUrlRef.current === tileUrl) return;
 
-      // Tear down previous layer + source
-      try {
-        if (map.getLayer(LAYER_ID)) map.removeLayer(LAYER_ID);
-        if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID);
-      } catch {
-        // Silently ignore
-      }
+      const uniqueId = Date.now().toString();
+      const currentSourceId = `${SOURCE_ID}-${uniqueId}`;
+      const currentLayerId = `${LAYER_ID}-${uniqueId}`;
 
       // Add fresh raster source
-      map.addSource(SOURCE_ID, {
+      map.addSource(currentSourceId, {
         type: 'raster',
         tiles: [tileUrl],
         tileSize,
@@ -50,32 +47,56 @@ export function useSatelliteLayer({
         attribution: '© Google Earth Engine',
       });
 
-      // Add raster layer below labels
+      // Add raster layer below labels, with a fade transition
       map.addLayer(
         {
-          id: LAYER_ID,
+          id: currentLayerId,
           type: 'raster',
-          source: SOURCE_ID,
+          source: currentSourceId,
           minzoom: 0,
           maxzoom: 22,
           paint: {
-            'raster-opacity': 1,
+            'raster-opacity': 0,
+            'raster-opacity-transition': { duration: 600, delay: 0 }
           },
         },
         getFirstLabelLayerId(map)
       );
 
+      // Trigger fade in on the next frame
+      requestAnimationFrame(() => {
+        if (map.getLayer(currentLayerId)) {
+          map.setPaintProperty(currentLayerId, 'raster-opacity', 1);
+        }
+      });
+
+      // Keep track of the new layer
+      const previousLayers = [...layerIdsRef.current];
+      layerIdsRef.current = [currentLayerId];
       renderedUrlRef.current = tileUrl;
+
+      // Clean up previous layers after the crossfade completes (e.g. 1000ms)
+      setTimeout(() => {
+        previousLayers.forEach((id) => {
+          try {
+            if (map.getLayer(id)) map.removeLayer(id);
+            const srcId = id.replace(LAYER_ID, SOURCE_ID);
+            if (map.getSource(srcId)) map.removeSource(srcId);
+          } catch {
+            // Silently ignore
+          }
+        });
+      }, 1000);
     };
 
-    if (map.isStyleLoaded()) {
+    if (map.loaded()) {
       applyLayer();
     } else {
-      map.once('styledata', applyLayer);
+      map.once('load', applyLayer);
     }
 
     return () => {
-      map.off('styledata', applyLayer);
+      map.off('load', applyLayer);
     };
   }, [map, tileUrl, maxzoom, tileSize]);
 
@@ -83,12 +104,15 @@ export function useSatelliteLayer({
   useEffect(() => {
     return () => {
       if (!map) return;
-      try {
-        if (map.getLayer(LAYER_ID)) map.removeLayer(LAYER_ID);
-        if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID);
-      } catch {
-        /* ignore */
-      }
+      layerIdsRef.current.forEach((id) => {
+        try {
+          if (map.getLayer(id)) map.removeLayer(id);
+          const srcId = id.replace(LAYER_ID, SOURCE_ID);
+          if (map.getSource(srcId)) map.removeSource(srcId);
+        } catch {
+          /* ignore */
+        }
+      });
     };
   }, [map]);
 }

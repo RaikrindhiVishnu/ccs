@@ -53,6 +53,11 @@ export default {
       },
       borderRadius: {
         "4xl": "32px",
+      },
+      fontFamily: {
+        'plus-jakarta': ['"Plus Jakarta Sans"', 'sans-serif'],
+        'manrope': ['Manrope', 'sans-serif'],
+        'poppins': ['Poppins', 'sans-serif'],
       }
     }
   },

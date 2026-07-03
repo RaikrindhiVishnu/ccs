@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Search, Bell, Clock, ListFilter, X as CloseIcon } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,8 @@ import FarmlandRequestCard from "@/features/ccs/components/Farmlandrequestcard";
 import FiltersModal, { type FilterState } from "@/features/ccs/components/FiltersModal";
 import NotificationsPopover from "@/features/ccs/components/NotificationsPopover";
 import { useGetAllAssignedFarmlandsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
+import { useGetAllGeoMasterDataMutation } from "@/features/ccs/api/masterDataApi";
+import { transformTable } from "@/features/role-manager/utils/utils";
 import { farmlandRequestDummyData } from "@/features/ccs/data/Farmlandrequestdata";
 
 /* ── Page ── */
@@ -24,11 +26,41 @@ export default function FarmlandRequest() {
   });
 
   const [getAllFarmlands, { data: apiResponse, isLoading }] = useGetAllAssignedFarmlandsMutation();
+  const [getGeoMasterData, { data: geoDataResponse }] = useGetAllGeoMasterDataMutation();
 
   useEffect(() => {
-    // The backend requires 'status_ids' parameter to be present.
-    // Passing an array of typical statuses [1..6] to fetch farmlands.
-    getAllFarmlands({ ...activeFilters, status_ids: [1, 2, 3, 4, 5, 6] });
+    getGeoMasterData({});
+  }, [getGeoMasterData]);
+
+  const geoData = useMemo(() => {
+    const rawGeoData = geoDataResponse?.data || geoDataResponse || {};
+    return {
+      states: transformTable(rawGeoData.states || []),
+      districts: transformTable(rawGeoData.districts || []),
+      mandals: transformTable(rawGeoData.mandals || [])
+    };
+  }, [geoDataResponse]);
+
+  useEffect(() => {
+    const payload: any = { 
+      status_ids: [1, 2], 
+      offset: 0,
+      state_id: activeFilters.state_id || null,
+      region_id: activeFilters.region_id || null,
+      area_id: activeFilters.area_id || null,
+      priority_id: activeFilters.priority_id || null,
+    };
+    
+    if (activeFilters.fromDate) {
+      const [d, m, y] = activeFilters.fromDate.split('/');
+      if (d && m && y) payload.from_date = `${y}-${m}-${d}`;
+    }
+    if (activeFilters.toDate) {
+      const [d, m, y] = activeFilters.toDate.split('/');
+      if (d && m && y) payload.to_date = `${y}-${m}-${d}`;
+    }
+
+    getAllFarmlands(payload);
   }, [activeFilters, getAllFarmlands]);
 
   const activeFilterEntries = [
@@ -40,7 +72,67 @@ export default function FarmlandRequest() {
     { key: "toDate", value: activeFilters.toDate },
   ].filter((f) => f.value);
 
-  const farmlands = apiResponse?.farmlands?.length ? apiResponse.farmlands : farmlandRequestDummyData;
+  // If apiResponse is present, use its farmlands array (even if empty to show "No results found").
+  // Only fall back to dummy data if there is no apiResponse at all (e.g. initial load or error).
+  let farmlands = apiResponse ? (apiResponse.farmlands || []) : farmlandRequestDummyData;
+
+  // Frontend fallback filtering for all fields (in case backend ignores them)
+  if (farmlands.length > 0 && Object.values(activeFilters).some(v => v !== "")) {
+    farmlands = farmlands.filter((item: any) => {
+      const fd = item.farmland_details || item;
+      const od = item.owner_details || item;
+      let matches = true;
+
+      // Priority Filtering
+      if (activeFilters.priority) {
+        const priorityNum = fd.farmland_priority || item.farmland_priority;
+        const mappedPriority = priorityNum === 1 ? 'High' : priorityNum === 2 ? 'Medium' : 'Low';
+        if (mappedPriority.toLowerCase() !== activeFilters.priority.toLowerCase()) {
+          matches = false;
+        }
+      }
+
+      // State, Region, Area Filtering (Case-insensitive includes for robust matching)
+      const locationStr = (fd.location || fd.village || fd.state || fd.region || fd.area || item.location || od.location || '').toLowerCase();
+      
+      if (activeFilters.state && !(fd.state || item.state || locationStr).toLowerCase().includes(activeFilters.state.toLowerCase())) {
+        matches = false;
+      }
+      if (activeFilters.region && !(fd.region || item.region || locationStr).toLowerCase().includes(activeFilters.region.toLowerCase())) {
+        matches = false;
+      }
+      if (activeFilters.area && !(fd.area || item.area || locationStr).toLowerCase().includes(activeFilters.area.toLowerCase())) {
+        matches = false;
+      }
+
+      // Date Filtering
+      const dateStr = fd.created_on || fd.createdAt || item.createdDate || fd.createdDate;
+      if (dateStr) {
+        const itemDate = new Date(dateStr);
+        if (activeFilters.fromDate) {
+          const [d, m, y] = activeFilters.fromDate.split('/');
+          if (d && m && y) {
+            const from = new Date(Number(y), Number(m) - 1, Number(d));
+            from.setHours(0, 0, 0, 0);
+            if (itemDate < from) matches = false;
+          }
+        }
+        if (activeFilters.toDate) {
+          const [d, m, y] = activeFilters.toDate.split('/');
+          if (d && m && y) {
+            const to = new Date(Number(y), Number(m) - 1, Number(d));
+            to.setHours(23, 59, 59, 999);
+            if (itemDate > to) matches = false;
+          }
+        }
+      } else if (activeFilters.fromDate || activeFilters.toDate) {
+        // If there's a date filter applied but the item has no date, it shouldn't match
+        matches = false;
+      }
+      
+      return matches;
+    });
+  }
 
   return (
     <div className="relative h-full overflow-hidden">
@@ -140,17 +232,67 @@ export default function FarmlandRequest() {
             </div>
           ) : farmlands.length > 0 ? (
             farmlands.map((item: any) => {
-              // Map API response to expected card format
+              // Map API response to expected card format, handling nested details
+              const fd = item.farmland_details || item;
+              const od = item.owner_details || item;
+
+              const dateStr = fd.created_on || fd.createdAt || item.createdDate || fd.createdDate;
+              const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A';
+
+              const acres = fd.Total_acres || fd.total_acres || item.totalAcres;
+              const formattedAcres = acres ? `${acres} Acres` : 'N/A';
+
+              const valuation = fd.per_acre_value || fd.price_per_acre || item.valuation;
+              const formattedValuation = valuation ? `₹ ${Number(valuation).toLocaleString()}/Acre` : '0';
+
+              const asset = fd.Assest_value || fd.total_asset_price || item.assetValue;
+              const formattedAsset = asset ? Number(asset).toLocaleString() : '0';
+
+              let location = fd.location || od.location || fd.village || od.village || item.location || 'Unknown Location';
+              
+              const locDetails = item.location_details || fd.location_details;
+              if (locDetails) {
+                const stateObj = geoData.states.find((s: any) => s.id === locDetails.state_id);
+                const districtObj = geoData.districts.find((d: any) => d.id === (locDetails.district_id || locDetails.region_id));
+                const mandalObj = geoData.mandals.find((m: any) => m.id === (locDetails.mandal_id || locDetails.area_id));
+
+                const stateName = stateObj?.description || stateObj?.name;
+                const districtName = districtObj?.description || districtObj?.name;
+                const mandalName = mandalObj?.description || mandalObj?.name;
+
+                const parts = [];
+                if (mandalName) parts.push(mandalName);
+                if (districtName) {
+                  const dName = districtName.toLowerCase();
+                  if (dName === "west godavari") parts.push("WG");
+                  else if (dName === "east godavari") parts.push("EG");
+                  else parts.push(districtName);
+                }
+                if (stateName) {
+                  const sName = stateName.toLowerCase();
+                  if (sName === "andhra pradesh") parts.push("A.P.");
+                  else if (sName === "telangana") parts.push("T.S.");
+                  else parts.push(stateName);
+                }
+
+                if (parts.length > 0) {
+                  location = parts.join(', ');
+                }
+              }
+
+              const agentName = od.owner_name || od.agent_name || fd.agent_name || fd.owner_name || item.agent_name || item.agentName || 'N/A';
+
               const mappedItem = {
-                id: item.farmland_id?.toString() || item.id,
-                farmlandId: item.farmland_code || item.glcId || 'N/A',
-                location: item.location || 'Unknown Location',
-                priority: item.farmland_priority === 1 ? 'High' : item.farmland_priority === 2 ? 'Medium' : 'Low',
-                agentName: item.agent_name || item.agentName || 'N/A',
-                createdDate: item.created_on || item.createdDate || 'N/A',
-                totalAcres: item.total_acres ? `${item.total_acres} Acres` : item.totalAcres || 'N/A',
-                valuation: item.price_per_acre ? `₹ ${item.price_per_acre.toLocaleString()}/Acre` : item.valuation || 'N/A',
-                assetValue: item.total_asset_price || item.assetValue || 'N/A',
+                id: fd.farmland_id?.toString() || item.id,
+                farmlandId: fd.farmland_code || item.glcId || 'N/A',
+                location: location,
+                priority: fd.farmland_priority === 1 ? 'High' : fd.farmland_priority === 2 ? 'Medium' : 'Low',
+                agentName: agentName,
+                createdDate: formattedDate,
+                totalAcres: formattedAcres,
+                valuation: formattedValuation,
+                assetValue: formattedAsset,
+                statusId: fd.status_id,
               };
 
               return (
@@ -162,8 +304,14 @@ export default function FarmlandRequest() {
               );
             })
           ) : (
-            <div className="col-span-full py-12 flex items-center justify-center text-gray-500 font-medium">
-              No farmland requests match the selected filters.
+            <div className="col-span-full py-12 flex flex-col items-center justify-center text-gray-500 font-medium bg-[#FFFFFF] rounded-[24px] shadow-sm border border-dashed border-gray-200">
+              <span className="text-[16px] text-[#0F172A]">No farmlands found matching the selected filters.</span>
+              <button 
+                onClick={() => setActiveFilters({ state: "", region: "", area: "", priority: "", fromDate: "", toDate: "" })}
+                className="mt-4 px-6 py-2 bg-[#2780C4] text-white rounded-full hover:bg-[#1f669d] transition-colors text-sm font-semibold"
+              >
+                Clear Filters
+              </button>
             </div>
           )}
         </div>

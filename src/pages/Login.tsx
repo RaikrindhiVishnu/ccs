@@ -55,25 +55,25 @@ function InputField({
           {label && (
             <label
               htmlFor={id}
-              className="font-sans font-medium text-[var(--text-secondary)] text-[clamp(0.75rem,0.97vw,0.875rem)] lg:text-[0.97vw] leading-none"
+              className="font-sans font-medium text-[var(--text-secondary)] text-sm md:text-[clamp(0.75rem,0.97vw,0.875rem)] lg:text-[0.97vw] leading-none"
             >
               {label}
             </label>
           )}
           {labelRight && (
-            <div className="text-[clamp(0.75rem,0.97vw,0.875rem)] lg:text-[0.97vw] font-medium text-[var(--text-secondary)]">
+            <div className="text-sm md:text-[clamp(0.75rem,0.97vw,0.875rem)] lg:text-[0.97vw] font-medium text-[var(--text-secondary)]">
               {labelRight}
             </div>
           )}
         </div>
       )}
 
-      <div className="relative flex items-center w-full bg-[var(--surface-page)] h-[clamp(2.75rem,5.5vh,3.5rem)] min-[1440px]:h-[3.89vw] rounded-full">
+      <div className="relative flex items-center w-full bg-[var(--surface-page)] h-12 md:h-[clamp(2.75rem,5.5vh,3.5rem)] min-[1440px]:h-[3.89vw] rounded-full">
         {Icon && (
-          <span className="absolute pointer-events-none flex items-center opacity-50 left-[clamp(0.875rem,1.11vw,1.25rem)] lg:left-[1.11vw]">
+          <span className="absolute pointer-events-none flex items-center opacity-50 left-4 md:left-[clamp(0.875rem,1.11vw,1.25rem)] lg:left-[1.11vw]">
             <Icon
               strokeWidth={1.8}
-              className="text-[var(--text-secondary)] w-[clamp(1rem,1.25vw,1.25rem)] lg:w-[1.11vw] h-[clamp(1rem,1.25vw,1.25rem)] lg:h-[1.11vw]"
+              className="text-[var(--text-secondary)] w-5 h-5 md:w-[clamp(1rem,1.25vw,1.25rem)] lg:w-[1.11vw] md:h-[clamp(1rem,1.25vw,1.25rem)] lg:h-[1.11vw]"
             />
           </span>
         )}
@@ -84,13 +84,15 @@ function InputField({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full h-full bg-transparent border-none outline-none font-sans font-normal text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/60 rounded-full text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] ${Icon ? "pl-[clamp(2.5rem,3.47vw,3.125rem)] lg:pl-[3.33vw]" : "pl-[clamp(0.875rem,1.11vw,1.25rem)] lg:pl-[1.11vw]"
-            } ${rightEl ? "pr-[clamp(2.5rem,3.47vw,3.125rem)] lg:pr-[3.33vw]" : "pr-[clamp(0.875rem,1.11vw,1.25rem)] lg:pr-[1.11vw]"
-            }`}
+          className={`w-full h-full bg-transparent border-none outline-none font-sans font-normal text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/60 rounded-full text-base md:text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] ${
+            Icon ? "pl-[2.75rem] md:pl-[clamp(2.5rem,3.47vw,3.125rem)] lg:pl-[3.33vw]" : "pl-4 md:pl-[clamp(0.875rem,1.11vw,1.25rem)] lg:pl-[1.11vw]"
+          } ${
+            rightEl ? "pr-[2.75rem] md:pr-[clamp(2.5rem,3.47vw,3.125rem)] lg:pr-[3.33vw]" : "pr-4 md:pr-[clamp(0.875rem,1.11vw,1.25rem)] lg:pr-[1.11vw]"
+          }`}
         />
 
         {rightEl && (
-          <span className="absolute flex items-center right-[clamp(0.875rem,1.11vw,1.25rem)] lg:right-[1.11vw]">
+          <span className="absolute flex items-center right-4 md:right-[clamp(0.875rem,1.11vw,1.25rem)] lg:right-[1.11vw]">
             {rightEl}
           </span>
         )}
@@ -129,7 +131,7 @@ function PrimaryButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`w-full ${bgClass} border-none text-white font-sans font-bold tracking-[0.04em] cursor-pointer transition-all duration-150 disabled:opacity-55 disabled:cursor-not-allowed hover:brightness-95 active:scale-[0.99] h-[3.25rem] min-[1440px]:h-[3.61vw] rounded-full text-base flex items-center justify-center ${className}`}
+      className={`w-full ${bgClass} border-none text-white font-sans font-bold tracking-[0.04em] cursor-pointer transition-all duration-150 disabled:opacity-55 disabled:cursor-not-allowed hover:brightness-95 active:scale-[0.99] h-12 md:h-[3.25rem] min-[1440px]:h-[3.61vw] rounded-full text-base flex items-center justify-center ${className}`}
     >
       {children}
     </button>
@@ -138,11 +140,11 @@ function PrimaryButton({
 
 function CardLogo({ className = "" }: { className?: string }) {
   return (
-    <div className={`flex flex-col mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 shrink-0 ${className}`}>
+    <div className={`flex flex-col mb-6 md:mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 shrink-0 ${className}`}>
       <img
         src={GlcLogo}
         alt="Green Land Capital"
-        className="w-[clamp(7.5rem,9.8vw,9.4375rem)] lg:w-[10.49vw] h-auto object-contain"
+        className="w-28 md:w-[clamp(7.5rem,9.8vw,9.4375rem)] lg:w-[10.49vw] h-auto object-contain"
       />
     </div>
   );
@@ -153,9 +155,9 @@ function SecureFooter({ className = "" }: { className?: string }) {
 
       <ShieldCheck
         strokeWidth={1.8}
-        className="shrink-0 text-[var(--status-success)] w-4 h-5 lg:w-[1.11vw] lg:h-[1.39vw]"
+        className="shrink-0 text-[var(--status-success)] w-5 h-5 md:w-4 md:h-5 lg:w-[1.11vw] lg:h-[1.39vw]"
       />
-      <span className="font-sans font-normal text-[var(--text-secondary)]/80 text-xs leading-tight lg:text-[0.83vw] lg:leading-[1.11vw]">
+      <span className="font-sans font-normal text-[var(--text-secondary)]/80 text-xs md:text-xs leading-tight lg:text-[0.83vw] lg:leading-[1.11vw]">
         Secured by TechGy Innovations. End-to-end encrypted connection.
       </span>
     </div>
@@ -171,9 +173,9 @@ function LoginCard({
 }) {
   return (
     <div
-      className={`absolute top-1/2 -translate-y-1/2 right-4 md:right-[4vw] lg:right-[8.54vw] bg-[var(--surface-card)] flex flex-col box-border shadow-[0px_8px_32px_rgba(0,0,0,0.07)] border border-[var(--border-soft)] rounded-4xl px-[clamp(1.5rem,3.33vw,3rem)] pt-[clamp(1rem,3.5vh,3rem)] pb-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:pt-[3.26vw] min-[1440px]:pb-[3.26vw] min-[1440px]:px-[3.33vw] lg:px-[3.33vw] w-[calc(100%-2rem)] sm:w-[clamp(25rem,38.19vw,34.375rem)] lg:w-[38.19vw] lg:shadow-[0px_1px_3.5px_rgba(0,0,0,0.06)] lg:rounded-[2.22vw] h-auto max-h-[calc(100vh-2.5rem)] ${className}`}
+      className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:left-auto md:translate-x-0 md:right-[4vw] lg:right-[8.54vw] bg-[var(--surface-card)] flex flex-col box-border shadow-xl md:shadow-[0px_8px_32px_rgba(0,0,0,0.07)] border border-[var(--border-soft)] rounded-[2rem] px-6 pt-8 pb-8 md:px-[clamp(1.5rem,3.33vw,3rem)] md:pt-[clamp(1rem,3.5vh,3rem)] md:pb-[clamp(1rem,3.5vh,2.5rem)] min-[1440px]:pt-[3.26vw] min-[1440px]:pb-[3.26vw] min-[1440px]:px-[3.33vw] lg:px-[3.33vw] w-[calc(100%-2rem)] sm:w-[26rem] md:w-[clamp(25rem,38.19vw,34.375rem)] lg:w-[38.19vw] lg:shadow-[0px_1px_3.5px_rgba(0,0,0,0.06)] lg:rounded-[2.22vw] h-auto max-h-[calc(100vh-2.5rem)] ${className}`}
     >
-      <div className="flex flex-col flex-1 overflow-y-auto custom-scrollbar pr-1 -mr-1 lg:overflow-visible lg:pr-0 lg:mr-0 gap-[clamp(1rem,2vh,2rem)] min-[1440px]:gap-0">
+      <div className="flex flex-col flex-1 overflow-y-auto custom-scrollbar pr-1 -mr-1 lg:overflow-visible lg:pr-0 lg:mr-0 gap-6 md:gap-[clamp(1rem,2vh,2rem)] min-[1440px]:gap-0">
         {children}
       </div>
     </div>
@@ -281,11 +283,11 @@ function LoginScreen({
     <LoginCard className="min-[1440px]:h-[48.68vw]">
       <CardLogo className="min-[1440px]:mb-[1.72vw]" />
 
-      <div className="mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 lg:flex lg:flex-col lg:items-start shrink-0 min-[1440px]:mb-[1.94vw]">
-        <h1 className="font-heading font-bold text-[var(--text-heading)] text-[clamp(1.25rem,1.66vw,1.5rem)] lg:text-[1.67vw] lg:leading-[2.78vw] leading-snug tracking-[-0.05625rem] lg:tracking-[-0.06vw] m-0 mb-[clamp(0.25rem,0.4vw,0.5rem)] min-[1440px]:mb-[0.97vw] ">
+      <div className="mb-6 md:mb-[clamp(0.75rem,2.5vh,1.5rem)] lg:mb-0 lg:flex lg:flex-col lg:items-start shrink-0 min-[1440px]:mb-[1.94vw]">
+        <h1 className="font-heading font-bold text-[var(--text-heading)] text-2xl md:text-[clamp(1.25rem,1.66vw,1.5rem)] lg:text-[1.67vw] lg:leading-[2.78vw] leading-snug tracking-[-0.05625rem] lg:tracking-[-0.06vw] m-0 mb-2 md:mb-[clamp(0.25rem,0.4vw,0.5rem)] min-[1440px]:mb-[0.97vw] ">
           Role Manager Login
         </h1>
-        <p className="font-sans font-normal text-[var(--text-secondary)] text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] lg:leading-[1.81vw] leading-normal m-0">
+        <p className="font-sans font-normal text-[var(--text-secondary)] text-sm md:text-[clamp(0.875rem,1.11vw,1rem)] lg:text-[1.11vw] lg:leading-[1.81vw] leading-normal m-0">
           Secure access for authorized Role Managers.
           <br />
           Please authenticate to continue.
@@ -294,7 +296,7 @@ function LoginScreen({
 
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col flex-1 gap-[clamp(0.75rem,2.5vh,1.5rem)] w-full"
+        className="flex flex-col flex-1 gap-4 md:gap-[clamp(0.75rem,2.5vh,1.5rem)] w-full"
       >
         <InputField
           id="login-id"

@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { X, ChevronDown, ChevronUp, Calendar, X as CloseIcon } from "lucide-react";
 import { format, parse, isValid } from "date-fns";
 import CalendarPopover from "./CalendarPopover";
+import { useGetAllGeoMasterDataMutation, useGetRegionsAreasByStateMutation } from "@/features/ccs/api/masterDataApi";
+import { transformTable } from "@/features/role-manager/utils/utils";
 
 function CustomSelect({
   label,
@@ -77,6 +79,10 @@ export type FilterState = {
   priority: string;
   fromDate?: string;
   toDate?: string;
+  state_id?: number | null;
+  region_id?: number | null;
+  area_id?: number | null;
+  priority_id?: number | null;
 };
 
 type FiltersModalProps = {
@@ -99,12 +105,12 @@ export default function FiltersModal({
   initialFilters,
   onApply,
 }: FiltersModalProps) {
-  const [state, setState]       = useState("");
-  const [region, setRegion]     = useState("");
-  const [area, setArea]         = useState("");
+  const [state, setState] = useState("");
+  const [region, setRegion] = useState("");
+  const [area, setArea] = useState("");
   const [priority, setPriority] = useState("");
   const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate]     = useState("");
+  const [toDate, setToDate] = useState("");
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
   const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
   const [showFromCalendar, setShowFromCalendar] = useState(false);
@@ -112,8 +118,46 @@ export default function FiltersModal({
   const fromDateRef = useRef<HTMLDivElement>(null);
   const toDateRef = useRef<HTMLDivElement>(null);
 
+  const [getGeoMasterData, { data: geoDataResponse }] = useGetAllGeoMasterDataMutation();
+  
+  const geoData = React.useMemo(() => {
+    const rawGeoData = geoDataResponse?.data || geoDataResponse || {};
+    return {
+      states: transformTable(rawGeoData.states || []),
+      districts: transformTable(rawGeoData.districts || []),
+      mandals: transformTable(rawGeoData.mandals || [])
+    };
+  }, [geoDataResponse]);
+
+  const [getRegionsAreas, { data: regionsAreasResp }] = useGetRegionsAreasByStateMutation();
+  
+  const cascadingData = React.useMemo(() => {
+    const rawRegionsAreas = regionsAreasResp?.data || regionsAreasResp || {};
+    return {
+      districts: rawRegionsAreas.regions ? (Array.isArray(rawRegionsAreas.regions[0]) ? transformTable(rawRegionsAreas.regions) : rawRegionsAreas.regions) : null,
+      mandals: rawRegionsAreas.areas ? (Array.isArray(rawRegionsAreas.areas[0]) ? transformTable(rawRegionsAreas.areas) : rawRegionsAreas.areas) : null
+    };
+  }, [regionsAreasResp]);
+
+  const currentDistricts = cascadingData.districts || geoData.districts;
+  const currentMandals = cascadingData.mandals || geoData.mandals;
+
+  useEffect(() => {
+    if (state && geoData.states.length > 0) {
+      const selectedStateObj: any = geoData.states.find((s: any) => 
+        (s.description || s.desc || s.state_name || s.name || String(s.id)) === state
+      );
+      if (selectedStateObj && selectedStateObj.id) {
+        getRegionsAreas({ stateid: Number(selectedStateObj.id) });
+      }
+    }
+  }, [state, geoData.states]);
+
   useEffect(() => {
     if (isOpen) {
+      if (!geoDataResponse) {
+        getGeoMasterData({});
+      }
       setState(initialFilters.state);
       setRegion(initialFilters.region);
       setArea(initialFilters.area);
@@ -130,12 +174,12 @@ export default function FiltersModal({
   if (!isOpen) return null;
 
   const activeFilters = [
-    { key: "state",    value: state,    setter: setState    },
-    { key: "region",   value: region,   setter: setRegion   },
-    { key: "area",     value: area,     setter: setArea     },
+    { key: "state", value: state, setter: setState },
+    { key: "region", value: region, setter: setRegion },
+    { key: "area", value: area, setter: setArea },
     { key: "priority", value: priority, setter: setPriority },
     { key: "fromDate", value: fromDate, setter: setFromDate },
-    { key: "toDate",   value: toDate,   setter: setToDate   },
+    { key: "toDate", value: toDate, setter: setToDate },
   ].filter((f) => f.value);
 
   const handleReset = () => {
@@ -150,7 +194,40 @@ export default function FiltersModal({
   };
 
   const handleApply = () => {
-    onApply({ state, region, area, priority, fromDate, toDate });
+    let state_id = null;
+    let region_id = null;
+    let area_id = null;
+    let priority_id = null;
+
+    if (state && geoData.states.length > 0) {
+      const selectedStateObj: any = geoData.states.find((s: any) => 
+        (s.description || s.desc || s.state_name || s.name || String(s.id)) === state
+      );
+      if (selectedStateObj) state_id = Number(selectedStateObj.id);
+    }
+
+    if (region && currentDistricts) {
+      const selectedRegionObj: any = currentDistricts.find((d: any) => 
+        (d.description || d.desc || d.district_name || d.region_name || d.name || String(d.id)) === region
+      );
+      if (selectedRegionObj) region_id = Number(selectedRegionObj.id);
+    }
+
+    if (area && currentMandals) {
+      const selectedAreaObj: any = currentMandals.find((m: any) => 
+        (m.description || m.desc || m.mandal_name || m.area_name || m.name || String(m.id)) === area
+      );
+      if (selectedAreaObj) area_id = Number(selectedAreaObj.id);
+    }
+
+    if (priority) {
+      const p = priority.toLowerCase();
+      if (p === 'high') priority_id = 1;
+      else if (p === 'medium') priority_id = 2;
+      else if (p === 'low') priority_id = 3;
+    }
+
+    onApply({ state, region, area, priority, fromDate, toDate, state_id, region_id, area_id, priority_id });
     onClose();
   };
 
@@ -208,7 +285,7 @@ export default function FiltersModal({
             <CustomSelect
               label="Select State"
               placeholder="Choose state"
-              options={["A.P.", "Telangana", "Karnataka", "Tamil Nadu"]}
+              options={geoData?.states?.map((s: any) => s.description || s.desc || s.state_name || s.name || String(s.id)) || ["A.P.", "Telangana", "Karnataka", "Tamil Nadu"]}
               value={state}
               onChange={setState}
             />
@@ -216,7 +293,7 @@ export default function FiltersModal({
             <CustomSelect
               label="Select Region"
               placeholder="Choose region"
-              options={["Coastal Andhra", "Rayalaseema", "North Coastal", "WG"]}
+              options={currentDistricts?.map((d: any) => d.description || d.desc || d.district_name || d.region_name || d.name || String(d.id)) || ["Coastal Andhra", "Rayalaseema", "North Coastal", "WG"]}
               value={region}
               onChange={setRegion}
             />
@@ -224,7 +301,7 @@ export default function FiltersModal({
             <CustomSelect
               label="Select Area"
               placeholder="Choose area"
-              options={["Tanuku", "Vizag", "Vijayawada", "Guntur"]}
+              options={currentMandals?.map((m: any) => m.description || m.desc || m.mandal_name || m.area_name || m.name || String(m.id)) || ["Tanuku", "Vizag", "Vijayawada", "Guntur"]}
               value={area}
               onChange={setArea}
             />

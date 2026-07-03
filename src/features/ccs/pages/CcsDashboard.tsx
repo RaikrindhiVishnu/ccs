@@ -26,16 +26,24 @@ export default function CcsDashboard() {
     // get-all-farmland-details still strictly requires dates despite swagger, so we pass a wide range if empty
     const farmlandPayload = startDate && endDate ? {
       startDate: format(startDate, 'yyyy-MM-dd'),
-      endDate: format(endDate, 'yyyy-MM-dd')
+      endDate: format(endDate, 'yyyy-MM-dd'),
+      fromDate: format(startDate, 'yyyy-MM-dd'),
+      toDate: format(endDate, 'yyyy-MM-dd'),
+      start_date: format(startDate, 'yyyy-MM-dd'),
+      end_date: format(endDate, 'yyyy-MM-dd')
     } : {
       startDate: "2000-01-01",
-      endDate: "2099-12-31"
+      endDate: "2099-12-31",
+      fromDate: "2000-01-01",
+      toDate: "2099-12-31"
     };
 
     // recent-activities defaults to last 7 days when omitted
     const activitiesPayload = startDate && endDate ? {
       startDate: format(startDate, 'yyyy-MM-dd'),
-      endDate: format(endDate, 'yyyy-MM-dd')
+      endDate: format(endDate, 'yyyy-MM-dd'),
+      fromDate: format(startDate, 'yyyy-MM-dd'),
+      toDate: format(endDate, 'yyyy-MM-dd')
     } : {};
 
     getFarmlandDetails(farmlandPayload);
@@ -49,28 +57,28 @@ export default function CcsDashboard() {
   const dynamicStats = [
     {
       title: statsData[0].title,
-      value: stats?.["total farmlands"]?.toLocaleString() || stats?.total_farmlands?.toLocaleString() || statsData[0].value,
+      value: stats?.["total farmlands"]?.toLocaleString() ?? stats?.total_farmlands?.toLocaleString() ?? "0",
       icon: statsData[0].icon,
     },
     {
       title: statsData[1].title,
-      value: stats?.["pending farmlands"]?.toLocaleString() || stats?.pending_farmlands?.toLocaleString() || statsData[1].value,
+      value: stats?.["pending farmlands"]?.toLocaleString() ?? stats?.pending_farmlands?.toLocaleString() ?? "0",
       icon: statsData[1].icon,
     },
     {
       title: statsData[2].title,
-      value: stats?.["approved farmlands"]?.toLocaleString() || stats?.approved_farmlands?.toLocaleString() || statsData[2].value,
+      value: stats?.["approved farmlands"]?.toLocaleString() ?? stats?.approved_farmlands?.toLocaleString() ?? "0",
       icon: statsData[2].icon,
     },
   ];
 
   const activities = recentActivitiesData?.data
-    ? recentActivitiesData.data.map((item: any) => ({
-      id: item.farmland_id,
-      description: `Farmland ${item.farmland_id} was ${item.status}`,
+    ? recentActivitiesData.data.map((item: any, index: number) => ({
+      id: item.farmland_id || `temp-${index}`,
+      description: item.farmland_id ? `Farmland ${item.farmland_id} was ${item.status}` : `Farmland was marked as ${item.status}`,
       timeAgo: "Recently", // The API doesn't provide a timestamp yet
     }))
-    : dummyActivities;
+    : [];
 
   return (
     <div className="flex flex-col w-full h-full px-4 py-4 lg:px-6 lg:py-6 overflow-x-hidden">
@@ -129,7 +137,7 @@ export default function CcsDashboard() {
           className="flex flex-col bg-[#FFFFFF] rounded-[33px] px-[31px] pt-[30px] pb-[30px] w-full h-full relative"
         >
           <div className="flex-none mb-[30px]">
-            <ScreeningChart />
+            <ScreeningChart endDate={endDate} />
           </div>
 
           <div className="flex-1 flex flex-col mt-[15px] min-h-0">

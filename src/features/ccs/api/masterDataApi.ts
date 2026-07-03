@@ -17,10 +17,18 @@ export const masterDataApi = ccsApi.injectEndpoints({
         body: body || {},
       }),
     }),
+    getRegionsAreasByState: builder.mutation<any, { stateid: number }>({
+      query: (body) => ({
+        url: "/master/get-regions-areas-by-state",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
 export const {
   useGetAllMasterDataMutation,
   useGetAllGeoMasterDataMutation,
+  useGetRegionsAreasByStateMutation,
 } = masterDataApi;

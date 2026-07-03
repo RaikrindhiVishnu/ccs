@@ -9,11 +9,11 @@ export default function PasswordSent() {
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] flex items-center justify-center">
-      <div className="relative w-full max-w-[1440px] h-screen max-h-[1024px] bg-[#F2F2F2] overflow-hidden flex flex-col lg:flex-row items-center lg:justify-start">
+      <div className="relative w-full max-w-[1440px] min-h-screen lg:h-screen lg:max-h-[1024px] bg-[#F2F2F2] overflow-y-auto lg:overflow-hidden flex flex-col lg:flex-row items-center lg:justify-start">
         
         {/* Left Side - Image Background */}
         <div 
-          className="relative w-full lg:w-[720px] lg:ml-[80px] h-[40vh] lg:h-[calc(100%-80px)] lg:max-h-[840px] lg:rounded-[24px] bg-cover bg-center overflow-hidden flex flex-col justify-between shrink-0"
+          className="relative w-full lg:flex-1 xl:flex-none xl:w-[720px] lg:m-[24px] xl:m-0 xl:ml-[80px] h-[35vh] min-h-[280px] lg:min-h-[500px] xl:min-h-0 lg:h-[calc(100%-48px)] xl:h-[calc(100%-80px)] lg:max-h-[840px] lg:rounded-[24px] bg-cover bg-center overflow-hidden flex flex-col justify-between shrink-0"
           style={{ backgroundImage: `url('${FrameBg}')` }}
         >
            {/* Top Left Logo */}
@@ -36,10 +36,10 @@ export default function PasswordSent() {
         </div>
 
         {/* Right Side - Form */}
-        <div className="w-full lg:flex-1 h-[60vh] lg:h-[calc(100%-80px)] lg:max-h-[840px] flex flex-col justify-between py-[20px] lg:py-[40px] px-6 lg:px-0 lg:pl-[80px] lg:pr-[40px]">
+        <div className="w-full lg:flex-1 flex-1 lg:h-[calc(100%-48px)] xl:h-[calc(100%-80px)] lg:max-h-[840px] flex flex-col justify-between py-[32px] lg:py-[40px] px-6 lg:px-[40px] xl:px-0 xl:pl-[80px] xl:pr-[40px]">
           
-          <div className="flex-1 flex flex-col justify-center items-center lg:items-start text-center lg:text-left">
-            <div className="w-full max-w-[445px] mx-auto lg:mx-0 flex flex-col items-center justify-center gap-[40px]">
+          <div className="flex-1 flex flex-col justify-center items-center xl:items-start text-center xl:text-left">
+            <div className="w-full max-w-[445px] mx-auto xl:mx-0 flex flex-col items-center justify-center gap-[40px]">
               
               <h2 className="font-['Plus_Jakarta_Sans'] font-semibold text-[32px] leading-[40px] text-black m-0 text-center">
                 Password Sent Succesfully
@@ -60,7 +60,7 @@ export default function PasswordSent() {
             </div>
           </div>
 
-          <div className="w-full max-w-[445px] mx-auto lg:mx-0 flex items-center gap-[8px] lg:gap-[16px] mt-auto">
+          <div className="w-full max-w-[445px] mx-auto xl:mx-0 flex items-center gap-[8px] lg:gap-[16px] mt-auto">
              <ShieldCheck className="text-[#006D3A] w-[16px] h-[20px] flex-shrink-0" />
              <span className="font-['Plus_Jakarta_Sans'] font-normal text-[10px] lg:text-[12px] leading-[14px] lg:leading-[16px] text-[#3D4949]/80">
                Secured by TechGy Innovations. End-to-end encrypted connection.

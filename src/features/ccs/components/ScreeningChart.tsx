@@ -3,16 +3,22 @@ import { format, subDays } from 'date-fns';
 import { Typography } from '@/components/ui/typography';
 import { useGetDashboardScreeningOutcomesMutation } from '@/features/ccs/api/dashboardApi';
 
-export default function ScreeningChart() {
+interface ScreeningChartProps {
+  endDate?: Date | null;
+}
+
+export default function ScreeningChart({ endDate }: ScreeningChartProps) {
   const [getScreeningOutcomes, { data }] = useGetDashboardScreeningOutcomesMutation();
 
   useEffect(() => {
-    // The graph is strictly fixed to the last 7 days from TODAY, 
-    // regardless of any custom date filters applied in the dashboard.
+    // If a custom endDate is provided, we use it as the reference date for the last 7 days.
+    // Otherwise, we default to TODAY.
+    const targetDate = endDate ? format(endDate, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd');
+    
     getScreeningOutcomes({
-      currentDate: format(new Date(), 'yyyy-MM-dd')
+      currentDate: targetDate
     });
-  }, [getScreeningOutcomes]);
+  }, [getScreeningOutcomes, endDate]);
 
   // Handle data wrapper if backend sends it
   const chartDataArray = Array.isArray((data as any)?.data) ? (data as any).data : (Array.isArray(data) ? data : []);
@@ -23,8 +29,8 @@ export default function ScreeningChart() {
     ...chartDataArray.map(item => (item.approvedFarmlands || 0) + (item.rejectedFarmlands || 0))
   );
 
-  // Generate the 7 days ending on TODAY
-  const referenceDate = new Date();
+  // Generate the 7 days ending on the reference date
+  const referenceDate = endDate || new Date();
   const last7Days = Array.from({ length: 7 }).map((_, i) => subDays(referenceDate, 6 - i));
   const days = last7Days.map(d => format(d, 'EEE'));
 

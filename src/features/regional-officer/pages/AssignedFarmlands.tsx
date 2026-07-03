@@ -13,7 +13,7 @@ import {
 
 // Authentic Design System SVG Assets
 import containerSvg from '../../../assets/regionalofficer/Container (8).svg';
-import roDashboardSvg from '../../../assets/regionalofficer/ro dasboard.svg';
+import roDashboardSvg from '../../../assets/regionalofficer/ro-dashboard.svg';
 import vineyardRows1Svg from '../../../assets/regionalofficer/Vineyard Rows (1).svg';
 import vineyardRowsSvg from '../../../assets/regionalofficer/Vineyard Rows.svg';
 import wheatField1Svg from '../../../assets/regionalofficer/Wheat Field (1).svg';

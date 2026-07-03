@@ -158,7 +158,11 @@ export default function PipelineStatus({ startDate, endDate }: PipelineStatusPro
     // If custom dates are selected, pass them. Otherwise omit them.
     const payload = startDate && endDate ? {
       startDate: format(startDate, 'yyyy-MM-dd'),
-      endDate: format(endDate, 'yyyy-MM-dd')
+      endDate: format(endDate, 'yyyy-MM-dd'),
+      fromDate: format(startDate, 'yyyy-MM-dd'),
+      toDate: format(endDate, 'yyyy-MM-dd'),
+      start_date: format(startDate, 'yyyy-MM-dd'),
+      end_date: format(endDate, 'yyyy-MM-dd')
     } : {};
 
     getPipelineStatus(payload);

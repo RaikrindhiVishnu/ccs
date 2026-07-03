@@ -12,7 +12,7 @@ import {
   Maximize
 } from 'lucide-react';
 import DailyClearanceChart from '../components/DailyClearanceChart';
-import roDashboardMap from '../../../assets/regionalofficer/ro dasboard.svg';
+import roDashboardMap from '../../../assets/regionalofficer/ro-dashboard.svg';
 
 // Mock Data
 const FARMLANDS = [

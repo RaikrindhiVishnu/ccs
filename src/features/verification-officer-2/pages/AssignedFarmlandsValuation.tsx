@@ -157,6 +157,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
   };
 
   const currentComment = comments[activeSubTab] || '';
+  const currentFiles = subTabsFilesData[activeSubTab] || { uploadedFiles: [] };
 
   return (
     <div className="bg-[#F2F2F2] min-h-screen flex flex-col items-center p-4 md:p-8 overflow-x-hidden font-inter">
@@ -197,7 +198,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
 
              <div className="relative flex flex-col gap-10 pl-[80px]">
                {/* Vertical Line */}
-               <div className="absolute left-[90px] top-[24px] bottom-[24px] w-[1px] border-l border-[#0078FA] opacity-25"></div>
+               <div className="absolute left-[62px] top-[24px] bottom-[24px] w-[1px] border-l border-[#0078FA] opacity-25"></div>
 
                {/* Step 1 */}
                <div className="relative flex items-center h-[36px]">
@@ -211,7 +212,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
                      <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
                    )}
                  </div>
-                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#5A5C5E] uppercase">CUSTOMER INFORMATION</span>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#5A5C5E] uppercase w-[173px]">CUSTOMER INFORMATION</span>
                </div>
 
                {/* Step 2 */}
@@ -226,7 +227,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
                      <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
                    )}
                  </div>
-                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#5A5C5E] uppercase">LAND & BOUNDARIES</span>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#5A5C5E] uppercase w-[173px]">LAND & BOUNDARIES</span>
                </div>
 
                {/* Step 3 (Active) */}
@@ -234,7 +235,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
                  <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
                    <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
                  </div>
-                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#FFBC8A] uppercase">VALUATION</span>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#FFBC8A] uppercase w-[173px]">VALUATION</span>
                </div>
 
                {/* Step 4 */}
@@ -242,7 +243,7 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
                  <div className="absolute -left-[30px] w-[24px] h-[24px] bg-white border-[0.2px] border-black/15 rounded-full flex items-center justify-center z-10">
                    <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[12px] font-bold">!</div>
                  </div>
-                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#FFBC8A] uppercase opacity-50">AGRICULTURE &<br/>REPORT</span>
+                 <span className="font-plus-jakarta font-semibold text-[14px] leading-[18px] text-[#FFBC8A] uppercase opacity-50 w-[173px]">AGRICULTURE &<br/>REPORT</span>
                </div>
              </div>
            </div>
@@ -260,12 +261,12 @@ export const VerificationOfficerAssignedFarmlandsValuation: React.FC = () => {
                       key={idx}
                       onClick={() => setActiveSubTab(idx)}
                       className="flex flex-row items-center justify-center px-4 py-[11px] gap-2 h-[41px] bg-[#F9F9F9] rounded-[72px] shadow-sm cursor-pointer whitespace-nowrap"
-                      style={{ border: isActive ? '1px solid #0078FA' : isCompleted ? '1px solid #A5B767' : '1px solid transparent' }}
+                      style={{ border: isActive ? '1px solid #0078FA' : isCompleted ? '1px solid #2780C4' : '1px solid transparent' }}
                     >
                       {!isCompleted && (
                         <div className="w-[18px] h-[18px] bg-[#FFBC8A] rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0">!</div>
                       )}
-                      <span className="font-plus-jakarta font-semibold text-[14px]" style={{ color: isActive ? '#0078FA' : isCompleted ? '#2780C4' : 'rgba(90, 92, 94, 0.74)' }}>
+                      <span className="font-plus-jakarta font-semibold text-[14px] text-[rgba(90,92,94,0.74)]">
                         {pill.label}
                       </span>
                       {isCompleted && (

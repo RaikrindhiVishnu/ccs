@@ -22,7 +22,7 @@ export default function ProcessingFeeScreen() {
     const navigate = useNavigate();
   return (
     <section className="w-full min-h-screen bg-[var(--surface-page)] p-[1rem] lg:p-[1.5rem] 2xl:p-[2rem]">
-      {/* Main Wrapper */}
+      {/* Main Wrapper - Vite HMR Trigger */}
       <div
         className="
           mx-auto
@@ -418,12 +418,15 @@ export default function ProcessingFeeScreen() {
                     variant="h1"
                     className="
                       mt-[0.4rem]
-                      text-[2.8rem]
-                      sm:text-[3.5rem]
-                      lg:text-[4rem]
+                      text-[2.5rem]
+                      md:text-[3rem]
+                      xl:text-[4rem]
                       font-extrabold
                       tracking-tight
                       text-white
+                      truncate
+                      w-full
+                      text-center
                     "
                   >
                     {processingFeeData.totalFee}
@@ -488,12 +491,13 @@ export default function ProcessingFeeScreen() {
                           />
                         </div>
 
-                        <div>
+                        <div className="flex-1 min-w-0 pr-[10px]">
                           <h4
                             className="
                               text-[0.92rem]
                               font-bold
                               text-[var(--text-primary)]
+                              truncate
                             "
                           >
                             {item.title}
@@ -504,6 +508,7 @@ export default function ProcessingFeeScreen() {
                               mt-[0.2rem]
                               text-[0.68rem]
                               text-[var(--text-subtle)]
+                              truncate
                             "
                           >
                             {item.description}
@@ -516,6 +521,8 @@ export default function ProcessingFeeScreen() {
                           text-[1rem]
                           font-bold
                           text-[var(--text-primary)]
+                          whitespace-nowrap
+                          shrink-0
                         "
                       >
                         {item.amount}
