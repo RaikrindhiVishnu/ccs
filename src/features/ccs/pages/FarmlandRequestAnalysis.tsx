@@ -16,15 +16,27 @@ export default function FarmlandRequestAnalysis() {
   }, [id, getDetails]);
 
   // Extract the real data from the API response
-  const rawData = apiResponse?.data?.farmland_details || apiResponse?.farmland_details || apiResponse?.data || apiResponse;
+  const responseData = apiResponse?.data || apiResponse;
+  
+  // Handle if responseData is an array (e.g. from a list endpoint returning one item)
+  const actualData = Array.isArray(responseData) ? responseData[0] : responseData;
+
+  // Handle the nested structure of the API response format
+  const farmlandDetails = actualData?.farmland_details || actualData;
 
   let normalizedPolygon: any = null;
   let initialCoords = { lat: 17.014366, lon: 78.423866 };
 
-  if (rawData?.farmland_polygon) {
+  if (farmlandDetails?.farmland_polygon) {
     try {
-      let polyObj = rawData.farmland_polygon;
-      if (typeof polyObj === 'string') polyObj = JSON.parse(polyObj);
+      let polyObj = farmlandDetails.farmland_polygon;
+      if (typeof polyObj === 'string') {
+        polyObj = JSON.parse(polyObj);
+        // Handle double-encoded strings just in case
+        if (typeof polyObj === 'string') {
+          polyObj = JSON.parse(polyObj);
+        }
+      }
 
       if (Array.isArray(polyObj) && polyObj.length > 0 && ('latitude' in polyObj[0] || 'lat' in polyObj[0])) {
         const coordinates = polyObj.map((point: any) => {
@@ -75,7 +87,7 @@ export default function FarmlandRequestAnalysis() {
   return (
     <div className="relative h-full overflow-hidden">
       <div className="fixed inset-0 z-[100] w-screen h-screen bg-white">
-        {!isLoading && rawData && (
+        {!isLoading && actualData && (
           <HistoricalAgronomyAnalysis 
             onBack={() => navigate(`/farmland-request/map/${id}`)} 
             onAuthorize={() => navigate(`/farmland-request/gateway/${id}`)}
