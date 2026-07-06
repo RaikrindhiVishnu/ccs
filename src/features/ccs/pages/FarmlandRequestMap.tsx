@@ -19,15 +19,28 @@ export default function FarmlandRequestMap() {
     }
   }, [id, getDetails]);
 
-  // Extract the real data from the API response
+  // Bulletproof extractor to find nested keys
+  const findDeep = (obj: any, key: string): any => {
+    if (!obj || typeof obj !== 'object') return null;
+    if (key in obj) return obj[key];
+    for (const k in obj) {
+      if (typeof obj[k] === 'object') {
+        const res = findDeep(obj[k], key);
+        if (res) return res;
+      }
+    }
+    return null;
+  };
+
+  // Find the details objects no matter how deeply nested they are
+  const extractedFarmland = findDeep(apiResponse, 'farmland_details');
+  const extractedOwner = findDeep(apiResponse, 'owner_details');
+
   const rawData = apiResponse?.data || apiResponse;
-  
-  // Handle if rawData is an array (e.g. from a list endpoint returning one item)
   const actualData = Array.isArray(rawData) ? rawData[0] : rawData;
 
-  // Handle the nested structure of the new API response format
-  const farmlandDetails = actualData?.farmland_details || actualData;
-  const ownerDetails = actualData?.owner_details || actualData;
+  const farmlandDetails = extractedFarmland || actualData;
+  const ownerDetails = extractedOwner || actualData;
 
   // Use a default date to fetch the satellite tile URL for the background, exactly as in Analysis
   const { sourceConfig } = useWaybackSource("2020-01-01");
@@ -54,10 +67,18 @@ export default function FarmlandRequestMap() {
     try {
       let polyObj = farmlandDetails.farmland_polygon;
       if (typeof polyObj === 'string') {
-        polyObj = JSON.parse(polyObj);
-        // Handle double-encoded strings just in case
-        if (typeof polyObj === 'string') {
+        try {
           polyObj = JSON.parse(polyObj);
+        } catch (e) {
+          // Attempt to fix single-quoted JSON strings
+          try {
+            polyObj = JSON.parse(polyObj.replace(/'/g, '"'));
+          } catch (e2) {
+            console.error("Failed to parse farmland_polygon:", polyObj);
+          }
+        }
+        if (typeof polyObj === 'string') {
+          try { polyObj = JSON.parse(polyObj); } catch(e) {}
         }
       }
 

@@ -15,14 +15,26 @@ export default function FarmlandRequestAnalysis() {
     }
   }, [id, getDetails]);
 
-  // Extract the real data from the API response
+  // Bulletproof extractor to find nested keys
+  const findDeep = (obj: any, key: string): any => {
+    if (!obj || typeof obj !== 'object') return null;
+    if (key in obj) return obj[key];
+    for (const k in obj) {
+      if (typeof obj[k] === 'object') {
+        const res = findDeep(obj[k], key);
+        if (res) return res;
+      }
+    }
+    return null;
+  };
+
+  // Find the details objects no matter how deeply nested they are
+  const extractedFarmland = findDeep(apiResponse, 'farmland_details');
+
   const responseData = apiResponse?.data || apiResponse;
-  
-  // Handle if responseData is an array (e.g. from a list endpoint returning one item)
   const actualData = Array.isArray(responseData) ? responseData[0] : responseData;
 
-  // Handle the nested structure of the API response format
-  const farmlandDetails = actualData?.farmland_details || actualData;
+  const farmlandDetails = extractedFarmland || actualData;
 
   let normalizedPolygon: any = null;
   let initialCoords = { lat: 17.014366, lon: 78.423866 };
@@ -31,10 +43,18 @@ export default function FarmlandRequestAnalysis() {
     try {
       let polyObj = farmlandDetails.farmland_polygon;
       if (typeof polyObj === 'string') {
-        polyObj = JSON.parse(polyObj);
-        // Handle double-encoded strings just in case
-        if (typeof polyObj === 'string') {
+        try {
           polyObj = JSON.parse(polyObj);
+        } catch (e) {
+          // Attempt to fix single-quoted JSON strings
+          try {
+            polyObj = JSON.parse(polyObj.replace(/'/g, '"'));
+          } catch (e2) {
+            console.error("Failed to parse farmland_polygon:", polyObj);
+          }
+        }
+        if (typeof polyObj === 'string') {
+          try { polyObj = JSON.parse(polyObj); } catch(e) {}
         }
       }
 
