@@ -564,12 +564,14 @@ export type HistoricalAgronomyAnalysisProps = {
   onBack?: () => void;
   onAuthorize?: () => void;
   polygon?: any;
+  coords?: { lat: number; lon: number };
 };
 
 export default function HistoricalAgronomyAnalysis({
   onBack,
   onAuthorize,
   polygon,
+  coords,
 }: HistoricalAgronomyAnalysisProps) {
   const [activeYear, setActiveYear] = useState<Year>("2020");
   const [activeNav, setActiveNav] = useState("soil");
@@ -593,7 +595,7 @@ export default function HistoricalAgronomyAnalysis({
           ref={mapRef}
           tileUrl={sourceConfig?.url ?? ""}
           maxzoom={sourceConfig?.maxzoom ?? 18}
-          coords={{ lat: 17.014366, lon: 78.423866 }} // Defaulting to Hyderabad area as in the dummy map text
+          coords={coords || { lat: 17.014366, lon: 78.423866 }} // Fallback to Hyderabad area if no coords provided
           polygon={polygon}
         />
 

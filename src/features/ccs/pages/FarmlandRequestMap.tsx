@@ -10,7 +10,7 @@ import "@/features/satellite-history/satellite-history.css";
 export default function FarmlandRequestMap() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   const [getDetails, { data: apiResponse, isLoading }] = useGetAssignedFarmlandDetailsMutation();
 
   useEffect(() => {
@@ -22,9 +22,12 @@ export default function FarmlandRequestMap() {
   // Extract the real data from the API response
   const rawData = apiResponse?.data || apiResponse;
   
+  // Handle if rawData is an array (e.g. from a list endpoint returning one item)
+  const actualData = Array.isArray(rawData) ? rawData[0] : rawData;
+
   // Handle the nested structure of the new API response format
-  const farmlandDetails = rawData?.farmland_details || rawData;
-  const ownerDetails = rawData?.owner_details || rawData;
+  const farmlandDetails = actualData?.farmland_details || actualData;
+  const ownerDetails = actualData?.owner_details || actualData;
 
   // Use a default date to fetch the satellite tile URL for the background, exactly as in Analysis
   const { sourceConfig } = useWaybackSource("2020-01-01");
@@ -45,22 +48,61 @@ export default function FarmlandRequestMap() {
   };
 
   let displayCoords = "17°00′51.72″N 78°25′25.92″E"; // default fallback
-  
+  let normalizedPolygon: any = null;
+
   if (farmlandDetails?.farmland_polygon) {
     try {
       let polyObj = farmlandDetails.farmland_polygon;
-      if (typeof polyObj === 'string') polyObj = JSON.parse(polyObj);
-      const geom = polyObj.type === 'Feature' ? polyObj.geometry : polyObj;
-      if (geom && geom.coordinates && geom.coordinates[0] && geom.coordinates[0][0]) {
-        // Handle both Polygon (geom.coordinates[0][0]) and MultiPolygon (geom.coordinates[0][0][0])
-        const firstCoord = Array.isArray(geom.coordinates[0][0][0]) 
-          ? geom.coordinates[0][0][0] 
-          : geom.coordinates[0][0];
+      if (typeof polyObj === 'string') {
+        polyObj = JSON.parse(polyObj);
+        // Handle double-encoded strings just in case
+        if (typeof polyObj === 'string') {
+          polyObj = JSON.parse(polyObj);
+        }
+      }
+
+      if (Array.isArray(polyObj) && polyObj.length > 0 && ('latitude' in polyObj[0] || 'lat' in polyObj[0])) {
+        const coordinates = polyObj.map((point: any) => {
+          const lat = parseFloat(point.latitude || point.lat);
+          const lon = parseFloat(point.longitude || point.lng || point.lon);
+          return [lon, lat];
+        });
         
-        if (firstCoord && firstCoord.length >= 2) {
-          const [lon, lat] = firstCoord;
-          initialCoords = { lat, lon };
-          displayCoords = formatDMS(lat, lon);
+        if (coordinates.length > 0) {
+          const first = coordinates[0];
+          const last = coordinates[coordinates.length - 1];
+          if (first[0] !== last[0] || first[1] !== last[1]) {
+            coordinates.push([...first]);
+          }
+        }
+
+        normalizedPolygon = {
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [coordinates]
+          }
+        };
+
+        const firstCoord = coordinates[0];
+        if (firstCoord) {
+          initialCoords = { lat: firstCoord[1], lon: firstCoord[0] };
+          displayCoords = formatDMS(firstCoord[1], firstCoord[0]);
+        }
+      } else {
+        normalizedPolygon = polyObj;
+        const geom = polyObj.type === 'Feature' ? polyObj.geometry : polyObj;
+        if (geom && geom.coordinates && geom.coordinates[0] && geom.coordinates[0][0]) {
+          // Handle both Polygon (geom.coordinates[0][0]) and MultiPolygon (geom.coordinates[0][0][0])
+          const firstCoord = Array.isArray(geom.coordinates[0][0][0])
+            ? geom.coordinates[0][0][0]
+            : geom.coordinates[0][0];
+
+          if (firstCoord && firstCoord.length >= 2) {
+            const [lon, lat] = firstCoord;
+            initialCoords = { lat, lon };
+            displayCoords = formatDMS(lat, lon);
+          }
         }
       }
     } catch (e) {
@@ -102,10 +144,10 @@ export default function FarmlandRequestMap() {
                 maxzoom={sourceConfig?.maxzoom ?? 18}
                 coords={initialCoords}
                 interactive={true}
-                polygon={farmlandDetails.farmland_polygon}
+                polygon={normalizedPolygon}
                 label={farmlandDetails.total_acres ? `${farmlandDetails.total_acres} Acres` : undefined}
               />
-              
+
               {/* Map controls (bottom right) */}
               <div className="absolute bottom-6 right-4 flex flex-col items-center gap-1 z-10 pointer-events-none">
                 <div className="flex items-center gap-1 rounded-full bg-black/50 px-3 py-1">
@@ -129,7 +171,7 @@ export default function FarmlandRequestMap() {
             onClose={() => navigate('/farmland-request')}
             onHistoricalAnalysis={() => navigate(`/farmland-request/analysis/${id}`)}
           />
-          
+
           {isLoading && (
             <div className="absolute inset-0 z-[110] bg-white/50 backdrop-blur-sm flex items-center justify-center">
               <div className="flex flex-col items-center justify-center text-[#2780C4] font-medium gap-4">

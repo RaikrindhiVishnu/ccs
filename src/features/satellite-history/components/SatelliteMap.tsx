@@ -233,7 +233,7 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
             id: 'polygon-fill',
             type: 'fill',
             source: 'polygon-source',
-            filter: ['==', '$type', 'Polygon'], // Only fill the polygon
+            filter: ['==', ['geometry-type'], 'Polygon'], // Only fill the polygon
             paint: {
               'fill-color': '#16a34a', // Solid green
               'fill-opacity': 0.4
@@ -243,7 +243,7 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
             id: 'polygon-outline',
             type: 'line',
             source: 'polygon-source',
-            filter: ['==', '$type', 'Polygon'], // Only outline the polygon
+            filter: ['==', ['geometry-type'], 'Polygon'], // Only outline the polygon
             paint: {
               'line-color': '#ffffff', // Solid white
               'line-width': 2.5,
@@ -254,7 +254,7 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
             id: 'polygon-vertices',
             type: 'circle',
             source: 'polygon-source',
-            filter: ['==', '$type', 'Point'], // MapLibre treats MultiPoint features as Point in filters
+            filter: ['==', ['geometry-type'], 'Point'], // MapLibre treats MultiPoint features as Point in filters
             paint: {
               'circle-radius': 5,
               'circle-color': '#ffffff' // Solid white dots
@@ -264,7 +264,7 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
             id: 'polygon-label',
             type: 'symbol',
             source: 'polygon-source',
-            filter: ['==', '$type', 'Polygon'], // Attach to the polygon centroid
+            filter: ['==', ['geometry-type'], 'Polygon'], // Attach to the polygon centroid
             layout: {
               'text-field': ['get', 'label'],
               'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
@@ -289,13 +289,24 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
 
           // Calculate safe padding to prevent MapLibre from throwing if padding > canvas width
           const mapWidth = map.getContainer().clientWidth;
-          const safeRightPadding = Math.min(500, Math.max(0, mapWidth - 150));
+          const mapHeight = map.getContainer().clientHeight;
+          
+          const safeRightPadding = Math.max(0, Math.min(500, mapWidth - 150));
+          const safeLeftPadding = Math.max(0, Math.min(60, mapWidth / 2 - 20));
+          const safeTopPadding = Math.max(0, Math.min(60, mapHeight / 2 - 20));
+          const safeBottomPadding = Math.max(0, Math.min(60, mapHeight / 2 - 20));
 
           const fit = () => {
-            map.fitBounds(bounds, {
-              padding: { top: 60, bottom: 60, left: 60, right: safeRightPadding },
-              duration: 1500
-            });
+            try {
+              map.fitBounds(bounds, {
+                padding: { top: safeTopPadding, bottom: safeBottomPadding, left: safeLeftPadding, right: safeRightPadding },
+                duration: 1500
+              });
+            } catch (e) {
+              console.warn("fitBounds failed, possibly due to container size:", e);
+              // Fallback to flyTo center if fitBounds fails
+              map.flyTo({ center: bounds.getCenter(), zoom: 15 });
+            }
           };
 
           fit();
