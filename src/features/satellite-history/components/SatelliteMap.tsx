@@ -233,7 +233,7 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
             id: 'polygon-fill',
             type: 'fill',
             source: 'polygon-source',
-            filter: ['==', ['geometry-type'], 'Polygon'], // Only fill the polygon
+            filter: ['==', '$type', 'Polygon'], // Only fill the polygon
             paint: {
               'fill-color': '#16a34a', // Solid green
               'fill-opacity': 0.4
@@ -243,7 +243,7 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
             id: 'polygon-outline',
             type: 'line',
             source: 'polygon-source',
-            filter: ['==', ['geometry-type'], 'Polygon'], // Only outline the polygon
+            filter: ['==', '$type', 'Polygon'], // Only outline the polygon
             paint: {
               'line-color': '#ffffff', // Solid white
               'line-width': 2.5,
@@ -254,7 +254,7 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
             id: 'polygon-vertices',
             type: 'circle',
             source: 'polygon-source',
-            filter: ['==', ['geometry-type'], 'Point'], // MapLibre treats MultiPoint features as Point in filters
+            filter: ['==', '$type', 'Point'], // MapLibre treats MultiPoint features as Point in filters
             paint: {
               'circle-radius': 5,
               'circle-color': '#ffffff' // Solid white dots
@@ -264,7 +264,7 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
             id: 'polygon-label',
             type: 'symbol',
             source: 'polygon-source',
-            filter: ['==', ['geometry-type'], 'Polygon'], // Attach to the polygon centroid
+            filter: ['==', '$type', 'Polygon'], // Attach to the polygon centroid
             layout: {
               'text-field': ['get', 'label'],
               'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
