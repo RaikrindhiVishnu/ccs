@@ -186,7 +186,7 @@ export default function FarmlandListCard({ item, onViewDetails }: Props) {
               onClick={() => onViewDetails?.(item.id)}
               className="rounded-[0.875rem] xl:rounded-[1rem]"
             >
-              View Details
+              View Polygon
             </Button>
           </div>
         </div>
