@@ -1,0 +1,350 @@
+import { useState, useEffect } from 'react';
+import { ArrowLeft, Edit, LogOut, Eye, EyeOff, X, Loader2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/core/hooks';
+import { logOut, selectCurrentUser } from '@/features/auth/store/authSlice';
+import { useGetDashboardUserMutation } from '@/features/ccs/api/dashboardApi';
+import { useUpdatePasswordMutation } from '@/features/auth/api/authApi';
+
+export default function CcsProfile() {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [alertsEnabled, setAlertsEnabled] = useState(true);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showOld, setShowOld] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pwError, setPwError] = useState('');
+  const [pwSuccess, setPwSuccess] = useState(false);
+
+  const [updatePassword, { isLoading: isUpdating }] = useUpdatePasswordMutation();
+  
+  const currentUser = useAppSelector(selectCurrentUser);
+  const [getUser, { data: apiUser }] = useGetDashboardUserMutation();
+
+  useEffect(() => {
+    if (currentUser?.id) {
+      getUser({ user_id: currentUser.id });
+    }
+  }, [getUser, currentUser?.id]);
+
+  const handleLogout = () => {
+    dispatch(logOut());
+    navigate('/login');
+  };
+
+  const openPasswordModal = () => {
+    setOldPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setPwError('');
+    setPwSuccess(false);
+    setShowPasswordModal(true);
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwError('');
+
+    if (newPassword.length < 8) {
+      setPwError('New password must be at least 8 characters.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPwError('New password and confirm password do not match.');
+      return;
+    }
+
+    try {
+      const result = await updatePassword({
+        old_password: oldPassword,
+        new_password: newPassword,
+      }).unwrap();
+
+      const isSuccess = result?.success !== false && result?.status !== 'error';
+      if (isSuccess) {
+        setPwSuccess(true);
+        setTimeout(() => setShowPasswordModal(false), 1500);
+      } else {
+        setPwError(result?.message || 'Failed to update password. Please try again.');
+      }
+    } catch (err: any) {
+      const msg = err?.data?.message || err?.data?.error || err?.message || 'Failed to update password.';
+      setPwError(msg);
+    }
+  };
+
+  const user = apiUser || currentUser || {};
+  const fullName = user.name || user.firstName || 'Ram Varma';
+  const firstName = fullName.split(' ')[0] || 'Ram';
+  const lastName = fullName.split(' ').slice(1).join(' ') || 'Varma';
+  const email = user.email || 'ramvarmaradhrapu@gmail.com';
+  const phone = user.phone || user.mobile_number || '+91 992 325 7593';
+  const dob = user.dob || user.date_of_birth || '03/09/1996';
+  const role = user.role || currentUser?.role || 'CCS';
+  const profileUrl = (user as any).profile_url || currentUser?.profile_url || null;
+  const initials = fullName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
+
+  return (
+    <div className="min-h-screen bg-[#F2F2F2] flex justify-center pb-[100px] overflow-y-auto font-['Plus_Jakarta_Sans']">
+      <div className="w-full max-w-[1440px] px-[40px] xl:px-[98px] pt-[38px] flex flex-col">
+        
+        {/* Back Button */}
+        <Link 
+          to="/ccs/dashboard" 
+          className="inline-flex self-start items-center gap-[8px] bg-[#FFFFFF] rounded-[60px] px-[20px] py-[15px] shadow-[0px_0px_4px_rgba(0,0,0,0.12)] transition-transform hover:-translate-x-1"
+        >
+          <ArrowLeft className="w-[24px] h-[24px] text-[#000000]" strokeWidth={1.5} />
+          <span className="font-normal text-[16px] leading-[18px] text-[#000000]">Go Back to Dashboard</span>
+        </Link>
+        
+        {/* Main Card Container */}
+        <div className="mt-[52px] bg-[#FFFFFF] rounded-[46px] w-full flex flex-col items-center px-[20px] xl:px-[50px] py-[32px] gap-[34px]">
+          
+          {/* Profile Banner Card */}
+          <div className="w-full xl:w-[1144px] h-[291px] bg-[#FFFFFF] shadow-[0px_0px_6px_rgba(0,0,0,0.12)] rounded-[24px] relative shrink-0">
+            {/* Banner Background */}
+            <div 
+              className="absolute left-0 right-0 top-0 h-[181px] rounded-t-[24px] bg-cover bg-center"
+              style={{ backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80')` }}
+            />
+            
+            {profileUrl ? (
+              <img
+                src={profileUrl}
+                alt="Profile"
+                className="absolute left-[41px] top-[93px] w-[176px] h-[176px] rounded-full object-cover border-[6px] border-[#FFFFFF] shadow-sm z-10 bg-[#FFFFFF]"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  (e.currentTarget.nextElementSibling as HTMLElement | null)?.classList.remove('hidden');
+                }}
+              />
+            ) : null}
+            <div
+              className={`${profileUrl ? 'hidden' : 'flex'} absolute left-[41px] top-[93px] w-[176px] h-[176px] rounded-full items-center justify-center bg-[var(--brand-500)] text-white text-4xl font-bold border-[6px] border-[#FFFFFF] shadow-sm z-10`}
+            >
+              {initials}
+            </div>
+
+            {/* Profile Name and Role */}
+            <div className="absolute left-[237px] top-[206px] flex flex-col z-10">
+              <span className="font-bold text-[24px] leading-[30px] text-[#000000]">{fullName}</span>
+              <span className="font-medium text-[16px] leading-[20px] text-[#000000] opacity-60">{role}</span>
+            </div>
+          </div>
+
+          {/* Personal Details Card */}
+          <div className="w-full xl:w-[1144px] h-auto min-h-[274px] bg-[#FFFFFF] shadow-[0px_0px_6px_rgba(0,0,0,0.12)] rounded-[24px] p-[30px] shrink-0">
+            <h2 className="font-semibold text-[24px] leading-[30px] text-[#000000] mb-[28px]">
+              Personal details
+            </h2>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-[24px] gap-y-[28px]">
+              {/* Field */}
+              <div className="flex flex-col gap-[10px]">
+                <label className="font-medium text-[16px] leading-[20px] text-[#000000] opacity-80">First name</label>
+                <div className="w-full h-[40px] bg-[#FFFFFF] border border-[#E1E5EF] rounded-[12px] flex items-center px-[14px]">
+                  <span className="font-normal text-[14px] text-[#000000]">{firstName}</span>
+                </div>
+              </div>
+              
+              {/* Field */}
+              <div className="flex flex-col gap-[10px]">
+                <label className="font-medium text-[16px] leading-[20px] text-[#000000] opacity-80">Last name</label>
+                <div className="w-full h-[40px] bg-[#FFFFFF] border border-[#E1E5EF] rounded-[12px] flex items-center px-[14px]">
+                  <span className="font-normal text-[14px] text-[#000000]">{lastName}</span>
+                </div>
+              </div>
+
+              {/* Field */}
+              <div className="flex flex-col gap-[10px]">
+                <label className="font-medium text-[16px] leading-[20px] text-[#000000] opacity-80">Date Of Birth</label>
+                <div className="w-full h-[40px] bg-[#FFFFFF] border border-[#E1E5EF] rounded-[12px] flex items-center px-[14px]">
+                  <span className="font-normal text-[14px] text-[#000000]">{dob}</span>
+                </div>
+              </div>
+
+              {/* Field */}
+              <div className="flex flex-col gap-[10px]">
+                <label className="font-medium text-[16px] leading-[20px] text-[#000000] opacity-80">Phone number</label>
+                <div className="w-full h-[40px] bg-[#FFFFFF] border border-[#E1E5EF] rounded-[12px] flex items-center px-[14px]">
+                  <span className="font-normal text-[14px] text-[#000000]">{phone}</span>
+                </div>
+              </div>
+
+              {/* Field */}
+              <div className="flex flex-col gap-[10px]">
+                <label className="font-medium text-[16px] leading-[20px] text-[#000000] opacity-80">Email</label>
+                <div className="w-full h-[40px] bg-[#FFFFFF] border border-[#E1E5EF] rounded-[12px] flex items-center px-[14px]">
+                  <span className="font-normal text-[14px] text-[#000000]">{email}</span>
+                </div>
+              </div>
+
+              {/* Password Action */}
+              <div className="flex flex-col justify-between gap-[10px]">
+                <label className="font-medium text-[16px] leading-[20px] text-[#000000] opacity-80">Password</label>
+                <button
+                  onClick={openPasswordModal}
+                  className="w-full h-[40px] border border-[#2780C4] rounded-[12px] flex items-center justify-between px-[20px] hover:bg-[rgba(39,128,196,0.05)] transition-colors"
+                >
+                  <span className="font-semibold text-[14px] leading-[20px] text-[#2780C4]">Update Your Password</span>
+                  <Edit className="w-[18px] h-[18px] text-[#2780C4]" strokeWidth={2} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Alerts Card */}
+          <div className="w-full xl:w-[1144px] h-[151px] bg-[#FFFFFF] shadow-[0px_0px_6px_rgba(0,0,0,0.12)] rounded-[24px] p-[24px] xl:px-[30px] flex flex-col gap-[24px] shrink-0">
+            <h2 className="font-semibold text-[24px] leading-[30px] text-[#000000]">
+              Alerts
+            </h2>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-[8px]">
+                <span className="font-semibold text-[18px] leading-[23px] text-[#000000] opacity-80">Notifications</span>
+                <span className="font-normal text-[14px] leading-[18px] text-[#000000]">Receive updates via Notifications</span>
+              </div>
+              
+              {/* Toggle switch */}
+              <div 
+                className={`relative w-[36px] h-[20px] rounded-full flex items-center px-[2px] cursor-pointer transition-colors ${alertsEnabled ? 'bg-[#4CAF50]' : 'bg-[#E0E0E0]'}`}
+                onClick={() => setAlertsEnabled(!alertsEnabled)}
+              >
+                <div 
+                  className={`w-[16px] h-[16px] bg-[#FFFFFF] rounded-full transition-transform ${alertsEnabled ? 'translate-x-[16px]' : 'translate-x-0'}`} 
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Logout Card */}
+          <div className="w-full xl:w-[1144px] h-[85px] bg-[#FFFFFF] shadow-[0px_0px_6px_rgba(0,0,0,0.12)] rounded-[24px] flex items-center justify-between px-[30px] shrink-0">
+            <span className="font-medium text-[18px] leading-[23px] text-[#000000]">
+              Want to logout?
+            </span>
+            
+            <button 
+              onClick={handleLogout}
+              className="bg-[rgba(249,34,34,0.08)] rounded-[8px] flex items-center justify-center gap-[8px] w-[124px] h-[44px] hover:bg-[rgba(249,34,34,0.12)] transition-colors"
+            >
+              <LogOut className="w-[20px] h-[20px] text-[#FF2D2D]" strokeWidth={2} />
+              <span className="font-medium text-[16px] leading-[20px] text-[#FF2D2D]">Logout</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ── Update Password Modal ── */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-[440px] bg-[#FFFFFF] rounded-[28px] shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] p-[32px] flex flex-col gap-[24px]">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-[22px] leading-[28px] text-[#0F172A] font-['Plus_Jakarta_Sans']">Update Password</h3>
+              <button onClick={() => setShowPasswordModal(false)} className="flex items-center justify-center w-[32px] h-[32px] rounded-full hover:bg-gray-100 transition-colors">
+                <X className="w-[18px] h-[18px] text-[#64748B]" strokeWidth={2} />
+              </button>
+            </div>
+
+            {pwSuccess ? (
+              <div className="flex flex-col items-center gap-[12px] py-[20px]">
+                <div className="w-[56px] h-[56px] rounded-full bg-[#DCFCE7] flex items-center justify-center">
+                  <svg className="w-[28px] h-[28px] text-[#16A34A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <p className="font-semibold text-[16px] text-[#16A34A] font-['Plus_Jakarta_Sans']">Password updated successfully!</p>
+              </div>
+            ) : (
+              <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-[18px]">
+                {/* Current Password */}
+                <div className="flex flex-col gap-[8px]">
+                  <label className="font-medium text-[14px] text-[#374151] font-['Plus_Jakarta_Sans']">Current Password</label>
+                  <div className="relative">
+                    <input
+                      type={showOld ? 'text' : 'password'}
+                      value={oldPassword}
+                      onChange={e => setOldPassword(e.target.value)}
+                      placeholder="Enter current password"
+                      required
+                      className="w-full h-[48px] border border-[#E1E5EF] rounded-[12px] px-[16px] pr-[44px] text-[14px] text-[#0F172A] font-['Plus_Jakarta_Sans'] focus:outline-none focus:border-[#2780C4] transition-colors"
+                    />
+                    <button type="button" onClick={() => setShowOld(v => !v)} className="absolute right-[14px] top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#475569]">
+                      {showOld ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* New Password */}
+                <div className="flex flex-col gap-[8px]">
+                  <label className="font-medium text-[14px] text-[#374151] font-['Plus_Jakarta_Sans']">New Password</label>
+                  <div className="relative">
+                    <input
+                      type={showNew ? 'text' : 'password'}
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                      placeholder="Min. 8 characters"
+                      required
+                      minLength={8}
+                      className="w-full h-[48px] border border-[#E1E5EF] rounded-[12px] px-[16px] pr-[44px] text-[14px] text-[#0F172A] font-['Plus_Jakarta_Sans'] focus:outline-none focus:border-[#2780C4] transition-colors"
+                    />
+                    <button type="button" onClick={() => setShowNew(v => !v)} className="absolute right-[14px] top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#475569]">
+                      {showNew ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Confirm New Password */}
+                <div className="flex flex-col gap-[8px]">
+                  <label className="font-medium text-[14px] text-[#374151] font-['Plus_Jakarta_Sans']">Confirm New Password</label>
+                  <div className="relative">
+                    <input
+                      type={showConfirm ? 'text' : 'password'}
+                      value={confirmPassword}
+                      onChange={e => setConfirmPassword(e.target.value)}
+                      placeholder="Re-enter new password"
+                      required
+                      className="w-full h-[48px] border border-[#E1E5EF] rounded-[12px] px-[16px] pr-[44px] text-[14px] text-[#0F172A] font-['Plus_Jakarta_Sans'] focus:outline-none focus:border-[#2780C4] transition-colors"
+                    />
+                    <button type="button" onClick={() => setShowConfirm(v => !v)} className="absolute right-[14px] top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#475569]">
+                      {showConfirm ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Error */}
+                {pwError && (
+                  <p className="text-[13px] text-[#DC2626] font-medium font-['Plus_Jakarta_Sans'] bg-[#FEF2F2] px-[12px] py-[8px] rounded-[8px]">{pwError}</p>
+                )}
+
+                {/* Actions */}
+                <div className="flex items-center justify-end gap-[12px] mt-[4px]">
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordModal(false)}
+                    className="h-[44px] px-[24px] bg-[#FFFFFF] border border-[#E1E5EF] rounded-[12px] font-semibold text-[14px] text-[#374151] hover:bg-gray-50 transition-colors font-['Plus_Jakarta_Sans']"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isUpdating}
+                    className="h-[44px] px-[28px] bg-[#2780C4] rounded-[12px] font-semibold text-[14px] text-[#FFFFFF] hover:bg-[#1f669d] disabled:opacity-60 disabled:cursor-not-allowed transition-colors font-['Plus_Jakarta_Sans'] flex items-center gap-[8px]"
+                  >
+                    {isUpdating && <Loader2 className="w-[16px] h-[16px] animate-spin" />}
+                    {isUpdating ? 'Updating...' : 'Update Password'}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,48 @@
+import type { FarmlandRequestItem } from "@/features/ccs/components/Farmlandrequestcard";
+
+export const farmlandRequestDummyData: FarmlandRequestItem[] = [
+  {
+    id: "1",
+    farmlandId: "GLCSOS 01",
+    location: "Tanuku, WG, A.P.",
+    priority: "High",
+    agentName: "Ram Varma",
+    createdDate: "08/04/26",
+    totalAcres: "100 Acres",
+    valuation: "₹45,000/Acre",
+    assetValue: "₹5.3 Crores",
+  },
+  {
+    id: "2",
+    farmlandId: "GLCSOS 02",
+    location: "Tanuku, WG, A.P.",
+    priority: "Medium",
+    agentName: "Ram Varma",
+    createdDate: "12/04/26",
+    totalAcres: "100 Acres",
+    valuation: "₹45,000/Acre",
+    assetValue: "₹5.3 Crores",
+  },
+  {
+    id: "3",
+    farmlandId: "GLCSOS 03",
+    location: "Tanuku, WG, A.P.",
+    priority: "High",
+    agentName: "Ram Varma",
+    createdDate: "12/04/26",
+    totalAcres: "100 Acres",
+    valuation: "₹45,000/Acre",
+    assetValue: "₹5.3 Crores",
+  },
+  {
+    id: "4",
+    farmlandId: "GLCSOS 04",
+    location: "Tanuku, WG, A.P.",
+    priority: "Medium",
+    agentName: "Ram Varma",
+    createdDate: "12/04/26",
+    totalAcres: "100 Acres",
+    valuation: "₹45,000/Acre",
+    assetValue: "₹5.3 Crores",
+  },
+];

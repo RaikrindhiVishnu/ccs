@@ -1,0 +1,182 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from "react-redux";
+import { Eye, EyeOff, Lock, User, ShieldCheck } from 'lucide-react';
+import { setCredentials } from "@/features/auth/store/authSlice";
+import { ROLE_CODES, UserRole } from "@/features/auth/types";
+import { useLoginMutation } from "@/features/auth/api/authApi";
+import { env } from "@/core/config/env";
+import FrameBg from '@/assets/ccs login.jpg';
+import GlcLogo from '@/assets/glc-logo.svg';
+
+export default function CCSLogin() {
+  const [loginId, setLoginId] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPw, setShowPw] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [login, { isLoading }] = useLoginMutation();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    // Mock backdoor for development if real credentials aren't available yet
+    if (env.ENABLE_MOCKS && loginId === 'ccs@glc.com' && password === 'ccs@123456') {
+      dispatch(
+        setCredentials({
+          user: {
+            id: 103,
+            login_id: 'ccs@glc.com',
+            first_name: 'CCS',
+            last_name: 'Officer',
+            role_id: UserRole.CCS,
+            role: 'CCS',
+            is_first_login: 0,
+          },
+          accessToken: 'mock-token-ccs',
+          refreshToken: 'mock-refresh-ccs',
+        })
+      );
+      navigate('/ccs/dashboard');
+      return;
+    }
+
+    try {
+      const response = await login({ login_id: loginId, password }).unwrap();
+
+      const roleCode = ROLE_CODES[response.role_id];
+      dispatch(
+          setCredentials({
+            user: {
+              id: response.id,
+              login_id: response.login_id,
+              first_name: response.first_name,
+              last_name: response.last_name,
+              profile_url: response.profile_url,
+              role_id: response.role_id,
+              role: roleCode,
+              is_first_login: response.is_first_login,
+            },
+            accessToken: response.token,
+            refreshToken: response.refreshToken,
+          })
+      );
+      
+      // If user requires default password update
+      if (response.is_first_login === 1) {
+         navigate('/ccs/update-default-password');
+      } else {
+         navigate('/ccs/dashboard');
+      }
+    } catch (err: any) {
+      setError(err?.data?.message || 'Invalid login ID or password.');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F2F2F2] flex items-center justify-center">
+      <div className="relative w-full max-w-[1440px] min-h-screen lg:h-screen lg:max-h-[1024px] bg-[#F2F2F2] overflow-y-auto lg:overflow-hidden flex flex-col lg:flex-row items-center lg:justify-start">
+        
+        {/* Left Side - Image Background */}
+        <div 
+          className="relative w-full lg:flex-1 xl:flex-none xl:w-[720px] lg:m-[24px] xl:m-0 xl:ml-[80px] h-[35vh] min-h-[280px] lg:min-h-[500px] xl:min-h-0 lg:h-[calc(100%-48px)] xl:h-[calc(100%-80px)] lg:max-h-[840px] lg:rounded-[24px] bg-cover bg-center overflow-hidden flex flex-col justify-between shrink-0"
+          style={{ backgroundImage: `url('${FrameBg}')` }}
+        >
+           {/* Top Left Logo */}
+           <div className="p-4 lg:p-[32px]">
+              <img src={GlcLogo} alt="Green Land Capital" className="w-[100px] lg:w-[134px] object-contain drop-shadow-md" />
+           </div>
+
+           <div className="w-full text-center mt-auto mb-8 lg:mb-[60px]">
+             <h1 className="font-['Plus_Jakarta_Sans'] font-semibold text-[28px] lg:text-[48px] leading-[1.2] lg:leading-[60px] text-white drop-shadow-lg">
+               Welcome To<br/>Green Land Capital
+             </h1>
+           </div>
+        </div>
+
+        {/* Right Side - Form */}
+        <div className="w-full lg:flex-1 flex-1 lg:h-[calc(100%-48px)] xl:h-[calc(100%-80px)] lg:max-h-[840px] flex flex-col justify-between py-[32px] lg:py-[40px] px-6 lg:px-[40px] xl:px-0 xl:pl-[80px] xl:pr-[40px]">
+          
+          <div className="flex-1 flex flex-col justify-center">
+            <div className="w-full max-w-[454px] mx-auto xl:mx-0 flex flex-col gap-[28px]">
+              
+              <div className="flex flex-col gap-3">
+                <h2 className="font-['Plus_Jakarta_Sans'] font-bold text-[32px] lg:text-[40px] leading-[1.2] lg:leading-[50px] tracking-[-0.9px] text-[#1A1C1D] m-0">
+                  Central Command<br/>System Login
+                </h2>
+                <p className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] lg:text-[16px] leading-[1.5] lg:leading-[26px] text-[#3D4949] m-0">
+                  Secure access for authorized CCS. Please authenticate to continue.
+                </p>
+                {error && (
+                  <p className="text-red-500 text-sm mt-2 font-['Plus_Jakarta_Sans']">{error}</p>
+                )}
+              </div>
+
+              <form className="flex flex-col gap-6 w-full" onSubmit={handleLogin}>
+                <div className="flex flex-col gap-2 w-full">
+                  <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[20px] text-[#3D4949]">
+                    Login ID
+                  </label>
+                  <div className="flex items-center w-full h-[56px] bg-[#F3F3F5] border border-black/10 rounded-[32px] px-6 gap-[18px]">
+                    <User className="text-[#6D7A7A] w-[16px] h-[16px] flex-shrink-0" strokeWidth={2} />
+                    <input 
+                      type="text" 
+                      placeholder="Enter your assigned ID" 
+                      autoComplete="username"
+                      className="flex-1 bg-transparent border-none outline-none font-['Plus_Jakarta_Sans'] text-[16px] text-black placeholder:text-[#6D7A7A]/30 w-full"
+                      value={loginId}
+                      onChange={(e) => setLoginId(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2 w-full">
+                  <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[20px] text-[#3D4949]">
+                    Password
+                  </label>
+                  <div className="flex items-center w-full h-[56px] bg-[#F3F3F5] border border-black/10 rounded-[32px] px-6 gap-[18px]">
+                    <Lock className="text-[#6D7A7A] w-[16px] h-[16px] flex-shrink-0" strokeWidth={2} />
+                    <input 
+                      type={showPw ? "text" : "password"} 
+                      placeholder="Enter Password" 
+                      autoComplete="current-password"
+                      className="flex-1 bg-transparent border-none outline-none font-['Plus_Jakarta_Sans'] text-[16px] text-black placeholder:text-[#6D7A7A]/30 w-full"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button type="button" onClick={() => setShowPw(!showPw)} className="border-none bg-transparent cursor-pointer p-0 flex items-center justify-center flex-shrink-0">
+                       {showPw ? <Eye className="text-[#6D7A7A] w-[18px] h-[18px]" /> : <EyeOff className="text-[#6D7A7A] w-[18px] h-[18px]" />}
+                    </button>
+                  </div>
+                  <div className="w-full text-right mt-[4px]">
+                     <button type="button" onClick={() => navigate('/ccs/forgot-password')} className="bg-transparent border-none p-0 cursor-pointer font-['Plus_Jakarta_Sans'] font-medium text-[14px] leading-[20px] text-[#3D4949] hover:underline">
+                       Forgot Password?
+                     </button>
+                  </div>
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="w-full h-[52px] bg-[#2780C4] hover:bg-[#206aa3] disabled:opacity-50 disabled:cursor-not-allowed rounded-[48px] text-white font-['Plus_Jakarta_Sans'] font-bold text-[16px] flex items-center justify-center border-none cursor-pointer mt-[8px] transition-colors"
+                >
+                  {isLoading ? 'Logging in...' : 'Login'}
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div className="w-full max-w-[454px] mx-auto xl:mx-0 flex items-center gap-[8px] lg:gap-[16px] mt-auto">
+             <ShieldCheck className="text-[#006D3A] w-[16px] h-[20px] flex-shrink-0" />
+             <span className="font-['Plus_Jakarta_Sans'] font-normal text-[10px] lg:text-[12px] leading-[14px] lg:leading-[16px] text-[#3D4949]/80">
+               Secured by TechGy Innovations. End-to-end encrypted connection.
+             </span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
