@@ -84,20 +84,6 @@ function ForwardIcon({ className }: { className?: string }) {
   );
 }
 
-function ChevronRight({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 10 16" fill="none" className={cn("shrink-0", className)}>
-      <path
-        d="M2 2l6 6-6 6"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Year = string;
@@ -195,14 +181,7 @@ const NAV_ITEMS: NavItem[] = [
   }
 ];
 
-function GeospatialControlsPanel({
-  activeItem,
-  onItemChange,
-}: {
-  activeItem: string;
-  onItemChange: (id: string) => void;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
+function GeospatialControlsPanel() {
   return (
     <div
       className="
@@ -393,7 +372,6 @@ export default function HistoricalAgronomyAnalysis({
   verdicts,
 }: HistoricalAgronomyAnalysisProps) {
   const [activeYear, setActiveYear] = useState<Year>("2020");
-  const [activeNav, setActiveNav] = useState("satellite");
   const mapRef = React.useRef<SatelliteMapHandle>(null);
 
   const date = `${activeYear}-01-01`;
@@ -464,10 +442,7 @@ export default function HistoricalAgronomyAnalysis({
       </div>
 
       {/* ── Geospatial Controls — top right ── */}
-      <GeospatialControlsPanel
-        activeItem={activeNav}
-        onItemChange={setActiveNav}
-      />
+      <GeospatialControlsPanel />
 
       {/* ── Verification Verdict Panel — middle right ── */}
       <VerificationVerdictPanel onAuthorize={onAuthorize} verdicts={verdicts} />
