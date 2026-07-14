@@ -1,6 +1,4 @@
 import { ArrowRight } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Typography } from '@/components/ui/typography';
 
 export type FarmlandRequestItem = {
   id: string;

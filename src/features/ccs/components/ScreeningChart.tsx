@@ -121,11 +121,15 @@ export default function ScreeningChart({ endDate }: ScreeningChartProps) {
           </div>
 
           {/* Labels under the chart */}
-          <div className="absolute left-[0px] top-[115.5px] flex flex-row justify-between w-[187px] ml-[11px]">
+          <div className="absolute left-[11px] top-[115.5px] w-[187px]">
             {days.map((day, i) => (
               <span
                 key={i}
-                className="font-['Inter'] font-normal text-[10px] leading-[137.52%] text-[#000000]"
+                className="absolute font-['Inter'] font-normal text-[10px] leading-[137.52%] text-[#000000] text-center"
+                style={{
+                  left: i * barGap,
+                  transform: 'translateX(-50%)',
+                }}
               >
                 {day}
               </span>

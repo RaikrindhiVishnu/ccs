@@ -787,22 +787,6 @@ export default function GeospatialAuditScreen() {
                 <br />
                 Verdict
               </Typography>
-
-              <Typography
-                as="span"
-                variant="span"
-                className="
-                  uppercase
-                  tracking-[0.05rem]
-                  font-bold
-
-                  text-[var(--text-muted-strong)]
-
-                  text-[0.45rem]
-                "
-              >
-                Audit Ref: #9022-X
-              </Typography>
             </div>
           </div>
 

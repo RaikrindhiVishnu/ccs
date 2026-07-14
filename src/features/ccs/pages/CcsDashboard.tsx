@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { Typography } from "@/components/ui/typography";
 import {
   DashboardHeader,
@@ -73,11 +73,22 @@ export default function CcsDashboard() {
   ];
 
   const activities = recentActivitiesData?.data
-    ? recentActivitiesData.data.map((item: any, index: number) => ({
-      id: item.farmland_id || `temp-${index}`,
-      description: item.farmland_id ? `Farmland ${item.farmland_id} was ${item.status}` : `Farmland was marked as ${item.status}`,
-      timeAgo: "Recently", // The API doesn't provide a timestamp yet
-    }))
+    ? recentActivitiesData.data.map((item: any, index: number) => {
+      const timestamp = item.created_at || item.created_on || item.updated_at || item.timestamp;
+      let timeAgo = "Recently";
+      if (timestamp) {
+        try {
+          timeAgo = formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+        } catch (e) {
+          // fallback if date is invalid
+        }
+      }
+      return {
+        id: item.farmland_code || item.farmland_id ? `FL-${item.farmland_id}` : `temp-${index}`,
+        description: item.farmland_id ? `Farmland ${item.farmland_code || item.farmland_id} was ${item.status}` : `Farmland was marked as ${item.status}`,
+        timeAgo,
+      };
+    })
     : [];
 
   return (
@@ -143,7 +154,7 @@ export default function CcsDashboard() {
           <div className="flex-1 flex flex-col mt-[15px] min-h-0">
             <Typography
               variant="h3"
-              className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[17px] tracking-[1px] uppercase text-[#000000] mb-[24px] text-center"
+              className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[17px] tracking-[1px] uppercase text-[#000000] mb-[24px]"
             >
               RECENT ACTIVITY
             </Typography>

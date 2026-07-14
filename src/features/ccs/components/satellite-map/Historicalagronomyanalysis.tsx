@@ -10,32 +10,6 @@ import "@/features/satellite-history/satellite-history.css";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
-function SoilHealthIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 21 21" fill="none" className={cn("shrink-0", className)}>
-      <circle
-        cx="10.5"
-        cy="10.5"
-        r="9"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M6 13c1-3 4-5 5-8"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M10 14c1-2 3-3 4-5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
 function SatelliteIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 22 22" fill="none" className={cn("shrink-0", className)}>
@@ -55,58 +29,6 @@ function SatelliteIcon({ className }: { className?: string }) {
         strokeLinecap="round"
       />
       <circle cx="11" cy="11" r="1.5" fill="currentColor" />
-    </svg>
-  );
-}
-
-function TopographyIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 25 14" fill="none" className={cn("shrink-0", className)}>
-      <path
-        d="M2 12L7 4L12 8L17 2L22 6"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function YieldHistoryIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 21 23" fill="none" className={cn("shrink-0", className)}>
-      <path
-        d="M3 20V8M8 20V12M13 20V5M18 20V9"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M3 8c2-3 5-3 7 0s5 3 8 0"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function BoundariesIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 21 23" fill="none" className={cn("shrink-0", className)}>
-      <path
-        d="M4 6l7-3 6 3v10l-6 3-7-3V6z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M4 6l6 3m1 0l6-3M11 9v11"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
     </svg>
   );
 }
@@ -318,40 +240,23 @@ function GeospatialControlsPanel({
           >
             Geospatial Controls
           </Typography>
-
-          <Typography
-            as="span"
-            variant="span"
-            className="
-          font-[family-name:var(--font-sans)]
-          font-semibold
-          text-[#71717A]
-          text-[0.625rem] lg:text-[0.6875rem] xl:text-[0.75rem] 2xl:text-[15.64px]
-          leading-[22px]
-        "
-          >
-            V1.4.2 Active
-          </Typography>
         </div>
 
-        {/* Dropdown Container Border */}
-        <div className="w-full flex flex-col pt-[17.88px] border-t-[1.12px] border-t-black/10 gap-[8.94px]">
-          {/* Dropdown Trigger */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
+        {/* Static Item */}
+        <div className="w-full flex flex-col pt-[17.88px] border-t-[1.12px] border-t-black/10">
+          <div
             className="
-          flex items-center justify-between
+          flex items-center
           w-full
           px-[0.75rem] 2xl:px-[17.88px]
           h-[2.5rem] 2xl:h-[58.75px]
           rounded-[0.875rem] 2xl:rounded-[11px]
           bg-[#F9F9F9]
-          transition-all duration-200
         "
           >
             <div className="flex items-center gap-[0.5rem] 2xl:gap-[17.88px]">
               <span className="text-[#71717A] flex items-center justify-center w-[19px] h-[19px]">
-                {NAV_ITEMS.find((item) => item.id === activeItem)?.icon}
+                {NAV_ITEMS[0].icon}
               </span>
 
               <Typography
@@ -364,72 +269,10 @@ function GeospatialControlsPanel({
               text-[#71717A]
             "
               >
-                {NAV_ITEMS.find((item) => item.id === activeItem)?.label}
+                {NAV_ITEMS[0].label}
               </Typography>
             </div>
-
-            <ChevronRight
-              className={cn(
-                "w-[0.8rem] h-[0.8rem] 2xl:w-[15.63px] 2xl:h-[15.63px] text-[#71717A] transition-transform duration-200",
-                isOpen ? "-rotate-90" : "rotate-90",
-              )}
-            />
-          </button>
-
-          {/* Dropdown Content */}
-          {isOpen && (
-            <div className="flex flex-col gap-[8.94px]">
-              {NAV_ITEMS.filter((item) => item.id !== activeItem).map((item) => {
-                const isActive = item.id === activeItem;
-
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      onItemChange(item.id);
-                      setIsOpen(false);
-                    }}
-                    className={cn(
-                      "flex items-center gap-[0.75rem] 2xl:gap-[17.88px]",
-                      "w-full text-left",
-                      "px-[0.75rem] 2xl:px-[17.88px]",
-                      "h-[2.5rem] 2xl:h-[58.75px]",
-                      "rounded-[0.875rem] 2xl:rounded-[11px]",
-                      "transition-all duration-200",
-                      isActive
-                        ? "bg-[#F9F9F9]"
-                        : "hover:bg-[#F9F9F9]",
-                    )}
-                >
-                  <span
-                    className={cn(
-                      isActive
-                        ? "text-[#131600]"
-                        : "text-[#71717A]",
-                    )}
-                  >
-                    {item.icon}
-                  </span>
-
-                  <Typography
-                    as="span"
-                    variant="span"
-                    className={cn(
-                      "font-[family-name:var(--font-sans)]",
-                      "text-[0.75rem] 2xl:text-[15.64px]",
-                      "font-semibold flex-1",
-                      isActive
-                        ? "text-[#131600]"
-                        : "text-[#71717A]",
-                    )}
-                  >
-                    {item.label}
-                  </Typography>
-                </button>
-              );
-            })}
           </div>
-        )}
         </div>
       </div>
     </div>
@@ -492,7 +335,6 @@ function VerificationVerdictPanel({
           </div>
           <div className="flex flex-col">
             <span className="font-['Plus_Jakarta_Sans'] font-extrabold text-[15.78px] leading-[20px] text-[#091426]">Verification Verdict</span>
-            <span className="font-['Plus_Jakarta_Sans'] font-bold text-[8.77px] leading-[13px] tracking-[0.88px] uppercase text-[rgba(69,71,76,0.6)]">AUDIT REF: #9022-X</span>
           </div>
         </div>
 
