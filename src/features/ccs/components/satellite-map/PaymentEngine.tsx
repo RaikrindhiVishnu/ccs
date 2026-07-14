@@ -158,7 +158,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                   <img
                     src={walletImage}
                     alt="Wallet"
-                    className="
+                    className="rmlands 
                         w-[30px]
                         h-[30px]
                         object-contain

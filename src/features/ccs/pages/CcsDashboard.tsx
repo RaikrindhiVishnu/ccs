@@ -83,9 +83,17 @@ export default function CcsDashboard() {
           // fallback if date is invalid
         }
       }
+      let displayStatus = item.status;
+      if (typeof item.status === 'string') {
+        if (item.status.toUpperCase() === "REVRTD") displayStatus = "Rejected";
+        else if (item.status.toUpperCase() === "APPRVD") displayStatus = "Approved";
+        else if (item.status.toUpperCase() === "PENDNG") displayStatus = "Pending";
+        else displayStatus = item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase();
+      }
+
       return {
         id: item.farmland_code || item.farmland_id ? `FL-${item.farmland_id}` : `temp-${index}`,
-        description: item.farmland_id ? `Farmland ${item.farmland_code || item.farmland_id} was ${item.status}` : `Farmland was marked as ${item.status}`,
+        description: item.farmland_id ? `Farmland ${item.farmland_code || item.farmland_id} was ${displayStatus}` : `Farmland was marked as ${displayStatus}`,
         timeAgo,
       };
     })
