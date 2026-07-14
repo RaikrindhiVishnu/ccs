@@ -33,7 +33,7 @@ export const assignedFarmlandsApi = ccsApi.injectEndpoints({
     }),
     rejectAssignedFarmland: builder.mutation<SuccessResponse<any>, ApproveFarmlandRequest>({
       query: (body) => ({
-        url: "/assigned-farmlands/reject-farmland",
+        url: "/assigned-farmlands/approve-farmland",
         method: "POST",
         body,
       }),
