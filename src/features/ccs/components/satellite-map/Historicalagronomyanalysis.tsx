@@ -211,7 +211,7 @@ function TemporalRibbon({
 }) {
   return (
     <div
-      className="absolute bottom-[20px] md:bottom-[30px] xl:bottom-[67px] left-[20px] xl:left-1/2 xl:-translate-x-1/2 w-[calc(100%-40px)] md:w-[calc(100%-340px)] xl:w-[calc(100%-40px)] max-w-[625px] h-[80px] md:h-[90px] xl:h-[114px] flex items-center justify-between px-[20px] md:px-[24px] xl:px-[47px] z-30 overflow-x-auto custom-scrollbar"
+      className="absolute bottom-[20px] md:bottom-[30px] xl:bottom-[67px] left-[20px] xl:left-1/2 xl:-translate-x-1/2 w-[calc(100%-40px)] md:w-[calc(100%-340px)] xl:w-[calc(100%-40px)] max-w-[625px] h-[80px] md:h-[90px] xl:h-[114px] z-30"
     >
       {/* Shadow layer */}
       <div className="absolute top-[0px] bottom-[0.44px] left-[0px] right-[-0.32px] bg-[#FFFFFF] rounded-[36.88px] shadow-[0px_28.81px_57.62px_-13.83px_rgba(0,0,0,0.25)] z-[-2]"></div>
@@ -219,7 +219,9 @@ function TemporalRibbon({
       {/* Shell layer */}
       <div className="absolute inset-0 bg-[rgba(255,255,255,0.2)] border-[1.15px] border-[rgba(255,255,255,0.4)] backdrop-blur-[36.88px] rounded-[36.88px] z-[-1]"></div>
 
-      {YEARS.map(({ year, icon }) => {
+      {/* Scrollable Container */}
+      <div className="relative flex items-center h-full w-full px-[20px] md:px-[24px] xl:px-[47px] overflow-x-auto custom-scrollbar gap-[10px] md:gap-[20px]">
+        {YEARS.map(({ year, icon }) => {
         const isActive = year === activeYear;
 
         if (isActive) {
@@ -254,6 +256,7 @@ function TemporalRibbon({
           </button>
         );
       })}
+      </div>
     </div>
   );
 }
