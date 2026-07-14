@@ -2,9 +2,9 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "../utils/formatters";
 import type { StatusCardItem } from "../types/dashboard";
-import rightIcon from "/public/super-admin/icons/right.svg";
-import crossIcon from "/public/super-admin/icons/cross.svg";
-import coneIcon from "/public/super-admin/icons/cone.svg";
+const rightIcon = "/super-admin/icons/right.svg";
+const crossIcon = "/super-admin/icons/cross.svg";
+const coneIcon = "/super-admin/icons/cone.svg";
 
 
 interface Props {

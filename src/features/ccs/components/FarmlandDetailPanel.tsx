@@ -26,15 +26,7 @@ type Props = {
   hideAnalysisButton?: boolean;
 };
 
-const STATUS_CONFIG: Record<
-  FarmlandDetail["status"],
-  { label: string; color: string }
-> = {
-  COMPLETED: { label: "Completed",  color: "#489C2C" },
-  ACTIVE:    { label: "Active",     color: "#2780C4" },
-  PENDING:   { label: "Pending",    color: "#D97706" },
-  REJECTED:  { label: "Rejected",   color: "#DC2626" },
-};
+
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (

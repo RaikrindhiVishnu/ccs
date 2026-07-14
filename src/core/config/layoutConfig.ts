@@ -11,11 +11,11 @@ import io4 from '@/assets/io4.svg';
 
 //for superadmin side bar//
 
-import widgetIcon from "/public/super-admin/icons/Widget.svg";
-import assignedIcon from "/public/super-admin/icons/assignedicon.svg";
-import farmlandListIcon from "/public/super-admin/icons/farmlisticon.svg";
-import userIcon from "/public/super-admin/icons/usericon.svg";
-import poolIcon from "/public/super-admin/icons/poolicon.svg";
+const widgetIcon = "/super-admin/icons/Widget.svg";
+const assignedIcon = "/super-admin/icons/assignedicon.svg";
+const farmlandListIcon = "/super-admin/icons/farmlisticon.svg";
+const userIcon = "/super-admin/icons/usericon.svg";
+const poolIcon = "/super-admin/icons/poolicon.svg";
 import uploadIcon from "@/assets/uploadicon.svg";
 
 // ─── Types ───────────────────────────────────────────────────────────────────

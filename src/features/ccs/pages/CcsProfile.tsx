@@ -77,7 +77,7 @@ export default function CcsProfile() {
     }
   };
 
-  const user = apiUser || currentUser || {};
+  const user: any = apiUser || currentUser || {};
   const fullName = user.name || user.firstName || 'Ram Varma';
   const firstName = fullName.split(' ')[0] || 'Ram';
   const lastName = fullName.split(' ').slice(1).join(' ') || 'Varma';

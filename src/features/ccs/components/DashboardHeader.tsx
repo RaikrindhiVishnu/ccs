@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { CalendarDays, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { Typography } from '@/components/ui/typography';
-import widgetIcon from '/public/super-admin/icons/Widget.svg';
+const widgetIcon = "/super-admin/icons/Widget.svg";
 import bellIconSvg from '@/assets/bellicon.svg';
 import CalendarPopover from './CalendarPopover';
 import NotificationsPopover from './NotificationsPopover';

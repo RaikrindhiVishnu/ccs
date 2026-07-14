@@ -15,7 +15,7 @@ export default function FarmlandRequestMap() {
 
   useEffect(() => {
     if (id) {
-      getDetails({ farmland_id: id });
+      getDetails({ farmland_id: Number(id) });
     }
   }, [id, getDetails]);
 

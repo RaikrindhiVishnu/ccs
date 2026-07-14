@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import nameIcon from "/public/super-admin/icons/name.svg";
-import idIcon from "/public/super-admin/icons/id.svg";
-import plotIdIcon from "/public/super-admin/icons/plotid.svg";
-import landIcon from "/public/super-admin/icons/land.svg";
-import ownIcon from "/public/super-admin/icons/own.svg";
-import dateIcon from "/public/super-admin/icons/date.svg";
-import poolIcon from "/public/super-admin/icons/pool.svg";
-import locIcon from "/public/super-admin/icons/loc.svg";
+const nameIcon = "/super-admin/icons/name.svg";
+const idIcon = "/super-admin/icons/id.svg";
+const plotIdIcon = "/super-admin/icons/plotid.svg";
+const landIcon = "/super-admin/icons/land.svg";
+const ownIcon = "/super-admin/icons/own.svg";
+const dateIcon = "/super-admin/icons/date.svg";
+const poolIcon = "/super-admin/icons/pool.svg";
+const locIcon = "/super-admin/icons/loc.svg";
 import {ArrowLeft, Plus, Minus, Navigation, CheckCircle2} from "lucide-react";
 import { mockDashboardData } from "@/features/super-admin/data/mockDashboardData";
 
