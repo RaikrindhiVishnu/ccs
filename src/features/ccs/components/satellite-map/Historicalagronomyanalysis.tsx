@@ -178,7 +178,7 @@ function ChevronRight({ className }: { className?: string }) {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type Year = "2005" | "2008" | "2011" | "2014" | "2017" | "2020" | "2023" | "2026";
+type Year = string;
 
 type NavItem = {
   id: string;
@@ -186,58 +186,21 @@ type NavItem = {
   icon: React.ReactNode;
 };
 
-// ─── Temporal Ribbon ──────────────────────────────────────────────────────────
-
-const YEARS: { year: Year; icon: React.ReactNode }[] = [
-  {
-    year: "2005",
-    icon: (
-      <ClockIcon className="w-[1.1rem] h-[1.1rem] lg:w-[1.2rem] lg:h-[1.2rem] xl:w-[1.3rem] xl:h-[1.3rem] 2xl:w-[1.4rem] 2xl:h-[1.4rem]" />
-    ),
-  },
-  {
-    year: "2008",
-    icon: (
-      <CalendarIcon className="w-[1.1rem] h-[1.1rem] lg:w-[1.2rem] lg:h-[1.2rem] xl:w-[1.3rem] xl:h-[1.3rem] 2xl:w-[1.4rem] 2xl:h-[1.4rem]" />
-    ),
-  },
-  {
-    year: "2011",
-    icon: (
-      <ClockIcon className="w-[1.1rem] h-[1.1rem] lg:w-[1.2rem] lg:h-[1.2rem] xl:w-[1.3rem] xl:h-[1.3rem] 2xl:w-[1.4rem] 2xl:h-[1.4rem]" />
-    ),
-  },
-  {
-    year: "2014",
-    icon: (
-      <CalendarIcon className="w-[1.1rem] h-[1.1rem] lg:w-[1.2rem] lg:h-[1.2rem] xl:w-[1.3rem] xl:h-[1.3rem] 2xl:w-[1.4rem] 2xl:h-[1.4rem]" />
-    ),
-  },
-  {
-    year: "2017",
-    icon: (
-      <ClockIcon className="w-[1.1rem] h-[1.1rem] lg:w-[1.2rem] lg:h-[1.2rem] xl:w-[1.3rem] xl:h-[1.3rem] 2xl:w-[1.4rem] 2xl:h-[1.4rem]" />
-    ),
-  },
-  {
-    year: "2020",
-    icon: (
-      <CalendarIcon className="w-[1.1rem] h-[1.1rem] lg:w-[1.2rem] lg:h-[1.2rem] xl:w-[1.3rem] xl:h-[1.3rem] 2xl:w-[1.4rem] 2xl:h-[1.4rem]" />
-    ),
-  },
-  {
-    year: "2023",
-    icon: (
-      <ClockIcon className="w-[1.1rem] h-[1.1rem] lg:w-[1.2rem] lg:h-[1.2rem] xl:w-[1.3rem] xl:h-[1.3rem] 2xl:w-[1.4rem] 2xl:h-[1.4rem]" />
-    ),
-  },
-  {
-    year: "2026",
-    icon: (
+const YEARS: { year: Year; icon: React.ReactNode }[] = Array.from({ length: 22 }, (_, i) => {
+  const year = String(2005 + i);
+  const isClock = i % 2 === 0;
+  const isLast = i === 21;
+  return {
+    year,
+    icon: isLast ? (
       <ForwardIcon className="w-[1.3rem] h-[0.8rem] lg:w-[1.4rem] lg:h-[0.85rem] xl:w-[1.45rem] xl:h-[0.9rem] 2xl:w-[1.55rem] 2xl:h-[0.95rem]" />
-    ),
-  },
-];
+    ) : isClock ? (
+      <ClockIcon className="w-[1.1rem] h-[1.1rem] lg:w-[1.2rem] lg:h-[1.2rem] xl:w-[1.3rem] xl:h-[1.3rem] 2xl:w-[1.4rem] 2xl:h-[1.4rem]" />
+    ) : (
+      <CalendarIcon className="w-[1.1rem] h-[1.1rem] lg:w-[1.2rem] lg:h-[1.2rem] xl:w-[1.3rem] xl:h-[1.3rem] 2xl:w-[1.4rem] 2xl:h-[1.4rem]" />
+    )
+  };
+});
 
 function TemporalRibbon({
   activeYear,
