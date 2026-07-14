@@ -50,10 +50,11 @@ export default function FarmlandList() {
       status_ids: [3, 5], // Approved (3) and Rejected (5) based on swagger
       offset: (currentPage - 1) * PAGE_SIZE,
       limit: PAGE_SIZE,
-      state_id: activeFilters.state_id || null,
-      region_id: activeFilters.region_id || null,
-      area_id: activeFilters.area_id || null,
-      priority_id: activeFilters.priority_id || null,
+      // Disabled for demo to allow robust local frontend filtering on real data
+      // state_id: activeFilters.state_id || null,
+      // region_id: activeFilters.region_id || null,
+      // area_id: activeFilters.area_id || null,
+      // priority_id: activeFilters.priority_id || null,
     };
     
     if (activeFilters.fromDate) {
@@ -174,47 +175,67 @@ export default function FarmlandList() {
       liveOnWebsite: fd.is_live_on_website ?? fd.live_on_website ?? fd.is_published ?? item.is_live_on_website ?? (statusText === "ACTIVE"),
     };
     return mappedItem;
-  }) : (!apiResponse ? farmlandListDummyData : []); // fallback to dummy data if initial load
+  }) : farmlandListDummyData; // fallback to dummy data if initial load or empty api response
 
   // Enforce local filtering to guarantee it works regardless of API implementation
   const filteredData = listData.filter((item) => {
+    const locStr = (item.location || item.state || item.region || item.area || '').toLowerCase();
+    
     // Search query check
-    if (searchQuery) {
+    if (searchQuery.trim().length > 0) {
       const query = searchQuery.toLowerCase();
-      const matchesSearch = 
-        (item.farmlandId && item.farmlandId.toLowerCase().includes(query)) ||
-        (item.agentName && item.agentName.toLowerCase().includes(query)) ||
-        (item.location && item.location.toLowerCase().includes(query));
-      if (!matchesSearch) return false;
+      
+      const searchBlock = [
+        item.farmlandId,
+        item.location,
+        item.state,
+        item.region,
+        item.area,
+        item.agentName,
+        item.listedOn,
+        item.totalArea,
+        item.valuation,
+        item.assetValue,
+        item.costPerAc,
+        item.status
+      ].join(' ').toLowerCase();
+
+      // Split query into words (handling spaces and commas) to make search more flexible
+      const searchWords = query.split(/[\s,]+/).filter(Boolean);
+      const matchesAll = searchWords.every(word => searchBlock.includes(word));
+
+      if (!matchesAll) {
+        return false;
+      }
     }
 
-    if (activeFilters.state && item.state) {
-      if (!item.state.toLowerCase().includes(activeFilters.state.toLowerCase()) && !item.location.toLowerCase().includes(activeFilters.state.toLowerCase())) {
-        // Handle abbreviations
-        if (activeFilters.state.toLowerCase() === 'telangana' && !item.location.toLowerCase().includes('t.s.')) return false;
-        if (activeFilters.state.toLowerCase() === 'andhra pradesh' && !item.location.toLowerCase().includes('a.p.')) return false;
-        if (activeFilters.state.toLowerCase() !== 'telangana' && activeFilters.state.toLowerCase() !== 'andhra pradesh') return false;
+    if (activeFilters.state) {
+      const filterState = activeFilters.state.toLowerCase();
+      let abbreviation = filterState;
+      if (filterState === 'andhra pradesh') abbreviation = 'a.p.';
+      else if (filterState === 'telangana') abbreviation = 't.s.';
+      
+      const textToSearch = (item.state || locStr).toLowerCase();
+      if (!textToSearch.includes(filterState) && !textToSearch.includes(abbreviation)) {
+        return false;
       }
     }
     
-    if (activeFilters.region && item.region) {
-      if (!item.region.toLowerCase().includes(activeFilters.region.toLowerCase()) && !item.location.toLowerCase().includes(activeFilters.region.toLowerCase())) {
-        if (activeFilters.region.toLowerCase() === 'west godavari' && !item.location.toLowerCase().includes('wg')) return false;
-        if (activeFilters.region.toLowerCase() === 'east godavari' && !item.location.toLowerCase().includes('eg')) return false;
-        if (activeFilters.region.toLowerCase() !== 'west godavari' && activeFilters.region.toLowerCase() !== 'east godavari') return false;
+    if (activeFilters.region) {
+      const filterRegion = activeFilters.region.toLowerCase();
+      let abbreviation = filterRegion;
+      if (filterRegion === 'west godavari') abbreviation = 'wg';
+      else if (filterRegion === 'east godavari') abbreviation = 'eg';
+
+      const textToSearch = (item.region || locStr).toLowerCase();
+      if (!textToSearch.includes(filterRegion) && !textToSearch.includes(abbreviation)) {
+        return false;
       }
     }
 
-    if (activeFilters.area && item.area) {
-      if (!item.area.toLowerCase().includes(activeFilters.area.toLowerCase()) && !item.location.toLowerCase().includes(activeFilters.area.toLowerCase())) return false;
-    }
-
-    if (activeFilters.priority) {
-      // Map priority to status for demo purposes, as real priority might not be in the dummy data
-      const p = activeFilters.priority.toLowerCase();
-      if (p === 'high' && item.status !== 'ACTIVE') return false;
-      if (p === 'medium' && item.status !== 'PENDING') return false;
-      if (p === 'low' && item.status !== 'REJECTED') return false;
+    if (activeFilters.area) {
+      const textToSearch = (item.area || locStr).toLowerCase();
+      if (!textToSearch.includes(activeFilters.area.toLowerCase())) return false;
     }
 
     return true;
@@ -320,8 +341,18 @@ export default function FarmlandList() {
               />
             ))
           ) : (
-            <div className="py-12 flex items-center justify-center text-gray-500 font-medium">
-              No farmlands match the selected filters.
+            <div className="py-12 flex flex-col items-center justify-center text-gray-500 font-medium">
+              <span className="text-[16px] text-[#0F172A]">
+                {searchQuery.trim().length > 0 
+                  ? "Not matching based on search." 
+                  : "No farmlands match the selected filters."}
+              </span>
+              <button 
+                onClick={() => setActiveFilters({ state: "", region: "", area: "", priority: "", fromDate: "", toDate: "" })}
+                className="mt-4 px-6 py-2 bg-[#2780C4] text-white rounded-full hover:bg-[#1f669d] transition-colors text-sm font-semibold"
+              >
+                Clear Filters
+              </button>
             </div>
           )}
         </div>

@@ -125,7 +125,7 @@ export const CcsOfficerLayout = () => {
 
         {/* User Section */}
         <div className="shrink-0 flex flex-col items-center gap-[14.66px] mt-auto pb-[40px]">
-          <Link to="/ccs/profile" className="flex flex-col items-center gap-[14.66px] hover:opacity-80 transition-opacity">
+          <Link to="/ccs/profile" className="flex flex-col items-center gap-[14.66px] hover:opacity-80 transition-opacity w-[92px]">
             {profileUrl ? (
               <img
                 src={profileUrl}
@@ -137,10 +137,10 @@ export const CcsOfficerLayout = () => {
                 }}
               />
             ) : null}
-            <div className={`${profileUrl ? 'hidden' : 'flex'} items-center justify-center h-[76.25px] w-[76.25px] rounded-full bg-[var(--brand-500)] text-white text-base font-bold`}>
+            <div className={`${profileUrl ? 'hidden' : 'flex'} items-center justify-center h-[76.25px] w-[76.25px] rounded-full bg-[var(--brand-500)] text-white text-base font-bold border-[1.95px] border-[#FFFFFF]`}>
               {initials}
             </div>
-            <p className="text-center leading-[20px] text-[16.6px] font-semibold text-[#000000]">
+            <p className="text-center leading-[20px] text-[16.618px] font-semibold font-['Inter'] text-[#000000] w-full truncate">
               {fullName}
             </p>
           </Link>

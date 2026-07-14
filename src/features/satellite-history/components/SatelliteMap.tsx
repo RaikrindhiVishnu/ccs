@@ -336,8 +336,8 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
     useSatelliteLayer({ map: mapRef.current, tileUrl });
 
     return (
-      <div className="satellite-map-container relative">
-        <div ref={containerRef} className="satellite-map-canvas" />
+      <div className="satellite-map-container relative w-full h-full">
+        <div ref={containerRef} className="satellite-map-canvas w-full h-full absolute inset-0" />
 
         {!polygon && (
           <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">

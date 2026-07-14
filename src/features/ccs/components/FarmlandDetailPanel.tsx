@@ -97,7 +97,15 @@ export default function FarmlandDetailPanel({
               <DetailRow label="Total Acres"   value={detail.totalArea} />
               <DetailRow label="Asset Value"   value={detail.assetValue} />
 
-
+              {/* Status */}
+              <div className="flex flex-col gap-[4px]">
+                <span className="font-['Plus_Jakarta_Sans'] font-bold text-[16px] leading-[20px] text-[#353535]">
+                  Status
+                </span>
+                <span className="font-['Plus_Jakarta_Sans'] font-bold text-[16px] leading-[20px] text-[#489C2C] capitalize">
+                  {detail.status.toLowerCase()} {detail.liveOnWebsite ? "(live in website)" : ""}
+                </span>
+              </div>
 
               {/* Field Notes */}
               <div className="flex flex-col gap-[4px]">

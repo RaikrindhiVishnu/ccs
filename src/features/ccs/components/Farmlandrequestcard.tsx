@@ -46,80 +46,99 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
   const isHigh = item.priority === 'High';
 
   return (
-    <Card
-      className="
-        relative flex flex-col justify-between
-        rounded-[32px] border-0 bg-[#FFFFFF]
-        p-[32px] shadow-sm
-        transition-shadow hover:shadow-md
-        min-h-[338px] w-full
-      "
+    <div
+      className="bg-white rounded-[32px] box-border w-full flex flex-col p-[26px] transition-shadow hover:shadow-md"
     >
       {/* ── CARD HEADER ── */}
-      <div className="flex items-start justify-between mb-6">
-        <div className="flex flex-col gap-1">
-          <Typography
-            variant="h3"
-            className="font-['Plus_Jakarta_Sans'] text-[24px] font-semibold leading-[30px] text-[#1A1C1D]"
-          >
+      <div className="flex items-start justify-between h-[56px]">
+        <div className="flex flex-col gap-[4px]">
+          <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[24px] leading-[30px] text-[#1A1C1D] truncate max-w-[200px] sm:max-w-[250px]">
             {item.farmlandId}
-          </Typography>
-          <Typography
-            as="span"
-            variant="span"
-            className="font-['Plus_Jakarta_Sans'] text-[18px] font-medium leading-[22px] text-[#3D4949] opacity-70"
-          >
+          </span>
+          <span className="font-['Inter'] font-medium text-[18px] leading-[22px] text-[rgba(61,73,73,0.7)] truncate max-w-[200px] sm:max-w-[250px]">
             {toTitleCase(item.location)}
-          </Typography>
+          </span>
         </div>
 
         {/* Priority Badge */}
         <div
-          className={`flex items-center justify-center px-3 py-1 rounded-full border ${isHigh
+          className={`box-border flex flex-row items-center px-[12px] py-[4px] rounded-full border shrink-0 ${isHigh
               ? 'bg-[#FEF2F2] border-[#FEE2E2] text-[#DC2626]'
               : 'bg-[#FFFBEB] border-[#FEF3C7] text-[#D97706]'
             }`}
         >
-          <span className="font-['Plus_Jakarta_Sans'] text-[12px] leading-[16px]">
+          <span className="font-['Plus_Jakarta_Sans'] font-normal text-[12px] leading-[16px]">
             {item.priority}
           </span>
         </div>
       </div>
 
       {/* ── DATA GRID ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-6 mb-8">
-        <InfoField label="CREATED DATE" value={item.createdDate} />
-        <InfoField label="TOTAL ACRES" value={item.totalAcres} />
-        <InfoField label="VALUATION" value={item.valuation} />
-        <InfoField label="ASSET VALUE" value={item.assetValue} />
+      <div className="grid grid-cols-3 gap-y-[29px] gap-x-[10px] mt-[38px]">
+        {/* AGENT NAME */}
+        <div className="flex flex-col gap-[3px]">
+          <span className="font-['Plus_Jakarta_Sans'] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[rgba(61,73,73,0.6)]">
+            Agent name
+          </span>
+          <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[20px] leading-[24px] text-[#1A1C1D] truncate pr-2">
+            {item.agentName}
+          </span>
+        </div>
+
+        {/* CREATED DATE */}
+        <div className="flex flex-col gap-[4px]">
+          <span className="font-['Inter'] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[rgba(61,73,73,0.6)]">
+            Created date
+          </span>
+          <span className="font-['Inter'] font-semibold text-[16px] leading-[24px] text-[#1A1C1D] truncate">
+            {item.createdDate}
+          </span>
+        </div>
+
+        {/* TOTAL ACRES */}
+        <div className="flex flex-col gap-[4px]">
+          <span className="font-['Inter'] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[rgba(61,73,73,0.6)]">
+            Total acres
+          </span>
+          <span className="font-['Inter'] font-semibold text-[16px] leading-[24px] text-[#1A1C1D] truncate">
+            {item.totalAcres}
+          </span>
+        </div>
+
+        {/* VALUATION */}
+        <div className="flex flex-col gap-[4px]">
+          <span className="font-['Inter'] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[rgba(61,73,73,0.6)]">
+            Valuation
+          </span>
+          <span className="font-['Inter'] font-semibold text-[16px] leading-[24px] text-[#1A1C1D] truncate">
+            {item.valuation}
+          </span>
+        </div>
+
+        {/* ASSET VALUE */}
+        <div className="flex flex-col gap-[4px] col-span-2">
+          <span className="font-['Inter'] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[rgba(61,73,73,0.6)]">
+            Asset Value
+          </span>
+          <span className="font-['Plus_Jakarta_Sans'] font-bold text-[16px] leading-[20px] text-[#1A1C1D] truncate">
+            {item.assetValue}
+          </span>
+        </div>
       </div>
 
       {/* ── CTA BUTTON ── */}
       <button
         onClick={() => onClick?.(item.id)}
-        className="w-full h-[44px] flex items-center justify-center gap-2 bg-[#2780C4] rounded-[32px] hover:bg-[#1f669d] transition-colors"
+        className="w-full flex flex-row justify-center items-center py-[10px] px-[24px] gap-[7.99px] bg-[#2780C4] rounded-[32px] transition-colors hover:bg-[#1f669d] mt-[30px]"
+        style={{ height: '44px', boxShadow: '0px 10px 15px -3px rgba(9, 20, 38, 0.2), 0px 4px 6px -4px rgba(9, 20, 38, 0.2)' }}
       >
-        <span className="font-['Plus_Jakarta_Sans'] text-[14px] font-bold leading-[20px] text-[#FFFFFF]">
+        <span className="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-center text-[#FFFFFF]">
           Start Verification
         </span>
-        <div className="w-[16px] h-[16px] flex items-center justify-center">
-          <ArrowRight className="w-[14px] h-[14px] text-[#FFFFFF]" strokeWidth={2.5} />
+        <div className="w-[9.33px] h-[9.33px] flex items-center justify-center text-white">
+          <ArrowRight className="w-[12px] h-[12px] text-[#FFFFFF]" strokeWidth={2.5} />
         </div>
       </button>
-    </Card>
-  );
-}
-
-/* ── InfoField helper ── */
-function InfoField({ label, value, valueClassName }: { label: string; value: string; valueClassName?: string; }) {
-  return (
-    <div className="flex flex-col gap-[6px]">
-      <span className="font-['Plus_Jakarta_Sans'] text-[12px] font-medium leading-[16px] tracking-[0.6px] uppercase text-[#3D4949] opacity-60 whitespace-nowrap">
-        {label}
-      </span>
-      <span className={`font-['Plus_Jakarta_Sans'] font-semibold leading-[24px] text-[#1A1C1D] break-words ${valueClassName || 'text-[16px]'}`}>
-        {value}
-      </span>
     </div>
   );
 }

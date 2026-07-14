@@ -19,6 +19,7 @@ export default function FarmlandRequest() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<FilterState>({
     state: "",
     region: "",
@@ -49,10 +50,11 @@ export default function FarmlandRequest() {
       status_ids: [1, 2], 
       offset: (currentPage - 1) * PAGE_SIZE,
       limit: PAGE_SIZE,
-      state_id: activeFilters.state_id || null,
-      region_id: activeFilters.region_id || null,
-      area_id: activeFilters.area_id || null,
-      priority_id: activeFilters.priority_id || null,
+      // Disabled for demo to allow robust local frontend filtering on real data
+      // state_id: activeFilters.state_id || null,
+      // region_id: activeFilters.region_id || null,
+      // area_id: activeFilters.area_id || null,
+      // priority_id: activeFilters.priority_id || null,
     };
     
     if (activeFilters.fromDate) {
@@ -82,16 +84,19 @@ export default function FarmlandRequest() {
     { key: "toDate", value: activeFilters.toDate },
   ].filter((f) => f.value);
 
-  // If apiResponse is present, use its farmlands array (even if empty to show "No results found").
-  // Only fall back to dummy data if there is no apiResponse at all (e.g. initial load or error).
-  let farmlands = apiResponse ? (apiResponse.farmlands || []) : farmlandRequestDummyData;
+  // If apiResponse is present and has elements, use its farmlands array.
+  // Only fall back to dummy data if there is no apiResponse or if it's empty (e.g. initial load, error, or empty demo).
+  let farmlands = (apiResponse && apiResponse.farmlands && apiResponse.farmlands.length > 0) ? apiResponse.farmlands : farmlandRequestDummyData;
 
   // Total count for pagination — prefer backend total, fall back to array length
   const totalCount: number = (apiResponse as any)?.total ?? (apiResponse as any)?.total_count ?? farmlands.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   // Frontend fallback filtering for all fields (in case backend ignores them)
-  if (farmlands.length > 0 && Object.values(activeFilters).some(v => v !== "")) {
+  const isSearchActive = searchQuery.trim().length > 0;
+  const isFilterActive = Object.values(activeFilters).some(v => v !== "");
+
+  if (farmlands.length > 0 && (isFilterActive || isSearchActive)) {
     farmlands = (farmlands as any[]).filter((item: any) => {
       const fd = item.farmland_details || item;
       const od = item.owner_details || item;
@@ -107,7 +112,39 @@ export default function FarmlandRequest() {
       }
 
       // State, Region, Area Filtering (Case-insensitive includes for robust matching)
-      const locationStr = (fd.location || fd.village || fd.state || fd.region || fd.area || item.location || od.location || '').toLowerCase();
+      let locationStr = (fd.location || fd.village || fd.state || fd.region || fd.area || item.location || od.location || '').toLowerCase();
+      
+      const locDetails = item.location_details || fd.location_details;
+      if (locDetails) {
+        const stateObj = geoData.states.find((s: any) => s.id === locDetails.state_id);
+        const districtObj = geoData.districts.find((d: any) => d.id === (locDetails.district_id || locDetails.region_id));
+        const mandalObj = geoData.mandals.find((m: any) => m.id === (locDetails.mandal_id || locDetails.area_id));
+
+        const stateName = (stateObj as any)?.description || (stateObj as any)?.name;
+        const districtName = (districtObj as any)?.description || (districtObj as any)?.name;
+        const mandalName = (mandalObj as any)?.description || (mandalObj as any)?.name;
+
+        const parts = [];
+        if (mandalName) parts.push(mandalName);
+        if (districtName) {
+          const dName = districtName.toLowerCase();
+          if (dName === "west godavari") parts.push("WG");
+          else if (dName === "east godavari") parts.push("EG");
+          else parts.push(districtName);
+        }
+        if (stateName) {
+          const sName = stateName.toLowerCase();
+          if (sName === "andhra pradesh") parts.push("A.P.");
+          else if (sName === "telangana") parts.push("T.S.");
+          else parts.push(stateName);
+        }
+
+        if (parts.length > 0) {
+          locationStr = parts.join(', ').toLowerCase();
+        }
+      }
+
+      const textToSearch = locationStr;
       
       if (activeFilters.state) {
         const filterState = activeFilters.state.toLowerCase();
@@ -115,7 +152,6 @@ export default function FarmlandRequest() {
         if (filterState === 'andhra pradesh') abbreviation = 'a.p.';
         else if (filterState === 'telangana') abbreviation = 't.s.';
         
-        const textToSearch = (fd.state || item.state || locationStr).toLowerCase();
         if (!textToSearch.includes(filterState) && !textToSearch.includes(abbreviation)) {
           matches = false;
         }
@@ -127,15 +163,65 @@ export default function FarmlandRequest() {
         if (filterRegion === 'west godavari') abbreviation = 'wg';
         else if (filterRegion === 'east godavari') abbreviation = 'eg';
 
-        const textToSearch = (fd.region || item.region || locationStr).toLowerCase();
         if (!textToSearch.includes(filterRegion) && !textToSearch.includes(abbreviation)) {
           matches = false;
         }
       }
 
       if (activeFilters.area) {
-        const textToSearch = (fd.area || item.area || locationStr).toLowerCase();
         if (!textToSearch.includes(activeFilters.area.toLowerCase())) {
+          matches = false;
+        }
+      }
+
+      // Search Filtering
+      if (searchQuery.trim().length > 0) {
+        const query = searchQuery.toLowerCase();
+        
+        // Format date exactly as it appears
+        const dateStr = fd.created_on || fd.createdAt || item.createdDate || fd.createdDate;
+        const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A';
+        
+        const acres = fd.Total_acres || fd.total_acres || item.totalAcres;
+        const formattedAcres = acres ? `${acres} Acres` : 'N/A';
+
+        const valuation = fd.per_acre_value || fd.price_per_acre || item.valuation || item.price_per_acre;
+        let formattedValuation = 'N/A';
+        if (valuation) {
+          if (typeof valuation === 'string' && valuation.includes('₹')) {
+            formattedValuation = valuation;
+          } else {
+            const num = Number(String(valuation).replace(/[^0-9.-]+/g, ""));
+            if (!isNaN(num) && num > 0) {
+              formattedValuation = `₹ ${num.toLocaleString('en-IN')}/Acre`;
+            }
+          }
+        }
+
+        const asset = fd.Assest_value || fd.total_asset_price || item.assetValue || item.total_asset_price;
+        const formattedAsset = asset ? Number(asset).toLocaleString() : '0';
+        
+        const priority = item.priority || fd.priority || 'Low';
+
+        const glcId = (fd.farmland_code || item.glcId || fd.glcId || item.farmlandId || '');
+        const agentName = (od.owner_name || od.agent_name || fd.agent_name || fd.owner_name || item.agent_name || item.agentName || '');
+
+        const searchBlock = [
+          glcId,
+          locationStr,
+          priority,
+          agentName,
+          formattedDate,
+          formattedAcres,
+          formattedValuation,
+          formattedAsset
+        ].join(' ').toLowerCase();
+
+        // Split query into words (handling spaces and commas) to make search more flexible
+        const searchWords = query.split(/[\s,]+/).filter(Boolean);
+        const matchesAll = searchWords.every(word => searchBlock.includes(word));
+
+        if (!matchesAll) {
           matches = false;
         }
       }
@@ -204,6 +290,8 @@ export default function FarmlandRequest() {
             <div className="flex flex-1 min-w-0 xl:flex-none items-center gap-[8px] rounded-[60px] bg-[#FFFFFF] px-[20px] h-[52px] w-full xl:w-[312px] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] border border-transparent hover:border-gray-100 transition-colors">
               <Search className="h-[24px] w-[24px] shrink-0 text-[#5C5C5C] opacity-50" strokeWidth={1.5} />
               <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by GLC ID, Agent....."
                 className="w-full bg-transparent text-[16px] font-normal text-[#5C5C5C] opacity-50 outline-none placeholder:text-[#5C5C5C] placeholder:opacity-50"
               />
@@ -350,7 +438,11 @@ export default function FarmlandRequest() {
             })
           ) : (
             <div className="col-span-full py-12 flex flex-col items-center justify-center text-gray-500 font-medium bg-[#FFFFFF] rounded-[24px] shadow-sm border border-dashed border-gray-200">
-              <span className="text-[16px] text-[#0F172A]">No farmlands found matching the selected filters.</span>
+              <span className="text-[16px] text-[#0F172A]">
+                {searchQuery.trim().length > 0 
+                  ? "Not matching based on search." 
+                  : "No farmlands found matching the selected filters."}
+              </span>
               <button 
                 onClick={() => setActiveFilters({ state: "", region: "", area: "", priority: "", fromDate: "", toDate: "" })}
                 className="mt-4 px-6 py-2 bg-[#2780C4] text-white rounded-full hover:bg-[#1f669d] transition-colors text-sm font-semibold"

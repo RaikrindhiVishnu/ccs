@@ -265,40 +265,12 @@ function TemporalRibbon({
 
 const NAV_ITEMS: NavItem[] = [
   {
-    id: "soil",
-    label: "Soil Health",
-    icon: (
-      <SoilHealthIcon className="w-[1.1rem] h-[1.1rem] lg:w-[1.15rem] lg:h-[1.15rem] xl:w-[1.2rem] xl:h-[1.2rem] 2xl:w-[1.3rem] 2xl:h-[1.3rem]" />
-    ),
-  },
-  {
     id: "satellite",
     label: "Satellite",
     icon: (
       <SatelliteIcon className="w-[1.1rem] h-[1.1rem] lg:w-[1.15rem] lg:h-[1.15rem] xl:w-[1.2rem] xl:h-[1.2rem] 2xl:w-[1.3rem] 2xl:h-[1.3rem]" />
     ),
-  },
-  {
-    id: "topography",
-    label: "Topography",
-    icon: (
-      <TopographyIcon className="w-[1.3rem] h-[0.7rem] lg:w-[1.35rem] lg:h-[0.75rem] xl:w-[1.4rem] xl:h-[0.8rem] 2xl:w-[1.55rem] 2xl:h-[0.85rem]" />
-    ),
-  },
-  {
-    id: "yield",
-    label: "Yield History",
-    icon: (
-      <YieldHistoryIcon className="w-[1.1rem] h-[1.2rem] lg:w-[1.15rem] lg:h-[1.25rem] xl:w-[1.2rem] xl:h-[1.3rem] 2xl:w-[1.3rem] 2xl:h-[1.4rem]" />
-    ),
-  },
-  {
-    id: "boundaries",
-    label: "Boundaries",
-    icon: (
-      <BoundariesIcon className="w-[1.1rem] h-[1.2rem] lg:w-[1.15rem] lg:h-[1.25rem] xl:w-[1.2rem] xl:h-[1.3rem] 2xl:w-[1.3rem] 2xl:h-[1.4rem]" />
-    ),
-  },
+  }
 ];
 
 function GeospatialControlsPanel({
@@ -313,9 +285,9 @@ function GeospatialControlsPanel({
     <div
       className="
     absolute z-50
-    top-[1.25rem] lg:top-[1.5rem] xl:top-[1.75rem] 2xl:top-[2rem]
-    right-[1.25rem] lg:right-[1.5rem] xl:right-[1.75rem] 2xl:right-[2rem]
-    w-[206px] h-[184px]
+    top-[1.25rem] lg:top-[1.5rem] xl:top-[1.75rem] 2xl:top-[32px]
+    right-[1.25rem] lg:right-[1.5rem] xl:right-[1.75rem] 2xl:right-[32px]
+    w-[286px]
   "
     >
       <div
@@ -331,8 +303,8 @@ function GeospatialControlsPanel({
       pb-[0.75rem] lg:pb-[0.875rem] xl:pb-[1rem] 2xl:pb-[17.88px]
     "
       >
-        {/* Header */}
-        <div className="flex flex-col gap-[4.47px] px-[0.4rem] 2xl:px-[8.94px] pb-[0.625rem] 2xl:pb-[17.88px]">
+        {/* Header container */}
+        <div className="flex flex-col items-start gap-[4.47px] px-[8.94px] pb-[17.88px]">
           <Typography
             as="h2"
             variant="span"
@@ -341,7 +313,7 @@ function GeospatialControlsPanel({
           font-semibold
           text-[#2D3622]
           text-[0.8125rem] lg:text-[0.875rem] xl:text-[0.9375rem] 2xl:text-[20.11px]
-          leading-[1.25]
+          leading-[25px]
         "
           >
             Geospatial Controls
@@ -355,78 +327,79 @@ function GeospatialControlsPanel({
           font-semibold
           text-[#71717A]
           text-[0.625rem] lg:text-[0.6875rem] xl:text-[0.75rem] 2xl:text-[15.64px]
-          leading-[1.43]
+          leading-[22px]
         "
           >
             V1.4.2 Active
           </Typography>
         </div>
 
-        {/* Dropdown Trigger */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="
-        flex items-center justify-between
-        w-full
-        px-[0.75rem] 2xl:px-[17.88px]
-        h-[2.5rem] 2xl:h-[58.75px]
-        rounded-[0.875rem] 2xl:rounded-[11px]
-        bg-[#F9F9F9]
-        transition-all duration-200
-        border-t border-t-black/5
-      "
-        >
-          <div className="flex items-center gap-[0.5rem] 2xl:gap-[17.88px]">
-            <span className="text-[#71717A]">
-              {NAV_ITEMS.find((item) => item.id === activeItem)?.icon}
-            </span>
+        {/* Dropdown Container Border */}
+        <div className="w-full flex flex-col pt-[17.88px] border-t-[1.12px] border-t-black/10 gap-[8.94px]">
+          {/* Dropdown Trigger */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="
+          flex items-center justify-between
+          w-full
+          px-[0.75rem] 2xl:px-[17.88px]
+          h-[2.5rem] 2xl:h-[58.75px]
+          rounded-[0.875rem] 2xl:rounded-[11px]
+          bg-[#F9F9F9]
+          transition-all duration-200
+        "
+          >
+            <div className="flex items-center gap-[0.5rem] 2xl:gap-[17.88px]">
+              <span className="text-[#71717A] flex items-center justify-center w-[19px] h-[19px]">
+                {NAV_ITEMS.find((item) => item.id === activeItem)?.icon}
+              </span>
 
-            <Typography
-              as="span"
-              variant="span"
-              className="
-            font-[family-name:var(--font-sans)]
-            text-[0.75rem] 2xl:text-[15.64px]
-            font-semibold
-            text-[#71717A]
-          "
-            >
-              {NAV_ITEMS.find((item) => item.id === activeItem)?.label}
-            </Typography>
-          </div>
+              <Typography
+                as="span"
+                variant="span"
+                className="
+              font-[family-name:var(--font-sans)]
+              text-[0.75rem] 2xl:text-[15.64px] leading-[22px]
+              font-semibold
+              text-[#71717A]
+            "
+              >
+                {NAV_ITEMS.find((item) => item.id === activeItem)?.label}
+              </Typography>
+            </div>
 
-          <ChevronRight
-            className={cn(
-              "w-[0.8rem] h-[0.8rem] 2xl:w-[10px] 2xl:h-[15.63px] text-[#71717A] transition-transform duration-200",
-              isOpen && "rotate-90",
-            )}
-          />
-        </button>
+            <ChevronRight
+              className={cn(
+                "w-[0.8rem] h-[0.8rem] 2xl:w-[15.63px] 2xl:h-[15.63px] text-[#71717A] transition-transform duration-200",
+                isOpen ? "-rotate-90" : "rotate-90",
+              )}
+            />
+          </button>
 
-        {/* Dropdown Content */}
-        {isOpen && (
-          <div className="flex flex-col gap-[0.25rem] mt-[0.5rem]">
-            {NAV_ITEMS.filter((item) => item.id !== activeItem).map((item) => {
-              const isActive = item.id === activeItem;
+          {/* Dropdown Content */}
+          {isOpen && (
+            <div className="flex flex-col gap-[8.94px]">
+              {NAV_ITEMS.filter((item) => item.id !== activeItem).map((item) => {
+                const isActive = item.id === activeItem;
 
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    onItemChange(item.id);
-                    setIsOpen(false);
-                  }}
-                  className={cn(
-                    "flex items-center gap-[0.75rem] 2xl:gap-[17.88px]",
-                    "w-full text-left",
-                    "px-[0.75rem] 2xl:px-[17.88px]",
-                    "h-[2.5rem] 2xl:h-[58.75px]",
-                    "rounded-[0.875rem] 2xl:rounded-[11px]",
-                    "transition-all duration-200",
-                    isActive
-                      ? "bg-[#F9F9F9]"
-                      : "hover:bg-[#F9F9F9]",
-                  )}
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      onItemChange(item.id);
+                      setIsOpen(false);
+                    }}
+                    className={cn(
+                      "flex items-center gap-[0.75rem] 2xl:gap-[17.88px]",
+                      "w-full text-left",
+                      "px-[0.75rem] 2xl:px-[17.88px]",
+                      "h-[2.5rem] 2xl:h-[58.75px]",
+                      "rounded-[0.875rem] 2xl:rounded-[11px]",
+                      "transition-all duration-200",
+                      isActive
+                        ? "bg-[#F9F9F9]"
+                        : "hover:bg-[#F9F9F9]",
+                    )}
                 >
                   <span
                     className={cn(
@@ -457,6 +430,7 @@ function GeospatialControlsPanel({
             })}
           </div>
         )}
+        </div>
       </div>
     </div>
   );
@@ -577,7 +551,7 @@ export default function HistoricalAgronomyAnalysis({
   verdicts,
 }: HistoricalAgronomyAnalysisProps) {
   const [activeYear, setActiveYear] = useState<Year>("2020");
-  const [activeNav, setActiveNav] = useState("soil");
+  const [activeNav, setActiveNav] = useState("satellite");
   const mapRef = React.useRef<SatelliteMapHandle>(null);
 
   const date = `${activeYear}-01-01`;
