@@ -56,6 +56,7 @@ function ProgressBar({
 function VerificationItem({
   title,
   subtitle,
+  status,
 }: {
   title: string;
   subtitle: string;
