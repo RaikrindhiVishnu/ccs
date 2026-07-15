@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { X, ChevronDown, ChevronUp, Calendar, X as CloseIcon } from "lucide-react";
 import { format, parse, isValid } from "date-fns";
 import CalendarPopover from "./CalendarPopover";
-import { useGetAllGeoMasterDataMutation, useGetRegionsAreasByStateMutation } from "@/features/ccs/api/masterDataApi";
+import { useGetAllGeoMasterDataMutation, useGetRegionsAreasByStateMutation, useGetAllMasterDataMutation } from "@/features/ccs/api/masterDataApi";
 import { transformTable } from "@/features/role-manager/utils/utils";
 
 function CustomSelect({
@@ -119,6 +119,7 @@ export default function FiltersModal({
   const toDateRef = useRef<HTMLDivElement>(null);
 
   const [getGeoMasterData, { data: geoDataResponse }] = useGetAllGeoMasterDataMutation();
+  const [getAllMasterData, { data: masterDataResponse }] = useGetAllMasterDataMutation();
   
   const geoData = React.useMemo(() => {
     const rawGeoData = geoDataResponse?.data || geoDataResponse || {};
@@ -142,6 +143,14 @@ export default function FiltersModal({
   const currentDistricts = cascadingData.districts || geoData.districts;
   const currentMandals = cascadingData.mandals || geoData.mandals;
 
+  const priorities = React.useMemo(() => {
+    const rawPriority = (masterDataResponse as any)?.data?.farmlandPriorityResult || (masterDataResponse as any)?.farmlandPriorityResult || [];
+    if (rawPriority.length > 0) {
+      return rawPriority.map((p: any) => p.description || p.name || p.code || String(p.id));
+    }
+    return ["High", "Medium", "Low"];
+  }, [masterDataResponse]);
+
   useEffect(() => {
     if (state && geoData.states.length > 0) {
       const selectedStateObj: any = geoData.states.find((s: any) => 
@@ -157,6 +166,9 @@ export default function FiltersModal({
     if (isOpen) {
       if (!geoDataResponse) {
         getGeoMasterData({});
+      }
+      if (!masterDataResponse) {
+        getAllMasterData({});
       }
       setState(initialFilters.state);
       setRegion(initialFilters.region);
@@ -221,10 +233,17 @@ export default function FiltersModal({
     }
 
     if (priority) {
-      const p = priority.toLowerCase();
-      if (p === 'high') priority_id = 1;
-      else if (p === 'medium') priority_id = 2;
-      else if (p === 'low') priority_id = 3;
+      const selectedPriorityObj: any = ((masterDataResponse as any)?.data?.farmlandPriorityResult || (masterDataResponse as any)?.farmlandPriorityResult || []).find((p: any) => 
+        (p.description || p.name || p.code || String(p.id)) === priority
+      );
+      if (selectedPriorityObj) {
+        priority_id = Number(selectedPriorityObj.id);
+      } else {
+        const p = priority.toLowerCase();
+        if (p === 'high') priority_id = 1;
+        else if (p === 'medium') priority_id = 2;
+        else if (p === 'low') priority_id = 3;
+      }
     }
 
     onApply({ state, region, area, priority, fromDate, toDate, state_id, region_id, area_id, priority_id });
@@ -322,7 +341,7 @@ export default function FiltersModal({
             <CustomSelect
               label="Priority"
               placeholder="Choose priority"
-              options={["High", "Medium", "Low"]}
+              options={priorities}
               value={priority}
               onChange={setPriority}
             />

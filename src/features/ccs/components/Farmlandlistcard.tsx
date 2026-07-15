@@ -11,6 +11,7 @@ export type FarmlandListItem = {
   id: string;
   farmlandId: string;
   agentName: string;
+  agentImg?: string;
   location: string;
   state: string;
   region: string;
@@ -94,9 +95,12 @@ export default function FarmlandListCard({ item, onViewDetails }: Props) {
 
             <div className="flex items-center gap-2">
               <img
-                src={UserIcon}
+                src={item.agentImg || UserIcon}
                 alt=""
-                className="h-[0.625rem] w-[0.625rem] shrink-0 lg:h-[0.6875rem] lg:w-[0.6875rem]"
+                className={item.agentImg 
+                  ? "h-[1.125rem] w-[1.125rem] shrink-0 rounded-full object-cover lg:h-[1.25rem] lg:w-[1.25rem]"
+                  : "h-[0.625rem] w-[0.625rem] shrink-0 lg:h-[0.6875rem] lg:w-[0.6875rem]"
+                }
               />
               <Typography
                 variant="span"

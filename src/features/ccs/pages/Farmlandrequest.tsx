@@ -112,7 +112,7 @@ export default function FarmlandRequest() {
       }
 
       // State, Region, Area Filtering (Case-insensitive includes for robust matching)
-      let locationStr = (fd.location || fd.village || fd.state || fd.region || fd.area || item.location || od.location || '').toLowerCase();
+      let locationStr = String(fd.location || fd.village || fd.state || fd.region || fd.area || (typeof item.location === 'string' ? item.location : '') || od.location || '').toLowerCase();
       
       const locDetails = item.location_details || fd.location_details;
       if (locDetails) {
@@ -383,7 +383,7 @@ export default function FarmlandRequest() {
 
               let location = fd.location || od.location || fd.village || od.village || item.location || 'Unknown Location';
               
-              const locDetails = item.location_details || fd.location_details;
+              const locDetails = item.location_details || fd.location_details || item.location;
               if (locDetails) {
                 const stateObj = geoData.states.find((s: any) => s.id === locDetails.state_id);
                 const districtObj = geoData.districts.find((d: any) => d.id === (locDetails.district_id || locDetails.region_id));
@@ -413,7 +413,13 @@ export default function FarmlandRequest() {
                 }
               }
 
-              const agentName = od.owner_name || od.agent_name || fd.agent_name || fd.owner_name || item.agent_name || item.agentName || 'N/A';
+              let agentName = od.owner_name || od.agent_name || fd.agent_name || fd.owner_name || item.agent_name || item.agentName;
+              const agentObj = item.agent || fd.agent || {};
+              if (!agentName && (item.agent || fd.agent)) {
+                agentName = `${agentObj.first_name || ''} ${agentObj.last_name || ''}`.trim();
+              }
+              if (!agentName) agentName = 'N/A';
+              const agentImg = item.agent_img || fd.agent_img || agentObj.img || agentObj.profile_picture || '';
 
               const mappedItem = {
                 id: fd.farmland_id?.toString() || item.id,
@@ -421,6 +427,7 @@ export default function FarmlandRequest() {
                 location: location,
                 priority: fd.farmland_priority === 1 ? 'High' : fd.farmland_priority === 2 ? 'Medium' : 'Low',
                 agentName: agentName,
+                agentImg: agentImg,
                 createdDate: formattedDate,
                 totalAcres: formattedAcres,
                 valuation: formattedValuation,

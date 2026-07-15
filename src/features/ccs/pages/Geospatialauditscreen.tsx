@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { BackButton } from "@/components/ui/BackButton";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
+import { useGetAssignedFarmlandDetailsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
 
 import { cn } from "@/lib/utils";
 
@@ -58,14 +59,21 @@ function VerificationItem({
 }: {
   title: string;
   subtitle: string;
+  status?: boolean;
 }) {
   return (
     <div className="flex items-start gap-[0.85rem]">
-      <img
-        src={sat7}
-        alt="Verify"
-        className="mt-[0.15rem] w-[1.15rem] h-[1.15rem]"
-      />
+      {status !== false ? (
+        <img
+          src={sat7}
+          alt="Verify"
+          className="mt-[0.15rem] w-[1.15rem] h-[1.15rem]"
+        />
+      ) : (
+        <div className="mt-[0.15rem] w-[1.15rem] h-[1.15rem] flex items-center justify-center bg-red-100 rounded-full text-red-500 font-bold text-[10px]">
+          X
+        </div>
+      )}
 
       <div className="flex flex-col gap-[0.1rem]">
         <Typography
@@ -105,8 +113,52 @@ function VerificationItem({
 
 export default function GeospatialAuditScreen() {
   const navigate = useNavigate();
-
+  const { id } = useParams<{ id: string }>();
+  const [getDetails, { data: apiResponse, isLoading }] = useGetAssignedFarmlandDetailsMutation();
   const [scanActive] = useState(true);
+
+  useEffect(() => {
+    if (id) {
+      getDetails({ farmland_id: Number(id) });
+    }
+  }, [id, getDetails]);
+
+  const findDeep = (obj: any, key: string): any => {
+    if (!obj || typeof obj !== 'object') return null;
+    if (key in obj) return obj[key];
+    for (const k in obj) {
+      if (typeof obj[k] === 'object') {
+        const res = findDeep(obj[k], key);
+        if (res) return res;
+      }
+    }
+    return null;
+  };
+
+  const extractedFarmland = findDeep(apiResponse, 'farmland_details');
+  const responseData = apiResponse?.data || apiResponse;
+  const actualData = Array.isArray(responseData) ? responseData[0] : responseData;
+  const farmlandDetails = extractedFarmland || actualData;
+
+  let dynamicVerdicts: any[] | undefined = undefined;
+  if (farmlandDetails) {
+    if (Array.isArray(farmlandDetails.verification_results)) {
+      dynamicVerdicts = farmlandDetails.verification_results;
+    } else if (Array.isArray(farmlandDetails.verdicts)) {
+      dynamicVerdicts = farmlandDetails.verdicts;
+    } else if (farmlandDetails.verification && Array.isArray(farmlandDetails.verification.results)) {
+      dynamicVerdicts = farmlandDetails.verification.results;
+    }
+  }
+
+  const verdicts = dynamicVerdicts?.map((v: any) => ({
+    title: v.title || v.name || v.check_name || "Verification Check",
+    subtitle: v.subtitle || v.description || v.status_text || "Details not provided",
+    status: v.status !== false && v.status !== "failed" && v.is_passed !== false
+  })) || [
+    { title: "Revenue Check", subtitle: "Documents validated via Land Bank", status: true },
+    { title: "Boundary Walk", subtitle: "Geo-tagged perimeter confirmed", status: true }
+  ];
 
   return (
     <div
@@ -252,7 +304,7 @@ export default function GeospatialAuditScreen() {
                 xl:text-[0.56rem]
               "
             >
-              Geospatial Audit: GLCSOS 01
+              Geospatial Audit: {farmlandDetails?.farmland_code || farmlandDetails?.glcId || 'GLCSOS 01'}
             </Typography>
           </div>
 
@@ -420,46 +472,59 @@ export default function GeospatialAuditScreen() {
           </div>
 
           <div className="flex flex-col">
-            {[
-              ["Total Area", "100 Acres"],
-              ["Location", "Tanuku, WG"],
-              ["Soil Composition", "Red Laterite"],
-            ].map(([label, value]) => (
-              <div
-                key={label}
-                className="
-                  flex items-center justify-between
+            <div
+              className="
+                flex items-center justify-between
 
-                  border-b border-[var(--border-subtle)]
-                  last:border-0
+                border-b border-[var(--border-subtle)]
+                last:border-0
 
-                  py-[0.42rem]
-                "
-              >
-                <Typography
-                  as="span"
-                  variant="span"
-                  className="
-                    text-[var(--text-secondary)]
-                    text-[0.5rem]
-                  "
-                >
-                  {label}
-                </Typography>
+                py-[0.42rem]
+              "
+            >
+              <Typography as="span" variant="span" className="text-[var(--text-secondary)] text-[0.5rem]">
+                Total Area
+              </Typography>
+              <Typography as="span" variant="span" className="font-bold text-[var(--text-heading)] text-[0.5rem]">
+                {farmlandDetails?.total_acres || farmlandDetails?.Total_acres ? `${farmlandDetails.total_acres || farmlandDetails.Total_acres} Acres` : "100 Acres"}
+              </Typography>
+            </div>
+            
+            <div
+              className="
+                flex items-center justify-between
 
-                <Typography
-                  as="span"
-                  variant="span"
-                  className="
-                    font-bold
-                    text-[var(--text-heading)]
-                    text-[0.5rem]
-                  "
-                >
-                  {value}
-                </Typography>
-              </div>
-            ))}
+                border-b border-[var(--border-subtle)]
+                last:border-0
+
+                py-[0.42rem]
+              "
+            >
+              <Typography as="span" variant="span" className="text-[var(--text-secondary)] text-[0.5rem]">
+                Location
+              </Typography>
+              <Typography as="span" variant="span" className="font-bold text-[var(--text-heading)] text-[0.5rem]">
+                {farmlandDetails?.location || farmlandDetails?.village || "Tanuku, WG"}
+              </Typography>
+            </div>
+
+            <div
+              className="
+                flex items-center justify-between
+
+                border-b border-[var(--border-subtle)]
+                last:border-0
+
+                py-[0.42rem]
+              "
+            >
+              <Typography as="span" variant="span" className="text-[var(--text-secondary)] text-[0.5rem]">
+                Asset Value
+              </Typography>
+              <Typography as="span" variant="span" className="font-bold text-[var(--text-heading)] text-[0.5rem]">
+                {farmlandDetails?.total_asset_price || farmlandDetails?.Assest_value ? `₹${Number(farmlandDetails.total_asset_price || farmlandDetails.Assest_value).toLocaleString()}` : "N/A"}
+              </Typography>
+            </div>
           </div>
         </Card>
 
@@ -532,7 +597,7 @@ export default function GeospatialAuditScreen() {
                   xl:text-[0.68rem]
                 "
               >
-                Ramudu Kumar
+                {farmlandDetails?.agent_name || farmlandDetails?.owner_name || "Ramudu Kumar"}
               </Typography>
 
               <Typography
@@ -546,7 +611,7 @@ export default function GeospatialAuditScreen() {
                   text-[0.46rem]
                 "
               >
-                Lead Custodian
+                {farmlandDetails?.owner_name ? "Owner" : "Agent / Custodian"}
               </Typography>
             </div>
           </div>
@@ -795,20 +860,16 @@ export default function GeospatialAuditScreen() {
 
           {/* Items */}
           <div className="flex flex-col gap-[1rem]">
-            <VerificationItem
-              title="Revenue Check"
-              subtitle="Documents validated via Land Bank"
-            />
-
-            <VerificationItem
-              title="Boundary Walk"
-              subtitle="Geo-tagged perimeter confirmed"
-            />
-
-            <VerificationItem
-              title="Local Intelligence"
-              subtitle="Pulsing community feedback loop..."
-            />
+            {isLoading ? (
+              <div className="text-[0.7rem] text-center text-gray-500 py-4">Loading verdicts...</div>
+            ) : verdicts.map((verdict, idx) => (
+              <VerificationItem
+                key={idx}
+                title={verdict.title}
+                subtitle={verdict.subtitle}
+                status={verdict.status}
+              />
+            ))}
           </div>
         </div>
 

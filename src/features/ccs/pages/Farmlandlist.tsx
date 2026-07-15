@@ -115,7 +115,7 @@ export default function FarmlandList() {
     let resolvedRegion = fd.region || item.region || 'N/A';
     let resolvedArea = fd.area || item.area || 'N/A';
 
-    const locDetails = item.location_details || fd.location_details;
+    const locDetails = item.location_details || fd.location_details || item.location;
     if (locDetails) {
       const stateObj = geoData.states.find((s: any) => s.id === locDetails.state_id);
       const districtObj = geoData.districts.find((d: any) => d.id === (locDetails.district_id || locDetails.region_id));
@@ -149,7 +149,13 @@ export default function FarmlandList() {
       }
     }
 
-    const agentName = od.owner_name || od.agent_name || fd.agent_name || fd.owner_name || item.agent_name || item.agentName || 'N/A';
+    let agentName = od.owner_name || od.agent_name || fd.agent_name || fd.owner_name || item.agent_name || item.agentName;
+    const agentObj = item.agent || fd.agent || {};
+    if (!agentName && (item.agent || fd.agent)) {
+      agentName = `${agentObj.first_name || ''} ${agentObj.last_name || ''}`.trim();
+    }
+    if (!agentName) agentName = 'N/A';
+    const agentImg = item.agent_img || fd.agent_img || agentObj.img || agentObj.profile_picture || '';
     
     // Status mapping based on Swagger: 2 -> PENDING, 3 -> APPROVED/ACTIVE, 5 -> REJECTED
     let statusText: "COMPLETED" | "PENDING" | "ACTIVE" | "REJECTED" = "PENDING";
@@ -166,6 +172,7 @@ export default function FarmlandList() {
       area: resolvedArea,
       image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80",
       agentName: agentName,
+      agentImg: agentImg,
       listedOn: formattedDate,
       totalArea: formattedAcres,
       valuation: formattedValuation,
@@ -179,7 +186,7 @@ export default function FarmlandList() {
 
   // Enforce local filtering to guarantee it works regardless of API implementation
   const filteredData = listData.filter((item) => {
-    const locStr = (item.location || item.state || item.region || item.area || '').toLowerCase();
+    const locStr = String(item.location || item.state || item.region || item.area || '').toLowerCase();
     
     // Search query check
     if (searchQuery.trim().length > 0) {
@@ -215,7 +222,7 @@ export default function FarmlandList() {
       if (filterState === 'andhra pradesh') abbreviation = 'a.p.';
       else if (filterState === 'telangana') abbreviation = 't.s.';
       
-      const textToSearch = (item.state || locStr).toLowerCase();
+      const textToSearch = String(item.state || locStr).toLowerCase();
       if (!textToSearch.includes(filterState) && !textToSearch.includes(abbreviation)) {
         return false;
       }
@@ -227,14 +234,14 @@ export default function FarmlandList() {
       if (filterRegion === 'west godavari') abbreviation = 'wg';
       else if (filterRegion === 'east godavari') abbreviation = 'eg';
 
-      const textToSearch = (item.region || locStr).toLowerCase();
+      const textToSearch = String(item.region || locStr).toLowerCase();
       if (!textToSearch.includes(filterRegion) && !textToSearch.includes(abbreviation)) {
         return false;
       }
     }
 
     if (activeFilters.area) {
-      const textToSearch = (item.area || locStr).toLowerCase();
+      const textToSearch = String(item.area || locStr).toLowerCase();
       if (!textToSearch.includes(activeFilters.area.toLowerCase())) return false;
     }
 

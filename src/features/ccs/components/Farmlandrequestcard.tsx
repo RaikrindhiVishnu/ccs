@@ -10,6 +10,7 @@ export type FarmlandRequestItem = {
   totalAcres: string;
   valuation: string;
   assetValue: string;
+  agentImg?: string;
 };
 
 type Props = {
@@ -22,6 +23,7 @@ const PRESERVE_UPPER = new Set(['A.P.', 'T.S.', 'WG', 'EG', 'NTR', 'AP', 'TS', '
 
 /** Convert a location string to title case, preserving known abbreviations */
 function toTitleCase(str: string): string {
+  if (!str || typeof str !== 'string') return '';
   return str
     .split(',')
     .map(segment =>
@@ -78,9 +80,14 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
           <span className="font-['Plus_Jakarta_Sans'] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[rgba(61,73,73,0.6)]">
             Agent name
           </span>
-          <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[20px] leading-[24px] text-[#1A1C1D] truncate pr-2">
-            {item.agentName}
-          </span>
+          <div className="flex flex-row items-center gap-[6px] pr-2">
+            {item.agentImg ? (
+              <img src={item.agentImg} alt="Agent" className="w-[20px] h-[20px] rounded-full object-cover shrink-0" />
+            ) : null}
+            <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[20px] leading-[24px] text-[#1A1C1D] truncate">
+              {item.agentName}
+            </span>
+          </div>
         </div>
 
         {/* CREATED DATE */}
