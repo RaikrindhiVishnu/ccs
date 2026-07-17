@@ -19,6 +19,7 @@ function CustomSelect({
   onChange: (val: string) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,13 +32,20 @@ function CustomSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const filteredOptions = options.filter(opt => 
+    opt.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className={`flex flex-col gap-[8px] relative ${isOpen ? 'z-[100]' : 'z-10'}`} ref={ref}>
       <label className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[21px] text-[#0F172A]">
         {label}
       </label>
       <div
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (!isOpen) setSearchTerm("");
+          setIsOpen(!isOpen);
+        }}
         className={`h-[58px] border ${isOpen ? "border-[#2880C4]" : "border-[#E2E8F0]"} rounded-[14px] flex items-center justify-between px-[16px] bg-[#FFFFFF] cursor-pointer hover:border-gray-300 transition-colors`}
       >
         <span
@@ -53,19 +61,33 @@ function CustomSelect({
       </div>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+4px)] left-0 w-full bg-[#FFFFFF] border border-[#E2E8F0] rounded-[14px] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1)] z-50 overflow-hidden py-2">
-          {options.map((opt: string) => (
+        <div className="absolute top-[calc(100%+4px)] left-0 w-full max-h-[250px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-[14px] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1)] z-50 overflow-y-auto py-2 flex flex-col">
+          <div className="px-[12px] pb-[8px] sticky top-0 bg-[#FFFFFF]">
+            <input 
+              type="text" 
+              placeholder="Search..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full px-[12px] py-[8px] border border-[#E2E8F0] rounded-[8px] text-[14px] font-['Plus_Jakarta_Sans'] focus:outline-none focus:border-[#2880C4]"
+            />
+          </div>
+          {filteredOptions.length > 0 ? filteredOptions.map((opt: string) => (
             <div
               key={opt}
               onClick={() => {
                 onChange(opt);
                 setIsOpen(false);
               }}
-              className="px-[16px] py-[12px] cursor-pointer hover:bg-gray-50 font-['Plus_Jakarta_Sans'] font-normal text-[14px] leading-[21px] text-[#0F172A] transition-colors"
+              className="px-[16px] py-[12px] cursor-pointer hover:bg-gray-50 font-['Plus_Jakarta_Sans'] font-normal text-[14px] leading-[21px] text-[#0F172A] transition-colors shrink-0"
             >
               {opt}
             </div>
-          ))}
+          )) : (
+            <div className="px-[16px] py-[12px] font-['Plus_Jakarta_Sans'] font-normal text-[14px] leading-[21px] text-[#94A3B8] shrink-0 text-center">
+              No results found
+            </div>
+          )}
         </div>
       )}
     </div>
