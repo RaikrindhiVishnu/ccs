@@ -155,7 +155,8 @@ export default function PipelineStatus({ startDate, endDate }: PipelineStatusPro
   const [getPipelineStatus, { data }] = useGetDashboardPipelineStatusMutation();
 
   useEffect(() => {
-    // If custom dates are selected, pass them. Otherwise omit them.
+    // Default to Today if no dates are selected to avoid backend returning lifetime metrics
+    const today = format(new Date(), 'yyyy-MM-dd');
     const payload = startDate && endDate ? {
       startDate: format(startDate, 'yyyy-MM-dd'),
       endDate: format(endDate, 'yyyy-MM-dd'),
@@ -163,7 +164,14 @@ export default function PipelineStatus({ startDate, endDate }: PipelineStatusPro
       toDate: format(endDate, 'yyyy-MM-dd'),
       start_date: format(startDate, 'yyyy-MM-dd'),
       end_date: format(endDate, 'yyyy-MM-dd')
-    } : {};
+    } : {
+      startDate: today,
+      endDate: today,
+      fromDate: today,
+      toDate: today,
+      start_date: today,
+      end_date: today
+    };
 
     getPipelineStatus(payload);
   }, [getPipelineStatus, startDate, endDate]);

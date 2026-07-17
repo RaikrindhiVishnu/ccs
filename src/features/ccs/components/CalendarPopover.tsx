@@ -116,9 +116,14 @@ export default function CalendarPopover({
   };
 
   const handleApply = () => {
-    if (mode === "range" && tempStartDate && tempEndDate) {
-      if (onChange) onChange(tempStartDate, tempEndDate);
-      onClose();
+    if (mode === "range") {
+      if (tempStartDate && tempEndDate) {
+        if (onChange) onChange(tempStartDate, tempEndDate);
+        onClose();
+      } else if (tempStartDate && !tempEndDate) {
+        if (onChange) onChange(tempStartDate, tempStartDate);
+        onClose();
+      }
     } else if (mode !== "range" && tempDate) {
       if (onChange) onChange(tempDate);
       onClose();
@@ -237,7 +242,7 @@ export default function CalendarPopover({
         {/* Hint shown when only start date is picked in range mode */}
         {mode === "range" && tempStartDate && !tempEndDate && (
           <p className="text-center text-[11px] text-[#6F7C8E] font-['Inter'] leading-[16px] -mt-1">
-            Now pick an end date
+            Now pick an end date or Apply for a single day
           </p>
         )}
         
@@ -254,7 +259,7 @@ export default function CalendarPopover({
           {mode === "range" && (
             <button 
               onClick={handleApply}
-              disabled={!tempStartDate || !tempEndDate}
+              disabled={!tempStartDate}
               className="flex items-center justify-center w-[66px] h-[32px] bg-[#2780C4] rounded-[8px] transition-colors hover:bg-blue-600 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
             >
               <span className="font-['Inter'] font-medium text-[15px] leading-[21px] text-[#FFFFFF]">

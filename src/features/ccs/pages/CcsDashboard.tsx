@@ -38,13 +38,19 @@ export default function CcsDashboard() {
       toDate: "2099-12-31"
     };
 
-    // recent-activities defaults to last 7 days when omitted
+    // recent-activities should default to today when omitted to avoid showing lifetime metrics
+    const today = format(new Date(), 'yyyy-MM-dd');
     const activitiesPayload = startDate && endDate ? {
       startDate: format(startDate, 'yyyy-MM-dd'),
       endDate: format(endDate, 'yyyy-MM-dd'),
       fromDate: format(startDate, 'yyyy-MM-dd'),
       toDate: format(endDate, 'yyyy-MM-dd')
-    } : {};
+    } : {
+      startDate: today,
+      endDate: today,
+      fromDate: today,
+      toDate: today
+    };
 
     getFarmlandDetails(farmlandPayload);
     getRecentActivities(activitiesPayload);

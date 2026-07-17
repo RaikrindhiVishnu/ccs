@@ -164,6 +164,8 @@ export default function FarmlandList() {
     }
     if (!agentName) agentName = 'N/A';
     const agentImg = item.agent_img || fd.agent_img || agentObj.img || agentObj.profile_picture || '';
+    const fieldNotes = fd.field_notes || fd.fieldNotes || item.field_notes || item.fieldNotes || '';
+    const imageUrl = (item.farmland_images && item.farmland_images.length > 0) ? item.farmland_images[0].url : (fd.image_url || fd.image || item.image_url || item.image || "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80");
     
     // Status mapping based on Swagger: 2 -> PENDING, 3 -> APPROVED/ACTIVE, 5 -> REJECTED
     let statusText: "COMPLETED" | "PENDING" | "ACTIVE" | "REJECTED" = "PENDING";
@@ -178,7 +180,7 @@ export default function FarmlandList() {
       state: resolvedState,
       region: resolvedRegion,
       area: resolvedArea,
-      image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80",
+      image: imageUrl,
       agentName: agentName,
       agentImg: agentImg,
       listedOn: formattedDate,

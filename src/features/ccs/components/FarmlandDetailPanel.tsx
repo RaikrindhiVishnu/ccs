@@ -113,8 +113,7 @@ export default function FarmlandDetailPanel({
                   Field Notes
                 </span>
                 <span className="font-['Plus_Jakarta_Sans'] font-medium text-[14px] leading-[20px] text-[#6B7280]">
-                  {detail.fieldNotes ??
-                    "Observed soil quality, nearby water sources, or topography notes..."}
+                  {detail.fieldNotes || "N/A"}
                 </span>
               </div>
             </div>

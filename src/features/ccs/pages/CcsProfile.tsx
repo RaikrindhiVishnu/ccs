@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { ArrowLeft, Edit, LogOut, Eye, EyeOff, X, Loader2 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, Edit, LogOut, Eye, EyeOff, X, Loader2, Camera } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { logOut, selectCurrentUser } from '@/features/auth/store/authSlice';
@@ -19,6 +19,17 @@ export default function CcsProfile() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [pwError, setPwError] = useState('');
   const [pwSuccess, setPwSuccess] = useState(false);
+  const [localProfilePic, setLocalProfilePic] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setLocalProfilePic(url);
+      // In a real application, you would upload the file to the backend here
+    }
+  };
 
   const [updatePassword, { isLoading: isUpdating }] = useUpdatePasswordMutation();
   
@@ -87,6 +98,7 @@ export default function CcsProfile() {
   const role = user.role || currentUser?.role || 'CCS';
   const profileUrl = (user as any).profile_url || currentUser?.profile_url || null;
   const initials = fullName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
+  const displayProfileUrl = localProfilePic || profileUrl;
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] flex justify-center pb-[100px] overflow-y-auto font-['Plus_Jakarta_Sans']">
@@ -112,22 +124,53 @@ export default function CcsProfile() {
               style={{ backgroundImage: `linear-gradient(0deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.06)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80')` }}
             />
             
-            {profileUrl ? (
-              <img
-                src={profileUrl}
-                alt="Profile"
-                className="absolute left-[41px] top-[93px] w-[176px] h-[176px] rounded-full object-cover border-[6px] border-[#FFFFFF] shadow-sm z-10 bg-[#FFFFFF]"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  (e.currentTarget.nextElementSibling as HTMLElement | null)?.classList.remove('hidden');
-                }}
-              />
-            ) : null}
-            <div
-              className={`${profileUrl ? 'hidden' : 'flex'} absolute left-[41px] top-[93px] w-[176px] h-[176px] rounded-full items-center justify-center bg-[var(--brand-500)] text-white text-4xl font-bold border-[6px] border-[#FFFFFF] shadow-sm z-10`}
-            >
-              {initials}
-            </div>
+            {displayProfileUrl ? (
+              <div className="absolute left-[41px] top-[93px] w-[176px] h-[176px] rounded-full border-[6px] border-[#FFFFFF] shadow-sm z-10 bg-[#FFFFFF] group">
+                <img
+                  src={displayProfileUrl}
+                  alt="Profile"
+                  className="w-full h-full rounded-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    (e.currentTarget.nextElementSibling as HTMLElement | null)?.classList.remove('hidden');
+                  }}
+                />
+                <div className="hidden items-center justify-center bg-[var(--brand-500)] text-white text-4xl font-bold w-full h-full rounded-full">
+                  {initials}
+                </div>
+                
+                {/* Upload Overlay */}
+                <div 
+                  className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Camera className="w-8 h-8 text-white" />
+                </div>
+              </div>
+            ) : (
+              <div className="absolute left-[41px] top-[93px] w-[176px] h-[176px] rounded-full border-[6px] border-[#FFFFFF] shadow-sm z-10 bg-[#FFFFFF] group">
+                <div
+                  className="flex items-center justify-center bg-[var(--brand-500)] text-white text-4xl font-bold w-full h-full rounded-full"
+                >
+                  {initials}
+                </div>
+                {/* Upload Overlay */}
+                <div 
+                  className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Camera className="w-8 h-8 text-white" />
+                </div>
+              </div>
+            )}
+            
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              className="hidden" 
+              accept="image/*"
+              onChange={handleProfilePicChange} 
+            />
 
             {/* Profile Name and Role */}
             <div className="absolute left-[237px] top-[206px] flex flex-col z-10">
