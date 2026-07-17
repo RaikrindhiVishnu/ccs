@@ -154,7 +154,23 @@ export default function FarmlandListMap() {
       dateOfBirth: ownerDetails.dob || ownerDetails.dateOfBirth || "N/A",
       religion: ownerDetails.religion || "N/A",
       caste: ownerDetails.caste || "N/A",
-      valuation: farmlandDetails.per_acre_value ? `₹ ${parseFloat(farmlandDetails.per_acre_value).toLocaleString()}/Acre` : farmlandDetails.price_per_acre ? `₹ ${farmlandDetails.price_per_acre.toLocaleString()}/Acre` : farmlandDetails.valuation || "N/A",
+      valuation: (() => {
+        const rawVal = farmlandDetails.per_acre_value || farmlandDetails.price_per_acre || farmlandDetails.valuation;
+        if (rawVal) {
+          const num = Number(String(rawVal).replace(/[^0-9.-]+/g, ""));
+          return !isNaN(num) && num > 0 ? `₹ ${num.toLocaleString('en-IN', { maximumFractionDigits: 2 })}/Acre` : "N/A";
+        }
+        const asset = farmlandDetails.Assest_value || farmlandDetails.total_asset_price || farmlandDetails.assetValue;
+        const acres = farmlandDetails.Total_acres || farmlandDetails.total_acres || farmlandDetails.totalArea;
+        if (asset && acres) {
+          const numAsset = Number(String(asset).replace(/[^0-9.-]+/g, ""));
+          const numAcres = Number(String(acres).replace(/[^0-9.-]+/g, ""));
+          if (!isNaN(numAsset) && !isNaN(numAcres) && numAcres > 0) {
+            return `₹ ${(numAsset / numAcres).toLocaleString('en-IN', { maximumFractionDigits: 2 })}/Acre`;
+          }
+        }
+        return "N/A";
+      })(),
       totalArea: farmlandDetails.Total_acres ? `${farmlandDetails.Total_acres} Acres` : farmlandDetails.total_acres ? `${farmlandDetails.total_acres} Acres` : farmlandDetails.totalArea || "N/A",
       assetValue: farmlandDetails.Assest_value || farmlandDetails.total_asset_price || farmlandDetails.assetValue || "N/A",
       status: farmlandDetails.status_id === 1 ? "PENDING" : farmlandDetails.status === "COMPLETED" ? "COMPLETED" : farmlandDetails.status === "REJECTED" ? "REJECTED" : farmlandDetails.status === "ACTIVE" ? "ACTIVE" : "PENDING",
@@ -170,28 +186,39 @@ export default function FarmlandListMap() {
           {/* The Map */}
           {!isLoading && farmlandDetails && (
             <div className="absolute inset-0 z-0">
-              <SatelliteMap
-                tileUrl={sourceConfig?.url ?? ""}
-                maxzoom={sourceConfig?.maxzoom ?? 18}
-                coords={initialCoords}
-                interactive={true}
-                polygon={normalizedPolygon}
-                label={farmlandDetails.total_acres ? `${farmlandDetails.total_acres} Acres` : undefined}
-              />
+              {normalizedPolygon ? (
+                <>
+                  <SatelliteMap
+                    tileUrl={sourceConfig?.url ?? ""}
+                    maxzoom={sourceConfig?.maxzoom ?? 18}
+                    coords={initialCoords}
+                    interactive={true}
+                    polygon={normalizedPolygon}
+                    label={farmlandDetails.total_acres ? `${farmlandDetails.total_acres} Acres` : undefined}
+                  />
 
-              {/* Map controls (bottom right) */}
-              <div className="absolute bottom-6 right-4 flex flex-col items-center gap-1 z-10 pointer-events-none">
-                <div className="flex items-center gap-1 rounded-full bg-black/50 px-3 py-1">
-                  <span className="text-[0.65rem] font-medium text-white">3D</span>
+                  {/* Map controls (bottom right) */}
+                  <div className="absolute bottom-6 right-4 flex flex-col items-center gap-1 z-10 pointer-events-none">
+                    <div className="flex items-center gap-1 rounded-full bg-black/50 px-3 py-1">
+                      <span className="text-[0.65rem] font-medium text-white">3D</span>
+                    </div>
+                  </div>
+
+                  {/* Bottom stats overlay for coordinates */}
+                  <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-black/40 px-4 py-1 z-10 pointer-events-none">
+                    <span className="text-[0.6rem] text-white/70">Camera: 991 m</span>
+                    <span className="text-[0.6rem] text-white/70">{displayCoords}</span>
+                    <span className="text-[0.6rem] text-white/70">704 m</span>
+                  </div>
+                </>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-[#F3F4F6] text-[#6B7280]">
+                  <div className="flex flex-col items-center gap-2 bg-white/80 p-6 rounded-[16px] shadow-sm">
+                    <span className="text-[16px] font-semibold">No Map Data</span>
+                    <span className="text-[14px]">Polygon coordinates are not available for this farmland.</span>
+                  </div>
                 </div>
-              </div>
-
-              {/* Bottom stats overlay for coordinates */}
-              <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-black/40 px-4 py-1 z-10 pointer-events-none">
-                <span className="text-[0.6rem] text-white/70">Camera: 991 m</span>
-                <span className="text-[0.6rem] text-white/70">{displayCoords}</span>
-                <span className="text-[0.6rem] text-white/70">704 m</span>
-              </div>
+              )}
             </div>
           )}
 

@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from "react";
 import { Search, Bell, ListFilter, X as CloseIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import { useNavigate } from "react-router-dom";
-import { farmlandListDummyData } from "@/features/ccs/data/Farmlandlistdata";
 import FarmlandListCard, { type FarmlandListItem } from "@/features/ccs/components/Farmlandlistcard";
 import FiltersModal, { type FilterState } from "@/features/ccs/components/FiltersModal";
 import NotificationsPopover from "@/features/ccs/components/NotificationsPopover";
@@ -103,11 +102,20 @@ export default function FarmlandList() {
     const acres = fd.Total_acres || fd.total_acres || item.totalAcres || item.total_acres;
     const formattedAcres = acres ? `${acres} Acres` : 'N/A';
 
-    const valuation = fd.per_acre_value || fd.price_per_acre || item.valuation || item.price_per_acre;
-    const formattedValuation = valuation ? `${Number(valuation).toLocaleString()}` : '0';
-    const formattedCostPerAc = valuation ? `₹ ${Number(valuation).toLocaleString()}` : '0';
-
     const asset = fd.Assest_value || fd.total_asset_price || item.assetValue || item.total_asset_price;
+    
+    let rawValuation = fd.per_acre_value || fd.price_per_acre || item.valuation || item.price_per_acre;
+    if (!rawValuation && asset && acres) {
+      const numAsset = Number(String(asset).replace(/[^0-9.-]+/g, ""));
+      const numAcres = Number(String(acres).replace(/[^0-9.-]+/g, ""));
+      if (!isNaN(numAsset) && !isNaN(numAcres) && numAcres > 0) {
+        rawValuation = numAsset / numAcres;
+      }
+    }
+
+    const formattedValuation = rawValuation ? `${Number(rawValuation).toLocaleString('en-IN', { maximumFractionDigits: 2 })}` : '0';
+    const formattedCostPerAc = rawValuation ? `₹ ${Number(rawValuation).toLocaleString('en-IN', { maximumFractionDigits: 2 })}` : '0';
+
     const formattedAsset = asset ? Number(asset).toLocaleString() : '0';
 
     let location = fd.location || od.location || fd.village || od.village || item.location || 'Unknown Location';
@@ -182,8 +190,7 @@ export default function FarmlandList() {
       liveOnWebsite: fd.is_live_on_website ?? fd.live_on_website ?? fd.is_published ?? item.is_live_on_website ?? (statusText === "ACTIVE"),
     };
     return mappedItem;
-  }) : farmlandListDummyData; // fallback to dummy data if initial load or empty api response
-
+  }) : [];
   // Enforce local filtering to guarantee it works regardless of API implementation
   const filteredData = listData.filter((item) => {
     const locStr = String(item.location || item.state || item.region || item.area || '').toLowerCase();

@@ -9,7 +9,6 @@ import NotificationsPopover from "@/features/ccs/components/NotificationsPopover
 import { useGetAllAssignedFarmlandsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
 import { useGetAllGeoMasterDataMutation } from "@/features/ccs/api/masterDataApi";
 import { transformTable } from "@/features/role-manager/utils/utils";
-import { farmlandRequestDummyData } from "@/features/ccs/data/Farmlandrequestdata";
 
 const PAGE_SIZE = 6;
 
@@ -84,9 +83,8 @@ export default function FarmlandRequest() {
     { key: "toDate", value: activeFilters.toDate },
   ].filter((f) => f.value);
 
-  // If apiResponse is present and has elements, use its farmlands array.
-  // Only fall back to dummy data if there is no apiResponse or if it's empty (e.g. initial load, error, or empty demo).
-  let farmlands = (apiResponse && apiResponse.farmlands && apiResponse.farmlands.length > 0) ? apiResponse.farmlands : farmlandRequestDummyData;
+  // Use the farmlands array from API response, default to empty array if not present.
+  let farmlands = (apiResponse && apiResponse.farmlands) ? apiResponse.farmlands : [];
 
   // Total count for pagination — prefer backend total, fall back to array length
   const totalCount: number = (apiResponse as any)?.total ?? (apiResponse as any)?.total_count ?? farmlands.length;
@@ -381,6 +379,16 @@ export default function FarmlandRequest() {
               const asset = fd.Assest_value || fd.total_asset_price || item.assetValue || item.total_asset_price;
               const formattedAsset = asset ? Number(asset).toLocaleString() : '0';
 
+              let finalValuation = formattedValuation;
+              if (finalValuation === 'N/A' && asset && acres) {
+                const numAsset = Number(String(asset).replace(/[^0-9.-]+/g, ""));
+                const numAcres = Number(String(acres).replace(/[^0-9.-]+/g, ""));
+                if (!isNaN(numAsset) && !isNaN(numAcres) && numAcres > 0) {
+                   const calculatedValuation = numAsset / numAcres;
+                   finalValuation = `₹ ${calculatedValuation.toLocaleString('en-IN', { maximumFractionDigits: 2 })}/Acre`;
+                }
+              }
+
               let location = fd.location || od.location || fd.village || od.village || item.location || 'Unknown Location';
               
               const locDetails = item.location_details || fd.location_details || item.location;
@@ -430,7 +438,7 @@ export default function FarmlandRequest() {
                 agentImg: agentImg,
                 createdDate: formattedDate,
                 totalAcres: formattedAcres,
-                valuation: formattedValuation,
+                valuation: finalValuation,
                 assetValue: formattedAsset,
                 statusId: fd.status_id,
               };
