@@ -240,9 +240,9 @@ export default function FiltersModal({
         priority_id = Number(selectedPriorityObj.id);
       } else {
         const p = priority.toLowerCase();
-        if (p === 'high') priority_id = 1;
+        if (p === 'high') priority_id = 3;
         else if (p === 'medium') priority_id = 2;
-        else if (p === 'low') priority_id = 3;
+        else if (p === 'low') priority_id = 1;
       }
     }
 

@@ -103,7 +103,7 @@ export default function FarmlandRequest() {
       // Priority Filtering
       if (activeFilters.priority) {
         const priorityNum = fd.farmland_priority || item.farmland_priority;
-        const mappedPriority = priorityNum === 1 ? 'High' : priorityNum === 2 ? 'Medium' : 'Low';
+        const mappedPriority = priorityNum === 1 ? 'Low' : priorityNum === 2 ? 'Medium' : 'High';
         if (mappedPriority.toLowerCase() !== activeFilters.priority.toLowerCase()) {
           matches = false;
         }
@@ -433,7 +433,7 @@ export default function FarmlandRequest() {
                 id: fd.farmland_id?.toString() || item.id,
                 farmlandId: fd.farmland_code || item.glcId || 'N/A',
                 location: location,
-                priority: fd.farmland_priority === 1 ? 'High' : fd.farmland_priority === 2 ? 'Medium' : 'Low',
+                priority: fd.farmland_priority === 1 ? 'Low' : fd.farmland_priority === 2 ? 'Medium' : 'High',
                 agentName: agentName,
                 agentImg: agentImg,
                 createdDate: formattedDate,
