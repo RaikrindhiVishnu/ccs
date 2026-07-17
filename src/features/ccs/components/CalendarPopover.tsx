@@ -124,7 +124,7 @@ export default function CalendarPopover({
         if (onChange) onChange(tempStartDate, tempStartDate);
         onClose();
       }
-    } else if (mode !== "range" && tempDate) {
+    } else if (tempDate) {
       if (onChange) onChange(tempDate);
       onClose();
     }
