@@ -388,36 +388,47 @@ export default function HistoricalAgronomyAnalysis({
     <div className="relative w-full h-full overflow-hidden bg-[#131600]">
       {/* Map */}
       <div className="absolute inset-0 z-0">
-        <SatelliteMap
-          ref={mapRef}
-          tileUrl={sourceConfig?.url ?? ""}
-          maxzoom={sourceConfig?.maxzoom ?? 18}
-          coords={coords || { lat: 17.014366, lon: 78.423866 }} // Defaulting to Hyderabad area as in the dummy map text
-          polygon={polygon}
-        />
+        {polygon ? (
+          <>
+            <SatelliteMap
+              ref={mapRef}
+              tileUrl={sourceConfig?.url ?? ""}
+              maxzoom={sourceConfig?.maxzoom ?? 18}
+              coords={coords || { lat: 17.014366, lon: 78.423866 }} // Defaulting to Hyderabad area as in the dummy map text
+              polygon={polygon}
+            />
 
-        {/* Loading Overlay */}
-        {isLoading && (
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#131600]/40 backdrop-blur-[2px] pointer-events-none transition-opacity duration-300">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#2780C4] mb-3"></div>
-            <span className="text-white/80 font-['Plus_Jakarta_Sans'] font-medium text-xs tracking-wide">
-              Fetching historical imagery...
-            </span>
+            {/* Loading Overlay */}
+            {isLoading && (
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#131600]/40 backdrop-blur-[2px] pointer-events-none transition-opacity duration-300">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#2780C4] mb-3"></div>
+                <span className="text-white/80 font-['Plus_Jakarta_Sans'] font-medium text-xs tracking-wide">
+                  Fetching historical imagery...
+                </span>
+              </div>
+            )}
+
+            {/* Bottom stats overlay from dummy map */}
+            <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-black/40 px-4 py-1 z-10 pointer-events-none">
+              <span className="text-[0.6rem] text-white/70">Camera: 991 m</span>
+              <span className="text-[0.6rem] text-white/70">
+                17°00′51.72″N 78°25′25.92″E
+              </span>
+              <span className="text-[0.6rem] text-white/70">704 m</span>
+            </div>
+
+            <div className="absolute bottom-6 right-4 flex items-center gap-1 rounded-full bg-black/50 px-3 py-1 z-10 pointer-events-none">
+              <span className="text-[0.65rem] font-medium text-white">3D</span>
+            </div>
+          </>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-[#F3F4F6] text-[#6B7280]">
+            <div className="flex flex-col items-center gap-2 bg-white/80 p-6 rounded-[16px] shadow-sm">
+              <span className="text-[16px] font-semibold">No Map Data</span>
+              <span className="text-[14px]">Polygon coordinates are not available for this farmland.</span>
+            </div>
           </div>
         )}
-
-        {/* Bottom stats overlay from dummy map */}
-        <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-black/40 px-4 py-1 z-10">
-          <span className="text-[0.6rem] text-white/70">Camera: 991 m</span>
-          <span className="text-[0.6rem] text-white/70">
-            17°00′51.72″N 78°25′25.92″E
-          </span>
-          <span className="text-[0.6rem] text-white/70">704 m</span>
-        </div>
-
-        <div className="absolute bottom-6 right-4 flex items-center gap-1 rounded-full bg-black/50 px-3 py-1 z-10">
-          <span className="text-[0.65rem] font-medium text-white">3D</span>
-        </div>
       </div>
 
       {/* ── Page header — top left inside map ── */}
@@ -442,13 +453,13 @@ export default function HistoricalAgronomyAnalysis({
       </div>
 
       {/* ── Geospatial Controls — top right ── */}
-      <GeospatialControlsPanel />
+      {polygon && <GeospatialControlsPanel />}
 
       {/* ── Verification Verdict Panel — middle right ── */}
       <VerificationVerdictPanel onAuthorize={onAuthorize} verdicts={verdicts} />
 
       {/* ── Temporal Ribbon — bottom center ── */}
-      <TemporalRibbon activeYear={activeYear} onYearChange={setActiveYear} />
+      {polygon && <TemporalRibbon activeYear={activeYear} onYearChange={setActiveYear} />}
     </div>
   );
 }
