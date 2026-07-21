@@ -325,8 +325,8 @@ function VerificationVerdictPanel({
                 <input 
                   type="checkbox" 
                   checked={verdict.status !== false}
-                  onChange={() => toggleVerdict(idx)}
-                  className="w-[20px] h-[20px] cursor-pointer rounded-[4px] border-[#00629E] text-[#00629E] focus:ring-0 focus:ring-offset-0 bg-white accent-[#00629E]"
+                  readOnly
+                  className="w-[20px] h-[20px] cursor-default rounded-[4px] border-[#00629E] text-[#00629E] focus:ring-0 focus:ring-offset-0 bg-white accent-[#00629E]"
                 />
               </div>
               <div className="flex flex-col">
