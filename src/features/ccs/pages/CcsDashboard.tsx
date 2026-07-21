@@ -26,30 +26,20 @@ export default function CcsDashboard() {
     // get-all-farmland-details still strictly requires dates despite swagger, so we pass a wide range if empty
     const farmlandPayload = startDate && endDate ? {
       startDate: format(startDate, 'yyyy-MM-dd'),
-      endDate: format(endDate, 'yyyy-MM-dd'),
-      fromDate: format(startDate, 'yyyy-MM-dd'),
-      toDate: format(endDate, 'yyyy-MM-dd'),
-      start_date: format(startDate, 'yyyy-MM-dd'),
-      end_date: format(endDate, 'yyyy-MM-dd')
+      endDate: format(endDate, 'yyyy-MM-dd')
     } : {
       startDate: "2000-01-01",
-      endDate: "2099-12-31",
-      fromDate: "2000-01-01",
-      toDate: "2099-12-31"
+      endDate: "2099-12-31"
     };
 
     // recent-activities should default to today when omitted to avoid showing lifetime metrics
     const today = format(new Date(), 'yyyy-MM-dd');
     const activitiesPayload = startDate && endDate ? {
       startDate: format(startDate, 'yyyy-MM-dd'),
-      endDate: format(endDate, 'yyyy-MM-dd'),
-      fromDate: format(startDate, 'yyyy-MM-dd'),
-      toDate: format(endDate, 'yyyy-MM-dd')
+      endDate: format(endDate, 'yyyy-MM-dd')
     } : {
       startDate: today,
-      endDate: today,
-      fromDate: today,
-      toDate: today
+      endDate: today
     };
 
     getFarmlandDetails(farmlandPayload);
@@ -97,9 +87,12 @@ export default function CcsDashboard() {
         else displayStatus = item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase();
       }
 
+      const fid = item.farmland_code || item.farmland_id;
+      const displayId = fid ? (String(fid).startsWith('FL') ? fid : `FL-${fid}`) : `temp-${index}`;
+
       return {
-        id: item.farmland_code || item.farmland_id ? `FL-${item.farmland_id}` : `temp-${index}`,
-        description: item.farmland_id ? `Farmland ${item.farmland_code || item.farmland_id} was ${displayStatus}` : `Farmland was marked as ${displayStatus}`,
+        id: displayId,
+        description: fid ? `Farmland ${displayId} was ${displayStatus}` : `Farmland was marked as ${displayStatus}`,
         timeAgo,
       };
     })

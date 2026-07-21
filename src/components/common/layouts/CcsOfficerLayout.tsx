@@ -25,21 +25,14 @@ const NavIcon = ({ name, isActive }: { name: string; isActive?: boolean }) => {
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '@/features/auth/store/authSlice';
-import { useGetDashboardUserMutation } from '@/features/ccs/api/dashboardApi';
 
 export const CcsOfficerLayout = () => {
   const { navItems } = useRoleLayout();
   const location = useLocation();
 
   const currentUser = useSelector(selectCurrentUser);
-  const [getUser, { data: user }] = useGetDashboardUserMutation();
 
-  useEffect(() => {
-    if (currentUser?.id) {
-      getUser({ user_id: currentUser.id });
-    }
-  }, [getUser, currentUser?.id]);
-
+  const user = currentUser;
   const fullName = user?.name || (currentUser?.first_name ? `${currentUser.first_name} ${currentUser.last_name ?? ''}`.trim() : 'CCS User');
   const profileUrl = user?.profile_url || currentUser?.profile_url || null;
 

@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Edit, LogOut, Eye, EyeOff, X, Loader2, Camera } from 'lucide-react';
+import { ArrowLeft, Edit, LogOut, Eye, EyeOff, X, Loader2, Camera, Save } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
-import { logOut, selectCurrentUser } from '@/features/auth/store/authSlice';
-import { useGetDashboardUserMutation } from '@/features/ccs/api/dashboardApi';
+import { logOut, selectCurrentUser, updateUser } from '@/features/auth/store/authSlice';
 import { useUpdatePasswordMutation } from '@/features/auth/api/authApi';
 
 export default function CcsProfile() {
@@ -19,29 +18,29 @@ export default function CcsProfile() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [pwError, setPwError] = useState('');
   const [pwSuccess, setPwSuccess] = useState(false);
+
+  const [isEditing, setIsEditing] = useState(false);
   const [localProfilePic, setLocalProfilePic] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [editForm, setEditForm] = useState({
+    first_name: '',
+    last_name: '',
+    phone: '',
+    dob: ''
+  });
 
   const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const url = URL.createObjectURL(file);
       setLocalProfilePic(url);
-      // In a real application, you would upload the file to the backend here
     }
   };
 
   const [updatePassword, { isLoading: isUpdating }] = useUpdatePasswordMutation();
-  
   const currentUser = useAppSelector(selectCurrentUser);
-  const [getUser, { data: apiUser }] = useGetDashboardUserMutation();
-
-  useEffect(() => {
-    if (currentUser?.id) {
-      getUser({ user_id: currentUser.id });
-    }
-  }, [getUser, currentUser?.id]);
-
+  
   const handleLogout = () => {
     dispatch(logOut());
     navigate('/login');
@@ -88,17 +87,40 @@ export default function CcsProfile() {
     }
   };
 
-  const user: any = apiUser || currentUser || {};
-  const fullName = user.name || user.firstName || 'Ram Varma';
-  const firstName = fullName.split(' ')[0] || 'Ram';
-  const lastName = fullName.split(' ').slice(1).join(' ') || 'Varma';
-  const email = user.email || 'ramvarmaradhrapu@gmail.com';
-  const phone = user.phone || user.mobile_number || '+91 992 325 7593';
-  const dob = user.dob || user.date_of_birth || '03/09/1996';
-  const role = user.role || currentUser?.role || 'CCS';
+  const user: any = { ...(currentUser || {}) };
+  const fullName = user.name || user.firstName || (user.first_name ? `${user.first_name} ${user.last_name || ''}`.trim() : '');
+  const firstName = (fullName ? fullName.split(' ')[0] : '') || 'N/A';
+  const lastName = (fullName ? fullName.split(' ').slice(1).join(' ') : '') || 'N/A';
+  const email = user.email || user.login_id || '';
+  const phone = user.phone || user.mobile_number || 'N/A';
+  const dob = user.dob || user.date_of_birth || 'N/A';
+  const role = user.role || currentUser?.role || '';
   const profileUrl = (user as any).profile_url || currentUser?.profile_url || null;
   const initials = fullName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase();
   const displayProfileUrl = localProfilePic || profileUrl;
+
+  // Initialize edit form when starting edit mode
+  useEffect(() => {
+    if (isEditing) {
+      setEditForm({
+        first_name: user.first_name || firstName !== 'N/A' ? firstName : '',
+        last_name: user.last_name || lastName !== 'N/A' ? lastName : '',
+        phone: phone !== 'N/A' ? phone : '',
+        dob: dob !== 'N/A' ? dob : ''
+      });
+    }
+  }, [isEditing, firstName, lastName, phone, dob, user]);
+
+  const handleSaveProfile = () => {
+    dispatch(updateUser({
+      first_name: editForm.first_name,
+      last_name: editForm.last_name,
+      phone: editForm.phone,
+      dob: editForm.dob,
+      profile_url: localProfilePic || undefined
+    }));
+    setIsEditing(false);
+  };
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] flex justify-center pb-[100px] overflow-y-auto font-['Plus_Jakarta_Sans']">
@@ -139,13 +161,14 @@ export default function CcsProfile() {
                   {initials}
                 </div>
                 
-                {/* Upload Overlay */}
-                <div 
-                  className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Camera className="w-8 h-8 text-white" />
-                </div>
+                {isEditing && (
+                  <div 
+                    className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Camera className="w-8 h-8 text-white" />
+                  </div>
+                )}
               </div>
             ) : (
               <div className="absolute left-[41px] top-[93px] w-[176px] h-[176px] rounded-full border-[6px] border-[#FFFFFF] shadow-sm z-10 bg-[#FFFFFF] group">
@@ -154,13 +177,14 @@ export default function CcsProfile() {
                 >
                   {initials}
                 </div>
-                {/* Upload Overlay */}
-                <div 
-                  className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Camera className="w-8 h-8 text-white" />
-                </div>
+                {isEditing && (
+                  <div 
+                    className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Camera className="w-8 h-8 text-white" />
+                  </div>
+                )}
               </div>
             )}
             
@@ -181,16 +205,57 @@ export default function CcsProfile() {
 
           {/* Personal Details Card */}
           <div className="w-full xl:w-[1144px] h-auto min-h-[274px] bg-[#FFFFFF] shadow-[0px_0px_6px_rgba(0,0,0,0.12)] rounded-[24px] p-[30px] shrink-0">
-            <h2 className="font-semibold text-[24px] leading-[30px] text-[#000000] mb-[28px]">
-              Personal details
-            </h2>
+            <div className="flex justify-between items-center mb-[28px]">
+              <h2 className="font-semibold text-[24px] leading-[30px] text-[#000000]">
+                Personal details
+              </h2>
+              {isEditing ? (
+                <div className="flex gap-[12px]">
+                  <button 
+                    onClick={() => {
+                      setIsEditing(false);
+                      setLocalProfilePic(null);
+                    }}
+                    className="flex items-center gap-[6px] px-[16px] py-[8px] border border-[#E1E5EF] rounded-[8px] font-medium text-[14px] text-[#374151] hover:bg-gray-50 transition-colors"
+                  >
+                    <X className="w-[16px] h-[16px]" />
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={handleSaveProfile}
+                    className="flex items-center gap-[6px] px-[16px] py-[8px] bg-[#2780C4] rounded-[8px] font-medium text-[14px] text-white hover:bg-[#1f669d] transition-colors"
+                  >
+                    <Save className="w-[16px] h-[16px]" />
+                    Save
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center gap-[6px] px-[16px] py-[8px] border border-[#2780C4] rounded-[8px] font-medium text-[14px] text-[#2780C4] hover:bg-[rgba(39,128,196,0.05)] transition-colors"
+                >
+                  <Edit className="w-[16px] h-[16px]" />
+                  Edit Profile
+                </button>
+              )}
+            </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-[24px] gap-y-[28px]">
               {/* Field */}
               <div className="flex flex-col gap-[10px]">
                 <label className="font-medium text-[16px] leading-[20px] text-[#000000] opacity-80">First name</label>
                 <div className="w-full h-[40px] bg-[#FFFFFF] border border-[#E1E5EF] rounded-[12px] flex items-center px-[14px]">
-                  <span className="font-normal text-[14px] text-[#000000]">{firstName}</span>
+                  {isEditing ? (
+                    <input 
+                      type="text"
+                      className="w-full bg-transparent focus:outline-none font-normal text-[14px] text-[#000000]"
+                      value={editForm.first_name}
+                      onChange={e => setEditForm({...editForm, first_name: e.target.value})}
+                      placeholder="First name"
+                    />
+                  ) : (
+                    <span className="font-normal text-[14px] text-[#000000]">{firstName}</span>
+                  )}
                 </div>
               </div>
               
@@ -198,7 +263,17 @@ export default function CcsProfile() {
               <div className="flex flex-col gap-[10px]">
                 <label className="font-medium text-[16px] leading-[20px] text-[#000000] opacity-80">Last name</label>
                 <div className="w-full h-[40px] bg-[#FFFFFF] border border-[#E1E5EF] rounded-[12px] flex items-center px-[14px]">
-                  <span className="font-normal text-[14px] text-[#000000]">{lastName}</span>
+                  {isEditing ? (
+                    <input 
+                      type="text"
+                      className="w-full bg-transparent focus:outline-none font-normal text-[14px] text-[#000000]"
+                      value={editForm.last_name}
+                      onChange={e => setEditForm({...editForm, last_name: e.target.value})}
+                      placeholder="Last name"
+                    />
+                  ) : (
+                    <span className="font-normal text-[14px] text-[#000000]">{lastName}</span>
+                  )}
                 </div>
               </div>
 
@@ -206,7 +281,16 @@ export default function CcsProfile() {
               <div className="flex flex-col gap-[10px]">
                 <label className="font-medium text-[16px] leading-[20px] text-[#000000] opacity-80">Date Of Birth</label>
                 <div className="w-full h-[40px] bg-[#FFFFFF] border border-[#E1E5EF] rounded-[12px] flex items-center px-[14px]">
-                  <span className="font-normal text-[14px] text-[#000000]">{dob}</span>
+                  {isEditing ? (
+                    <input 
+                      type="date"
+                      className="w-full bg-transparent focus:outline-none font-normal text-[14px] text-[#000000]"
+                      value={editForm.dob}
+                      onChange={e => setEditForm({...editForm, dob: e.target.value})}
+                    />
+                  ) : (
+                    <span className="font-normal text-[14px] text-[#000000]">{dob}</span>
+                  )}
                 </div>
               </div>
 
@@ -214,7 +298,17 @@ export default function CcsProfile() {
               <div className="flex flex-col gap-[10px]">
                 <label className="font-medium text-[16px] leading-[20px] text-[#000000] opacity-80">Phone number</label>
                 <div className="w-full h-[40px] bg-[#FFFFFF] border border-[#E1E5EF] rounded-[12px] flex items-center px-[14px]">
-                  <span className="font-normal text-[14px] text-[#000000]">{phone}</span>
+                  {isEditing ? (
+                    <input 
+                      type="tel"
+                      className="w-full bg-transparent focus:outline-none font-normal text-[14px] text-[#000000]"
+                      value={editForm.phone}
+                      onChange={e => setEditForm({...editForm, phone: e.target.value})}
+                      placeholder="Phone number"
+                    />
+                  ) : (
+                    <span className="font-normal text-[14px] text-[#000000]">{phone}</span>
+                  )}
                 </div>
               </div>
 

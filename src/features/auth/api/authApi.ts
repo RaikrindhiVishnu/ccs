@@ -11,6 +11,14 @@ export const authApi = baseApi.injectEndpoints({
       }),
     }),
 
+    checkLoginStatus: builder.mutation<any, { emailAddress: string }>({
+      query: (body) => ({
+        url: "/auth/checkLoginStatus",
+        method: "POST",
+        body,
+      }),
+    }),
+
     forgotPassword: builder.mutation<{ success: boolean; message: string }, { login_id: string }>({
       query: (body) => ({
         url: "/auth/forgotPassword",
@@ -55,6 +63,7 @@ export const authApi = baseApi.injectEndpoints({
 
 export const {
   useLoginMutation,
+  useCheckLoginStatusMutation,
   useSendIssueMailMutation,
   useApproveUserMutation,
   useGeneratePresignedUrlQuery,

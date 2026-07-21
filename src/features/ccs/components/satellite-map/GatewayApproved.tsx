@@ -5,6 +5,7 @@ import fee6 from "@/assets/fee6.svg";
 export type GatewayApprovedProps = {
   onBack: () => void;
   onProceed: () => void;
+  farmlandDetails?: any;
 };
 
 function CheckmarkHeader() {
@@ -26,7 +27,7 @@ function CheckmarkHeader() {
   );
 }
 
-function TotalSummary() {
+function TotalSummary({ total }: { total: string }) {
   return (
     <div className="w-full px-[20px] md:px-[40px] pt-[24px] border-t border-[rgba(0,0,0,0.15)] flex flex-col md:flex-row items-start md:items-center justify-between mt-[24px] gap-[16px] md:gap-[0px]">
       <div className="flex flex-col gap-[4px]">
@@ -43,7 +44,7 @@ function TotalSummary() {
             Total =
           </span>
           <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[24px] leading-[34px] text-[#1A1C1C]">
-            ₹15,000
+            ₹{total}
           </span>
         </div>
         <div className="flex items-center gap-[8px] bg-[rgba(0,124,85,0.1)] rounded-full px-[12px] py-[6px]">
@@ -57,7 +58,31 @@ function TotalSummary() {
   );
 }
 
-export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedProps) {
+export default function GatewayApproved({ onBack, onProceed, farmlandDetails }: GatewayApprovedProps) {
+  // Extract officers and fees safely
+  const officers = farmlandDetails?.assigned_officers || farmlandDetails?.officers || [];
+  
+  // Try to find specific officers by role or fallback to default array positions if roles are not explicitly named
+  const roName = officers.find((o: any) => o?.role?.includes('RO') || o?.role?.includes('Regional'))?.name 
+    || officers[0]?.name || "Data not available";
+  const foName = officers.find((o: any) => o?.role?.includes('FO') || o?.role?.includes('Field'))?.name 
+    || officers[1]?.name || "Data not available";
+  const ioName = officers.find((o: any) => o?.role?.includes('IO') || o?.role?.includes('Intelligence'))?.name 
+    || officers[2]?.name || "Data not available";
+
+  const roAvatar = officers.find((o: any) => o?.role?.includes('RO'))?.profile_url || "https://i.pravatar.cc/150?u=ro";
+  const foAvatar = officers.find((o: any) => o?.role?.includes('FO'))?.profile_url || "https://i.pravatar.cc/150?u=fo";
+  const ioAvatar = officers.find((o: any) => o?.role?.includes('IO'))?.profile_url || "https://i.pravatar.cc/150?u=io";
+
+  // Fee details extraction
+  const fees = farmlandDetails?.fee_allocation || farmlandDetails?.fees || {};
+  const roFee = fees?.ro_fee || fees?.regional_office_fee || 0;
+  const foFee = fees?.fo_fee || fees?.field_office_fee || 0;
+  const ioFee = fees?.io_fee || fees?.intelligence_officer_fee || 0;
+  
+  const formatFee = (val: number) => val === 0 ? "0" : val.toLocaleString('en-IN');
+  const totalProcessingFee = formatFee(Number(roFee) + Number(foFee) + Number(ioFee));
+
   return (
     <div className="relative w-full h-full bg-[#F2F2F2] md:rounded-[32px] overflow-y-auto custom-scrollbar flex flex-col items-center">
       
@@ -100,13 +125,11 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
                   </span>
                 </div>
               </div>
-              <div className="relative w-full max-w-[236px] h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
+              <div className="relative w-full max-w-[236px] h-[50px] bg-[#F8F9FA] border border-[#E4E7EC] rounded-[12px] flex items-center px-[16px]">
                 <span className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] text-[#717783] mr-[8px]">₹</span>
-                <input 
-                  type="text" 
-                  defaultValue="5,000" 
-                  className="w-full font-['Plus_Jakarta_Sans'] font-normal text-[16px] text-[#1A1C1C] outline-none bg-transparent"
-                />
+                <span className="w-full font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#475467]">
+                  {formatFee(roFee)}
+                </span>
               </div>
             </div>
 
@@ -125,13 +148,11 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
                   </span>
                 </div>
               </div>
-              <div className="relative w-full max-w-[236px] h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
+              <div className="relative w-full max-w-[236px] h-[50px] bg-[#F8F9FA] border border-[#E4E7EC] rounded-[12px] flex items-center px-[16px]">
                 <span className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] text-[#717783] mr-[8px]">₹</span>
-                <input 
-                  type="text" 
-                  defaultValue="5,000" 
-                  className="w-full font-['Plus_Jakarta_Sans'] font-normal text-[16px] text-[#1A1C1C] outline-none bg-transparent"
-                />
+                <span className="w-full font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#475467]">
+                  {formatFee(foFee)}
+                </span>
               </div>
             </div>
 
@@ -150,18 +171,16 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
                   </span>
                 </div>
               </div>
-              <div className="relative w-full max-w-[236px] h-[50px] bg-[#FFFFFF] border border-[#C1C7D3] rounded-[12px] flex items-center px-[16px]">
+              <div className="relative w-full max-w-[236px] h-[50px] bg-[#F8F9FA] border border-[#E4E7EC] rounded-[12px] flex items-center px-[16px]">
                 <span className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] text-[#717783] mr-[8px]">₹</span>
-                <input 
-                  type="text" 
-                  defaultValue="5,000" 
-                  className="w-full font-['Plus_Jakarta_Sans'] font-normal text-[16px] text-[#1A1C1C] outline-none bg-transparent"
-                />
+                <span className="w-full font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#475467]">
+                  {formatFee(ioFee)}
+                </span>
               </div>
             </div>
           </div>
 
-          <TotalSummary />
+          <TotalSummary total={totalProcessingFee} />
         </div>
 
         {/* Verification Progress Card */}
@@ -171,51 +190,59 @@ export default function GatewayApproved({ onBack, onProceed }: GatewayApprovedPr
             Verification Progress
           </h2>
           
-          <div className="relative flex flex-col md:flex-row justify-between items-center md:items-start px-[20px] md:px-[80px] mb-[40px] gap-[32px] md:gap-[0px]">
-            {/* Connection Line */}
-            <div className="absolute top-[28px] left-[150px] right-[150px] h-[1px] bg-[rgba(224,192,180,0.5)] z-0 hidden md:block"></div>
-
-            {/* Step 1 */}
-            <div className="flex flex-col items-center z-10 w-full md:w-[200px]">
-              <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px]">
-                <img src="https://i.pravatar.cc/150?u=srikar" alt="Srikar Patel" className="w-full h-full object-cover" />
-              </div>
-              <span className="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#251914] mb-[4px]">
-                Srikar Patel
-              </span>
-              <span className="font-['Plus_Jakarta_Sans'] font-bold text-[11px] leading-[18px] text-[#584239] text-center">
-                Regional Office: <span className="font-normal text-[#717783]">Documentation review</span>
+          {officers.length === 0 ? (
+            <div className="flex w-full justify-center items-center py-8">
+              <span className="font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#717783]">
+                Data not available
               </span>
             </div>
+          ) : (
+            <div className="relative flex flex-col md:flex-row justify-between items-center md:items-start px-[20px] md:px-[80px] mb-[40px] gap-[32px] md:gap-[0px]">
+              {/* Connection Line */}
+              <div className="absolute top-[28px] left-[150px] right-[150px] h-[1px] bg-[rgba(224,192,180,0.5)] z-0 hidden md:block"></div>
 
-            {/* Step 2 */}
-            <div className="flex flex-col items-center z-10 w-full md:w-[200px]">
-              <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px]">
-                <img src="https://i.pravatar.cc/150?u=ananthu" alt="Ananthu" className="w-full h-full object-cover" />
+              {/* Step 1 */}
+              <div className="flex flex-col items-center z-10 w-full md:w-[200px]">
+                <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px]">
+                  <img src={roAvatar} alt={roName} className="w-full h-full object-cover" />
+                </div>
+                <span className="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#251914] mb-[4px] text-center">
+                  {roName}
+                </span>
+                <span className="font-['Plus_Jakarta_Sans'] font-bold text-[11px] leading-[18px] text-[#584239] text-center">
+                  Regional Office: <span className="font-normal text-[#717783]">Documentation review</span>
+                </span>
               </div>
-              <span className="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#251914] mb-[4px]">
-                Ananthu
-              </span>
-              <span className="font-['Plus_Jakarta_Sans'] font-bold text-[11px] leading-[18px] text-[#584239] text-center">
-                Field Office: <span className="font-normal text-[#717783]">Physical inspection</span>
-              </span>
-            </div>
 
-            {/* Step 3 */}
-            <div className="flex flex-col items-center z-10 w-full md:w-[200px]">
-              <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px]">
-                <img src="https://i.pravatar.cc/150?u=yakoob" alt="Yakoob Syed" className="w-full h-full object-cover" />
+              {/* Step 2 */}
+              <div className="flex flex-col items-center z-10 w-full md:w-[200px]">
+                <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px]">
+                  <img src={foAvatar} alt={foName} className="w-full h-full object-cover" />
+                </div>
+                <span className="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#251914] mb-[4px] text-center">
+                  {foName}
+                </span>
+                <span className="font-['Plus_Jakarta_Sans'] font-bold text-[11px] leading-[18px] text-[#584239] text-center">
+                  Field Office: <span className="font-normal text-[#717783]">Physical inspection</span>
+                </span>
               </div>
-              <span className="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#251914] mb-[4px]">
-                Yakoob Syed
-              </span>
-              <span className="font-['Plus_Jakarta_Sans'] font-bold text-[11px] leading-[18px] text-[#584239] text-center">
-                Intelligence Officer: <span className="font-normal text-[#717783]">Risk assessment</span>
-              </span>
-            </div>
-          </div>
 
-          <TotalSummary />
+              {/* Step 3 */}
+              <div className="flex flex-col items-center z-10 w-full md:w-[200px]">
+                <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px]">
+                  <img src={ioAvatar} alt={ioName} className="w-full h-full object-cover" />
+                </div>
+                <span className="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#251914] mb-[4px] text-center">
+                  {ioName}
+                </span>
+                <span className="font-['Plus_Jakarta_Sans'] font-bold text-[11px] leading-[18px] text-[#584239] text-center">
+                  Intelligence Officer: <span className="font-normal text-[#717783]">Risk assessment</span>
+                </span>
+              </div>
+            </div>
+          )}
+
+          <TotalSummary total={totalProcessingFee} />
         </div>
         
         {/* Proceed Button */}

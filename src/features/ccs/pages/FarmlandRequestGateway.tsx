@@ -4,20 +4,25 @@ import {
   useApproveAssignedFarmlandMutation,
   useRejectAssignedFarmlandMutation
 } from "@/features/ccs/api/assignedFarmlandsApi";
+import { useAppSelector } from "@/core/hooks";
+import { selectCurrentUser } from "@/features/auth/store/authSlice";
 
 export default function FarmlandRequestGateway() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [approveFarmland] = useApproveAssignedFarmlandMutation();
   const [rejectFarmland] = useRejectAssignedFarmlandMutation();
+  const currentUser = useAppSelector(selectCurrentUser);
 
   const handleAccept = async () => {
     try {
       if (id) {
         await approveFarmland({
           farmland_id: Number(id),
-          mile_stone_status_id: 3,
+          mile_stone_status_id: 3, // 3 is Approved
           mile_store_stage_id: 1,
+          // @ts-ignore
+          userId: currentUser?.id,
           // @ts-ignore
           remarks: "Approved from Gateway"
         }).unwrap();
@@ -34,8 +39,10 @@ export default function FarmlandRequestGateway() {
       if (id) {
         await rejectFarmland({
           farmland_id: Number(id),
-          mile_stone_status_id: 5, // 5 is Rejected
+          mile_stone_status_id: 4, // 4 is REJCTD (Rejected)
           mile_store_stage_id: 1,
+          // @ts-ignore
+          userId: currentUser?.id,
           // @ts-ignore
           remarks: "Rejected from Gateway"
         }).unwrap();

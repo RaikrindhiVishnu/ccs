@@ -155,13 +155,13 @@ export default function FarmlandRequestMap() {
       religion: ownerDetails.religion || "N/A",
       caste: ownerDetails.caste || "N/A",
       valuation: (() => {
-        const rawVal = farmlandDetails.per_acre_value || farmlandDetails.price_per_acre || farmlandDetails.valuation;
+        const rawVal = farmlandDetails.per_acre_value || farmlandDetails.price_per_acre || farmlandDetails.valuation || ownerDetails.per_acre_value || ownerDetails.price_per_acre;
         if (rawVal) {
           const num = Number(String(rawVal).replace(/[^0-9.-]+/g, ""));
           return !isNaN(num) && num > 0 ? `₹ ${num.toLocaleString('en-IN', { maximumFractionDigits: 2 })}/Acre` : "N/A";
         }
-        const asset = farmlandDetails.Assest_value || farmlandDetails.total_asset_price || farmlandDetails.assetValue;
-        const acres = farmlandDetails.Total_acres || farmlandDetails.total_acres || farmlandDetails.totalArea;
+        const asset = farmlandDetails.Assest_value || farmlandDetails.total_asset_price || farmlandDetails.assetValue || ownerDetails.total_asset_price || ownerDetails.assetValue;
+        const acres = farmlandDetails.Total_acres || farmlandDetails.total_acres || farmlandDetails.totalArea || farmlandDetails.totalAcres || ownerDetails.total_acres || ownerDetails.totalAcres;
         if (asset && acres) {
           const numAsset = Number(String(asset).replace(/[^0-9.-]+/g, ""));
           const numAcres = Number(String(acres).replace(/[^0-9.-]+/g, ""));
@@ -171,11 +171,21 @@ export default function FarmlandRequestMap() {
         }
         return "N/A";
       })(),
-      totalArea: farmlandDetails.Total_acres ? `${farmlandDetails.Total_acres} Acres` : farmlandDetails.total_acres ? `${farmlandDetails.total_acres} Acres` : farmlandDetails.totalArea || "N/A",
-      assetValue: farmlandDetails.Assest_value || farmlandDetails.total_asset_price || farmlandDetails.assetValue || "N/A",
+      totalArea: (() => {
+        const acres = farmlandDetails.Total_acres || farmlandDetails.total_acres || farmlandDetails.totalArea || farmlandDetails.totalAcres || ownerDetails.total_acres || ownerDetails.totalAcres;
+        return acres ? `${acres} Acres` : "N/A";
+      })(),
+      assetValue: (() => {
+        const asset = farmlandDetails.Assest_value || farmlandDetails.total_asset_price || farmlandDetails.assetValue || ownerDetails.total_asset_price || ownerDetails.assetValue;
+        if (asset) {
+           const num = Number(String(asset).replace(/[^0-9.-]+/g, ""));
+           return !isNaN(num) ? `₹ ${num.toLocaleString('en-IN', { maximumFractionDigits: 2 })}` : asset;
+        }
+        return "N/A";
+      })(),
       status: farmlandDetails.status_id === 1 ? "PENDING" : farmlandDetails.status === "COMPLETED" ? "COMPLETED" : farmlandDetails.status === "REJECTED" ? "REJECTED" : farmlandDetails.status === "ACTIVE" ? "ACTIVE" : "PENDING",
       liveOnWebsite: farmlandDetails.live_on_website || false,
-      fieldNotes: farmlandDetails.field_notes || farmlandDetails.fieldNotes || undefined,
+      fieldNotes: farmlandDetails.field_notes || farmlandDetails.fieldNotes || ownerDetails.field_notes || ownerDetails.fieldNotes || "N/A",
     };
   }
 

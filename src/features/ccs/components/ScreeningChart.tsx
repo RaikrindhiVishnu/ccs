@@ -29,14 +29,14 @@ export default function ScreeningChart({ endDate }: ScreeningChartProps) {
     ...chartDataArray.map((item: any) => (item.approvedFarmlands || 0) + (item.rejectedFarmlands || 0))
   );
 
-  // Generate the 7 days of the week starting from Sunday
+  // Generate the 7 days of the week (Sun to Sat) for the referenceDate
   const referenceDate = endDate || new Date();
-  const weekStart = startOfWeek(referenceDate);
-  const last7Days = Array.from({ length: 7 }).map((_, i) => addDays(weekStart, i));
-  const days = last7Days.map(d => format(d, 'EEE'));
+  const weekStart = startOfWeek(referenceDate); // Defaults to Sunday
+  const currentWeekDays = Array.from({ length: 7 }).map((_, i) => addDays(weekStart, i));
+  const days = currentWeekDays.map(d => format(d, 'EEE'));
 
   // Map backend data to these exact 7 days
-  const paddedData = last7Days.map(day => {
+  const paddedData = currentWeekDays.map(day => {
     const formattedDay = format(day, 'yyyy-MM-dd');
     const found = chartDataArray.find((item: any) => item.date === formattedDay);
     return found || { approvedFarmlands: 0, rejectedFarmlands: 0 };
