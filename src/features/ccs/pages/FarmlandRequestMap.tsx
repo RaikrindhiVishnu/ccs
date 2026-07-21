@@ -4,7 +4,7 @@ import FarmlandDetailPanel from "@/features/ccs/components/FarmlandDetailPanel";
 import type { FarmlandDetail } from "@/features/ccs/components/FarmlandDetailPanel";
 import { SatelliteMap } from "@/features/satellite-history/components/SatelliteMap";
 import { useWaybackSource } from "@/features/satellite-history/hooks/useWaybackSource";
-import { useGetAssignedFarmlandDetailsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
+import { useGetAssignedFarmlandDetailsMutation, useGetAllAssignedFarmlandsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
 import "@/features/satellite-history/satellite-history.css";
 
 export default function FarmlandRequestMap() {
@@ -12,12 +12,17 @@ export default function FarmlandRequestMap() {
   const navigate = useNavigate();
 
   const [getDetails, { data: apiResponse, isLoading }] = useGetAssignedFarmlandDetailsMutation();
+  const [getAllFarmlands, { data: allFarmlandsData }] = useGetAllAssignedFarmlandsMutation();
 
   useEffect(() => {
     if (id) {
       getDetails({ farmland_id: Number(id) });
+      getAllFarmlands({ status_ids: [1, 2, 3, 4, 5, 6], limit: 500, offset: 0 }); // Fallback to grab field notes missing from getDetails
     }
-  }, [id, getDetails]);
+  }, [id, getDetails, getAllFarmlands]);
+
+  const allFarmlandsList = (allFarmlandsData as any)?.farmlands || (allFarmlandsData as any)?.data || [];
+  const matchingFarmlandFromList = allFarmlandsList.find((f: any) => String(f.farmland_id) === String(id) || String(f.id) === String(id));
 
   // Bulletproof extractor to find nested keys
   const findDeep = (obj: any, key: string): any => {
@@ -156,20 +161,27 @@ export default function FarmlandRequestMap() {
       caste: ownerDetails.caste || "N/A",
       valuation: (() => {
         const rawVal = farmlandDetails.per_acre_value || farmlandDetails.price_per_acre || farmlandDetails.valuation || ownerDetails.per_acre_value || ownerDetails.price_per_acre;
+        let finalVal = "N/A";
+        
         if (rawVal) {
           const num = Number(String(rawVal).replace(/[^0-9.-]+/g, ""));
-          return !isNaN(num) && num > 0 ? `₹ ${num.toLocaleString('en-IN', { maximumFractionDigits: 2 })}/Acre` : "N/A";
-        }
-        const asset = farmlandDetails.Assest_value || farmlandDetails.total_asset_price || farmlandDetails.assetValue || ownerDetails.total_asset_price || ownerDetails.assetValue;
-        const acres = farmlandDetails.Total_acres || farmlandDetails.total_acres || farmlandDetails.totalArea || farmlandDetails.totalAcres || ownerDetails.total_acres || ownerDetails.totalAcres;
-        if (asset && acres) {
-          const numAsset = Number(String(asset).replace(/[^0-9.-]+/g, ""));
-          const numAcres = Number(String(acres).replace(/[^0-9.-]+/g, ""));
-          if (!isNaN(numAsset) && !isNaN(numAcres) && numAcres > 0) {
-            return `₹ ${(numAsset / numAcres).toLocaleString('en-IN', { maximumFractionDigits: 2 })}/Acre`;
+          if (!isNaN(num) && num > 0) {
+             finalVal = `₹ ${num.toLocaleString('en-IN', { maximumFractionDigits: 2 })}/Acre`;
           }
         }
-        return "N/A";
+        
+        if (finalVal === "N/A") {
+          const asset = farmlandDetails.Assest_value || farmlandDetails.total_asset_price || farmlandDetails.assetValue || ownerDetails.total_asset_price || ownerDetails.assetValue;
+          const acres = farmlandDetails.Total_acres || farmlandDetails.total_acres || farmlandDetails.totalArea || farmlandDetails.totalAcres || ownerDetails.total_acres || ownerDetails.totalAcres;
+          if (asset && acres) {
+            const numAsset = Number(String(asset).replace(/[^0-9.-]+/g, ""));
+            const numAcres = Number(String(acres).replace(/[^0-9.-]+/g, ""));
+            if (!isNaN(numAsset) && !isNaN(numAcres) && numAcres > 0) {
+              finalVal = `₹ ${(numAsset / numAcres).toLocaleString('en-IN', { maximumFractionDigits: 2 })}/Acre`;
+            }
+          }
+        }
+        return finalVal;
       })(),
       totalArea: (() => {
         const acres = farmlandDetails.Total_acres || farmlandDetails.total_acres || farmlandDetails.totalArea || farmlandDetails.totalAcres || ownerDetails.total_acres || ownerDetails.totalAcres;
@@ -185,7 +197,7 @@ export default function FarmlandRequestMap() {
       })(),
       status: farmlandDetails.status_id === 1 ? "PENDING" : farmlandDetails.status === "COMPLETED" ? "COMPLETED" : farmlandDetails.status === "REJECTED" ? "REJECTED" : farmlandDetails.status === "ACTIVE" ? "ACTIVE" : "PENDING",
       liveOnWebsite: farmlandDetails.live_on_website || false,
-      fieldNotes: farmlandDetails.field_notes || farmlandDetails.fieldNotes || ownerDetails.field_notes || ownerDetails.fieldNotes || "N/A",
+      fieldNotes: farmlandDetails.field_notes || matchingFarmlandFromList?.field_notes || matchingFarmlandFromList?.fieldNotes || actualData.field_notes || actualData.fieldNotes || farmlandDetails.fieldNotes || farmlandDetails.remarks || farmlandDetails.notes || ownerDetails.field_notes || ownerDetails.fieldNotes || ownerDetails.remarks || ownerDetails.notes || "N/A",
     };
   }
 

@@ -341,24 +341,35 @@ export default function FiltersModal({
               placeholder="Choose state"
               options={geoData?.states?.map((s: any) => s.description || s.desc || s.state_name || s.name || String(s.id)) || ["A.P.", "Telangana", "Karnataka", "Tamil Nadu"]}
               value={state}
-              onChange={setState}
+              onChange={(val) => {
+                setState(val);
+                setRegion("");
+                setArea("");
+              }}
             />
 
-            <CustomSelect
-              label="Select Region"
-              placeholder="Choose region"
-              options={currentDistricts?.map((d: any) => d.description || d.desc || d.district_name || d.region_name || d.name || String(d.id)) || ["Coastal Andhra", "Rayalaseema", "North Coastal", "WG"]}
-              value={region}
-              onChange={setRegion}
-            />
+            {state && (
+              <CustomSelect
+                label="Select Region"
+                placeholder="Choose region"
+                options={currentDistricts?.map((d: any) => d.description || d.desc || d.district_name || d.region_name || d.name || String(d.id)) || ["Coastal Andhra", "Rayalaseema", "North Coastal", "WG"]}
+                value={region}
+                onChange={(val) => {
+                  setRegion(val);
+                  setArea("");
+                }}
+              />
+            )}
 
-            <CustomSelect
-              label="Select Area"
-              placeholder="Choose area"
-              options={currentMandals?.map((m: any) => m.description || m.desc || m.mandal_name || m.area_name || m.name || String(m.id)) || ["Tanuku", "Vizag", "Vijayawada", "Guntur"]}
-              value={area}
-              onChange={setArea}
-            />
+            {region && (
+              <CustomSelect
+                label="Select Area"
+                placeholder="Choose area"
+                options={currentMandals?.map((m: any) => m.description || m.desc || m.mandal_name || m.area_name || m.name || String(m.id)) || ["Tanuku", "Vizag", "Vijayawada", "Guntur"]}
+                value={area}
+                onChange={setArea}
+              />
+            )}
 
             <CustomSelect
               label="Priority"

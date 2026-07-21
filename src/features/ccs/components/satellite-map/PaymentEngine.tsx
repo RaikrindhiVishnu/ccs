@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, Check } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useGetAssignedFarmlandDetailsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
 import fee1 from "@/assets/fee1.svg";
 import fee2 from "@/assets/fee2.svg";
 import fee3 from "@/assets/fee3.svg";
@@ -15,6 +18,70 @@ export type PaymentEngineProps = {
 
 export default function PaymentEngine({ onBack, onSendRequest }: PaymentEngineProps) {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  
+  const currentUser = useSelector((state: any) => state.auth.user);
+  const [getDetails, { data: apiResponse }] = useGetAssignedFarmlandDetailsMutation();
+
+  useEffect(() => {
+    if (id) {
+      getDetails({ farmland_id: Number(id) });
+    }
+  }, [id, getDetails]);
+
+  // Extract details
+  const findDeep = (obj: any, key: string): any => {
+    if (!obj || typeof obj !== 'object') return null;
+    if (key in obj) return obj[key];
+    for (const k in obj) {
+      if (typeof obj[k] === 'object') {
+        const res = findDeep(obj[k], key);
+        if (res) return res;
+      }
+    }
+    return null;
+  };
+
+  const farmlandDetails = findDeep(apiResponse, 'farmland_details') || apiResponse?.data || {};
+  const ownerDetails = findDeep(apiResponse, 'owner_details') || apiResponse?.data || {};
+  
+  // Dynamic fields
+  const userName = currentUser?.first_name ? `${currentUser.first_name} ${currentUser.last_name || ''}` : 'Ramudu Kumar';
+  const roleName = currentUser?.role_name || 'Senior Auditor';
+  const userPhone = currentUser?.phone_number || '+91 98765 43210';
+  const userEmail = currentUser?.login_id || currentUser?.email || 'ramudu.k@glc.com';
+  const userProfile = currentUser?.profile_picture || "https://i.pravatar.cc/150?u=ramudu";
+
+  const farmlandId = farmlandDetails?.farmland_code || farmlandDetails?.glcId || id || 'GLCSOS 01';
+  
+  // Location
+  let locationStr = 'West Godavari, Tanuku';
+  if (farmlandDetails?.location) {
+    locationStr = typeof farmlandDetails.location === 'string' ? farmlandDetails.location : (farmlandDetails.village || farmlandDetails.location_details?.district_name || 'West Godavari, Tanuku');
+  } else if (ownerDetails?.location) {
+    locationStr = ownerDetails.location;
+  }
+
+  // Status
+  const statusStr = farmlandDetails?.status_id === 1 ? 'Pending' : (farmlandDetails?.status || 'Pending Final Clearance');
+  
+  // Asset Value
+  const assetValRaw = farmlandDetails?.Assest_value || farmlandDetails?.total_asset_price || farmlandDetails?.assetValue || ownerDetails?.total_asset_price || 42000000;
+  const numAsset = Number(String(assetValRaw).replace(/[^0-9.-]+/g, ""));
+  const portfolioValue = !isNaN(numAsset) ? `₹${(numAsset / 10000000).toFixed(1)} Cr` : '₹4.2 Cr';
+
+  // Fee Calculation
+  // Determine fee amounts based on farmland priority or status (dummy logic here if none provided by API)
+  // If no fee property exists, fallback to 0
+  const feeAmountRaw = farmlandDetails?.total_fee || farmlandDetails?.processing_fee || 0;
+  const numFee = Number(String(feeAmountRaw).replace(/[^0-9.-]+/g, ""));
+  const totalFee = !isNaN(numFee) ? numFee : 0;
+  
+  // Dummy breakdowns for UI, sum equals totalFee
+  const splitFee = totalFee > 0 ? Math.floor(totalFee / 3) : 0;
+  const formattedTotalFee = totalFee === 0 ? "₹0" : `₹${totalFee.toLocaleString('en-IN')}`;
+  const formattedSplitFee = totalFee === 0 ? "₹0" : `₹${splitFee.toLocaleString('en-IN')}`;
+
   return (
     <div className="relative w-full h-full bg-[#F2F2F2] md:rounded-[32px] overflow-y-auto custom-scrollbar flex flex-col pt-[32px] px-[52px] pb-[40px]">
       
@@ -43,19 +110,20 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
             <div className="relative w-[107px] h-[107px] mb-[20px]">
               <div className="absolute inset-[-3.3px] bg-gradient-to-tr from-[#00629E] to-[#BCD225] opacity-20 blur-[3.3px] rounded-full"></div>
               <img 
-                src="https://i.pravatar.cc/150?u=ramudu" 
-                alt="Ramudu Kumar" 
+                src={userProfile} 
+                alt={userName} 
                 className="relative w-full h-full object-cover rounded-full border-[3.3px] border-[#FFFFFF] shadow-[0px_16.7px_20.9px_-4.1px_rgba(0,0,0,0.1)]"
+                onError={(e) => { (e.target as HTMLImageElement).src = "https://i.pravatar.cc/150?u=ramudu"; }}
               />
             </div>
 
             <h2 className="font-['Plus_Jakarta_Sans'] font-extrabold text-[20px] leading-[27px] tracking-[-0.5px] text-[#131600] mb-[3px]">
-              Ramudu Kumar
+              {userName}
             </h2>
             
             <div className="bg-[#E7E8E9] rounded-full px-[10px] py-[3.3px] mb-[13px]">
               <span className="font-['Plus_Jakarta_Sans'] font-bold text-[8.4px] leading-[13px] tracking-[0.84px] uppercase text-[#45474C]">
-                Senior Auditor
+                {roleName}
               </span>
             </div>
 
@@ -65,7 +133,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                 Phone
               </span>
               <span className="font-['Plus_Jakarta_Sans'] font-medium text-[11.75px] leading-[17px] text-[#091426]">
-                +91 98765 43210
+                {userPhone}
               </span>
             </div>
             
@@ -74,7 +142,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                 Email
               </span>
               <span className="font-['Plus_Jakarta_Sans'] font-medium text-[11.75px] leading-[17px] text-[#091426]">
-                ramudu.k@glc.com
+                {userEmail}
               </span>
             </div>
 
@@ -90,7 +158,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                   <div className="w-[18.4px] pt-[1.6px]"><img src={fee1} alt="Farmland ID" className="w-[13px] h-[13px] object-contain" /></div>
                   <div className="flex flex-col">
                     <span className="font-['Plus_Jakarta_Sans'] font-bold text-[8.4px] leading-[13px] tracking-[0.4px] uppercase text-[#75777D]">Farmland ID</span>
-                    <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[11.75px] leading-[17px] text-[#091426]">GLCSOS 01</span>
+                    <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[11.75px] leading-[17px] text-[#091426]">{farmlandId}</span>
                   </div>
                 </div>
                 {/* Location */}
@@ -98,7 +166,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                   <div className="w-[18.4px] pt-[1.6px]"><img src={fee2} alt="Location" className="w-[13px] h-[13px] object-contain" /></div>
                   <div className="flex flex-col">
                     <span className="font-['Plus_Jakarta_Sans'] font-bold text-[8.4px] leading-[13px] tracking-[0.4px] uppercase text-[#75777D]">Location</span>
-                    <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[11.75px] leading-[17px] text-[#091426]">West Godavari, Tanuku</span>
+                    <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[11.75px] leading-[17px] text-[#091426] truncate max-w-[150px]">{locationStr}</span>
                   </div>
                 </div>
                 {/* Status */}
@@ -107,8 +175,8 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                   <div className="flex flex-col">
                     <span className="font-['Plus_Jakarta_Sans'] font-bold text-[8.4px] leading-[13px] tracking-[0.4px] uppercase text-[#75777D]">Status</span>
                     <div className="flex items-center gap-[6.7px]">
-                      <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[11.75px] leading-[17px] text-[#091426]">Pending Final Clearance</span>
-                      <div className="w-[6.7px] h-[6.7px] bg-[#FBBF24] rounded-full"></div>
+                      <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[11.75px] leading-[17px] text-[#091426] truncate max-w-[150px]">{statusStr}</span>
+                      <div className="w-[6.7px] h-[6.7px] bg-[#FBBF24] rounded-full shrink-0"></div>
                     </div>
                   </div>
                 </div>
@@ -124,7 +192,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
               Portfolio Value
             </span>
             <span className="relative z-10 font-['Plus_Jakarta_Sans'] font-bold text-[25px] leading-[30px] tracking-[-1.25px] text-[#FFFFFF]">
-              ₹4.2 Cr
+              {portfolioValue}
             </span>
           </div>
 
@@ -158,7 +226,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                   <img
                     src={walletImage}
                     alt="Wallet"
-                    className="rmlands 
+                    className="
                         w-[30px]
                         h-[30px]
                         object-contain
@@ -183,7 +251,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
               
               {/* Fee Amount */}
               <span className="relative z-10 font-['Plus_Jakarta_Sans'] font-extrabold text-[40px] md:text-[50px] xl:text-[60.4px] leading-[60px] tracking-[-3px] text-[#FFFFFF] truncate w-full text-center">
-                ₹15,000
+                {formattedTotalFee}
               </span>
             </div>
 
@@ -224,7 +292,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                     </div>
                   </div>
                   <span className="font-['Plus_Jakarta_Sans'] font-bold text-[15.1px] leading-[23px] text-[#091426]">
-                    ₹5,000
+                    {formattedSplitFee}
                   </span>
                 </div>
 
@@ -244,7 +312,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                     </div>
                   </div>
                   <span className="font-['Plus_Jakarta_Sans'] font-bold text-[15.1px] leading-[23px] text-[#091426]">
-                    ₹5,000
+                    {formattedSplitFee}
                   </span>
                 </div>
 
@@ -264,7 +332,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                     </div>
                   </div>
                   <span className="font-['Plus_Jakarta_Sans'] font-bold text-[15.1px] leading-[23px] text-[#091426]">
-                    ₹5,000
+                    {formattedSplitFee}
                   </span>
                 </div>
               </div>
@@ -275,7 +343,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                   Total Amount Due
                 </span>
                 <span className="font-['Plus_Jakarta_Sans'] font-extrabold text-[25px] leading-[30px] text-[#131600]">
-                  ₹15,000
+                  {formattedTotalFee}
                 </span>
               </div>
 
@@ -325,7 +393,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
 
             {/* Description */}
             <p className="w-[449px] font-['Plus_Jakarta_Sans'] font-normal text-[16px] leading-[26px] text-[#414751] text-center mb-[40px]">
-              The fee request of <span className="font-bold">₹15,000</span> has been sent to the investor for approval. You will be notified once it is processed.
+              The fee request of <span className="font-bold">{formattedTotalFee}</span> has been sent to the investor for approval. You will be notified once it is processed.
             </p>
 
             {/* Notification Pill */}

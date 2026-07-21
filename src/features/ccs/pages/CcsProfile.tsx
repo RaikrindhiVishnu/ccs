@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/core/hooks';
 import { logOut, selectCurrentUser, updateUser } from '@/features/auth/store/authSlice';
 import { useUpdatePasswordMutation } from '@/features/auth/api/authApi';
+import { useUpdateUserDetailsByIdMutation } from '@/features/ccs/api/dashboardApi';
 
 export default function CcsProfile() {
   const navigate = useNavigate();
@@ -103,23 +104,42 @@ export default function CcsProfile() {
   useEffect(() => {
     if (isEditing) {
       setEditForm({
-        first_name: user.first_name || firstName !== 'N/A' ? firstName : '',
-        last_name: user.last_name || lastName !== 'N/A' ? lastName : '',
+        first_name: user.first_name || (firstName !== 'N/A' ? firstName : ''),
+        last_name: user.last_name || (lastName !== 'N/A' ? lastName : ''),
         phone: phone !== 'N/A' ? phone : '',
         dob: dob !== 'N/A' ? dob : ''
       });
     }
-  }, [isEditing, firstName, lastName, phone, dob, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditing]); // Only initialize when isEditing is toggled to true
 
-  const handleSaveProfile = () => {
-    dispatch(updateUser({
-      first_name: editForm.first_name,
-      last_name: editForm.last_name,
-      phone: editForm.phone,
-      dob: editForm.dob,
-      profile_url: localProfilePic || undefined
-    }));
-    setIsEditing(false);
+  const [updateUserDetails] = useUpdateUserDetailsByIdMutation();
+
+  const handleSaveProfile = async () => {
+    try {
+      if (currentUser?.id) {
+        await updateUserDetails({
+          user_id: currentUser.id,
+          frist_name: editForm.first_name, // Note: intentionally misspelled to match swagger
+          last_name: editForm.last_name,
+          dob: editForm.dob,
+          profile_url: localProfilePic || undefined
+        }).unwrap();
+      }
+      
+      // Update local Redux state so UI changes immediately
+      dispatch(updateUser({
+        first_name: editForm.first_name,
+        last_name: editForm.last_name,
+        phone: editForm.phone,
+        dob: editForm.dob,
+        profile_url: localProfilePic || undefined
+      }));
+    } catch (e) {
+      console.error("Failed to update profile", e);
+    } finally {
+      setIsEditing(false);
+    }
   };
 
   return (

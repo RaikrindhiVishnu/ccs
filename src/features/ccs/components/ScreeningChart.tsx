@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { format, startOfWeek, addDays } from 'date-fns';
 import { Typography } from '@/components/ui/typography';
 import { useGetDashboardScreeningOutcomesMutation } from '@/features/ccs/api/dashboardApi';
@@ -9,6 +9,7 @@ interface ScreeningChartProps {
 
 export default function ScreeningChart({ endDate }: ScreeningChartProps) {
   const [getScreeningOutcomes, { data }] = useGetDashboardScreeningOutcomesMutation();
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
     // If a custom endDate is provided, we use it as the reference date for the last 7 days.
@@ -90,7 +91,22 @@ export default function ScreeningChart({ endDate }: ScreeningChartProps) {
                 const yBotCyan = 100 - r;
 
                 return (
-                  <g key={i}>
+                  <g 
+                    key={i}
+                    onMouseEnter={() => setHoveredIndex(i)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                  >
+                    {/* Invisible wider line for easier hover area */}
+                    <line
+                      x1={x}
+                      y1={0}
+                      x2={x}
+                      y2={100}
+                      stroke="transparent"
+                      strokeWidth={20}
+                    />
+                    
                     {/* Blue bar (Approved) */}
                     {bH > 0 && (
                       <line
@@ -101,6 +117,7 @@ export default function ScreeningChart({ endDate }: ScreeningChartProps) {
                         stroke="#2780C4"
                         strokeWidth={barW}
                         strokeLinecap="round"
+                        className="pointer-events-none"
                       />
                     )}
                     {/* Cyan bar (Rejected) */}
@@ -113,6 +130,7 @@ export default function ScreeningChart({ endDate }: ScreeningChartProps) {
                         stroke="#37E8DD"
                         strokeWidth={barW}
                         strokeLinecap="round"
+                        className="pointer-events-none"
                       />
                     )}
                   </g>
@@ -120,6 +138,30 @@ export default function ScreeningChart({ endDate }: ScreeningChartProps) {
               })}
             </svg>
           </div>
+
+          {/* Hover Tooltip */}
+          {hoveredIndex !== null && (
+            <div 
+              className="absolute bg-[#FFFFFF] border border-[#E5E7EB] shadow-[0px_4px_12px_rgba(0,0,0,0.1)] rounded-[8px] px-[10px] py-[6px] z-50 pointer-events-none flex flex-col gap-1 min-w-[90px]"
+              style={{
+                left: 11 + (hoveredIndex * barGap),
+                bottom: '105px',
+                transform: 'translateX(-50%)'
+              }}
+            >
+              <div className="font-['Plus_Jakarta_Sans'] font-semibold text-[11px] text-[#64748B] text-center border-b border-[#F1F5F9] pb-1 mb-1">
+                {format(currentWeekDays[hoveredIndex], 'MMM d, yyyy')}
+              </div>
+              <div className="flex justify-between items-center font-['Plus_Jakarta_Sans'] text-[12px]">
+                <span className="text-[#2780C4] font-medium">Approved:</span>
+                <span className="text-[#0F172A] font-bold">{paddedData[hoveredIndex].approvedFarmlands || 0}</span>
+              </div>
+              <div className="flex justify-between items-center font-['Plus_Jakarta_Sans'] text-[12px]">
+                <span className="text-[#37E8DD] font-medium">Rejected:</span>
+                <span className="text-[#0F172A] font-bold">{paddedData[hoveredIndex].rejectedFarmlands || 0}</span>
+              </div>
+            </div>
+          )}
 
           {/* Labels under the chart */}
           <div className="absolute left-[11px] top-[115.5px] w-[187px]">

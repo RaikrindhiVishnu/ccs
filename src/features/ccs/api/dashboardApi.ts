@@ -44,6 +44,19 @@ export const dashboardApi = ccsApi.injectEndpoints({
         body: body || {},
       }),
     }),
+    updateUserDetailsById: builder.mutation<any, {
+      user_id: number;
+      frist_name?: string; // intentionally misspelled to match swagger
+      last_name?: string;
+      dob?: string;
+      profile_url?: string;
+    }>({
+      query: (body) => ({
+        url: "/dashboard/update_user_details_by_id",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -53,4 +66,5 @@ export const {
   useGetDashboardUserMutation,
   useGetDashboardScreeningOutcomesMutation,
   useGetDashboardRecentActivitiesMutation,
+  useUpdateUserDetailsByIdMutation,
 } = dashboardApi;

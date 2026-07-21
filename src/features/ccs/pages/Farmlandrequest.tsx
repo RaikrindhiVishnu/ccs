@@ -454,16 +454,23 @@ export default function FarmlandRequest() {
           ) : (
             <div className="col-span-full py-12 flex flex-col items-center justify-center text-gray-500 font-medium bg-[#FFFFFF] rounded-[24px] shadow-sm border border-dashed border-gray-200">
               <span className="text-[16px] text-[#0F172A]">
-                {searchQuery.trim().length > 0 
+                {isSearchActive 
                   ? "Not matching based on search." 
-                  : "No farmlands found matching the selected filters."}
+                  : isFilterActive 
+                    ? "No farmlands found matching the selected filters."
+                    : "No farmlands found."}
               </span>
-              <button 
-                onClick={() => setActiveFilters({ state: "", region: "", area: "", priority: "", fromDate: "", toDate: "" })}
-                className="mt-4 px-6 py-2 bg-[#2780C4] text-white rounded-full hover:bg-[#1f669d] transition-colors text-sm font-semibold"
-              >
-                Clear Filters
-              </button>
+              {(isFilterActive || isSearchActive) && (
+                <button 
+                  onClick={() => {
+                    setSearchQuery("");
+                    setActiveFilters({ state: "", region: "", area: "", priority: "", fromDate: "", toDate: "" });
+                  }}
+                  className="mt-4 px-6 py-2 bg-[#2780C4] text-white rounded-full hover:bg-[#1f669d] transition-colors text-sm font-semibold"
+                >
+                  Clear {isSearchActive && !isFilterActive ? 'Search' : 'Filters'}
+                </button>
+              )}
             </div>
           )}
         </div>
