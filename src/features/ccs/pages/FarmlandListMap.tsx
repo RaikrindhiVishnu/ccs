@@ -4,7 +4,7 @@ import FarmlandDetailPanel from "@/features/ccs/components/FarmlandDetailPanel";
 import type { FarmlandDetail } from "@/features/ccs/components/FarmlandDetailPanel";
 import { SatelliteMap } from "@/features/satellite-history/components/SatelliteMap";
 import { useWaybackSource } from "@/features/satellite-history/hooks/useWaybackSource";
-import { useGetAssignedFarmlandDetailsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
+import { useGetAssignedFarmlandDetailsMutation, useGetAllAssignedFarmlandsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
 import "@/features/satellite-history/satellite-history.css";
 
 export default function FarmlandListMap() {
@@ -12,12 +12,17 @@ export default function FarmlandListMap() {
   const navigate = useNavigate();
 
   const [getDetails, { data: apiResponse, isLoading }] = useGetAssignedFarmlandDetailsMutation();
+  const [getAllFarmlands, { data: allFarmlandsData }] = useGetAllAssignedFarmlandsMutation();
 
   useEffect(() => {
     if (id) {
       getDetails({ farmland_id: Number(id) });
+      getAllFarmlands({ status_ids: [1, 2, 3, 4, 5, 6], limit: 500, offset: 0 }); // Fallback to grab field notes missing from getDetails
     }
-  }, [id, getDetails]);
+  }, [id, getDetails, getAllFarmlands]);
+
+  const allFarmlandsList = (allFarmlandsData as any)?.farmlands || (allFarmlandsData as any)?.data || [];
+  const matchingFarmlandFromList = allFarmlandsList.find((f: any) => String(f.farmland_id) === String(id) || String(f.id) === String(id));
 
   // Bulletproof extractor to find nested keys
   const findDeep = (obj: any, key: string): any => {
@@ -182,7 +187,7 @@ export default function FarmlandListMap() {
       assetValue: farmlandDetails.Assest_value || farmlandDetails.total_asset_price || farmlandDetails.assetValue || "N/A",
       status: farmlandDetails.status_id === 1 ? "PENDING" : farmlandDetails.status === "COMPLETED" ? "COMPLETED" : farmlandDetails.status === "REJECTED" ? "REJECTED" : farmlandDetails.status === "ACTIVE" ? "ACTIVE" : "PENDING",
       liveOnWebsite: farmlandDetails.live_on_website || false,
-      fieldNotes: farmlandDetails.field_notes || actualData.field_notes || actualData.fieldNotes || farmlandDetails.fieldNotes || farmlandDetails.remarks || farmlandDetails.notes || ownerDetails.field_notes || ownerDetails.fieldNotes || ownerDetails.remarks || ownerDetails.notes || undefined,
+      fieldNotes: farmlandDetails.field_notes || matchingFarmlandFromList?.field_notes || matchingFarmlandFromList?.fieldNotes || actualData.field_notes || actualData.fieldNotes || farmlandDetails.fieldNotes || farmlandDetails.remarks || farmlandDetails.notes || ownerDetails.field_notes || ownerDetails.fieldNotes || ownerDetails.remarks || ownerDetails.notes || undefined,
     };
   }
 
