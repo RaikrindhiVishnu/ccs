@@ -46,7 +46,7 @@ export default function FarmlandList() {
 
   useEffect(() => {
     const payload: any = { 
-      status_ids: activeFilters.status_ids || [3, 5], // Approved (3) and Rejected (5) based on swagger
+      status_ids: activeFilters.status_ids || [3, 4, 5], // Approved (3) and Rejected (4), Reverted (5)
       offset: (currentPage - 1) * PAGE_SIZE,
       limit: PAGE_SIZE,
       // Disabled for demo to allow robust local frontend filtering on real data
@@ -168,8 +168,8 @@ export default function FarmlandList() {
     
     // Status mapping based on Swagger: 2 -> PENDING, 3 -> APPROVED/ACTIVE, 5 -> REJECTED
     let statusText: "COMPLETED" | "PENDING" | "ACTIVE" | "REJECTED" = "PENDING";
-    if (fd.status_id === 5 || item.status_id === 5 || fd.status === "REJECTED" || item.status === "REJECTED") statusText = "REJECTED";
-    else if (fd.status_id === 3 || item.status_id === 3 || fd.status === "APPROVED" || item.status === "APPROVED") statusText = "ACTIVE";
+    if (fd.status_id === 4 || fd.status_id === 5 || item.status_id === 4 || item.status_id === 5 || fd.mile_stone_status_id === 4 || fd.status === "REJECTED" || item.status === "REJECTED") statusText = "REJECTED";
+    else if (fd.status_id === 3 || fd.status_id === 2 || item.status_id === 3 || item.status_id === 2 || fd.status === "APPROVED" || item.status === "APPROVED") statusText = "ACTIVE";
     // status_id === 2 (and any other unmapped id) falls through to the default "PENDING"
 
     const mappedItem: FarmlandListItem = {

@@ -248,7 +248,7 @@ export default function FiltersModal({
     let status_ids: number[] | null = null;
     if (status) {
       if (status.toLowerCase() === "approved") status_ids = [3];
-      else if (status.toLowerCase() === "rejected") status_ids = [5];
+      else if (status.toLowerCase() === "rejected") status_ids = [4, 5];
     }
 
     onApply({ state, region, area, status, fromDate, toDate, state_id, region_id, area_id, status_ids });
