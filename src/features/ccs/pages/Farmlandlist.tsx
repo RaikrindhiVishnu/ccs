@@ -105,7 +105,7 @@ export default function FarmlandList() {
     const asset = fd.Assest_value || fd.total_asset_price || item.assetValue || item.total_asset_price;
     
     let rawValuation = fd.per_acre_value || fd.price_per_acre || item.valuation || item.price_per_acre;
-    if (!rawValuation && asset && acres) {
+    if ((!rawValuation || Number(rawValuation) === 0) && asset && acres) {
       const numAsset = Number(String(asset).replace(/[^0-9.-]+/g, ""));
       const numAcres = Number(String(acres).replace(/[^0-9.-]+/g, ""));
       if (!isNaN(numAsset) && !isNaN(numAcres) && numAcres > 0) {

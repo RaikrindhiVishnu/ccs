@@ -117,6 +117,17 @@ function TemporalRibbon({
   activeYear: Year;
   onYearChange: (y: Year) => void;
 }) {
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (scrollRef.current) {
+      const activeEl = scrollRef.current.querySelector('[data-active="true"]');
+      if (activeEl) {
+        activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+  }, [activeYear]);
+
   return (
     <div
       className="absolute bottom-[20px] md:bottom-[30px] xl:bottom-[67px] left-[20px] xl:left-1/2 xl:-translate-x-1/2 w-[calc(100%-40px)] md:w-[calc(100%-340px)] xl:w-[calc(100%-40px)] max-w-[625px] h-[80px] md:h-[90px] xl:h-[114px] z-30"
@@ -128,7 +139,10 @@ function TemporalRibbon({
       <div className="absolute inset-0 bg-[rgba(255,255,255,0.2)] border-[1.15px] border-[rgba(255,255,255,0.4)] backdrop-blur-[36.88px] rounded-[36.88px] z-[-1]"></div>
 
       {/* Scrollable Container */}
-      <div className="relative flex items-center h-full w-full px-[20px] md:px-[24px] xl:px-[47px] overflow-x-auto custom-scrollbar gap-[10px] md:gap-[20px]">
+      <div 
+        ref={scrollRef}
+        className="relative flex items-center h-full w-full px-[20px] md:px-[24px] xl:px-[47px] overflow-x-auto custom-scrollbar gap-[10px] md:gap-[20px]"
+      >
         {YEARS.map(({ year, icon }) => {
         const isActive = year === activeYear;
 
@@ -136,6 +150,7 @@ function TemporalRibbon({
           return (
             <button
               key={year}
+              data-active="true"
               onClick={() => onYearChange(year)}
               className="flex flex-col items-center justify-center shrink-0 w-[110px] md:w-[120px] lg:w-[135px] h-[70px] md:h-[76px] lg:h-[79px] bg-[#2780C4] rounded-[11523px] shadow-[0px_0px_0px_9.2px_rgba(255,255,255,0.4),0px_11.5px_17.3px_-3.5px_rgba(0,0,0,0.1),0px_4.6px_6.9px_-4.6px_rgba(0,0,0,0.1)] transition-transform hover:scale-105 z-10"
             >
