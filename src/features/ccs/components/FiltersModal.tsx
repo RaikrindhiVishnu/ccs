@@ -98,13 +98,13 @@ export type FilterState = {
   state: string;
   region: string;
   area: string;
-  priority: string;
+  status?: string;
   fromDate?: string;
   toDate?: string;
   state_id?: number | null;
   region_id?: number | null;
   area_id?: number | null;
-  priority_id?: number | null;
+  status_ids?: number[] | null;
 };
 
 type FiltersModalProps = {
@@ -130,7 +130,7 @@ export default function FiltersModal({
   const [state, setState] = useState("");
   const [region, setRegion] = useState("");
   const [area, setArea] = useState("");
-  const [priority, setPriority] = useState("");
+  const [status, setStatus] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
@@ -165,14 +165,6 @@ export default function FiltersModal({
   const currentDistricts = cascadingData.districts || geoData.districts;
   const currentMandals = cascadingData.mandals || geoData.mandals;
 
-  const priorities = React.useMemo(() => {
-    const rawPriority = (masterDataResponse as any)?.data?.farmlandPriorityResult || (masterDataResponse as any)?.farmlandPriorityResult || [];
-    if (rawPriority.length > 0) {
-      return rawPriority.map((p: any) => p.description || p.name || p.code || String(p.id));
-    }
-    return ["High", "Medium", "Low"];
-  }, [masterDataResponse]);
-
   useEffect(() => {
     if (state && geoData.states.length > 0) {
       const selectedStateObj: any = geoData.states.find((s: any) => 
@@ -195,7 +187,7 @@ export default function FiltersModal({
       setState(initialFilters.state);
       setRegion(initialFilters.region);
       setArea(initialFilters.area);
-      setPriority(initialFilters.priority);
+      setStatus(initialFilters.status ?? "");
       setFromDate(initialFilters.fromDate ?? "");
       setToDate(initialFilters.toDate ?? "");
       setSelectedStartDate(parseDateString(initialFilters.fromDate ?? ""));
@@ -211,7 +203,7 @@ export default function FiltersModal({
     { key: "state", value: state, setter: setState },
     { key: "region", value: region, setter: setRegion },
     { key: "area", value: area, setter: setArea },
-    { key: "priority", value: priority, setter: setPriority },
+    { key: "status", value: status, setter: setStatus },
     { key: "fromDate", value: fromDate, setter: setFromDate },
     { key: "toDate", value: toDate, setter: setToDate },
   ].filter((f) => f.value);
@@ -220,7 +212,7 @@ export default function FiltersModal({
     setState("");
     setRegion("");
     setArea("");
-    setPriority("");
+    setStatus("");
     setFromDate("");
     setToDate("");
     setSelectedStartDate(null);
@@ -231,7 +223,6 @@ export default function FiltersModal({
     let state_id = null;
     let region_id = null;
     let area_id = null;
-    let priority_id = null;
 
     if (state && geoData.states.length > 0) {
       const selectedStateObj: any = geoData.states.find((s: any) => 
@@ -254,21 +245,13 @@ export default function FiltersModal({
       if (selectedAreaObj) area_id = Number(selectedAreaObj.id);
     }
 
-    if (priority) {
-      const selectedPriorityObj: any = ((masterDataResponse as any)?.data?.farmlandPriorityResult || (masterDataResponse as any)?.farmlandPriorityResult || []).find((p: any) => 
-        (p.description || p.name || p.code || String(p.id)) === priority
-      );
-      if (selectedPriorityObj) {
-        priority_id = Number(selectedPriorityObj.id);
-      } else {
-        const p = priority.toLowerCase();
-        if (p === 'high') priority_id = 3;
-        else if (p === 'medium') priority_id = 2;
-        else if (p === 'low') priority_id = 1;
-      }
+    let status_ids: number[] | null = null;
+    if (status) {
+      if (status.toLowerCase() === "approved") status_ids = [3];
+      else if (status.toLowerCase() === "rejected") status_ids = [5];
     }
 
-    onApply({ state, region, area, priority, fromDate, toDate, state_id, region_id, area_id, priority_id });
+    onApply({ state, region, area, status, fromDate, toDate, state_id, region_id, area_id, status_ids });
     onClose();
   };
 
@@ -372,11 +355,11 @@ export default function FiltersModal({
             )}
 
             <CustomSelect
-              label="Priority"
-              placeholder="Choose priority"
-              options={priorities}
-              value={priority}
-              onChange={setPriority}
+              label="Status"
+              placeholder="Choose status"
+              options={["Approved", "Rejected"]}
+              value={status}
+              onChange={setStatus}
             />
 
             {/* Date row */}

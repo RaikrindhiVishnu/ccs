@@ -23,7 +23,7 @@ export default function FarmlandList() {
     state: "",
     region: "",
     area: "",
-    priority: "",
+    status: "",
     fromDate: "",
     toDate: "",
   });
@@ -46,7 +46,7 @@ export default function FarmlandList() {
 
   useEffect(() => {
     const payload: any = { 
-      status_ids: [3, 5], // Approved (3) and Rejected (5) based on swagger
+      status_ids: activeFilters.status_ids || [3, 5], // Approved (3) and Rejected (5) based on swagger
       offset: (currentPage - 1) * PAGE_SIZE,
       limit: PAGE_SIZE,
       // Disabled for demo to allow robust local frontend filtering on real data
@@ -84,7 +84,7 @@ export default function FarmlandList() {
     { key: "state",    value: activeFilters.state    },
     { key: "region",   value: activeFilters.region   },
     { key: "area",     value: activeFilters.area     },
-    { key: "priority", value: activeFilters.priority },
+    { key: "status",   value: activeFilters.status   },
     { key: "fromDate", value: activeFilters.fromDate },
     { key: "toDate",   value: activeFilters.toDate   },
   ].filter((f) => f.value);
@@ -168,8 +168,8 @@ export default function FarmlandList() {
     
     // Status mapping based on Swagger: 2 -> PENDING, 3 -> APPROVED/ACTIVE, 5 -> REJECTED
     let statusText: "COMPLETED" | "PENDING" | "ACTIVE" | "REJECTED" = "PENDING";
-    if (fd.status_id === 3 || fd.status === "APPROVED" || item.status === "APPROVED") statusText = "ACTIVE";
-    else if (fd.status_id === 5 || fd.status === "REJECTED" || item.status === "REJECTED") statusText = "REJECTED";
+    if (fd.status_id === 5 || item.status_id === 5 || fd.status === "REJECTED" || item.status === "REJECTED") statusText = "REJECTED";
+    else if (fd.status_id === 3 || item.status_id === 3 || fd.status === "APPROVED" || item.status === "APPROVED") statusText = "ACTIVE";
     // status_id === 2 (and any other unmapped id) falls through to the default "PENDING"
 
     const mappedItem: FarmlandListItem = {
@@ -244,6 +244,13 @@ export default function FarmlandList() {
 
       const textToSearch = String(item.region || locStr).toLowerCase();
       if (!textToSearch.includes(filterRegion) && !textToSearch.includes(abbreviation)) {
+        return false;
+      }
+    }
+
+    if (activeFilters.status) {
+      const filterStatus = activeFilters.status.toLowerCase() === "approved" ? "active" : activeFilters.status.toLowerCase();
+      if (item.status.toLowerCase() !== filterStatus) {
         return false;
       }
     }
