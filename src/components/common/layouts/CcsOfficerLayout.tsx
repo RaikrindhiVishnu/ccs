@@ -114,6 +114,9 @@ export const CcsOfficerLayout = () => {
               (location.pathname.includes('/farmland-request') || 
                location.pathname.includes('/geospatial-audit') ||
                location.pathname.includes('/pending-cases'));
+               
+            const isFarmlandsListActive = item.label === 'Farmlands List' && 
+              location.pathname.includes('/farmland-list');
 
             return (
             <NavLink
@@ -122,7 +125,7 @@ export const CcsOfficerLayout = () => {
               end={item.path === '/'}
               title={!isExpanded ? item.label : undefined}
               className={({ isActive }) => {
-                const trulyActive = isActive || isVerificationActive;
+                const trulyActive = isActive || isVerificationActive || isFarmlandsListActive;
                 return [
                   'flex items-center',
                   isExpanded ? 'gap-[12px] px-[16px] justify-start' : 'justify-center px-0',
@@ -137,7 +140,7 @@ export const CcsOfficerLayout = () => {
               }}
             >
               {({ isActive }) => {
-                const trulyActive = isActive || isVerificationActive;
+                const trulyActive = isActive || isVerificationActive || isFarmlandsListActive;
                 return (
                 <>
                   <span className="shrink-0 flex items-center justify-center w-[23.46px] h-[23.46px]">
