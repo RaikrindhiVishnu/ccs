@@ -39,6 +39,14 @@ export const assignedFarmlandsApi = ccsApi.injectEndpoints({
       }),
       invalidatesTags: ["Farmland", "Dashboard"],
     }),
+    getAssignedOfficers: builder.mutation<any, { farmland_id: number }>({
+      query: (body) => ({
+        url: "/assigned-farmlands/get-assigned-officers",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Farmland"],
+    }),
   }),
 });
 
@@ -47,4 +55,5 @@ export const {
   useGetAllAssignedFarmlandsMutation,
   useApproveAssignedFarmlandMutation,
   useRejectAssignedFarmlandMutation,
+  useGetAssignedOfficersMutation,
 } = assignedFarmlandsApi;

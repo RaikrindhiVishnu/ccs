@@ -287,11 +287,11 @@ function VerificationVerdictPanel({
     }
   }, [verdicts]);
 
-  const toggleVerdict = (index: number) => {
-    const updated = [...localVerdicts];
-    updated[index] = { ...updated[index], status: !(updated[index].status !== false) };
-    setLocalVerdicts(updated);
-  };
+  // const toggleVerdict = (index: number) => {
+  //   const updated = [...localVerdicts];
+  //   updated[index] = { ...updated[index], status: !(updated[index].status !== false) };
+  //   setLocalVerdicts(updated);
+  // };
 
   return (
     <div

@@ -1,10 +1,11 @@
+import { useState, useEffect } from "react";
 import { ArrowLeft, Check } from "lucide-react";
 import fee4 from "@/assets/fee4.svg";
 import fee5 from "@/assets/fee5.svg";
 import fee6 from "@/assets/fee6.svg";
 export type GatewayApprovedProps = {
   onBack: () => void;
-  onProceed: () => void;
+  onProceed: (fees: { roFee: number; foFee: number; ioFee: number }) => void;
   farmlandDetails?: any;
 };
 
@@ -64,21 +65,30 @@ export default function GatewayApproved({ onBack, onProceed, farmlandDetails }: 
   
   // Try to find specific officers by role or fallback to default array positions if roles are not explicitly named
   const roName = officers.find((o: any) => o?.role?.includes('RO') || o?.role?.includes('Regional'))?.name 
-    || officers[0]?.name || "Data not available";
+    || officers[0]?.name || "NA";
   const foName = officers.find((o: any) => o?.role?.includes('FO') || o?.role?.includes('Field'))?.name 
-    || officers[1]?.name || "Data not available";
+    || officers[1]?.name || "NA";
   const ioName = officers.find((o: any) => o?.role?.includes('IO') || o?.role?.includes('Intelligence'))?.name 
-    || officers[2]?.name || "Data not available";
+    || officers[2]?.name || "NA";
 
-  const roAvatar = officers.find((o: any) => o?.role?.includes('RO'))?.profile_url || "https://i.pravatar.cc/150?u=ro";
-  const foAvatar = officers.find((o: any) => o?.role?.includes('FO'))?.profile_url || "https://i.pravatar.cc/150?u=fo";
-  const ioAvatar = officers.find((o: any) => o?.role?.includes('IO'))?.profile_url || "https://i.pravatar.cc/150?u=io";
+  const roAvatar = officers.find((o: any) => o?.role?.includes('RO'))?.profile_url || "https://ui-avatars.com/api/?name=RO&background=F3F4F6&color=164573";
+  const foAvatar = officers.find((o: any) => o?.role?.includes('FO'))?.profile_url || "https://ui-avatars.com/api/?name=FO&background=F3F4F6&color=164573";
+  const ioAvatar = officers.find((o: any) => o?.role?.includes('IO'))?.profile_url || "https://ui-avatars.com/api/?name=IO&background=F3F4F6&color=164573";
 
   // Fee details extraction
   const fees = farmlandDetails?.fee_allocation || farmlandDetails?.fees || {};
-  const roFee = fees?.ro_fee || fees?.regional_office_fee || 0;
-  const foFee = fees?.fo_fee || fees?.field_office_fee || 0;
-  const ioFee = fees?.io_fee || fees?.intelligence_officer_fee || 0;
+  
+  const [roFee, setRoFee] = useState<number>(fees?.ro_fee || fees?.regional_office_fee || 0);
+  const [foFee, setFoFee] = useState<number>(fees?.fo_fee || fees?.field_office_fee || 0);
+  const [ioFee, setIoFee] = useState<number>(fees?.io_fee || fees?.intelligence_officer_fee || 0);
+
+  useEffect(() => {
+    if (fees) {
+      if (fees.ro_fee !== undefined || fees.regional_office_fee !== undefined) setRoFee(fees.ro_fee || fees.regional_office_fee);
+      if (fees.fo_fee !== undefined || fees.field_office_fee !== undefined) setFoFee(fees.fo_fee || fees.field_office_fee);
+      if (fees.io_fee !== undefined || fees.intelligence_officer_fee !== undefined) setIoFee(fees.io_fee || fees.intelligence_officer_fee);
+    }
+  }, [fees]);
   
   const formatFee = (val: number) => val === 0 ? "0" : val.toLocaleString('en-IN');
   const totalProcessingFee = formatFee(Number(roFee) + Number(foFee) + Number(ioFee));
@@ -127,9 +137,12 @@ export default function GatewayApproved({ onBack, onProceed, farmlandDetails }: 
               </div>
               <div className="relative w-full max-w-[236px] h-[50px] bg-[#F8F9FA] border border-[#E4E7EC] rounded-[12px] flex items-center px-[16px]">
                 <span className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] text-[#717783] mr-[8px]">₹</span>
-                <span className="w-full font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#475467]">
-                  {formatFee(roFee)}
-                </span>
+                <input 
+                  type="number" 
+                  value={roFee} 
+                  onChange={(e) => setRoFee(e.target.value === '' ? 0 : Number(e.target.value))}
+                  className="w-full bg-transparent font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#475467] outline-none" 
+                />
               </div>
             </div>
 
@@ -150,9 +163,12 @@ export default function GatewayApproved({ onBack, onProceed, farmlandDetails }: 
               </div>
               <div className="relative w-full max-w-[236px] h-[50px] bg-[#F8F9FA] border border-[#E4E7EC] rounded-[12px] flex items-center px-[16px]">
                 <span className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] text-[#717783] mr-[8px]">₹</span>
-                <span className="w-full font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#475467]">
-                  {formatFee(foFee)}
-                </span>
+                <input 
+                  type="number" 
+                  value={foFee} 
+                  onChange={(e) => setFoFee(e.target.value === '' ? 0 : Number(e.target.value))}
+                  className="w-full bg-transparent font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#475467] outline-none" 
+                />
               </div>
             </div>
 
@@ -173,9 +189,12 @@ export default function GatewayApproved({ onBack, onProceed, farmlandDetails }: 
               </div>
               <div className="relative w-full max-w-[236px] h-[50px] bg-[#F8F9FA] border border-[#E4E7EC] rounded-[12px] flex items-center px-[16px]">
                 <span className="font-['Plus_Jakarta_Sans'] font-normal text-[14px] text-[#717783] mr-[8px]">₹</span>
-                <span className="w-full font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#475467]">
-                  {formatFee(ioFee)}
-                </span>
+                <input 
+                  type="number" 
+                  value={ioFee} 
+                  onChange={(e) => setIoFee(e.target.value === '' ? 0 : Number(e.target.value))}
+                  className="w-full bg-transparent font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#475467] outline-none" 
+                />
               </div>
             </div>
           </div>
@@ -190,24 +209,15 @@ export default function GatewayApproved({ onBack, onProceed, farmlandDetails }: 
             Verification Progress
           </h2>
           
-          {officers.length === 0 ? (
-            <div className="flex w-full justify-center items-center py-8">
-              <span className="font-['Plus_Jakarta_Sans'] font-medium text-[16px] text-[#717783]">
-                Data not available
-              </span>
-            </div>
-          ) : (
-            <div className="relative flex flex-col md:flex-row justify-between items-center md:items-start px-[20px] md:px-[80px] mb-[40px] gap-[32px] md:gap-[0px]">
-              {/* Connection Line */}
-              <div className="absolute top-[28px] left-[150px] right-[150px] h-[1px] bg-[rgba(224,192,180,0.5)] z-0 hidden md:block"></div>
+          <div className="relative flex flex-col md:flex-row justify-between items-center md:items-start px-[20px] md:px-[80px] mb-[40px] gap-[32px] md:gap-[0px]">
 
               {/* Step 1 */}
               <div className="flex flex-col items-center z-10 w-full md:w-[200px]">
-                <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px]">
-                  <img src={roAvatar} alt={roName} className="w-full h-full object-cover" />
+                <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px] flex items-center justify-center text-gray-500">
+                  {roAvatar ? <img src={roAvatar} alt={roName} className="w-full h-full object-cover" /> : <span className="text-[12px]">N/A</span>}
                 </div>
                 <span className="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#251914] mb-[4px] text-center">
-                  {roName}
+                  {roName === 'NA' ? 'NA' : roName}
                 </span>
                 <span className="font-['Plus_Jakarta_Sans'] font-bold text-[11px] leading-[18px] text-[#584239] text-center">
                   Regional Office: <span className="font-normal text-[#717783]">Documentation review</span>
@@ -216,11 +226,11 @@ export default function GatewayApproved({ onBack, onProceed, farmlandDetails }: 
 
               {/* Step 2 */}
               <div className="flex flex-col items-center z-10 w-full md:w-[200px]">
-                <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px]">
-                  <img src={foAvatar} alt={foName} className="w-full h-full object-cover" />
+                <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px] flex items-center justify-center text-gray-500">
+                  {foAvatar ? <img src={foAvatar} alt={foName} className="w-full h-full object-cover" /> : <span className="text-[12px]">N/A</span>}
                 </div>
                 <span className="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#251914] mb-[4px] text-center">
-                  {foName}
+                  {foName === 'NA' ? 'NA' : foName}
                 </span>
                 <span className="font-['Plus_Jakarta_Sans'] font-bold text-[11px] leading-[18px] text-[#584239] text-center">
                   Field Office: <span className="font-normal text-[#717783]">Physical inspection</span>
@@ -229,18 +239,17 @@ export default function GatewayApproved({ onBack, onProceed, farmlandDetails }: 
 
               {/* Step 3 */}
               <div className="flex flex-col items-center z-10 w-full md:w-[200px]">
-                <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px]">
-                  <img src={ioAvatar} alt={ioName} className="w-full h-full object-cover" />
+                <div className="w-[56px] h-[56px] rounded-full border border-[rgba(224,192,180,0.5)] overflow-hidden bg-gray-200 mb-[16px] flex items-center justify-center text-gray-500">
+                  {ioAvatar ? <img src={ioAvatar} alt={ioName} className="w-full h-full object-cover" /> : <span className="text-[12px]">N/A</span>}
                 </div>
                 <span className="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-[#251914] mb-[4px] text-center">
-                  {ioName}
+                  {ioName === 'NA' ? 'NA' : ioName}
                 </span>
                 <span className="font-['Plus_Jakarta_Sans'] font-bold text-[11px] leading-[18px] text-[#584239] text-center">
                   Intelligence Officer: <span className="font-normal text-[#717783]">Risk assessment</span>
                 </span>
               </div>
             </div>
-          )}
 
           <TotalSummary total={totalProcessingFee} />
         </div>
@@ -248,7 +257,7 @@ export default function GatewayApproved({ onBack, onProceed, farmlandDetails }: 
         {/* Proceed Button */}
         <div className="w-full flex justify-end mt-[10px]">
           <button 
-            onClick={onProceed}
+            onClick={() => onProceed({ roFee, foFee, ioFee })}
             className="flex items-center justify-center w-[107px] h-[40px] bg-[#2780C4] text-[#FFFFFF] rounded-[32px] font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] shadow-[0px_10px_15px_-3px_rgba(9,20,38,0.2),0px_4px_6px_-4px_rgba(9,20,38,0.2)] hover:bg-[#1f669d] transition-colors"
           >
             Proceed

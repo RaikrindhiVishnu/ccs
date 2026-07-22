@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, Check } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGetAssignedFarmlandDetailsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
 import fee1 from "@/assets/fee1.svg";
@@ -19,6 +19,8 @@ export type PaymentEngineProps = {
 export default function PaymentEngine({ onBack, onSendRequest }: PaymentEngineProps) {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const passedFees = location.state as { roFee?: number, foFee?: number, ioFee?: number } | null;
   
   const currentUser = useSelector((state: any) => state.auth.user);
   const [getDetails, { data: apiResponse }] = useGetAssignedFarmlandDetailsMutation();
@@ -50,7 +52,8 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
   const roleName = currentUser?.role_name || 'Senior Auditor';
   const userPhone = currentUser?.phone_number || '+91 98765 43210';
   const userEmail = currentUser?.login_id || currentUser?.email || 'ramudu.k@glc.com';
-  const userProfile = currentUser?.profile_picture || "https://i.pravatar.cc/150?u=ramudu";
+  const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=F3F4F6&color=164573`;
+  const userProfile = currentUser?.profile_picture || fallbackAvatar;
 
   const farmlandId = farmlandDetails?.farmland_code || farmlandDetails?.glcId || id || 'GLCSOS 01';
   
@@ -75,12 +78,20 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
   // If no fee property exists, fallback to 0
   const feeAmountRaw = farmlandDetails?.total_fee || farmlandDetails?.processing_fee || 0;
   const numFee = Number(String(feeAmountRaw).replace(/[^0-9.-]+/g, ""));
-  const totalFee = !isNaN(numFee) ? numFee : 0;
+  let totalFee = !isNaN(numFee) ? numFee : 0;
   
-  // Dummy breakdowns for UI, sum equals totalFee
-  const splitFee = totalFee > 0 ? Math.floor(totalFee / 3) : 0;
+  let roFeeVal = passedFees?.roFee !== undefined ? passedFees.roFee : (totalFee > 0 ? Math.floor(totalFee / 3) : 0);
+  let foFeeVal = passedFees?.foFee !== undefined ? passedFees.foFee : (totalFee > 0 ? Math.floor(totalFee / 3) : 0);
+  let ioFeeVal = passedFees?.ioFee !== undefined ? passedFees.ioFee : (totalFee > 0 ? totalFee - (roFeeVal + foFeeVal) : 0);
+
+  if (passedFees) {
+    totalFee = roFeeVal + foFeeVal + ioFeeVal;
+  }
+  
   const formattedTotalFee = totalFee === 0 ? "₹0" : `₹${totalFee.toLocaleString('en-IN')}`;
-  const formattedSplitFee = totalFee === 0 ? "₹0" : `₹${splitFee.toLocaleString('en-IN')}`;
+  const formattedRoFee = roFeeVal === 0 ? "₹0" : `₹${roFeeVal.toLocaleString('en-IN')}`;
+  const formattedFoFee = foFeeVal === 0 ? "₹0" : `₹${foFeeVal.toLocaleString('en-IN')}`;
+  const formattedIoFee = ioFeeVal === 0 ? "₹0" : `₹${ioFeeVal.toLocaleString('en-IN')}`;
 
   return (
     <div className="relative w-full h-full bg-[#F2F2F2] md:rounded-[32px] overflow-y-auto custom-scrollbar flex flex-col pt-[32px] px-[52px] pb-[40px]">
@@ -113,7 +124,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                 src={userProfile} 
                 alt={userName} 
                 className="relative w-full h-full object-cover rounded-full border-[3.3px] border-[#FFFFFF] shadow-[0px_16.7px_20.9px_-4.1px_rgba(0,0,0,0.1)]"
-                onError={(e) => { (e.target as HTMLImageElement).src = "https://i.pravatar.cc/150?u=ramudu"; }}
+                onError={(e) => { (e.target as HTMLImageElement).src = fallbackAvatar; }}
               />
             </div>
 
@@ -292,7 +303,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                     </div>
                   </div>
                   <span className="font-['Plus_Jakarta_Sans'] font-bold text-[15.1px] leading-[23px] text-[#091426]">
-                    {formattedSplitFee}
+                    {formattedRoFee}
                   </span>
                 </div>
 
@@ -312,7 +323,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                     </div>
                   </div>
                   <span className="font-['Plus_Jakarta_Sans'] font-bold text-[15.1px] leading-[23px] text-[#091426]">
-                    {formattedSplitFee}
+                    {formattedFoFee}
                   </span>
                 </div>
 
@@ -332,7 +343,7 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
                     </div>
                   </div>
                   <span className="font-['Plus_Jakarta_Sans'] font-bold text-[15.1px] leading-[23px] text-[#091426]">
-                    {formattedSplitFee}
+                    {formattedIoFee}
                   </span>
                 </div>
               </div>

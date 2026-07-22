@@ -7,8 +7,7 @@ import RegionCreationVelocity from "@/features/role-manager/components/RegionCre
 import WorkforceStructure from "@/features/role-manager/components/WorkforceStructure";
 import RoleCreationOverviewCard from "@/features/role-manager/components/Rolecreationoverviewcard";
 import pako from "pako";
-import { Buffer } from "buffer";
-import geoJsonData from "../data/geoJsonApi.json";
+import geoJsonUrl from "../data/geoJsonApi.json?url";
 import { useDispatch } from "react-redux";
 import { useGetAllGeoMasterDataQuery } from "@/features/role-manager/api/masterDataApi";
 import { setGeoMasterData } from "@/features/role-manager/store/roleManagerSlice";
@@ -148,8 +147,13 @@ const RoleManagerDashboard: React.FC = () => {
 
   const fetchAndDecodeGeoData = useCallback(async (base64Data: string) => {
     try {
-      const binaryData = Buffer.from(base64Data, "base64");
-      const decompressedData = pako.ungzip(binaryData);
+      const binaryString = atob(base64Data);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const decompressedData = pako.ungzip(bytes);
       const decompressedString = new TextDecoder().decode(decompressedData);
       const finalData = JSON.parse(decompressedString);
       return finalData;
@@ -160,10 +164,15 @@ const RoleManagerDashboard: React.FC = () => {
 
   // For testing purposes as requested by user
   React.useEffect(() => {
-    const data = (geoJsonData as any)?.data;
-    if (data) {
-      fetchAndDecodeGeoData(data);
-    }
+    fetch(geoJsonUrl)
+      .then((res) => res.json())
+      .then((geoJsonData) => {
+        const data = (geoJsonData as any)?.data;
+        if (data) {
+          fetchAndDecodeGeoData(data);
+        }
+      })
+      .catch((err) => console.error("Failed to load geoJsonData:", err));
   }, [fetchAndDecodeGeoData]);
 
   const [getIntelligence] = useGetAllIntelligenceOfficersMutation();

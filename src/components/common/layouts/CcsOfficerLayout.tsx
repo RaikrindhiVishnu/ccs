@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, CircleDashed, MapPin, History, Menu, ChevronRight, ChevronLeft, type LucideIcon } from 'lucide-react';
+import { LayoutDashboard, CircleDashed, MapPin, History, ChevronRight, ChevronLeft, type LucideIcon } from 'lucide-react';
 import { useRoleLayout } from '@/core/hooks/useRoleLayout';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '@/features/auth/store/authSlice';
@@ -33,7 +33,7 @@ export const CcsOfficerLayout = () => {
   const currentUser = useSelector(selectCurrentUser);
 
   const user = currentUser;
-  const fullName = user?.name || (currentUser?.first_name ? `${currentUser.first_name} ${currentUser.last_name ?? ''}`.trim() : 'CCS User');
+  const fullName = (user as any)?.name || (currentUser?.first_name ? `${currentUser.first_name} ${currentUser.last_name ?? ''}`.trim() : 'CCS User');
   const profileUrl = user?.profile_url || currentUser?.profile_url || null;
 
   const initials = fullName
