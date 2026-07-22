@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { Map, IndianRupee, Compass, Crop } from "lucide-react";
+import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 
 import UserIcon from "@/assets/farm-user.svg";
 import moneyStackIcon from "@/assets/cost-per-ac.svg";
@@ -59,6 +60,9 @@ const STATUS_STYLES: Record<
 
 export default function FarmlandListCard({ item, onViewDetails }: Props) {
   const s = STATUS_STYLES[item.status];
+  const isS3Key = Boolean(item.agentImg && !item.agentImg.startsWith("http") && !item.agentImg.startsWith("data:"));
+  const { data: s3Data } = useGeneratePresignedUrlQuery(item.agentImg || "", { skip: !isS3Key });
+  const finalAgentImg = isS3Key ? s3Data?.url : item.agentImg;
 
   return (
     <Card
@@ -95,9 +99,9 @@ export default function FarmlandListCard({ item, onViewDetails }: Props) {
 
             <div className="flex items-center gap-2">
               <img
-                src={item.agentImg || UserIcon}
+                src={finalAgentImg || UserIcon}
                 alt=""
-                className={item.agentImg 
+                className={finalAgentImg 
                   ? "h-[1.125rem] w-[1.125rem] shrink-0 rounded-full object-cover lg:h-[1.25rem] lg:w-[1.25rem]"
                   : "h-[0.625rem] w-[0.625rem] shrink-0 lg:h-[0.6875rem] lg:w-[0.6875rem]"
                 }
