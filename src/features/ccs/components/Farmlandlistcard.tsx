@@ -174,18 +174,10 @@ export default function FarmlandListCard({ item, onViewDetails }: Props) {
                     s.text,
                   ].join(" ")}
                 >
-                  {item.status}
+                  {item.status === "ACTIVE" ? "APPROVED" : item.status}
                 </Typography>
               </span>
 
-              {item.liveOnWebsite && (
-                <Typography
-                  variant="span"
-                  className="text-[#45474C] text-[0.75rem] font-medium xl:text-[0.875rem]"
-                >
-                  Live in Website
-                </Typography>
-              )}
             </div>
 
             {/* View Details button */}
