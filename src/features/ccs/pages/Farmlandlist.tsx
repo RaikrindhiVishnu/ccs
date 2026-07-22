@@ -370,7 +370,7 @@ export default function FarmlandList() {
                   : "No farmlands match the selected filters."}
               </span>
               <button 
-                onClick={() => setActiveFilters({ state: "", region: "", area: "", priority: "", fromDate: "", toDate: "" })}
+                onClick={() => setActiveFilters({ state: "", region: "", area: "", status: "", fromDate: "", toDate: "" })}
                 className="mt-4 px-6 py-2 bg-[#2780C4] text-white rounded-full hover:bg-[#1f669d] transition-colors text-sm font-semibold"
               >
                 Clear Filters
