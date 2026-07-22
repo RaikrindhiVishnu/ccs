@@ -11,6 +11,8 @@ interface User {
   role_id: UserRole;
   role: string;
   is_first_login: number;
+  phone?: string;
+  dob?: string;
 }
 
 interface AuthState {

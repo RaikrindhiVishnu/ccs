@@ -1,4 +1,5 @@
 import { ArrowRight } from 'lucide-react';
+import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 
 export type FarmlandRequestItem = {
   id: string;
@@ -44,6 +45,9 @@ function toTitleCase(str: string): string {
 
 export default function FarmlandRequestCard({ item, onClick }: Props) {
   const isHigh = item.priority === 'High';
+  const isS3Key = Boolean(item.agentImg && !item.agentImg.startsWith("http") && !item.agentImg.startsWith("data:"));
+  const { data: s3Data } = useGeneratePresignedUrlQuery(item.agentImg || "", { skip: !isS3Key });
+  const finalAgentImg = isS3Key ? s3Data?.url : item.agentImg;
 
   return (
     <div
@@ -81,8 +85,8 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
             Agent name
           </span>
           <div className="flex flex-row items-center gap-[6px] pr-2">
-            {item.agentImg ? (
-              <img src={item.agentImg} alt="Agent" className="w-[20px] h-[20px] rounded-full object-cover shrink-0" />
+            {finalAgentImg ? (
+              <img src={finalAgentImg} alt="Agent" className="w-[20px] h-[20px] rounded-full object-cover shrink-0" />
             ) : null}
             <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[20px] leading-[24px] text-[#1A1C1D] truncate">
               {item.agentName}

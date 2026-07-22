@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, Check } from "lucide-react";
+import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
 import fee4 from "@/assets/fee4.svg";
 import fee5 from "@/assets/fee5.svg";
 import fee6 from "@/assets/fee6.svg";
@@ -71,9 +72,21 @@ export default function GatewayApproved({ onBack, onProceed, farmlandDetails }: 
   const ioName = officers.find((o: any) => o?.role?.includes('IO') || o?.role?.includes('Intelligence'))?.name 
     || officers[2]?.name || "NA";
 
-  const roAvatar = officers.find((o: any) => o?.role?.includes('RO'))?.profile_url || "https://ui-avatars.com/api/?name=RO&background=F3F4F6&color=164573";
-  const foAvatar = officers.find((o: any) => o?.role?.includes('FO'))?.profile_url || "https://ui-avatars.com/api/?name=FO&background=F3F4F6&color=164573";
-  const ioAvatar = officers.find((o: any) => o?.role?.includes('IO'))?.profile_url || "https://ui-avatars.com/api/?name=IO&background=F3F4F6&color=164573";
+  const rawRoAvatar = officers.find((o: any) => o?.role?.includes('RO'))?.profile_url || "";
+  const rawFoAvatar = officers.find((o: any) => o?.role?.includes('FO'))?.profile_url || "";
+  const rawIoAvatar = officers.find((o: any) => o?.role?.includes('IO'))?.profile_url || "";
+
+  const isRoS3 = Boolean(rawRoAvatar && !rawRoAvatar.startsWith("http") && !rawRoAvatar.startsWith("data:"));
+  const isFoS3 = Boolean(rawFoAvatar && !rawFoAvatar.startsWith("http") && !rawFoAvatar.startsWith("data:"));
+  const isIoS3 = Boolean(rawIoAvatar && !rawIoAvatar.startsWith("http") && !rawIoAvatar.startsWith("data:"));
+
+  const { data: roS3 } = useGeneratePresignedUrlQuery(rawRoAvatar, { skip: !isRoS3 });
+  const { data: foS3 } = useGeneratePresignedUrlQuery(rawFoAvatar, { skip: !isFoS3 });
+  const { data: ioS3 } = useGeneratePresignedUrlQuery(rawIoAvatar, { skip: !isIoS3 });
+
+  const roAvatar = (isRoS3 ? roS3?.url : rawRoAvatar) || "https://ui-avatars.com/api/?name=RO&background=F3F4F6&color=164573";
+  const foAvatar = (isFoS3 ? foS3?.url : rawFoAvatar) || "https://ui-avatars.com/api/?name=FO&background=F3F4F6&color=164573";
+  const ioAvatar = (isIoS3 ? ioS3?.url : rawIoAvatar) || "https://ui-avatars.com/api/?name=IO&background=F3F4F6&color=164573";
 
   // Fee details extraction
   const fees = farmlandDetails?.fee_allocation || farmlandDetails?.fees || {};

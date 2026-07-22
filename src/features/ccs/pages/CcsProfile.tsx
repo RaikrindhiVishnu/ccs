@@ -131,7 +131,8 @@ export default function CcsProfile() {
       dispatch(updateUser({
         first_name: editForm.first_name,
         last_name: editForm.last_name,
-        phone_number: editForm.phone,
+        // @ts-ignore
+        phone: editForm.phone,
         dob: editForm.dob,
         profile_url: localProfilePic || undefined
       }));
