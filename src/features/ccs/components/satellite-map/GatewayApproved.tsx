@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ArrowLeft, Check } from "lucide-react";
 import { useGeneratePresignedUrlQuery } from "@/features/auth/api/authApi";
+import { toast } from "sonner";
 import fee4 from "@/assets/fee4.svg";
 import fee5 from "@/assets/fee5.svg";
 import fee6 from "@/assets/fee6.svg";
@@ -270,7 +271,13 @@ export default function GatewayApproved({ onBack, onProceed, farmlandDetails }: 
         {/* Proceed Button */}
         <div className="w-full flex justify-end mt-[10px]">
           <button 
-            onClick={() => onProceed({ roFee, foFee, ioFee })}
+            onClick={() => {
+              if (!roName || roName === "NA" || !foName || foName === "NA" || !ioName || ioName === "NA") {
+                toast.error("Please assign all 3 verification officers before proceeding.");
+                return;
+              }
+              onProceed({ roFee, foFee, ioFee });
+            }}
             className="flex items-center justify-center w-[107px] h-[40px] bg-[#2780C4] text-[#FFFFFF] rounded-[32px] font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] shadow-[0px_10px_15px_-3px_rgba(9,20,38,0.2),0px_4px_6px_-4px_rgba(9,20,38,0.2)] hover:bg-[#1f669d] transition-colors"
           >
             Proceed
