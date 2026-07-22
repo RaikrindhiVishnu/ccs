@@ -371,7 +371,7 @@ export default function HistoricalAgronomyAnalysis({
   coords,
   verdicts,
 }: HistoricalAgronomyAnalysisProps) {
-  const currentYear = new Date().getFullYear().toString();
+  const currentYear = "2026";
   const [activeYear, setActiveYear] = useState<Year>(currentYear);
   const mapRef = React.useRef<SatelliteMapHandle>(null);
 
