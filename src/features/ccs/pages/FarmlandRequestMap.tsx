@@ -16,7 +16,7 @@ export default function FarmlandRequestMap() {
 
   useEffect(() => {
     if (id) {
-      getDetails({ farmland_id: Number(id) });
+      getDetails({ farmland_id: Number(id) as any });
       getAllFarmlands({ status_ids: [1, 2, 3, 4, 5, 6], limit: 500, offset: 0 }); // Fallback to grab field notes missing from getDetails
     }
   }, [id, getDetails, getAllFarmlands]);

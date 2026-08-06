@@ -98,6 +98,7 @@ export type FilterState = {
   state: string;
   region: string;
   area: string;
+  priority?: string;
   status?: string;
   fromDate?: string;
   toDate?: string;

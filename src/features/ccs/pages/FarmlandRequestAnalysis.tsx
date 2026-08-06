@@ -11,7 +11,7 @@ export default function FarmlandRequestAnalysis() {
 
   useEffect(() => {
     if (id) {
-      getDetails({ farmland_id: Number(id) });
+      getDetails({ farmland_id: Number(id) as any });
     }
   }, [id, getDetails]);
 
