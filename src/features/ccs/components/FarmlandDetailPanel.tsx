@@ -54,7 +54,7 @@ export default function FarmlandDetailPanel({
       {open && (
         <button
           onClick={onClose}
-          className="absolute z-50 left-[16px] md:left-[36px] top-[16px] md:top-[37px] w-[135px] h-[52px] bg-[#FFFFFF] rounded-[60px] flex items-center justify-center gap-[8px] shadow-[0px_0px_4px_rgba(0,0,0,0.12)] hover:bg-gray-50 transition-colors"
+          className="absolute z-50 left-[20px] md:left-[110px] lg:left-[320px] top-[16px] md:top-[37px] w-[135px] h-[52px] bg-[#FFFFFF] rounded-[60px] flex items-center justify-center gap-[8px] shadow-[0px_0px_4px_rgba(0,0,0,0.12)] hover:bg-gray-50 transition-colors"
         >
           <ArrowLeft className="w-[24px] h-[24px] text-[#353535]" strokeWidth={1.4} />
           <span className="font-['Inter'] font-normal text-[16px] leading-[18px] text-[#353535]">

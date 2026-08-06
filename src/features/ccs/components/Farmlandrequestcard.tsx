@@ -86,7 +86,14 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
           </span>
           <div className="flex flex-row items-center gap-[6px] pr-2">
             {finalAgentImg ? (
-              <img src={finalAgentImg} alt="Agent" className="w-[20px] h-[20px] rounded-full object-cover shrink-0" />
+              <img 
+                src={finalAgentImg} 
+                alt="Agent" 
+                className="w-[20px] h-[20px] rounded-full object-cover shrink-0" 
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.agentName)}&background=F3F4F6&color=164573`;
+                }}
+              />
             ) : null}
             <span className="font-['Plus_Jakarta_Sans'] font-semibold text-[20px] leading-[24px] text-[#1A1C1D] truncate">
               {item.agentName}

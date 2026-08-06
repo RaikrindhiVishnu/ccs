@@ -129,56 +129,59 @@ function TemporalRibbon({
   }, [activeYear]);
 
   return (
-    <div
-      className="absolute bottom-[20px] md:bottom-[30px] xl:bottom-[67px] left-[20px] xl:left-1/2 xl:-translate-x-1/2 w-[calc(100%-40px)] md:w-[calc(100%-340px)] xl:w-[calc(100%-40px)] max-w-[625px] h-[80px] md:h-[90px] xl:h-[114px] z-30"
-    >
-      {/* Shadow layer */}
-      <div className="absolute top-[0px] bottom-[0.44px] left-[0px] right-[-0.32px] bg-[#FFFFFF] rounded-[36.88px] shadow-[0px_28.81px_57.62px_-13.83px_rgba(0,0,0,0.25)] z-[-2]"></div>
-      
-      {/* Shell layer */}
-      <div className="absolute inset-0 bg-[rgba(255,255,255,0.2)] border-[1.15px] border-[rgba(255,255,255,0.4)] backdrop-blur-[36.88px] rounded-[36.88px] z-[-1]"></div>
+    <div className="absolute bottom-[20px] md:bottom-[30px] xl:bottom-[40px] left-[10px] right-[10px] md:left-[110px] md:right-[330px] lg:left-[320px] flex justify-center pointer-events-none z-30">
+      <div className="relative w-full max-w-[625px] h-[80px] md:h-[90px] xl:h-[114px] pointer-events-auto">
+        {/* Shadow layer */}
+        <div className="absolute top-[0px] bottom-[0px] left-[0px] right-[0px] bg-[#FFFFFF] rounded-[36.88px] shadow-[0px_28.81px_57.62px_-13.83px_rgba(0,0,0,0.25)] z-[-2]"></div>
+        
+        {/* Shell layer */}
+        <div className="absolute inset-0 bg-[rgba(255,255,255,0.2)] border-[1.15px] border-[rgba(255,255,255,0.4)] backdrop-blur-[36.88px] rounded-[36.88px] z-[-1]"></div>
 
-      {/* Scrollable Container */}
-      <div 
-        ref={scrollRef}
-        className="relative flex items-center h-full w-full px-[20px] md:px-[24px] xl:px-[47px] overflow-x-auto custom-scrollbar gap-[10px] md:gap-[20px]"
-      >
-        {YEARS.map(({ year, icon }) => {
-        const isActive = year === activeYear;
+        {/* Scrollable Container */}
+        <div 
+          ref={scrollRef}
+          className="relative flex items-center h-full w-full px-[15px] md:px-[24px] xl:px-[47px] overflow-x-auto custom-scrollbar gap-[10px] md:gap-[20px]"
+        >
+          {YEARS.map(({ year, icon }) => {
+            const isActive = year === activeYear;
 
-        if (isActive) {
-          return (
-            <button
-              key={year}
-              data-active="true"
-              onClick={() => onYearChange(year)}
-              className="flex flex-col items-center justify-center shrink-0 w-[110px] md:w-[120px] lg:w-[135px] h-[70px] md:h-[76px] lg:h-[79px] bg-[#2780C4] rounded-[11523px] shadow-[0px_0px_0px_9.2px_rgba(255,255,255,0.4),0px_11.5px_17.3px_-3.5px_rgba(0,0,0,0.1),0px_4.6px_6.9px_-4.6px_rgba(0,0,0,0.1)] transition-transform hover:scale-105 z-10"
-            >
-              <div className="w-[20px] h-[20px] md:w-[23.34px] md:h-[25.93px] text-[#FFFFFF] flex items-center justify-center mb-[4.6px]">
-                {icon}
-              </div>
-              <span className="font-['Plus_Jakarta_Sans'] font-bold text-[12px] md:text-[13.83px] leading-[21px] tracking-[1.15px] uppercase text-[#FFFFFF]">
-                {year}
-              </span>
-            </button>
-          );
-        }
+            if (isActive) {
+              return (
+                <button
+                  key={year}
+                  data-active="true"
+                  onClick={() => onYearChange(year)}
+                  className="flex flex-col items-center justify-center shrink-0 w-[110px] md:w-[120px] lg:w-[135px] h-[70px] md:h-[76px] lg:h-[79px] bg-[#2780C4] rounded-[11523px] shadow-[0px_0px_0px_9.2px_rgba(255,255,255,0.4),0px_11.5px_17.3px_-3.5px_rgba(0,0,0,0.1),0px_4.6px_6.9px_-4.6px_rgba(0,0,0,0.1)] transition-transform hover:scale-105 z-10"
+                >
+                  <div className="w-[20px] h-[20px] md:w-[23px] md:h-[26px] text-[#FFFFFF] flex items-center justify-center mb-[4.6px]">
+                    {icon}
+                  </div>
+                  <span className="font-['Plus_Jakarta_Sans'] font-bold text-[12px] md:text-[13.83px] leading-[21px] tracking-[1.15px] uppercase text-[#FFFFFF]">
+                    {year}
+                  </span>
+                </button>
+              );
+            }
 
-        return (
-          <button
-            key={year}
-            onClick={() => onYearChange(year)}
-            className="flex flex-col items-center justify-center gap-[4.61px] shrink-0 p-[10px] md:p-[13.8px] hover:bg-white/10 rounded-xl transition-colors z-10"
-          >
-            <div className="w-[18px] h-[18px] md:w-[20.74px] md:h-[20.74px] text-[#A1A1AA] flex items-center justify-center">
-              {icon}
-            </div>
-            <span className="font-['Plus_Jakarta_Sans'] font-normal text-[10px] md:text-[11.52px] leading-[17px] tracking-[1.15px] uppercase text-[#A1A1AA]">
-              {year}
-            </span>
-          </button>
-        );
-      })}
+            return (
+              <button
+                key={year}
+                onClick={() => onYearChange(year)}
+                className="flex flex-col items-center justify-center gap-[4.6px] shrink-0 p-[10px] md:p-[13.8px] hover:bg-black/5 rounded-xl transition-colors z-10"
+              >
+                <div className="w-[18px] h-[18px] md:w-[20.74px] md:h-[20.74px] text-[#A1A1AA] flex items-center justify-center">
+                  {icon}
+                </div>
+                <span className="font-['Plus_Jakarta_Sans'] font-normal text-[10px] md:text-[11.52px] leading-[17px] tracking-[1.15px] uppercase text-[#A1A1AA]">
+                  {year}
+                </span>
+              </button>
+            );
+          })}
+          
+          {/* Spacer to fix right padding in scrollable flex containers */}
+          <div className="shrink-0 w-[10px] md:w-[20px] lg:w-[30px]"></div>
+        </div>
       </div>
     </div>
   );
@@ -452,7 +455,7 @@ export default function HistoricalAgronomyAnalysis({
         className="
           absolute z-30
           top-[37px]
-          left-[36px]
+          left-[20px] md:left-[110px] lg:left-[320px]
         "
       >
         {onBack && (

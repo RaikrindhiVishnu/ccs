@@ -87,32 +87,44 @@ export default function FarmlandListMap() {
         }
       }
 
-      if (Array.isArray(polyObj) && polyObj.length > 0 && ('latitude' in polyObj[0] || 'lat' in polyObj[0])) {
-        const coordinates = polyObj.map((point: any) => {
-          const lat = parseFloat(point.latitude || point.lat);
-          const lon = parseFloat(point.longitude || point.lng || point.lon);
-          return [lon, lat];
-        });
+      if (Array.isArray(polyObj) && polyObj.length > 0) {
+        let coordinates: number[][] = [];
         
+        if (typeof polyObj[0] === 'string' && polyObj[0].toLowerCase() === 'polygon') {
+          // Format: ["polygon", "lat1", "lon1", "lat2", "lon2", ...]
+          for (let i = 1; i < polyObj.length; i += 2) {
+            const lat = parseFloat(polyObj[i]);
+            const lon = parseFloat(polyObj[i + 1]);
+            if (!isNaN(lat) && !isNaN(lon)) {
+              coordinates.push([lon, lat]);
+            }
+          }
+        } else if (typeof polyObj[0] === 'object' && polyObj[0] !== null && ('latitude' in polyObj[0] || 'lat' in polyObj[0] || 'lng' in polyObj[0] || 'lon' in polyObj[0])) {
+          // Format: [{lat: ..., lng: ...}, ...]
+          coordinates = polyObj.map((point: any) => {
+            const lat = parseFloat(point.latitude || point.lat);
+            const lon = parseFloat(point.longitude || point.lng || point.lon);
+            return [lon, lat];
+          });
+        }
+
         if (coordinates.length > 0) {
           const first = coordinates[0];
           const last = coordinates[coordinates.length - 1];
           if (first[0] !== last[0] || first[1] !== last[1]) {
             coordinates.push([...first]);
           }
-        }
 
-        normalizedPolygon = {
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [coordinates]
-          }
-        };
+          normalizedPolygon = {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [coordinates]
+            }
+          };
 
-        // Use centroid (average of all vertices) as the map center,
-        // not just the first corner of the polygon.
-        if (coordinates.length > 0) {
+          // Use centroid (average of all vertices) as the map center,
+          // not just the first corner of the polygon.
           const sumLon = coordinates.reduce((s: number, c: number[]) => s + c[0], 0);
           const sumLat = coordinates.reduce((s: number, c: number[]) => s + c[1], 0);
           const centLon = sumLon / coordinates.length;
@@ -120,7 +132,9 @@ export default function FarmlandListMap() {
           initialCoords = { lat: centLat, lon: centLon };
           displayCoords = formatDMS(centLat, centLon);
         }
-      } else {
+      } 
+      
+      if (!normalizedPolygon && polyObj && !Array.isArray(polyObj)) {
         normalizedPolygon = polyObj;
         const geom = polyObj.type === 'Feature' ? polyObj.geometry : polyObj;
         if (geom && geom.coordinates && geom.coordinates[0] && geom.coordinates[0].length > 0) {
@@ -217,7 +231,7 @@ export default function FarmlandListMap() {
                   </div>
 
                   {/* Bottom stats overlay for coordinates */}
-                  <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-black/40 px-4 py-1 z-10 pointer-events-none">
+                  <div className="absolute bottom-0 left-0 md:left-[88px] lg:left-[291px] right-0 flex items-center justify-between bg-black/40 px-4 py-1 z-10 pointer-events-none">
                     <span className="text-[0.6rem] text-white/70">Camera: 991 m</span>
                     <span className="text-[0.6rem] text-white/70">{displayCoords}</span>
                     <span className="text-[0.6rem] text-white/70">704 m</span>

@@ -58,34 +58,50 @@ export default function FarmlandRequestAnalysis() {
         }
       }
 
-      if (Array.isArray(polyObj) && polyObj.length > 0 && ('latitude' in polyObj[0] || 'lat' in polyObj[0])) {
-        const coordinates = polyObj.map((point: any) => {
-          const lat = parseFloat(point.latitude || point.lat);
-          const lon = parseFloat(point.longitude || point.lng || point.lon);
-          return [lon, lat];
-        });
+      if (Array.isArray(polyObj) && polyObj.length > 0) {
+        let coordinates: number[][] = [];
         
+        if (typeof polyObj[0] === 'string' && polyObj[0].toLowerCase() === 'polygon') {
+          // Format: ["polygon", "lat1", "lon1", "lat2", "lon2", ...]
+          for (let i = 1; i < polyObj.length; i += 2) {
+            const lat = parseFloat(polyObj[i]);
+            const lon = parseFloat(polyObj[i + 1]);
+            if (!isNaN(lat) && !isNaN(lon)) {
+              coordinates.push([lon, lat]);
+            }
+          }
+        } else if (typeof polyObj[0] === 'object' && polyObj[0] !== null && ('latitude' in polyObj[0] || 'lat' in polyObj[0] || 'lng' in polyObj[0] || 'lon' in polyObj[0])) {
+          // Format: [{lat: ..., lng: ...}, ...]
+          coordinates = polyObj.map((point: any) => {
+            const lat = parseFloat(point.latitude || point.lat);
+            const lon = parseFloat(point.longitude || point.lng || point.lon);
+            return [lon, lat];
+          });
+        }
+
         if (coordinates.length > 0) {
           const first = coordinates[0];
           const last = coordinates[coordinates.length - 1];
           if (first[0] !== last[0] || first[1] !== last[1]) {
             coordinates.push([...first]);
           }
-        }
 
-        normalizedPolygon = {
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [coordinates]
+          normalizedPolygon = {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [coordinates]
+            }
+          };
+
+          const firstCoord = coordinates[0];
+          if (firstCoord) {
+            initialCoords = { lat: firstCoord[1], lon: firstCoord[0] };
           }
-        };
-
-        const firstCoord = coordinates[0];
-        if (firstCoord) {
-          initialCoords = { lat: firstCoord[1], lon: firstCoord[0] };
         }
-      } else {
+      } 
+      
+      if (!normalizedPolygon && polyObj && !Array.isArray(polyObj)) {
         normalizedPolygon = polyObj;
         const geom = polyObj.type === 'Feature' ? polyObj.geometry : polyObj;
         if (geom && geom.coordinates && geom.coordinates[0] && geom.coordinates[0][0]) {

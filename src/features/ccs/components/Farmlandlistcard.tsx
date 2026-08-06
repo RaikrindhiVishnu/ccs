@@ -105,6 +105,9 @@ export default function FarmlandListCard({ item, onViewDetails }: Props) {
                   ? "h-[1.125rem] w-[1.125rem] shrink-0 rounded-full object-cover lg:h-[1.25rem] lg:w-[1.25rem]"
                   : "h-[0.625rem] w-[0.625rem] shrink-0 lg:h-[0.6875rem] lg:w-[0.6875rem]"
                 }
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.agentName)}&background=F3F4F6&color=164573`;
+                }}
               />
               <Typography
                 variant="span"
