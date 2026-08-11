@@ -1,7 +1,13 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import GatewayApproved from "@/features/ccs/components/satellite-map/GatewayApproved";
-import { useGetAssignedFarmlandDetailsMutation, useGetAssignedOfficersMutation } from "@/features/ccs/api/assignedFarmlandsApi";
+import { 
+  useGetAssignedFarmlandDetailsMutation, 
+  useGetAssignedOfficersMutation,
+  useApproveAssignedFarmlandMutation
+} from "@/features/ccs/api/assignedFarmlandsApi";
+import { useAppSelector } from "@/core/hooks";
+import { selectCurrentUser } from "@/features/auth/store/authSlice";
 
 export default function FarmlandRequestGatewayApproved() {
   const { id } = useParams<{ id: string }>();
@@ -9,6 +15,8 @@ export default function FarmlandRequestGatewayApproved() {
 
   const [getDetails, { data: apiResponse, isLoading }] = useGetAssignedFarmlandDetailsMutation();
   const [getOfficers, { data: officersResponse, isLoading: isOfficersLoading }] = useGetAssignedOfficersMutation();
+  const [approveFarmland] = useApproveAssignedFarmlandMutation();
+  const currentUser = useAppSelector(selectCurrentUser);
 
   useEffect(() => {
     if (id) {
@@ -114,7 +122,25 @@ export default function FarmlandRequestGatewayApproved() {
         {!isPageLoading && (
           <GatewayApproved 
             onBack={() => navigate(`/farmland-request/gateway/${id}`)}
-            onProceed={(fees) => navigate(`/farmland-request/payment/${id}`, { state: fees })}
+            onProceed={async (fees) => {
+              try {
+                if (id) {
+                  await approveFarmland({
+                    farmland_id: Number(id),
+                    mile_stone_status_id: 3, // 3 is Approved
+                    mile_store_stage_id: 1,
+                    // @ts-ignore
+                    userId: currentUser?.id,
+                    // @ts-ignore
+                    remarks: "Approved from Gateway"
+                  }).unwrap();
+                }
+              } catch (e) {
+                console.error("Failed to approve farmland", e);
+              } finally {
+                navigate(`/farmland-request/payment/${id}`, { state: fees });
+              }
+            }}
             farmlandDetails={combinedDetails}
           />
         )}

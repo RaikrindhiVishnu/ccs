@@ -15,23 +15,7 @@ export default function FarmlandRequestGateway() {
   const currentUser = useAppSelector(selectCurrentUser);
 
   const handleAccept = async () => {
-    try {
-      if (id) {
-        await approveFarmland({
-          farmland_id: Number(id),
-          mile_stone_status_id: 3, // 3 is Approved
-          mile_store_stage_id: 1,
-          // @ts-ignore
-          userId: currentUser?.id,
-          // @ts-ignore
-          remarks: "Approved from Gateway"
-        }).unwrap();
-      }
-    } catch (e) {
-      console.error("Failed to approve farmland", e);
-    } finally {
-      navigate(`/farmland-request/gateway-approved/${id}`);
-    }
+    navigate(`/farmland-request/gateway-approved/${id}`);
   };
 
   const handleReject = async () => {
