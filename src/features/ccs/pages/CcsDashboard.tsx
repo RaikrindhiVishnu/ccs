@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { format, formatDistanceToNow } from "date-fns";
+import { motion } from "framer-motion";
 import { Typography } from "@/components/ui/typography";
 import {
   DashboardHeader,
@@ -14,13 +15,16 @@ import {
   useGetDashboardAllFarmlandDetailsMutation,
   useGetDashboardRecentActivitiesMutation
 } from "@/features/ccs/api/dashboardApi";
+import { StaggerContainer } from "@/components/animations/StaggerContainer";
+import { fadeUp } from "@/components/animations/variants";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CcsDashboard() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
   const [getFarmlandDetails, { data: farmlandStats, isLoading: isFarmlandLoading }] = useGetDashboardAllFarmlandDetailsMutation();
-  const [getRecentActivities, { data: recentActivitiesData }] = useGetDashboardRecentActivitiesMutation();
+  const [getRecentActivities, { data: recentActivitiesData, isLoading: isActivitiesLoading }] = useGetDashboardRecentActivitiesMutation();
 
   useEffect(() => {
     // get-all-farmland-details still strictly requires dates despite swagger, so we pass a wide range if empty
@@ -101,26 +105,31 @@ export default function CcsDashboard() {
   return (
     <div className="flex flex-col w-full h-full px-4 py-4 lg:px-6 lg:py-6 overflow-x-hidden">
       {/* Header */}
-      <div className="w-full shrink-0 relative z-50 mb-[39px]">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full shrink-0 relative z-50 mb-[39px]"
+      >
         <DashboardHeader
           startDate={startDate}
           endDate={endDate}
           setStartDate={setStartDate}
           setEndDate={setEndDate}
         />
-      </div>
+      </motion.div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_1fr] gap-[19px] items-stretch w-full">
+      <StaggerContainer className="grid grid-cols-1 xl:grid-cols-[1.2fr_1fr] gap-[19px] items-stretch w-full">
 
         {/* ════ LEFT COLUMN ════ */}
-        <div className="flex flex-col w-full h-full justify-between">
+        <motion.div variants={fadeUp} className="flex flex-col w-full h-full justify-between">
 
           <div className="flex flex-col w-full gap-[36px]">
             {/* Stats Section */}
-            <div className="grid grid-cols-2 gap-[18px]">
+            <StaggerContainer className="grid grid-cols-2 gap-[18px]">
               {dynamicStats.map((item, index) => (
-                <div key={item.title} className={index === 0 ? "col-span-2" : ""}>
+                <motion.div variants={fadeUp} key={item.title} className={index === 0 ? "col-span-2" : ""}>
                   <StatsCard
                     title={item.title}
                     value={item.value}
@@ -128,12 +137,12 @@ export default function CcsDashboard() {
                     large={index === 0}
                     isLoading={isFarmlandLoading}
                   />
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </StaggerContainer>
 
             {/* Pipeline Status */}
-            <div className="flex flex-col">
+            <motion.div variants={fadeUp} className="flex flex-col">
               <Typography
                 variant="h2"
                 className="mb-[29px] font-['Plus_Jakarta_Sans'] font-extrabold uppercase leading-[120%] text-[#171717] text-[24px]"
@@ -141,17 +150,18 @@ export default function CcsDashboard() {
                 PIPELINE STATUS
               </Typography>
               <PipelineStatus startDate={startDate} endDate={endDate} />
-            </div>
+            </motion.div>
           </div>
 
           {/* Alert Banner */}
-          <div className="mt-auto pt-[29px]">
+          <motion.div variants={fadeUp} className="mt-auto pt-[29px]">
             <AlertBanner />
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* ════ RIGHT PANEL ════ */}
-        <div
+        <motion.div
+          variants={fadeUp}
           className="flex flex-col bg-[#FFFFFF] rounded-[33px] px-[31px] pt-[30px] pb-[30px] w-full h-full relative"
         >
           <div className="flex-none mb-[30px]">
@@ -165,23 +175,48 @@ export default function CcsDashboard() {
             >
               RECENT ACTIVITY
             </Typography>
-            <div className="flex flex-col gap-[24px] overflow-y-auto pr-2 pb-2 flex-1">
-              {activities.map((item: any, index: number) => (
-                <div key={index} className="flex flex-col gap-[24px]">
-                  <ActivityCard
-                    id={item.id}
-                    description={item.description}
-                    timeAgo={item.timeAgo}
-                  />
-                  {index < activities.length - 1 && (
-                    <div className="w-full h-0 border-t border-[rgba(0,0,0,0.06)]" />
-                  )}
+            <div data-lenis-prevent="true" className="flex flex-col gap-[24px] overflow-y-auto pr-2 pb-2 flex-1">
+              {isActivitiesLoading ? (
+                <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }} className="flex flex-col gap-[24px]">
+                  {[1, 2, 3].map((i) => (
+                    <motion.div variants={fadeUp} key={i} className="flex flex-col gap-[24px]">
+                      <div className="flex gap-4">
+                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <div className="flex flex-col gap-2 flex-1">
+                          <Skeleton className="h-4 w-3/4" />
+                          <Skeleton className="h-3 w-1/2" />
+                        </div>
+                      </div>
+                      {i < 3 && <div className="w-full h-0 border-t border-[rgba(0,0,0,0.06)]" />}
+                    </motion.div>
+                  ))}
+                </motion.div>
+              ) : activities.length > 0 ? (
+                <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }} className="flex flex-col gap-[24px]">
+                  {activities.map((item: any, index: number) => (
+                    <motion.div variants={fadeUp} key={index} className="flex flex-col gap-[24px]">
+                      <ActivityCard
+                        id={item.id}
+                        description={item.description}
+                        timeAgo={item.timeAgo}
+                      />
+                      {index < activities.length - 1 && (
+                        <div className="w-full h-0 border-t border-[rgba(0,0,0,0.06)]" />
+                      )}
+                    </motion.div>
+                  ))}
+                </motion.div>
+              ) : (
+                <div className="flex w-full h-full items-center justify-center pt-10">
+                  <Typography variant="span" className="text-gray-400 font-['Plus_Jakarta_Sans'] text-sm">
+                    No recent activity found.
+                  </Typography>
                 </div>
-              ))}
+              )}
             </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </StaggerContainer>
     </div>
   );
 }

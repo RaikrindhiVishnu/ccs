@@ -10,7 +10,7 @@ import { useGetAllAssignedFarmlandsMutation } from "@/features/ccs/api/assignedF
 import { useGetAllGeoMasterDataMutation } from "@/features/ccs/api/masterDataApi";
 import { transformTable } from "@/features/role-manager/utils/utils";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 20;
 
 /* ── Page ── */
 export default function FarmlandRequest() {
@@ -86,16 +86,16 @@ export default function FarmlandRequest() {
   // Use the farmlands array from API response, default to empty array if not present.
   let farmlands = (apiResponse && apiResponse.farmlands) ? apiResponse.farmlands : [];
 
-  // Total count for pagination — prefer backend total, fall back to array length
-  const totalCount: number = (apiResponse as any)?.total ?? (apiResponse as any)?.total_count ?? farmlands.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  // We calculate total pages dynamically below based on filtering & backend behavior.
 
   // Frontend fallback filtering for all fields (in case backend ignores them)
   const isSearchActive = searchQuery.trim().length > 0;
   const isFilterActive = Object.values(activeFilters).some(v => v !== "");
 
+  let filteredFarmlands = farmlands;
+
   if (farmlands.length > 0 && (isFilterActive || isSearchActive)) {
-    farmlands = (farmlands as any[]).filter((item: any) => {
+    filteredFarmlands = (farmlands as any[]).filter((item: any) => {
       const fd = item.farmland_details || item;
       const od = item.owner_details || item;
       let matches = true;
@@ -253,6 +253,23 @@ export default function FarmlandRequest() {
     });
   }
 
+  // Only slice locally if the backend returned more than PAGE_SIZE items 
+  // (which implies backend ignored offset/limit).
+  // If backend correctly paginated, we don't slice because it already returned only PAGE_SIZE items for this page.
+  const backendTotalCount = (apiResponse as any)?.total ?? (apiResponse as any)?.total_count;
+  const isBackendPaginated = backendTotalCount !== undefined && farmlands.length <= PAGE_SIZE;
+
+  // Use the filtered length if backend didn't paginate or if filters are applied locally
+  const effectiveTotal = (isBackendPaginated && !isFilterActive && !isSearchActive) 
+    ? backendTotalCount 
+    : filteredFarmlands.length;
+    
+  const totalPages = Math.max(1, Math.ceil(effectiveTotal / PAGE_SIZE));
+
+  const pagedFarmlands = (isBackendPaginated && !isFilterActive && !isSearchActive)
+    ? filteredFarmlands
+    : filteredFarmlands.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
   return (
     <div className="relative h-full overflow-hidden">
       <FiltersModal
@@ -347,12 +364,11 @@ export default function FarmlandRequest() {
           "
         >
           {isLoading ? (
-            <div className="col-span-full py-12 flex flex-col items-center justify-center text-gray-500 font-medium">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#BDD327] mb-4"></div>
-              Loading farmland requests...
-            </div>
-          ) : farmlands.length > 0 ? (
-            farmlands.map((item: any) => {
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="w-full h-[140px] rounded-[16px] bg-gray-200/60 animate-pulse border border-[#E5E7EB]" />
+            ))
+          ) : pagedFarmlands.length > 0 ? (
+            pagedFarmlands.map((item: any) => {
               // Map API response to expected card format, handling nested details
               const fd = item.farmland_details || item;
               const od = item.owner_details || item;

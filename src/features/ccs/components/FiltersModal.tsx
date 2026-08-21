@@ -61,7 +61,7 @@ function CustomSelect({
       </div>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+4px)] left-0 w-full max-h-[250px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-[14px] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1)] z-50 overflow-y-auto py-2 flex flex-col">
+        <div data-lenis-prevent="true" className="absolute top-[calc(100%+4px)] left-0 w-full max-h-[250px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-[14px] shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1)] z-50 overflow-y-auto py-2 flex flex-col">
           <div className="px-[12px] pb-[8px] sticky top-0 bg-[#FFFFFF]">
             <input 
               type="text" 
@@ -301,6 +301,7 @@ export default function FiltersModal({
       >
         {/* Scrollable inner content */}
         <div
+          data-lenis-prevent="true"
           className="flex flex-col gap-[24px] px-[31px] py-[31px] overflow-y-auto flex-1 min-h-0 overflow-x-visible"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
         >

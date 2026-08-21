@@ -37,7 +37,7 @@ export const SuperAdminLayout = () => {
       )}
 
       {/* ── Page content ────────────────────────────────────────────────────── */}
-      <main className="flex-1 overflow-auto">
+      <main data-lenis-prevent="true" className="flex-1 overflow-auto">
         <Outlet />
       </main>
     </div>

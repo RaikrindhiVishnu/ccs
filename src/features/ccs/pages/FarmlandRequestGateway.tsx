@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import DecisionGateway from "@/features/ccs/components/satellite-map/DecisionGateway";
 import { 
-  useApproveAssignedFarmlandMutation,
   useRejectAssignedFarmlandMutation
 } from "@/features/ccs/api/assignedFarmlandsApi";
 import { useAppSelector } from "@/core/hooks";
@@ -10,7 +9,6 @@ import { selectCurrentUser } from "@/features/auth/store/authSlice";
 export default function FarmlandRequestGateway() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [approveFarmland] = useApproveAssignedFarmlandMutation();
   const [rejectFarmland] = useRejectAssignedFarmlandMutation();
   const currentUser = useAppSelector(selectCurrentUser);
 

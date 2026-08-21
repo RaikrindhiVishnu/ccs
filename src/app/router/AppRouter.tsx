@@ -7,10 +7,28 @@ import { guestRoutes, authRoutes, publicRoutes } from './routes.definitions';
 import { RouteErrorBoundary } from '@/components/common/RouteErrorBoundary';
 
 const PageLoader = () => (
-  <div className="flex min-h-screen items-center justify-center bg-gray-50/50 backdrop-blur-sm">
-    <div className="flex flex-col items-center gap-4">
-      <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-      <p className="text-sm font-medium text-muted-foreground animate-pulse">Loading...</p>
+  <div className="flex h-full w-full flex-col p-4 lg:p-6 gap-6 overflow-hidden bg-[#FAFAFA]">
+    {/* Header Skeleton */}
+    <div className="flex items-center justify-between mb-2">
+      <div className="h-8 w-48 bg-gray-200 animate-pulse rounded-md"></div>
+      <div className="flex gap-2">
+        <div className="hidden md:block h-12 w-[300px] bg-gray-200 animate-pulse rounded-[60px]"></div>
+        <div className="h-12 w-12 bg-gray-200 animate-pulse rounded-full"></div>
+      </div>
+    </div>
+    
+    {/* Body Skeleton - Generic Grid */}
+    <div className="flex flex-col gap-6 flex-1">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6">
+        <div className="h-[140px] bg-gray-200/80 animate-pulse rounded-[32px]"></div>
+        <div className="h-[140px] bg-gray-200/80 animate-pulse rounded-[32px]"></div>
+        <div className="h-[140px] bg-gray-200/80 animate-pulse rounded-[32px]"></div>
+        <div className="h-[140px] bg-gray-200/80 animate-pulse rounded-[32px]"></div>
+      </div>
+      <div className="flex-1 grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
+        <div className="col-span-2 h-full min-h-[300px] bg-gray-200/80 animate-pulse rounded-[32px]"></div>
+        <div className="col-span-1 h-full min-h-[300px] bg-gray-200/80 animate-pulse rounded-[32px]"></div>
+      </div>
     </div>
   </div>
 );

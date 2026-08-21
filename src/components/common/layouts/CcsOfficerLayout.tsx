@@ -4,6 +4,7 @@ import { LayoutDashboard, CircleDashed, MapPin, History, ChevronRight, ChevronLe
 import { useRoleLayout } from '@/core/hooks/useRoleLayout';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '@/features/auth/store/authSlice';
+import { motion } from 'framer-motion';
 
 import logo from '@/assets/glc-logo.svg';
 
@@ -99,7 +100,7 @@ export const CcsOfficerLayout = () => {
 
           {/* Toggle Button */}
           <button 
-            className={`lg:hidden flex items-center justify-center w-[32px] h-[32px] rounded-lg bg-gray-50 border border-gray-100 text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors shrink-0`}
+            className={`flex items-center justify-center w-[32px] h-[32px] rounded-lg bg-gray-50 border border-gray-100 text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors shrink-0`}
             onClick={() => setIsExpanded(!isExpanded)}
             title={isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
           >
@@ -118,12 +119,16 @@ export const CcsOfficerLayout = () => {
             const isFarmlandsListActive = item.label === 'Farmlands List' && 
               location.pathname.includes('/farmland-list');
 
+            const MotionNavLink = motion(NavLink);
+
             return (
-            <NavLink
+            <MotionNavLink
               key={item.path}
               to={item.path}
               end={item.path === '/'}
               title={!isExpanded ? item.label : undefined}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               className={({ isActive }) => {
                 const trulyActive = isActive || isVerificationActive || isFarmlandsListActive;
                 return [
@@ -132,7 +137,7 @@ export const CcsOfficerLayout = () => {
                   'rounded-[12.7px]',
                   'py-[12px]',
                   'font-[\'Plus_Jakarta_Sans\'] text-[15px]',
-                  'transition-all duration-200',
+                  'transition-colors duration-200',
                   trulyActive
                     ? 'bg-[#F2F2F2] text-[#2780C4] font-semibold'
                     : 'text-[#7F8397] font-medium hover:bg-[#F9F9F9] hover:text-[#2780C4]',
@@ -162,7 +167,7 @@ export const CcsOfficerLayout = () => {
                   {isExpanded && <span className="whitespace-nowrap">{item.label}</span>}
                 </>
               )}}
-            </NavLink>
+            </MotionNavLink>
           )})}
         </nav>
 
@@ -171,7 +176,7 @@ export const CcsOfficerLayout = () => {
           <Link 
             to="/ccs/profile" 
             className={`flex flex-col items-center gap-[14.66px] hover:opacity-80 transition-opacity ${isExpanded ? 'w-[92px]' : 'w-full'}`}
-            title={!isExpanded ? fullName : undefined}
+            title={fullName}
           >
             {profileUrl ? (
               <img
@@ -198,7 +203,7 @@ export const CcsOfficerLayout = () => {
 
       {/* ───────────────── MAIN ───────────────── */}
       <section className="flex-1 min-h-0 h-full py-[30px] pr-[30px] pl-[30px] md:pl-0 relative flex flex-col">
-        <div className="h-full w-full overflow-y-auto rounded-[43px] bg-[#F2F2F2] shadow-sm relative z-0">
+        <div data-lenis-prevent="true" className="h-full w-full overflow-y-auto rounded-[43px] bg-[#F2F2F2] shadow-sm relative z-0">
           <Outlet />
         </div>
       </section>

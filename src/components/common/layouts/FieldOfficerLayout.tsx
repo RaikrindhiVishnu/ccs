@@ -74,8 +74,8 @@ export const FieldOfficerLayout = () => {
       )}
 
       <div className="flex-1 w-full flex flex-col relative">
-        <main className={`flex-1 overflow-y-auto ${isLegalDocumentsPage ? "bg-[#F7F7F7] py-0" : "bg-[#F5F5F5] py-[clamp(1rem,3vh,2rem)]"}`}>
-          <div className={isLegalDocumentsPage ? "w-full" : "w-full px-[4vw]"}>
+        <main data-lenis-prevent="true" className={`flex-1 overflow-y-auto ${isLegalDocumentsPage ? "bg-[#F7F7F7] py-0" : "bg-[#F5F5F5] py-[clamp(1rem,3vh,2rem)]"}`}>
+          <div className={`${isLegalDocumentsPage ? "" : "px-[clamp(1rem,3vw,2rem)] max-w-[1920px] mx-auto w-full"}`}>
             <Outlet />
           </div>
         </main>

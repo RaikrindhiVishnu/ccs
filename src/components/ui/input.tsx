@@ -41,6 +41,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           "bg-[var(--surface-card)]",
           "border border-[var(--border-default)]",
           "rounded-[var(--radius-dropdown)]",
+          "transition-all duration-200 ease-in-out focus-within:ring-2 focus-within:ring-[var(--brand-500)] focus-within:border-transparent",
           wrapperClassName
         )
       : cn(
@@ -49,6 +50,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           variant === "white"
             ? "bg-[var(--surface-card)]"
             : "bg-[var(--input)]",
+          "transition-all duration-200 ease-in-out focus-within:ring-2 focus-within:ring-[var(--brand-500)]",
           wrapperClassName
         );
 

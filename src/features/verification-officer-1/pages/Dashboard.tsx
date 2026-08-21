@@ -131,7 +131,7 @@ export const Dashboard = () => {
               <ChevronDown className="w-4 h-4 text-[#5D6B6B]/60" />
             </button>
             {activeDropdown === "location" && (
-              <div className="absolute right-0 mt-2 bg-white border border-[#D9DFE0] rounded-2xl shadow-xl w-48 z-20 py-2 max-h-56 overflow-y-auto no-scrollbar">
+              <div data-lenis-prevent="true" className="absolute right-0 mt-2 bg-white border border-[#D9DFE0] rounded-2xl shadow-xl w-48 z-20 py-2 max-h-56 overflow-y-auto no-scrollbar">
                 <button onClick={() => { setSelectedLocation("all"); setActiveDropdown(null); }} className="w-full text-left px-4 py-2 hover:bg-gray-50 font-plus-jakarta text-sm text-[#1E1E1E] font-medium border-none bg-transparent cursor-pointer">All Locations</button>
                 {locations.map(loc => (
                   <button key={loc} onClick={() => { setSelectedLocation(loc); setActiveDropdown(null); }} className="w-full text-left px-4 py-2 hover:bg-gray-50 font-plus-jakarta text-sm text-[#1E1E1E] font-medium border-none bg-transparent cursor-pointer">{loc}</button>

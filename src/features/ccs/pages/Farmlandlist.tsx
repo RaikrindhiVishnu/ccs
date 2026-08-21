@@ -11,7 +11,7 @@ import { transformTable } from "@/features/role-manager/utils/utils";
 import farmlandListIcon from "@/assets/farmland-list.svg";
 
 /* ── page ── */
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 20;
 
 export default function FarmlandList() {
   const navigate = useNavigate();
@@ -350,10 +350,9 @@ export default function FarmlandList() {
 
         <div className="flex flex-col gap-3 xl:gap-4">
           {isLoading ? (
-            <div className="py-12 flex flex-col items-center justify-center text-gray-500 font-medium">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#BDD327] mb-4"></div>
-              Loading farmland list...
-            </div>
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="w-full h-[140px] rounded-[16px] bg-gray-200/60 animate-pulse border border-[#E5E7EB]" />
+            ))
           ) : pagedData.length > 0 ? (
             pagedData.map((item) => (
               <FarmlandListCard

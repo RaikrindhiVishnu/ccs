@@ -264,7 +264,7 @@ const RegionalOfficerDashboard: React.FC = () => {
           </div>
 
           {/* Recent Activity / Transaction History */}
-          <div className="bg-white rounded-[22.5px] p-6 shadow-sm border border-gray-50 h-auto lg:h-[435px] overflow-y-auto w-full shrink-0 flex flex-col">
+          <div data-lenis-prevent="true" className="bg-white rounded-[22.5px] p-6 shadow-sm border border-gray-50 h-auto lg:h-[435px] overflow-y-auto w-full shrink-0 flex flex-col">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-[12.75px] font-plus-jakarta text-black">Recent Activity</h3>
               <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center">

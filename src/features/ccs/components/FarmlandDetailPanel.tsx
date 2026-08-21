@@ -79,7 +79,7 @@ export default function FarmlandDetailPanel({
             </div>
 
             {/* Scrollable content */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar px-[24px] pt-[24px] pb-[20px] flex flex-col gap-[24px]">
+            <div data-lenis-prevent="true" className="flex-1 overflow-y-auto custom-scrollbar px-[24px] pt-[24px] pb-[20px] flex flex-col gap-[24px]">
 
               {/* Name */}
               <div className="flex flex-col gap-[4px]">

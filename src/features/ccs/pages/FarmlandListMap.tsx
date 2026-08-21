@@ -6,6 +6,8 @@ import { SatelliteMap } from "@/features/satellite-history/components/SatelliteM
 import { useWaybackSource } from "@/features/satellite-history/hooks/useWaybackSource";
 import { useGetAssignedFarmlandDetailsMutation, useGetAllAssignedFarmlandsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
 import "@/features/satellite-history/satellite-history.css";
+import { AnimatedPage } from "@/components/animations/AnimatedPage";
+import { motion } from 'framer-motion';
 
 export default function FarmlandListMap() {
   const { id } = useParams<{ id: string }>();
@@ -206,12 +208,17 @@ export default function FarmlandListMap() {
   }
 
   return (
-    <div className="relative h-full overflow-hidden">
+    <AnimatedPage className="relative h-full overflow-hidden">
       <div className="fixed inset-0 w-screen h-screen flex items-center justify-center bg-[#FFFFFF] z-[100] opacity-100 pointer-events-auto">
         <div className="relative w-full h-full overflow-hidden bg-[#131600]">
           {/* The Map */}
           {!isLoading && farmlandDetails && (
-            <div className="absolute inset-0 z-0">
+            <motion.div 
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="absolute inset-0 z-0"
+            >
               {normalizedPolygon ? (
                 <>
                   <SatelliteMap
@@ -245,7 +252,7 @@ export default function FarmlandListMap() {
                   </div>
                 </div>
               )}
-            </div>
+            </motion.div>
           )}
 
           {/* The Detail Panel */}
@@ -256,17 +263,8 @@ export default function FarmlandListMap() {
             onHistoricalAnalysis={() => navigate(`/farmland-request/analysis/${id}`)}
             hideAnalysisButton={true}
           />
-
-          {isLoading && (
-            <div className="absolute inset-0 z-[110] bg-white/50 backdrop-blur-sm flex items-center justify-center">
-              <div className="flex flex-col items-center justify-center text-[#2780C4] font-medium gap-4">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2780C4]"></div>
-                Loading details...
-              </div>
-            </div>
-          )}
         </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 }

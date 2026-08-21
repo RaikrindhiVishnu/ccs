@@ -2,6 +2,7 @@ import React from "react";
 import { MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
+import { motion } from "framer-motion";
 import defaultProfileImg from "@/assets/profile.svg";
 
 interface VO3FarmlandCardProps {
@@ -52,7 +53,13 @@ export const VO3FarmlandCard: React.FC<VO3FarmlandCardProps> = ({
 
         {/* Priority Badge */}
         {priority && (
-          <div className="absolute flex items-center gap-[clamp(0.2025rem,0.42vw,0.75rem)] left-[clamp(0.5625rem,1.18vw,2.1rem)] top-[clamp(0.63rem,1.32vw,2.35rem)] z-10 px-[clamp(0.375rem,0.78vw,1.38rem)] py-[clamp(0.1875rem,0.39vw,0.69rem)] bg-black/40 backdrop-blur-[6px] rounded-full border border-white/15 text-white select-none">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="absolute flex items-center gap-[clamp(0.2025rem,0.42vw,0.75rem)] left-[clamp(0.5625rem,1.18vw,2.1rem)] top-[clamp(0.63rem,1.32vw,2.35rem)] z-10 px-[clamp(0.375rem,0.78vw,1.38rem)] py-[clamp(0.1875rem,0.39vw,0.69rem)] bg-black/40 backdrop-blur-[6px] rounded-full border border-white/15 text-white select-none"
+          >
             <span
               className={`w-[clamp(0.2625rem,0.56vw,0.99rem)] h-[clamp(0.2625rem,0.56vw,0.99rem)] rounded-full shrink-0 ${
                 priority === "HIGH"
@@ -68,7 +75,7 @@ export const VO3FarmlandCard: React.FC<VO3FarmlandCardProps> = ({
             >
               {priority} Priority
             </Typography>
-          </div>
+          </motion.div>
         )}
 
         {/* Gradient Overlay for Location readability */}

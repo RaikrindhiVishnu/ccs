@@ -2,135 +2,97 @@ import { useEffect, useState } from 'react';
 import { format, startOfWeek, addDays } from 'date-fns';
 import { Typography } from '@/components/ui/typography';
 import { useGetDashboardScreeningOutcomesMutation } from '@/features/ccs/api/dashboardApi';
+import { motion } from 'framer-motion';
 
 interface ScreeningChartProps {
   endDate?: Date | null;
 }
 
 export default function ScreeningChart({ endDate }: ScreeningChartProps) {
-  const [getScreeningOutcomes, { data }] = useGetDashboardScreeningOutcomesMutation();
+  const [getScreeningOutcomes, { data, isLoading }] = useGetDashboardScreeningOutcomesMutation();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    // If a custom endDate is provided, we use it as the reference date for the last 7 days.
-    // Otherwise, we default to TODAY.
     const targetDate = endDate ? format(endDate, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd');
-    
-    getScreeningOutcomes({
-      currentDate: targetDate
-    });
+    getScreeningOutcomes({ currentDate: targetDate });
   }, [getScreeningOutcomes, endDate]);
 
-  // Handle data wrapper if backend sends it
+  if (isLoading) {
+    return (
+      <div className="flex flex-col rounded-[33px] bg-[#F9F9F9] w-full p-[31px] pt-[32px] min-h-[245px] animate-pulse">
+        <div className="h-4 bg-gray-200 rounded w-1/3 mb-[33px]"></div>
+        <div className="flex flex-row justify-between w-full flex-wrap gap-8 items-center mt-4">
+          <div className="w-[211px] h-[129.5px] bg-gray-200 rounded"></div>
+          <div className="flex flex-col gap-[24px] w-[100px]">
+            <div className="h-4 bg-gray-200 rounded w-full"></div>
+            <div className="h-4 bg-gray-200 rounded w-full"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const chartDataArray = Array.isArray((data as any)?.data) ? (data as any).data : (Array.isArray(data) ? data : []);
+  const maxDaily = Math.max(1, ...chartDataArray.map((item: any) => (item.approvedFarmlands || 0) + (item.rejectedFarmlands || 0)));
 
-  // Compute dynamic heights based on max daily total to scale bars to max 100px
-  const maxDaily = Math.max(
-    1,
-    ...chartDataArray.map((item: any) => (item.approvedFarmlands || 0) + (item.rejectedFarmlands || 0))
-  );
-
-  // Generate the 7 days of the week (Sun to Sat) for the referenceDate
   const referenceDate = endDate || new Date();
-  const weekStart = startOfWeek(referenceDate); // Defaults to Sunday
+  const weekStart = startOfWeek(referenceDate);
   const currentWeekDays = Array.from({ length: 7 }).map((_, i) => addDays(weekStart, i));
   const days = currentWeekDays.map(d => format(d, 'EEE'));
 
-  // Map backend data to these exact 7 days
   const paddedData = currentWeekDays.map(day => {
     const formattedDay = format(day, 'yyyy-MM-dd');
     const found = chartDataArray.find((item: any) => item.date === formattedDay);
     return found || { approvedFarmlands: 0, rejectedFarmlands: 0 };
   });
 
-  // Calculate pixel heights (0 to 100 max)
   const blueHeights = paddedData.map(item => ((item.approvedFarmlands || 0) / maxDaily) * 100);
   const cyanHeights = paddedData.map(item => ((item.rejectedFarmlands || 0) / maxDaily) * 100);
 
-  const barW = 7; // 7px stroke width based on Figma
-  const barGap = 30; // Spaced evenly for 7 bars over ~187px
+  const barW = 7;
+  const barGap = 30;
 
   return (
-    <div
-      className="
-        flex flex-col rounded-[33px] bg-[#F9F9F9]
-        w-full p-[31px] pt-[32px] min-h-[245px]
-      "
-    >
+    <div className="flex flex-col rounded-[33px] bg-[#F9F9F9] w-full p-[31px] pt-[32px] min-h-[245px]">
       <div className="flex justify-between items-center mb-[33px]">
-        <Typography
-          variant="h3"
-          className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[17px] tracking-[1px] uppercase text-[#000000] ml-[6px]"
-        >
+        <Typography variant="h3" className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[17px] tracking-[1px] uppercase text-[#000000] ml-[6px]">
           Daily Screening Outcomes
         </Typography>
-        {/* We can show total aggregated from API here if needed */}
       </div>
 
       <div className="flex flex-row justify-between w-full flex-wrap gap-8 items-center">
-        {/* Chart container */}
         <div className="relative w-[211px] h-[129.5px]">
-
-          {/* SVG for Bars */}
           <div className="absolute left-[11px] top-[0px] w-[187px] h-[100px]">
-            <svg
-              width="100%"
-              height="100%"
-              viewBox="0 0 187 100"
-              className="overflow-visible"
-            >
+            <svg width="100%" height="100%" viewBox="0 0 187 100" className="overflow-visible">
               {paddedData.slice(0, 7).map((_, i) => {
                 const x = i * barGap;
-                // Minimum visible height for 0 is 0. If there is a value, draw it.
                 const bH = blueHeights[i] > 0 ? Math.max(blueHeights[i], barW) : 0;
                 const cH = cyanHeights[i] > 0 ? Math.max(cyanHeights[i], barW) : 0;
-
                 const r = barW / 2;
                 const yTopBlue = 100 - bH + r;
                 const yMid = 100 - cH;
                 const yBotCyan = 100 - r;
 
                 return (
-                  <g 
-                    key={i}
-                    onMouseEnter={() => setHoveredIndex(i)}
-                    onMouseLeave={() => setHoveredIndex(null)}
-                    className="cursor-pointer hover:opacity-80 transition-opacity"
-                  >
-                    {/* Invisible wider line for easier hover area */}
-                    <line
-                      x1={x}
-                      y1={0}
-                      x2={x}
-                      y2={100}
-                      stroke="transparent"
-                      strokeWidth={20}
-                    />
+                  <g key={i} onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)} className="cursor-pointer hover:opacity-80 transition-opacity">
+                    <line x1={x} y1={0} x2={x} y2={100} stroke="transparent" strokeWidth={20} />
                     
-                    {/* Blue bar (Approved) */}
                     {bH > 0 && (
-                      <line
-                        x1={x}
-                        y1={yTopBlue}
-                        x2={x}
-                        y2={yMid - (cH > 0 ? 1 : 0)} // slight gap if both exist
-                        stroke="#2780C4"
-                        strokeWidth={barW}
-                        strokeLinecap="round"
-                        className="pointer-events-none"
+                      <motion.line
+                        initial={{ y1: yMid - (cH > 0 ? 1 : 0), y2: yMid - (cH > 0 ? 1 : 0) }}
+                        animate={{ y1: yTopBlue, y2: yMid - (cH > 0 ? 1 : 0) }}
+                        transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
+                        x1={x} x2={x}
+                        stroke="#2780C4" strokeWidth={barW} strokeLinecap="round" className="pointer-events-none"
                       />
                     )}
-                    {/* Cyan bar (Rejected) */}
                     {cH > 0 && (
-                      <line
-                        x1={x}
-                        y1={yMid}
-                        x2={x}
-                        y2={yBotCyan}
-                        stroke="#37E8DD"
-                        strokeWidth={barW}
-                        strokeLinecap="round"
-                        className="pointer-events-none"
+                      <motion.line
+                        initial={{ y1: yBotCyan, y2: yBotCyan }}
+                        animate={{ y1: yMid, y2: yBotCyan }}
+                        transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
+                        x1={x} x2={x}
+                        stroke="#37E8DD" strokeWidth={barW} strokeLinecap="round" className="pointer-events-none"
                       />
                     )}
                   </g>

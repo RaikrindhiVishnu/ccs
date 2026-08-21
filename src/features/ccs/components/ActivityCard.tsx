@@ -1,4 +1,5 @@
 import { Typography } from '@/components/ui/typography';
+import { motion } from 'framer-motion';
 
 type Props = {
   id: string;
@@ -8,7 +9,11 @@ type Props = {
 
 export default function ActivityCard({ id, description, timeAgo }: Props) {
   return (
-    <div className="relative flex flex-col items-start min-h-[47px] gap-0">
+    <motion.div 
+      whileHover={{ x: 8 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className="relative flex flex-col items-start min-h-[47px] gap-0 cursor-pointer p-2 -ml-2 rounded-lg hover:bg-gray-50/50"
+    >
       <div className="flex w-full items-center justify-between h-[24px]">
         <Typography
           variant="span"
@@ -30,6 +35,6 @@ export default function ActivityCard({ id, description, timeAgo }: Props) {
       >
         {description}
       </Typography>
-    </div>
+    </motion.div>
   );
 }

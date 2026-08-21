@@ -265,15 +265,6 @@ export default function FarmlandRequestMap() {
             onClose={() => navigate('/farmland-request')}
             onHistoricalAnalysis={() => navigate(`/farmland-request/analysis/${id}`)}
           />
-
-          {isLoading && (
-            <div className="absolute inset-0 z-[110] bg-white/50 backdrop-blur-sm flex items-center justify-center">
-              <div className="flex flex-col items-center justify-center text-[#2780C4] font-medium gap-4">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2780C4]"></div>
-                Loading details...
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

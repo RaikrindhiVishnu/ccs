@@ -56,7 +56,7 @@ export const RoleManagerLayout = () => {
       </div>
 
       {/* ── Page content — full height, no header ──────────────────────────── */}
-      <main className="flex-1 overflow-auto">
+      <main data-lenis-prevent="true" className="flex-1 overflow-auto">
         <Outlet />
       </main>
     </div>

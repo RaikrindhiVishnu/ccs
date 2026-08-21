@@ -1,5 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { Typography } from '@/components/ui/typography';
+import { AnimatedNumber } from '@/components/animations/AnimatedNumber';
 
 function ScreeningPaceCard({ value = 76 }: { value?: number }) {
   const totalTicks = 18;
@@ -38,7 +39,7 @@ function ScreeningPaceCard({ value = 76 }: { value?: number }) {
             variant="span"
             className="font-['Plus_Jakarta_Sans'] font-semibold text-[30px] leading-[36px] text-[#0E0D3D] mt-[-1.77px]"
           >
-            {value}
+            <AnimatedNumber value={value.toString()} />
           </Typography>
           <Typography
             variant="span"
@@ -64,7 +65,7 @@ function ScreeningPaceCard({ value = 76 }: { value?: number }) {
         <div 
           className={`absolute bottom-[16px] font-['Plus_Jakarta_Sans'] font-semibold text-[#0E0D3D] tracking-[-1px] ${String(value).length > 3 ? 'text-[24px]' : 'text-[30px]'}`}
         >
-          {Number.isInteger(value) ? value : Number(value).toFixed(1)}%
+          <AnimatedNumber value={Number.isInteger(value) ? value.toString() : Number(value).toFixed(1)} />%
         </div>
       </div>
     </Card>
@@ -72,7 +73,6 @@ function ScreeningPaceCard({ value = 76 }: { value?: number }) {
 }
 
 function AverageReviewTimeCard({ time = "1.2 hr" }: { time?: string }) {
-  // Exact coordinates from Figma export for pixel-perfect match
   const whiteBars = [
     { x: 30.96, y: 114.10, h: 13.27 }, { x: 43.34, y: 105.26, h: 11.50 },
     { x: 55.73, y: 92.88,  h: 16.81 }, { x: 68.99, y: 112.34, h: 15.92 },
@@ -117,7 +117,7 @@ function AverageReviewTimeCard({ time = "1.2 hr" }: { time?: string }) {
             variant="span"
             className="font-['Plus_Jakarta_Sans'] font-semibold text-[42px] leading-[42px] text-[#FFFFFF]"
           >
-            {time?.split(' ')[0]}
+            <AnimatedNumber value={time?.split(' ')[0] || "0"} />
           </Typography>
           <Typography
             variant="span"
@@ -152,7 +152,7 @@ interface PipelineStatusProps {
 }
 
 export default function PipelineStatus({ startDate, endDate }: PipelineStatusProps) {
-  const [getPipelineStatus, { data }] = useGetDashboardPipelineStatusMutation();
+  const [getPipelineStatus, { data, isLoading }] = useGetDashboardPipelineStatusMutation();
 
   useEffect(() => {
     const payload = startDate && endDate ? {
@@ -165,6 +165,15 @@ export default function PipelineStatus({ startDate, endDate }: PipelineStatusPro
 
     getPipelineStatus(payload);
   }, [getPipelineStatus, startDate, endDate]);
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-2 gap-[19px]">
+        <div className="h-[194px] w-full rounded-[23.18px] bg-gray-200 animate-pulse" />
+        <div className="h-[194px] w-full rounded-[23.18px] bg-gray-200 animate-pulse" />
+      </div>
+    );
+  }
 
   const percentage = (data as any)?.["screening Pace"] || data?.screeningPercentage || 0;
   

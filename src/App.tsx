@@ -3,11 +3,16 @@ import { store } from "./app/store/store";
 import { AppRouter } from "./app/router/AppRouter";
 import { NotificationHandler } from "./core/firebase/NotificationHandler";
 import { Toaster } from "sonner";
+import { SmoothScroll } from "./components/animations/SmoothScroll";
+
 function App() {
   return (
     <Provider store={store}>
       {" "}
-      <NotificationHandler /> <AppRouter />
+      <NotificationHandler /> 
+      <SmoothScroll>
+        <AppRouter />
+      </SmoothScroll>
       <Toaster richColors position="top-right" />
     </Provider>
   );
