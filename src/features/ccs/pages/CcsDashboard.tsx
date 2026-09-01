@@ -78,16 +78,30 @@ export default function CcsDashboard() {
       let timeAgo = "Recently";
       if (timestamp) {
         try {
-          timeAgo = formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+          let dateStr = timestamp;
+          if (typeof dateStr === 'string' && !dateStr.endsWith('Z') && !dateStr.match(/[+-]\d{2}:?\d{2}$/)) {
+            if (dateStr.includes(' ')) {
+              dateStr = dateStr.replace(' ', 'T');
+            }
+            if (!dateStr.endsWith('Z')) {
+              dateStr += 'Z';
+            }
+          }
+          let date = new Date(dateStr);
+          if (date > new Date()) {
+            date = new Date();
+          }
+          timeAgo = formatDistanceToNow(date, { addSuffix: true });
         } catch (e) {
           // fallback if date is invalid
         }
       }
       let displayStatus = item.status;
       if (typeof item.status === 'string') {
-        if (item.status.toUpperCase() === "REVRTD") displayStatus = "Rejected";
+        if (item.status.toUpperCase() === "REVRTD" || item.status.toUpperCase() === "REJCTD") displayStatus = "Rejected";
         else if (item.status.toUpperCase() === "APPRVD") displayStatus = "Approved";
         else if (item.status.toUpperCase() === "PENDNG") displayStatus = "Pending";
+        else if (item.status.toUpperCase() === "INPRGS") displayStatus = "In Progress";
         else displayStatus = item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase();
       }
 
@@ -103,13 +117,13 @@ export default function CcsDashboard() {
     : [];
 
   return (
-    <div className="flex flex-col w-full h-full px-4 py-4 lg:px-6 lg:py-6 overflow-x-hidden">
+    <div className="flex flex-col w-full h-full px-2 pt-0 pb-2 lg:px-4 lg:pt-0 lg:pb-2 overflow-x-hidden">
       {/* Header */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full shrink-0 relative z-50 mb-[39px]"
+        className="w-full shrink-0 sticky top-0 z-50 mb-0 bg-[#F2F2F2] pt-4 pb-2"
       >
         <DashboardHeader
           startDate={startDate}
@@ -122,64 +136,61 @@ export default function CcsDashboard() {
       {/* Main Content Grid */}
       <StaggerContainer className="grid grid-cols-1 xl:grid-cols-[1.2fr_1fr] gap-[19px] items-stretch w-full">
 
-        {/* ════ LEFT COLUMN ════ */}
-        <motion.div variants={fadeUp} className="flex flex-col w-full h-full justify-between">
+        {/* ── LEFT COLUMN ── */}
+        <motion.div variants={fadeUp} className="flex flex-col w-full gap-[24px] 2xl:gap-[36px]">
+          {/* Stats Section */}
+          <StaggerContainer className="grid grid-cols-2 gap-[18px]">
+            {dynamicStats.map((item, index) => (
+              <motion.div variants={fadeUp} key={item.title} className={index === 0 ? "col-span-2" : ""}>
+                <StatsCard
+                  title={item.title}
+                  value={item.value}
+                  icon={item.icon}
+                  large={index === 0}
+                  isLoading={isFarmlandLoading}
+                />
+              </motion.div>
+            ))}
+          </StaggerContainer>
 
-          <div className="flex flex-col w-full gap-[36px]">
-            {/* Stats Section */}
-            <StaggerContainer className="grid grid-cols-2 gap-[18px]">
-              {dynamicStats.map((item, index) => (
-                <motion.div variants={fadeUp} key={item.title} className={index === 0 ? "col-span-2" : ""}>
-                  <StatsCard
-                    title={item.title}
-                    value={item.value}
-                    icon={item.icon}
-                    large={index === 0}
-                    isLoading={isFarmlandLoading}
-                  />
-                </motion.div>
-              ))}
-            </StaggerContainer>
-
-            {/* Pipeline Status */}
-            <motion.div variants={fadeUp} className="flex flex-col">
-              <Typography
-                variant="h2"
-                className="mb-[29px] font-['Plus_Jakarta_Sans'] font-extrabold uppercase leading-[120%] text-[#171717] text-[24px]"
-              >
-                PIPELINE STATUS
-              </Typography>
-              <PipelineStatus startDate={startDate} endDate={endDate} />
-            </motion.div>
-          </div>
+          {/* Pipeline Status */}
+          <motion.div variants={fadeUp} className="flex flex-col">
+            <Typography
+              variant="h2"
+              className="mb-[24px] font-['Plus_Jakarta_Sans'] font-extrabold uppercase leading-[120%] text-[#171717] text-[20px] 2xl:text-[24px]"
+            >
+              PIPELINE STATUS
+            </Typography>
+            <PipelineStatus startDate={startDate} endDate={endDate} />
+          </motion.div>
 
           {/* Alert Banner */}
-          <motion.div variants={fadeUp} className="mt-auto pt-[29px]">
+          {/* <motion.div variants={fadeUp} className="mt-auto pt-[29px]">
             <AlertBanner />
-          </motion.div>
+          </motion.div> */}
         </motion.div>
 
-        {/* ════ RIGHT PANEL ════ */}
+        {/* ── RIGHT PANEL ── */}
         <motion.div
           variants={fadeUp}
-          className="flex flex-col bg-[#FFFFFF] rounded-[33px] px-[31px] pt-[30px] pb-[30px] w-full h-full relative"
+          className="flex flex-col bg-[#FFFFFF] rounded-[24px] px-4 pt-4 pb-1 2xl:px-6 2xl:pt-6 2xl:pb-2 w-full h-full min-h-0 relative"
         >
-          <div className="flex-none mb-[30px]">
+          <div className="flex-none mb-2 2xl:mb-4">
             <ScreeningChart endDate={endDate} />
           </div>
 
-          <div className="flex-1 flex flex-col mt-[15px] min-h-0">
+          <div className="flex-1 flex flex-col mt-0 2xl:mt-2 min-h-0">
             <Typography
               variant="h3"
-              className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[17px] tracking-[1px] uppercase text-[#000000] mb-[24px]"
+              className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[17px] tracking-[1px] uppercase text-[#000000] mb-2 2xl:mb-3"
             >
               RECENT ACTIVITY
             </Typography>
-            <div data-lenis-prevent="true" className="flex flex-col gap-[24px] overflow-y-auto pr-2 pb-2 flex-1">
+            <div data-lenis-prevent="true" className="flex flex-col gap-[4px] 2xl:gap-[6px] overflow-y-auto pr-2 pb-2 flex-1">
               {isActivitiesLoading ? (
-                <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }} className="flex flex-col gap-[24px]">
+                <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }} className="flex flex-col gap-[4px] 2xl:gap-[6px]">
                   {[1, 2, 3].map((i) => (
-                    <motion.div variants={fadeUp} key={i} className="flex flex-col gap-[24px]">
+                    <motion.div variants={fadeUp} key={i} className="flex flex-col gap-[4px] 2xl:gap-[6px]">
                       <div className="flex gap-4">
                         <Skeleton className="h-10 w-10 rounded-full" />
                         <div className="flex flex-col gap-2 flex-1">
@@ -192,9 +203,9 @@ export default function CcsDashboard() {
                   ))}
                 </motion.div>
               ) : activities.length > 0 ? (
-                <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }} className="flex flex-col gap-[24px]">
+                <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }} className="flex flex-col gap-[4px] 2xl:gap-[6px]">
                   {activities.map((item: any, index: number) => (
-                    <motion.div variants={fadeUp} key={index} className="flex flex-col gap-[24px]">
+                    <motion.div variants={fadeUp} key={index} className="flex flex-col gap-[4px] 2xl:gap-[6px]">
                       <ActivityCard
                         id={item.id}
                         description={item.description}

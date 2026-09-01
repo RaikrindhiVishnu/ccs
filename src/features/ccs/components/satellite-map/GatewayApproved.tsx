@@ -9,6 +9,7 @@ export type GatewayApprovedProps = {
   onBack: () => void;
   onProceed: (fees: { roFee: number; foFee: number; ioFee: number }) => void;
   farmlandDetails?: any;
+  isSidebarExpanded?: boolean;
 };
 
 function CheckmarkHeader() {
@@ -61,7 +62,7 @@ function TotalSummary({ total }: { total: string }) {
   );
 }
 
-export default function GatewayApproved({ onBack, onProceed, farmlandDetails }: GatewayApprovedProps) {
+export default function GatewayApproved({ onBack, onProceed, farmlandDetails, isSidebarExpanded = false }: GatewayApprovedProps) {
   // Extract officers and fees safely
   const officers = farmlandDetails?.assigned_officers || farmlandDetails?.officers || [];
   
@@ -111,17 +112,13 @@ export default function GatewayApproved({ onBack, onProceed, farmlandDetails }: 
     <div className="relative w-full h-full bg-[#F2F2F2] md:rounded-[32px] overflow-y-auto custom-scrollbar flex flex-col items-center">
       
       {/* Go Back Button */}
-      <div className="w-full flex justify-start pt-[24px] pl-[24px] md:absolute md:top-[32px] md:left-[52px] md:p-0 z-10">
-        <button
-          onClick={onBack}
-          className="flex items-center justify-center gap-[8px] w-[135px] h-[52px] bg-[#FFFFFF] rounded-[60px] shadow-[0px_0px_4px_rgba(0,0,0,0.12)] hover:bg-gray-50 transition-colors"
-        >
-          <ArrowLeft className="w-[24px] h-[24px] text-[#353535]" strokeWidth={1.4} />
-          <span className="font-['Inter'] font-normal text-[16px] leading-[18px] text-[#353535]">
-            Go back
-          </span>
-        </button>
-      </div>
+      <button
+        onClick={onBack}
+        className="absolute z-50 top-[16px] md:top-[37px] left-[20px] md:left-[24px] w-[52px] h-[52px] bg-[#FFFFFF] rounded-[60px] flex items-center justify-center shadow-[0px_0px_4px_rgba(0,0,0,0.12)] hover:bg-gray-50 transition-colors"
+        title="Go back"
+      >
+        <ArrowLeft className="w-[24px] h-[24px] text-[#353535]" strokeWidth={1.4} />
+      </button>
 
       <CheckmarkHeader />
 

@@ -24,34 +24,34 @@ function ScreeningPaceCard({ value = 76 }: { value?: number }) {
       className="
         relative flex flex-col rounded-[23.18px] border-0
         bg-[#FFFFFF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]
-        h-[194px] w-full
+        h-[140px] 2xl:h-[194px] w-full
       "
     >
-      <div className="absolute top-[20.05px] left-[20.5px] right-[20px] flex items-start justify-between px-[10px]">
+      <div className="absolute top-[12px] 2xl:top-[20.05px] left-[16px] 2xl:left-[20.5px] right-[16px] 2xl:right-[20px] flex items-start justify-between px-[10px]">
         <Typography
           variant="span"
-          className="font-['Plus_Jakarta_Sans'] font-bold text-[14.15px] leading-[17px] text-[#0E0D3D]"
+          className="font-['Plus_Jakarta_Sans'] font-bold text-[12px] 2xl:text-[14.15px] leading-[15px] 2xl:leading-[17px] text-[#0E0D3D]"
         >
           Screening Pace
         </Typography>
         <div className="flex items-start leading-none gap-[2px]">
           <Typography
             variant="span"
-            className="font-['Plus_Jakarta_Sans'] font-semibold text-[30px] leading-[36px] text-[#0E0D3D] mt-[-1.77px]"
+            className="font-['Plus_Jakarta_Sans'] font-semibold text-[24px] 2xl:text-[30px] leading-[28px] 2xl:leading-[36px] text-[#0E0D3D] mt-0 2xl:mt-[-1.77px]"
           >
             <AnimatedNumber value={value.toString()} />
           </Typography>
           <Typography
             variant="span"
-            className="mt-[1.25px] font-['Plus_Jakarta_Sans'] font-semibold text-[19.5px] leading-[23px] text-[#9090AE]"
+            className="mt-0 2xl:mt-[1.25px] font-['Plus_Jakarta_Sans'] font-semibold text-[14px] 2xl:text-[19.5px] leading-[18px] 2xl:leading-[23px] text-[#9090AE]"
           >
             %
           </Typography>
         </div>
       </div>
 
-      <div className="flex flex-1 items-center justify-center mt-12 relative">
-        <svg className="w-[185px]" height="95.55" viewBox="0 0 160 85">
+      <div className="flex flex-1 items-center justify-center mt-6 2xl:mt-12 relative">
+        <svg className="w-[140px] 2xl:w-[185px]" height="100%" viewBox="0 0 160 85">
           {ticks.map((t, i) => (
             <line
               key={i}
@@ -63,7 +63,7 @@ function ScreeningPaceCard({ value = 76 }: { value?: number }) {
           ))}
         </svg>
         <div 
-          className={`absolute bottom-[16px] font-['Plus_Jakarta_Sans'] font-semibold text-[#0E0D3D] tracking-[-1px] ${String(value).length > 3 ? 'text-[24px]' : 'text-[30px]'}`}
+          className={`absolute bottom-[10px] 2xl:bottom-[16px] font-['Plus_Jakarta_Sans'] font-semibold text-[#0E0D3D] tracking-[-1px] ${String(value).length > 3 ? 'text-[20px] 2xl:text-[24px]' : 'text-[24px] 2xl:text-[30px]'}`}
         >
           <AnimatedNumber value={Number.isInteger(value) ? value.toString() : Number(value).toFixed(1)} />%
         </div>
@@ -102,26 +102,26 @@ function AverageReviewTimeCard({ time = "1.2 hr" }: { time?: string }) {
       className="
         relative flex flex-col rounded-[23.18px] border-0
         bg-[#2780C4] shadow-[0px_1px_2px_rgba(0,0,0,0.05)]
-        h-[194px] w-full
+        h-[140px] 2xl:h-[194px] w-full
       "
     >
-      <div className="absolute top-[20.3px] left-[20.5px] right-[20px] flex items-start justify-between px-[10px] z-10">
+      <div className="absolute top-[12px] 2xl:top-[20.3px] left-[16px] 2xl:left-[20.5px] right-[16px] 2xl:right-[20px] flex items-start justify-between px-[10px] z-10">
         <Typography
           variant="span"
-          className="font-['Plus_Jakarta_Sans'] font-bold text-[14.15px] leading-[17px] text-[#FFFFFF] mt-[4px]"
+          className="font-['Plus_Jakarta_Sans'] font-bold text-[12px] 2xl:text-[14.15px] leading-[15px] 2xl:leading-[17px] text-[#FFFFFF] mt-[2px] 2xl:mt-[4px]"
         >
           Average Review Time
         </Typography>
         <div className="flex items-baseline gap-[4px]">
           <Typography
             variant="span"
-            className="font-['Plus_Jakarta_Sans'] font-semibold text-[42px] leading-[42px] text-[#FFFFFF]"
+            className="font-['Plus_Jakarta_Sans'] font-semibold text-[32px] 2xl:text-[42px] leading-[32px] 2xl:leading-[42px] text-[#FFFFFF]"
           >
             <AnimatedNumber value={time?.split(' ')[0] || "0"} />
           </Typography>
           <Typography
             variant="span"
-            className="font-['Plus_Jakarta_Sans'] font-semibold text-[22px] leading-[22px] text-[#FFFFFF]"
+            className="font-['Plus_Jakarta_Sans'] font-semibold text-[16px] 2xl:text-[22px] leading-[16px] 2xl:leading-[22px] text-[#FFFFFF]"
           >
             {time?.split(' ')[1] || 'hr'}
           </Typography>
@@ -168,9 +168,9 @@ export default function PipelineStatus({ startDate, endDate }: PipelineStatusPro
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 gap-[19px]">
-        <div className="h-[194px] w-full rounded-[23.18px] bg-gray-200 animate-pulse" />
-        <div className="h-[194px] w-full rounded-[23.18px] bg-gray-200 animate-pulse" />
+      <div className="grid grid-cols-2 gap-[12px] 2xl:gap-[19px]">
+        <div className="h-[140px] 2xl:h-[194px] w-full rounded-[23.18px] bg-gray-200 animate-pulse" />
+        <div className="h-[140px] 2xl:h-[194px] w-full rounded-[23.18px] bg-gray-200 animate-pulse" />
       </div>
     );
   }
@@ -183,7 +183,7 @@ export default function PipelineStatus({ startDate, endDate }: PipelineStatusPro
     : data?.totalTimeTakenMinutes ? `${(data.totalTimeTakenMinutes / 60).toFixed(1)} hr` : "0.0 hr";
 
   return (
-    <div className="grid grid-cols-2 gap-[19px]">
+    <div className="grid grid-cols-2 gap-[12px] 2xl:gap-[19px]">
       <ScreeningPaceCard value={percentage} />
       <AverageReviewTimeCard time={timeStr} />
     </div>

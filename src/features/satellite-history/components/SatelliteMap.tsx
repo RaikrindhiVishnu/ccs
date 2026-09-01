@@ -10,16 +10,19 @@ interface SatelliteMapProps {
   interactive?: boolean;
   polygon?: any;
   label?: string; // Text to display in the center of the polygon
+  onPolygonClick?: () => void;
 }
 
 export interface SatelliteMapHandle {
   flyTo: (lat: number, lon: number, bbox?: [string, string, string, string]) => void;
   recenterPolygon: () => void;
+  getMap: () => maplibregl.Map | null;
 }
 
 // Google Satellite base style — fast, high-quality, no ArcGIS
 const GOOGLE_SATELLITE_STYLE: maplibregl.StyleSpecification = {
   version: 8,
+  glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
   sources: {
     'google-satellite': {
       type: 'raster',
@@ -59,7 +62,7 @@ const GOOGLE_SATELLITE_STYLE: maplibregl.StyleSpecification = {
 };
 
 export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
-  ({ tileUrl, coords, interactive = true, polygon, label }, ref) => {
+  ({ tileUrl, coords, interactive = true, polygon, label, onPolygonClick }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<maplibregl.Map | null>(null);
     const markerRef = useRef<maplibregl.Marker | null>(null);
@@ -79,7 +82,7 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
       });
 
       if (interactive) {
-        map.addControl(new maplibregl.NavigationControl(), 'top-right');
+        map.addControl(new maplibregl.NavigationControl(), 'bottom-right');
       }
       map.addControl(
         new maplibregl.AttributionControl({ compact: true }),
@@ -117,15 +120,17 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
 
         if (bbox) {
           const [minLat, maxLat, minLon, maxLon] = bbox.map(Number);
+          const rightPadding = window.innerWidth > 768 ? 250 : 60;
+          const bottomPadding = 200;
           map.fitBounds(
             [
               [minLon, minLat],
               [maxLon, maxLat],
             ],
-            { padding: 60, duration: 1500, maxZoom: 12 }
+            { padding: { top: 60, bottom: bottomPadding, left: 60, right: rightPadding }, animate: false }
           );
         } else {
-          map.flyTo({ center: [lon, lat], zoom: 11, duration: 1500 });
+          map.jumpTo({ center: [lon, lat], zoom: 11 });
         }
 
         // Update/place marker
@@ -141,6 +146,9 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
         if (recenterPolygonRef.current) {
           recenterPolygonRef.current();
         }
+      },
+      getMap() {
+        return mapRef.current;
       }
     }));
 
@@ -150,9 +158,9 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
       const map = mapRef.current;
       const currentCenter = map.getCenter();
 
-      // Only animate if the coordinates actually changed
+      // Only jump if the coordinates actually changed
       if (Math.abs(currentCenter.lat - coords.lat) > 0.0001 || Math.abs(currentCenter.lng - coords.lon) > 0.0001) {
-        map.flyTo({ center: [coords.lon, coords.lat], zoom: 14, duration: 1500 });
+        map.jumpTo({ center: [coords.lon, coords.lat], zoom: 14 });
       }
     }, [coords?.lat, coords?.lon]);
 
@@ -244,7 +252,7 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
           filter: ['==', '$type', 'Polygon'],
           paint: {
             'fill-color': '#16a34a',
-            'fill-opacity': 0.4
+            'fill-opacity': 0
           }
         });
         map.addLayer({
@@ -258,14 +266,26 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
             'line-dasharray': [2, 2]
           }
         });
+        // Add custom location pin icon matching the requested Flaticon design
+        const pinSvg = `<svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 12 8 12V2z" fill="#FF0033"/><path d="M12 2C16.42 2 20 5.58 20 10c0 5.25-8 12-8 12V2z" fill="#D10024"/><circle cx="12" cy="9.5" r="3.5" fill="#FFFFFF"/></svg>`;
+        const img = new Image();
+        img.src = 'data:image/svg+xml;base64,' + btoa(pinSvg);
+        img.onload = () => {
+          if (!map.hasImage('location-pin')) {
+            map.addImage('location-pin', img);
+          }
+        };
+
         map.addLayer({
           id: 'polygon-vertices',
-          type: 'circle',
+          type: 'symbol',
           source: SOURCE_ID,
           filter: ['==', '$type', 'Point'],
-          paint: {
-            'circle-radius': 5,
-            'circle-color': '#ffffff'
+          layout: {
+            'icon-image': 'location-pin',
+            'icon-size': 1,
+            'icon-anchor': 'bottom',
+            'icon-allow-overlap': true
           }
         });
         map.addLayer({
@@ -294,19 +314,13 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
             bounds.extend(coord);
           }
 
-          const mapWidth = map.getContainer().clientWidth;
-          const mapHeight = map.getContainer().clientHeight;
-          
-          const safeRightPadding = Math.max(0, Math.min(500, mapWidth - 150));
-          const safeLeftPadding = Math.max(0, Math.min(60, mapWidth / 2 - 20));
-          const safeTopPadding = Math.max(0, Math.min(60, mapHeight / 2 - 20));
-          const safeBottomPadding = Math.max(0, Math.min(60, mapHeight / 2 - 20));
-
           const fit = () => {
             try {
+              const rightPadding = window.innerWidth > 768 ? 250 : 60;
+              const bottomPadding = 200;
               map.fitBounds(bounds, {
-                padding: { top: safeTopPadding, bottom: safeBottomPadding, left: safeLeftPadding, right: safeRightPadding },
-                duration: 1500
+                padding: { top: 60, bottom: bottomPadding, left: 60, right: rightPadding },
+                animate: false
               });
             } catch (e) {
               console.warn("fitBounds failed, possibly due to container size:", e);
@@ -317,6 +331,23 @@ export const SatelliteMap = forwardRef<SatelliteMapHandle, SatelliteMapProps>(
           fit();
           recenterPolygonRef.current = fit;
         }
+
+        // Add interaction handlers for the polygon
+        map.on('mouseenter', 'polygon-fill', () => {
+          map.getCanvas().style.cursor = 'pointer';
+          map.setPaintProperty('polygon-fill', 'fill-opacity', 0.4);
+        });
+
+        map.on('mouseleave', 'polygon-fill', () => {
+          map.getCanvas().style.cursor = '';
+          map.setPaintProperty('polygon-fill', 'fill-opacity', 0);
+        });
+
+        map.on('click', 'polygon-fill', () => {
+          if (onPolygonClick) {
+            onPolygonClick();
+          }
+        });
       };
 
       // Use 'style.load' which fires when the style (and its sources/layers) are fully ready.

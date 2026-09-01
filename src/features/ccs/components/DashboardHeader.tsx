@@ -92,9 +92,9 @@ export default function DashboardHeader({ startDate, endDate, setStartDate, setE
               setShowCalendar(!showCalendar);
               setShowNotifications(false);
             }}
-            className="relative flex h-[52px] w-[52px] items-center justify-center rounded-[40px] bg-[#FFFFFF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[var(--brand-tint)] p-[8px]"
+            className="relative flex h-[44px] w-[44px] items-center justify-center rounded-[40px] bg-[#FFFFFF] shadow-[0px_1px_2px_rgba(0,0,0,0.05)] transition-colors hover:bg-[var(--brand-tint)] p-[8px]"
           >
-            <CalendarDays className="h-[24px] w-[24px] text-[#000000]" strokeWidth={1.5} />
+            <CalendarDays className="h-[20px] w-[20px] text-[#000000]" strokeWidth={1.5} />
           </button>
           {showCalendar && (
             <CalendarPopover
@@ -118,7 +118,7 @@ export default function DashboardHeader({ startDate, endDate, setStartDate, setE
             }}
             className="relative flex items-center justify-center transition-transform hover:scale-105"
           >
-            <img src={bellIconSvg} alt="Notifications" className="h-[52px] w-[52px]" />
+            <img src={bellIconSvg} alt="Notifications" className="h-[44px] w-[44px]" />
             <span className="sr-only">Notifications</span>
           </button>
           {showNotifications && (

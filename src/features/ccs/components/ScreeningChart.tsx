@@ -19,11 +19,11 @@ export default function ScreeningChart({ endDate }: ScreeningChartProps) {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col rounded-[33px] bg-[#F9F9F9] w-full p-[31px] pt-[32px] min-h-[245px] animate-pulse">
-        <div className="h-4 bg-gray-200 rounded w-1/3 mb-[33px]"></div>
-        <div className="flex flex-row justify-between w-full flex-wrap gap-8 items-center mt-4">
-          <div className="w-[211px] h-[129.5px] bg-gray-200 rounded"></div>
-          <div className="flex flex-col gap-[24px] w-[100px]">
+      <div className="flex flex-col rounded-[24px] bg-[#F9F9F9] w-full p-[20px] min-h-[160px] animate-pulse">
+        <div className="h-4 bg-gray-200 rounded w-1/3 mb-[16px]"></div>
+        <div className="flex flex-row justify-between w-full flex-wrap gap-8 items-center mt-2">
+          <div className="w-[211px] h-[80px] bg-gray-200 rounded"></div>
+          <div className="flex flex-col gap-[12px] w-[100px]">
             <div className="h-4 bg-gray-200 rounded w-full"></div>
             <div className="h-4 bg-gray-200 rounded w-full"></div>
           </div>
@@ -46,41 +46,44 @@ export default function ScreeningChart({ endDate }: ScreeningChartProps) {
     return found || { approvedFarmlands: 0, rejectedFarmlands: 0 };
   });
 
-  const blueHeights = paddedData.map(item => ((item.approvedFarmlands || 0) / maxDaily) * 100);
-  const cyanHeights = paddedData.map(item => ((item.rejectedFarmlands || 0) / maxDaily) * 100);
+  const blueHeights = paddedData.map(item => ((item.approvedFarmlands || 0) / maxDaily) * 60);
+  const cyanHeights = paddedData.map(item => ((item.rejectedFarmlands || 0) / maxDaily) * 60);
 
   const barW = 7;
   const barGap = 30;
 
   return (
-    <div className="flex flex-col rounded-[33px] bg-[#F9F9F9] w-full p-[31px] pt-[32px] min-h-[245px]">
-      <div className="flex justify-between items-center mb-[33px]">
+    <div className="flex flex-col rounded-[24px] bg-[#F9F9F9] w-full p-[20px] min-h-[160px]">
+      <div className="flex justify-between items-center mb-[16px]">
         <Typography variant="h3" className="font-['Plus_Jakarta_Sans'] font-semibold text-[14px] leading-[17px] tracking-[1px] uppercase text-[#000000] ml-[6px]">
           Daily Screening Outcomes
         </Typography>
       </div>
 
       <div className="flex flex-row justify-between w-full flex-wrap gap-8 items-center">
-        <div className="relative w-[211px] h-[129.5px]">
-          <div className="absolute left-[11px] top-[0px] w-[187px] h-[100px]">
-            <svg width="100%" height="100%" viewBox="0 0 187 100" className="overflow-visible">
+        <div className="relative w-[211px] h-[80px]">
+          <div className="absolute left-[11px] top-[0px] w-[187px] h-[60px]">
+            <svg width="100%" height="100%" viewBox="0 0 187 60" className="overflow-visible">
               {paddedData.slice(0, 7).map((_, i) => {
                 const x = i * barGap;
                 const bH = blueHeights[i] > 0 ? Math.max(blueHeights[i], barW) : 0;
                 const cH = cyanHeights[i] > 0 ? Math.max(cyanHeights[i], barW) : 0;
                 const r = barW / 2;
-                const yTopBlue = 100 - bH + r;
-                const yMid = 100 - cH;
-                const yBotCyan = 100 - r;
+                
+                const cyanY2 = 60 - r;
+                const cyanY1 = cyanY2 - Math.max(0, cH - barW);
+                
+                const blueY2 = cH > 0 ? (60 - cH - 1 - r) : (60 - r);
+                const blueY1 = blueY2 - Math.max(0, bH - barW);
 
                 return (
                   <g key={i} onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)} className="cursor-pointer hover:opacity-80 transition-opacity">
-                    <line x1={x} y1={0} x2={x} y2={100} stroke="transparent" strokeWidth={20} />
-                    
+                    <line x1={x} y1={0} x2={x} y2={60} stroke="transparent" strokeWidth={20} />
+
                     {bH > 0 && (
                       <motion.line
-                        initial={{ y1: yMid - (cH > 0 ? 1 : 0), y2: yMid - (cH > 0 ? 1 : 0) }}
-                        animate={{ y1: yTopBlue, y2: yMid - (cH > 0 ? 1 : 0) }}
+                        initial={{ y1: blueY2, y2: blueY2 }}
+                        animate={{ y1: blueY1, y2: blueY2 }}
                         transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
                         x1={x} x2={x}
                         stroke="#2780C4" strokeWidth={barW} strokeLinecap="round" className="pointer-events-none"
@@ -88,8 +91,8 @@ export default function ScreeningChart({ endDate }: ScreeningChartProps) {
                     )}
                     {cH > 0 && (
                       <motion.line
-                        initial={{ y1: yBotCyan, y2: yBotCyan }}
-                        animate={{ y1: yMid, y2: yBotCyan }}
+                        initial={{ y1: cyanY2, y2: cyanY2 }}
+                        animate={{ y1: cyanY1, y2: cyanY2 }}
                         transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
                         x1={x} x2={x}
                         stroke="#37E8DD" strokeWidth={barW} strokeLinecap="round" className="pointer-events-none"
@@ -103,11 +106,11 @@ export default function ScreeningChart({ endDate }: ScreeningChartProps) {
 
           {/* Hover Tooltip */}
           {hoveredIndex !== null && (
-            <div 
+            <div
               className="absolute bg-[#FFFFFF] border border-[#E5E7EB] shadow-[0px_4px_12px_rgba(0,0,0,0.1)] rounded-[8px] px-[10px] py-[6px] z-50 pointer-events-none flex flex-col gap-1 min-w-[90px]"
               style={{
                 left: 11 + (hoveredIndex * barGap),
-                bottom: '105px',
+                bottom: '75px',
                 transform: 'translateX(-50%)'
               }}
             >
@@ -126,7 +129,7 @@ export default function ScreeningChart({ endDate }: ScreeningChartProps) {
           )}
 
           {/* Labels under the chart */}
-          <div className="absolute left-[11px] top-[115.5px] w-[187px]">
+          <div className="absolute left-[11px] top-[70.5px] w-[187px]">
             {days.map((day, i) => (
               <span
                 key={i}
@@ -143,7 +146,7 @@ export default function ScreeningChart({ endDate }: ScreeningChartProps) {
         </div>
 
         {/* Legend Container */}
-        <div className="flex flex-col items-start gap-[24px] w-[100px] mb-8">
+        <div className="flex flex-col items-start gap-[12px] w-[100px] mb-2">
           {/* Approved */}
           <div className="flex flex-row items-center gap-[9px] w-full">
             <div className="box-border w-[17px] h-[17px] border-[2.34px] border-[#2780C4] rounded-full flex-none" />

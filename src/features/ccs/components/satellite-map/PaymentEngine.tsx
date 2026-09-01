@@ -14,9 +14,10 @@ import walletImage from "@/assets/wallet.svg";
 export type PaymentEngineProps = {
   onBack: () => void;
   onSendRequest: () => void;
+  isSidebarExpanded?: boolean;
 };
 
-export default function PaymentEngine({ onBack, onSendRequest }: PaymentEngineProps) {
+export default function PaymentEngine({ onBack, onSendRequest, isSidebarExpanded = false }: PaymentEngineProps) {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
@@ -97,19 +98,15 @@ export default function PaymentEngine({ onBack, onSendRequest }: PaymentEnginePr
     <div className="relative w-full h-full bg-[#F2F2F2] md:rounded-[32px] overflow-y-auto custom-scrollbar flex flex-col pt-[32px] px-[52px] pb-[40px]">
       
       {/* Go Back Button */}
-      <div className="mb-[32px]">
-        <button
-          onClick={onBack}
-          className="flex items-center justify-center gap-[8px] w-[135px] h-[52px] bg-[#FFFFFF] rounded-[60px] shadow-[0px_0px_4px_rgba(0,0,0,0.12)] hover:bg-gray-50 transition-colors"
-        >
-          <ArrowLeft className="w-[24px] h-[24px] text-[#353535]" strokeWidth={1.4} />
-          <span className="font-['Inter'] font-normal text-[16px] leading-[18px] text-[#353535]">
-            Go back
-          </span>
-        </button>
-      </div>
+      <button
+        onClick={onBack}
+        className="absolute z-50 top-[16px] md:top-[37px] left-[20px] md:left-[24px] w-[52px] h-[52px] bg-[#FFFFFF] rounded-[60px] flex items-center justify-center shadow-[0px_0px_4px_rgba(0,0,0,0.12)] hover:bg-gray-50 transition-colors"
+        title="Go back"
+      >
+        <ArrowLeft className="w-[24px] h-[24px] text-[#353535]" strokeWidth={1.4} />
+      </button>
 
-      <div className="flex flex-col xl:flex-row gap-[32px] w-full max-w-[1050px] mx-auto min-h-min pb-[40px]">
+      <div className="flex flex-col xl:flex-row gap-[32px] w-full max-w-[1050px] mx-auto min-h-min pb-[40px] mt-[40px] xl:mt-0">
         
         {/* ASIDE - LEFT PANE: User Identity & Context */}
         <div className="flex flex-col gap-[24px] w-full xl:w-[362px] shrink-0">

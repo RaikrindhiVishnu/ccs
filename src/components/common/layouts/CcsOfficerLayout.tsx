@@ -29,7 +29,15 @@ export const CcsOfficerLayout = () => {
   const { navItems } = useRoleLayout();
   const location = useLocation();
   // By default, expanded on large screens, collapsed on tablet.
-  const [isExpanded, setIsExpanded] = useState(window.innerWidth >= 1024);
+  // Also default to collapsed if we are landing directly on a full-screen map/gateway route.
+  const [isExpanded, setIsExpanded] = useState(() => {
+    if (window.innerWidth < 1024) return false;
+    const path = window.location.pathname;
+    if (path.includes('/map') || path.includes('/analysis') || path.includes('/gateway') || path.includes('/payment')) {
+      return false;
+    }
+    return true;
+  });
 
   const currentUser = useSelector(selectCurrentUser);
 
@@ -44,10 +52,12 @@ export const CcsOfficerLayout = () => {
     .slice(0, 2)
     .toUpperCase();
 
-  // Close sidebar on route change if on mobile/tablet
+  // Close sidebar on route change if on mobile/tablet or if viewing a map
   useEffect(() => {
-    if (window.innerWidth < 1024) {
+    if (window.innerWidth < 1024 || location.pathname.includes('/map') || location.pathname.includes('/analysis') || location.pathname.includes('/gateway') || location.pathname.includes('/payment')) {
       setIsExpanded(false);
+    } else {
+      setIsExpanded(true);
     }
   }, [location.pathname]);
 
@@ -83,28 +93,30 @@ export const CcsOfficerLayout = () => {
       <aside 
         className={`
           flex flex-col shrink-0 h-full min-h-0 bg-[#FFFFFF] pt-[30px] transition-all duration-300 ease-in-out
-          ${isExpanded ? 'w-[291px] absolute z-[100] md:relative shadow-2xl md:shadow-none' : 'w-[88px] relative z-[100] border-r border-gray-100'}
+          ${isExpanded ? 'w-[291px] absolute z-[100] md:relative shadow-2xl md:shadow-none' : 'w-[88px] relative z-[100]'}
         `}
       >
         
         {/* Header (Logo & Toggle Button) */}
-        <div className={`shrink-0 flex ${isExpanded ? 'items-center justify-between pl-[32px] pr-[16px]' : 'flex-col items-center gap-[24px] px-0'} pt-[3px] pb-[50px]`}>
-          {/* Logo */}
-          <div className={`flex justify-center shrink-0 ${!isExpanded ? 'mt-[10px]' : ''}`}>
-            <img
-              src={logo}
-              alt="Green Land Capital"
-              className={`h-auto object-contain transition-all duration-300 ${isExpanded ? 'w-[140px]' : 'w-[50px]'}`}
-            />
-          </div>
+        <div className={`relative shrink-0 flex items-center ${isExpanded ? 'justify-between pl-[32px] pr-[24px]' : 'justify-center'} pt-[16px] pb-[50px]`}>
+          {/* Logo (Hidden when collapsed for cleaner UI, leaving only the toggle button at the top) */}
+          {isExpanded && (
+            <div className={`flex justify-center shrink-0`}>
+              <img
+                src={logo}
+                alt="Green Land Capital"
+                className={`h-auto object-contain transition-all duration-300 w-[140px]`}
+              />
+            </div>
+          )}
 
           {/* Toggle Button */}
           <button 
-            className={`flex items-center justify-center w-[32px] h-[32px] rounded-lg bg-gray-50 border border-gray-100 text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors shrink-0`}
+            className={`flex items-center justify-center w-[36px] h-[36px] rounded-full bg-white border border-gray-200 shadow-sm text-gray-500 hover:text-gray-800 hover:bg-gray-50 transition-colors z-50 ${isExpanded ? 'absolute right-[16px]' : 'relative'}`}
             onClick={() => setIsExpanded(!isExpanded)}
             title={isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
           >
-            {isExpanded ? <ChevronLeft size={18} strokeWidth={2} /> : <ChevronRight size={18} strokeWidth={2} />}
+            {isExpanded ? <ChevronLeft size={18} strokeWidth={2.5} /> : <ChevronRight size={18} strokeWidth={2.5} />}
           </button>
         </div>
 
@@ -175,7 +187,7 @@ export const CcsOfficerLayout = () => {
         <div className="shrink-0 flex flex-col items-center gap-[14.66px] mt-auto pb-[40px]">
           <Link 
             to="/ccs/profile" 
-            className={`flex flex-col items-center gap-[14.66px] hover:opacity-80 transition-opacity ${isExpanded ? 'w-[92px]' : 'w-full'}`}
+            className={`flex flex-col items-center gap-[14.66px] hover:opacity-80 transition-opacity w-full px-4`}
             title={fullName}
           >
             {profileUrl ? (
@@ -193,7 +205,7 @@ export const CcsOfficerLayout = () => {
               {initials}
             </div>
             {isExpanded && (
-              <p className="text-center leading-[20px] text-[16.618px] font-semibold font-['Inter'] text-[#000000] w-full truncate">
+              <p className="text-center leading-[20px] text-[16.618px] font-semibold font-['Inter'] text-[#000000] w-full whitespace-nowrap overflow-visible px-2">
                 {fullName}
               </p>
             )}
@@ -201,10 +213,10 @@ export const CcsOfficerLayout = () => {
         </div>
       </aside>
 
-      {/* ───────────────── MAIN ───────────────── */}
-      <section className="flex-1 min-h-0 h-full py-[30px] pr-[30px] pl-[30px] md:pl-0 relative flex flex-col">
-        <div data-lenis-prevent="true" className="h-full w-full overflow-y-auto rounded-[43px] bg-[#F2F2F2] shadow-sm relative z-0">
-          <Outlet />
+      {/* ── MAIN ── */}
+      <section className="flex-1 min-h-0 h-full py-[8px] pr-[8px] pl-[8px] md:pl-0 relative flex flex-col">
+        <div data-lenis-prevent="true" className="h-full w-full overflow-y-auto rounded-[32px] bg-[#F2F2F2] shadow-sm relative z-0">
+          <Outlet context={{ isExpanded }} />
         </div>
       </section>
 

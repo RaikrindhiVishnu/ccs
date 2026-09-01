@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 import GatewayApproved from "@/features/ccs/components/satellite-map/GatewayApproved";
 import { 
   useGetAssignedFarmlandDetailsMutation, 
@@ -12,6 +12,8 @@ import { selectCurrentUser } from "@/features/auth/store/authSlice";
 export default function FarmlandRequestGatewayApproved() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const context = useOutletContext<{ isExpanded?: boolean }>();
+  const isSidebarExpanded = context?.isExpanded ?? false;
 
   const [getDetails, { data: apiResponse, isLoading }] = useGetAssignedFarmlandDetailsMutation();
   const [getOfficers, { data: officersResponse, isLoading: isOfficersLoading }] = useGetAssignedOfficersMutation();
@@ -118,7 +120,7 @@ export default function FarmlandRequestGatewayApproved() {
 
   return (
     <div className="relative h-full overflow-hidden">
-      <div className="absolute inset-0 z-[110] bg-white">
+      <div className="absolute inset-0 z-[120]">
         {!isPageLoading && (
           <GatewayApproved 
             onBack={() => navigate(`/farmland-request/gateway/${id}`)}

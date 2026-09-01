@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 import FarmlandDetailPanel from "@/features/ccs/components/FarmlandDetailPanel";
 import type { FarmlandDetail } from "@/features/ccs/components/FarmlandDetailPanel";
 import { SatelliteMap } from "@/features/satellite-history/components/SatelliteMap";
@@ -10,6 +10,8 @@ import "@/features/satellite-history/satellite-history.css";
 export default function FarmlandRequestMap() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const context = useOutletContext<{ isExpanded?: boolean }>();
+  const isSidebarExpanded = context?.isExpanded ?? false;
 
   const [getDetails, { data: apiResponse, isLoading }] = useGetAssignedFarmlandDetailsMutation();
   const [getAllFarmlands, { data: allFarmlandsData }] = useGetAllAssignedFarmlandsMutation();
@@ -230,7 +232,8 @@ export default function FarmlandRequestMap() {
                     coords={initialCoords}
                     interactive={true}
                     polygon={normalizedPolygon}
-                    label={farmlandDetails.total_acres ? `${farmlandDetails.total_acres} Acres` : undefined}
+                    label={detail?.totalArea && detail.totalArea !== "N/A" ? detail.totalArea : undefined}
+                    onPolygonClick={() => navigate(`/farmland-request/analysis/${id}`)}
                   />
 
                   {/* Map controls (bottom right) */}
@@ -264,6 +267,7 @@ export default function FarmlandRequestMap() {
             open={true}
             onClose={() => navigate('/farmland-request')}
             onHistoricalAnalysis={() => navigate(`/farmland-request/analysis/${id}`)}
+            isSidebarExpanded={isSidebarExpanded}
           />
         </div>
       </div>

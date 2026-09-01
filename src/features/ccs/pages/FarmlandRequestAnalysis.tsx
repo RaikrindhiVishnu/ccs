@@ -1,11 +1,13 @@
 import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 import HistoricalAgronomyAnalysis from "@/features/ccs/components/satellite-map/Historicalagronomyanalysis";
 import { useGetAssignedFarmlandDetailsMutation } from "@/features/ccs/api/assignedFarmlandsApi";
 
 export default function FarmlandRequestAnalysis() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const context = useOutletContext<{ isExpanded?: boolean }>();
+  const isSidebarExpanded = context?.isExpanded ?? false;
 
   const [getDetails, { data: apiResponse, isLoading }] = useGetAssignedFarmlandDetailsMutation();
 
@@ -139,6 +141,12 @@ export default function FarmlandRequestAnalysis() {
     status: v.status !== false && v.status !== "failed" && v.is_passed !== false
   }));
 
+  const extractedOwner = findDeep(apiResponse, 'owner_details');
+  const ownerDetails = extractedOwner || actualData;
+
+  const acres = farmlandDetails?.Total_acres || farmlandDetails?.total_acres || farmlandDetails?.totalArea || farmlandDetails?.totalAcres || ownerDetails?.total_acres || ownerDetails?.totalAcres;
+  const labelText = acres ? `${acres} Acres` : undefined;
+
   return (
     <div className="relative h-full overflow-hidden">
       <div className="fixed inset-0 z-[100] w-screen h-screen bg-white">
@@ -149,6 +157,8 @@ export default function FarmlandRequestAnalysis() {
             polygon={normalizedPolygon}
             coords={initialCoords}
             verdicts={mappedVerdicts}
+            isSidebarExpanded={isSidebarExpanded}
+            label={labelText}
           />
         )}
         

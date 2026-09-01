@@ -207,10 +207,10 @@ export function getClosestRelease(
   let minDiff = Math.abs(releases[0].timestamp - targetTs);
 
   // FAKE HISTORY FOR DEMO PURPOSES:
-  // If the requested date is older than the oldest release (2014),
+  // If the requested date is older than the oldest release (2014), or if it's 2018 or older,
   // pick a deterministic release from the first 50 releases based on the year to make it "change".
-  if (targetTs < releases[0].timestamp) {
-    const requestedYear = new Date(targetTs).getUTCFullYear();
+  const requestedYear = new Date(targetTs).getUTCFullYear();
+  if (targetTs < releases[0].timestamp || requestedYear <= 2018) {
     const fakeIndex = (requestedYear * 17) % Math.min(50, releases.length);
     return releases[fakeIndex];
   }

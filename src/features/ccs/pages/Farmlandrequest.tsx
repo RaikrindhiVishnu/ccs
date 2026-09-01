@@ -45,8 +45,8 @@ export default function FarmlandRequest() {
   }, [geoDataResponse]);
 
   useEffect(() => {
-    const payload: any = { 
-      status_ids: [1, 2], 
+    const payload: any = {
+      status_ids: [1, 2],
       offset: (currentPage - 1) * PAGE_SIZE,
       limit: PAGE_SIZE,
       // Disabled for demo to allow robust local frontend filtering on real data
@@ -55,7 +55,7 @@ export default function FarmlandRequest() {
       // area_id: activeFilters.area_id || null,
       // priority_id: activeFilters.priority_id || null,
     };
-    
+
     if (activeFilters.fromDate) {
       const [d, m, y] = activeFilters.fromDate.split('/');
       if (d && m && y) payload.from_date = `${y}-${m}-${d}`;
@@ -111,7 +111,7 @@ export default function FarmlandRequest() {
 
       // State, Region, Area Filtering (Case-insensitive includes for robust matching)
       let locationStr = String(fd.location || fd.village || fd.state || fd.region || fd.area || (typeof item.location === 'string' ? item.location : '') || od.location || '').toLowerCase();
-      
+
       const locDetails = item.location_details || fd.location_details;
       if (locDetails) {
         const stateObj = geoData.states.find((s: any) => s.id === locDetails.state_id);
@@ -143,13 +143,13 @@ export default function FarmlandRequest() {
       }
 
       const textToSearch = locationStr;
-      
+
       if (activeFilters.state) {
         const filterState = activeFilters.state.toLowerCase();
         let abbreviation = filterState;
         if (filterState === 'andhra pradesh') abbreviation = 'a.p.';
         else if (filterState === 'telangana') abbreviation = 't.s.';
-        
+
         if (!textToSearch.includes(filterState) && !textToSearch.includes(abbreviation)) {
           matches = false;
         }
@@ -175,11 +175,11 @@ export default function FarmlandRequest() {
       // Search Filtering
       if (searchQuery.trim().length > 0) {
         const query = searchQuery.toLowerCase();
-        
+
         // Format date exactly as it appears
         const dateStr = fd.created_on || fd.createdAt || item.createdDate || fd.createdDate;
         const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A';
-        
+
         const acres = fd.Total_acres || fd.total_acres || item.totalAcres;
         const formattedAcres = acres ? `${acres} Acres` : 'N/A';
 
@@ -198,7 +198,7 @@ export default function FarmlandRequest() {
 
         const asset = fd.Assest_value || fd.total_asset_price || item.assetValue || item.total_asset_price;
         const formattedAsset = asset ? Number(asset).toLocaleString() : '0';
-        
+
         const priority = item.priority || fd.priority || 'Low';
 
         const glcId = (fd.farmland_code || item.glcId || fd.glcId || item.farmlandId || '');
@@ -248,7 +248,7 @@ export default function FarmlandRequest() {
         // If there's a date filter applied but the item has no date, it shouldn't match
         matches = false;
       }
-      
+
       return matches;
     });
   }
@@ -260,10 +260,10 @@ export default function FarmlandRequest() {
   const isBackendPaginated = backendTotalCount !== undefined && farmlands.length <= PAGE_SIZE;
 
   // Use the filtered length if backend didn't paginate or if filters are applied locally
-  const effectiveTotal = (isBackendPaginated && !isFilterActive && !isSearchActive) 
-    ? backendTotalCount 
+  const effectiveTotal = (isBackendPaginated && !isFilterActive && !isSearchActive)
+    ? backendTotalCount
     : filteredFarmlands.length;
-    
+
   const totalPages = Math.max(1, Math.ceil(effectiveTotal / PAGE_SIZE));
 
   const pagedFarmlands = (isBackendPaginated && !isFilterActive && !isSearchActive)
@@ -271,7 +271,7 @@ export default function FarmlandRequest() {
     : filteredFarmlands.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
-    <div className="relative h-full overflow-hidden">
+    <div className="relative flex flex-col h-full overflow-hidden">
       <FiltersModal
         isOpen={filtersOpen}
         onClose={() => setFiltersOpen(false)}
@@ -279,15 +279,9 @@ export default function FarmlandRequest() {
         onApply={handleFiltersChange}
       />
 
-      <div
-        className="
-          h-full overflow-y-auto
-          px-4 py-4
-          lg:px-6 lg:py-6
-        "
-      >
-        {/* ── HEADER ── */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 md:gap-0">
+      {/* ── HEADER (Fixed Top) ── */}
+      <div className="shrink-0 px-4 pt-2 lg:px-6 lg:pt-3 mb-2">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-0">
           {/* LEFT — icon + title */}
           <div className="flex items-center gap-[7px]">
             <Clock className="w-[19px] h-[19px] text-[#000000]" strokeWidth={2.5} />
@@ -302,32 +296,32 @@ export default function FarmlandRequest() {
           {/* RIGHT — search + filter + bell */}
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-[8px] w-full md:w-auto">
             {/* SEARCH BAR */}
-            <div className="flex flex-1 min-w-0 xl:flex-none items-center gap-[8px] rounded-[60px] bg-[#FFFFFF] px-[20px] h-[52px] w-full xl:w-[312px] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] border border-transparent hover:border-gray-100 transition-colors">
-              <Search className="h-[24px] w-[24px] shrink-0 text-[#5C5C5C] opacity-50" strokeWidth={1.5} />
+            <div className="flex flex-1 min-w-0 xl:flex-none items-center gap-[8px] rounded-[60px] bg-[#FFFFFF] px-[16px] h-[44px] w-full xl:w-[280px] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] border border-transparent hover:border-gray-100 transition-colors">
+              <Search className="h-[20px] w-[20px] shrink-0 text-[#5C5C5C] opacity-50" strokeWidth={1.5} />
               <input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by GLC ID, Agent....."
-                className="w-full bg-transparent text-[16px] font-normal text-[#5C5C5C] opacity-50 outline-none placeholder:text-[#5C5C5C] placeholder:opacity-50"
+                className="w-full bg-transparent text-[14px] font-normal text-[#5C5C5C] opacity-50 outline-none placeholder:text-[#5C5C5C] placeholder:opacity-50"
               />
             </div>
 
             {/* FILTER */}
             <button
               onClick={() => setFiltersOpen(true)}
-              className="flex shrink-0 h-[52px] w-[52px] items-center justify-center rounded-[40px] bg-[#FFFFFF] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] hover:bg-gray-50 transition-colors"
+              className="flex shrink-0 h-[44px] w-[44px] items-center justify-center rounded-[40px] bg-[#FFFFFF] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] hover:bg-gray-50 transition-colors"
             >
-              <ListFilter className="h-[24px] w-[24px] text-[#000000]" strokeWidth={2} />
+              <ListFilter className="h-[20px] w-[20px] text-[#000000]" strokeWidth={2} />
             </button>
 
             {/* BELL */}
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative shrink-0 flex h-[52px] w-[52px] items-center justify-center rounded-[40px] bg-[#FFFFFF] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] hover:bg-gray-50 transition-colors"
+                className="relative shrink-0 flex h-[44px] w-[44px] items-center justify-center rounded-[40px] bg-[#FFFFFF] shadow-[0px_4px_10px_rgba(0,0,0,0.03)] hover:bg-gray-50 transition-colors"
               >
-                <span className="absolute right-[16px] top-[14px] h-[5px] w-[5px] rounded-full bg-[#EF4646]" />
-                <Bell className="h-[24px] w-[24px] text-[#2C2C2C]" strokeWidth={1.5} />
+                <span className="absolute right-[12px] top-[12px] h-[5px] w-[5px] rounded-full bg-[#EF4646]" />
+                <Bell className="h-[20px] w-[20px] text-[#2C2C2C]" strokeWidth={1.5} />
                 <span className="sr-only">Notifications</span>
               </button>
               {showNotifications && (
@@ -339,7 +333,7 @@ export default function FarmlandRequest() {
 
         {/* ── ACTIVE FILTERS CHIPS ── */}
         {activeFilterEntries.length > 0 && (
-          <div className="flex flex-wrap gap-[12px] mb-6">
+          <div className="flex flex-wrap gap-[12px] mt-3">
             {activeFilterEntries.map((filter) => (
               <div
                 key={filter.key}
@@ -354,7 +348,10 @@ export default function FarmlandRequest() {
             ))}
           </div>
         )}
+      </div>
 
+      {/* ── MIDDLE (Scrollable) ── */}
+      <div className="flex-1 overflow-y-auto px-4 pb-4 lg:px-6 lg:pb-6">
         <div
           className="
             grid grid-cols-1 content-start gap-3
@@ -400,13 +397,13 @@ export default function FarmlandRequest() {
                 const numAsset = Number(String(asset).replace(/[^0-9.-]+/g, ""));
                 const numAcres = Number(String(acres).replace(/[^0-9.-]+/g, ""));
                 if (!isNaN(numAsset) && !isNaN(numAcres) && numAcres > 0) {
-                   const calculatedValuation = numAsset / numAcres;
-                   finalValuation = `₹ ${calculatedValuation.toLocaleString('en-IN', { maximumFractionDigits: 2 })}/Acre`;
+                  const calculatedValuation = numAsset / numAcres;
+                  finalValuation = `₹ ${calculatedValuation.toLocaleString('en-IN', { maximumFractionDigits: 2 })}/Acre`;
                 }
               }
 
               let location = fd.location || od.location || fd.village || od.village || item.location || 'Unknown Location';
-              
+
               const locDetails = item.location_details || fd.location_details || item.location;
               if (locDetails) {
                 const stateObj = geoData.states.find((s: any) => s.id === locDetails.state_id);
@@ -470,14 +467,14 @@ export default function FarmlandRequest() {
           ) : (
             <div className="col-span-full py-12 flex flex-col items-center justify-center text-gray-500 font-medium bg-[#FFFFFF] rounded-[24px] shadow-sm border border-dashed border-gray-200">
               <span className="text-[16px] text-[#0F172A]">
-                {isSearchActive 
-                  ? "Not matching based on search." 
-                  : isFilterActive 
+                {isSearchActive
+                  ? "Not matching based on search."
+                  : isFilterActive
                     ? "No farmlands found matching the selected filters."
                     : "No farmlands found."}
               </span>
               {(isFilterActive || isSearchActive) && (
-                <button 
+                <button
                   onClick={() => {
                     setSearchQuery("");
                     setActiveFilters({ state: "", region: "", area: "", priority: "", fromDate: "", toDate: "" });
@@ -490,74 +487,73 @@ export default function FarmlandRequest() {
             </div>
           )}
         </div>
-
-        {/* ── PAGINATION ── */}
-        {!isLoading && farmlands.length > 0 && totalPages > 1 && (
-          <div className="flex items-center justify-between mt-6 px-1">
-            {/* Left: page info */}
-            <span className="text-[13px] font-medium text-[#7F8397] font-['Plus_Jakarta_Sans'] whitespace-nowrap">
-              Page {currentPage} of {totalPages}
-            </span>
-
-            {/* Center: page buttons */}
-            <div className="flex items-center gap-[6px]">
-              {/* Prev */}
-              <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="flex items-center justify-center h-[36px] w-[36px] rounded-[10px] bg-[#FFFFFF] shadow-[0px_2px_8px_rgba(0,0,0,0.06)] border border-[#E5E7EB] disabled:opacity-40 hover:bg-[#F3F4F6] transition-colors"
-              >
-                <ChevronLeft className="w-[16px] h-[16px] text-[#374151]" strokeWidth={2} />
-              </button>
-
-              {/* Numbered pages — show at most 5 around current */}
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter(p =>
-                  p === 1 ||
-                  p === totalPages ||
-                  Math.abs(p - currentPage) <= 1
-                )
-                .reduce<(number | '...')[]>((acc, p, idx, arr) => {
-                  if (idx > 0 && (p as number) - (arr[idx - 1] as number) > 1) acc.push('...');
-                  acc.push(p);
-                  return acc;
-                }, [])
-                .map((p, idx) =>
-                  p === '...' ? (
-                    <span key={`ellipsis-${idx}`} className="px-1 text-[#9CA3AF] text-[13px] select-none">…</span>
-                  ) : (
-                    <button
-                      key={p}
-                      onClick={() => setCurrentPage(p as number)}
-                      className={`flex items-center justify-center h-[36px] min-w-[36px] px-2 rounded-[10px] text-[13px] font-semibold font-['Plus_Jakarta_Sans'] transition-colors border ${
-                        currentPage === p
-                          ? 'bg-[#2780C4] text-white border-[#2780C4] shadow-[0px_2px_8px_rgba(39,128,196,0.3)]'
-                          : 'bg-[#FFFFFF] text-[#374151] border-[#E5E7EB] shadow-[0px_2px_8px_rgba(0,0,0,0.06)] hover:bg-[#F3F4F6]'
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  )
-                )
-              }
-
-              {/* Next */}
-              <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="flex items-center justify-center h-[36px] w-[36px] rounded-[10px] bg-[#FFFFFF] shadow-[0px_2px_8px_rgba(0,0,0,0.06)] border border-[#E5E7EB] disabled:opacity-40 hover:bg-[#F3F4F6] transition-colors"
-              >
-                <ChevronRight className="w-[16px] h-[16px] text-[#374151]" strokeWidth={2} />
-              </button>
-            </div>
-
-            {/* Right: items per page label */}
-            <span className="text-[13px] font-medium text-[#7F8397] font-['Plus_Jakarta_Sans'] whitespace-nowrap">
-              {PAGE_SIZE} per page
-            </span>
-          </div>
-        )}
       </div>
+
+      {/* ── PAGINATION (Fixed Bottom) ── */}
+      {!isLoading && farmlands.length > 0 && totalPages > 1 && (
+        <div className="shrink-0 flex items-center justify-between px-4 py-1.5 lg:px-6 bg-[#F2F2F2]">
+          {/* Left: page info */}
+          <span className="text-[13px] font-medium text-[#7F8397] font-['Plus_Jakarta_Sans'] whitespace-nowrap">
+            Page {currentPage} of {totalPages}
+          </span>
+
+          {/* Center: page buttons */}
+          <div className="flex items-center gap-[6px]">
+            {/* Prev */}
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="flex items-center justify-center h-[36px] w-[36px] rounded-[10px] bg-[#FFFFFF] shadow-[0px_2px_8px_rgba(0,0,0,0.06)] border border-[#E5E7EB] disabled:opacity-40 hover:bg-[#F3F4F6] transition-colors"
+            >
+              <ChevronLeft className="w-[16px] h-[16px] text-[#374151]" strokeWidth={2} />
+            </button>
+
+            {/* Numbered pages — show at most 5 around current */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(p =>
+                p === 1 ||
+                p === totalPages ||
+                Math.abs(p - currentPage) <= 1
+              )
+              .reduce<(number | '...')[]>((acc, p, idx, arr) => {
+                if (idx > 0 && (p as number) - (arr[idx - 1] as number) > 1) acc.push('...');
+                acc.push(p);
+                return acc;
+              }, [])
+              .map((p, idx) =>
+                p === '...' ? (
+                  <span key={`ellipsis-${idx}`} className="px-1 text-[#9CA3AF] text-[13px] select-none">…</span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => setCurrentPage(p as number)}
+                    className={`flex items-center justify-center h-[36px] min-w-[36px] px-2 rounded-[10px] text-[13px] font-semibold font-['Plus_Jakarta_Sans'] transition-colors border ${currentPage === p
+                        ? 'bg-[#2780C4] text-white border-[#2780C4] shadow-[0px_2px_8px_rgba(39,128,196,0.3)]'
+                        : 'bg-[#FFFFFF] text-[#374151] border-[#E5E7EB] shadow-[0px_2px_8px_rgba(0,0,0,0.06)] hover:bg-[#F3F4F6]'
+                      }`}
+                  >
+                    {p}
+                  </button>
+                )
+              )
+            }
+
+            {/* Next */}
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="flex items-center justify-center h-[36px] w-[36px] rounded-[10px] bg-[#FFFFFF] shadow-[0px_2px_8px_rgba(0,0,0,0.06)] border border-[#E5E7EB] disabled:opacity-40 hover:bg-[#F3F4F6] transition-colors"
+            >
+              <ChevronRight className="w-[16px] h-[16px] text-[#374151]" strokeWidth={2} />
+            </button>
+          </div>
+
+          {/* Right: items per page label */}
+          <span className="text-[13px] font-medium text-[#7F8397] font-['Plus_Jakarta_Sans'] whitespace-nowrap">
+            {PAGE_SIZE} per page
+          </span>
+        </div>
+      )}
     </div>
   );
 }

@@ -228,6 +228,7 @@ export default function FarmlandListMap() {
                     interactive={true}
                     polygon={normalizedPolygon}
                     label={farmlandDetails.total_acres ? `${farmlandDetails.total_acres} Acres` : undefined}
+                    onPolygonClick={() => navigate(`/farmland-request/analysis/${id}`)}
                   />
 
                   {/* Map controls (bottom right) */}

@@ -51,7 +51,7 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
 
   return (
     <div
-      className="bg-white rounded-[32px] box-border w-full flex flex-col p-[26px] transition-shadow hover:shadow-md"
+      className="bg-white rounded-[24px] box-border w-full flex flex-col p-[16px] transition-shadow hover:shadow-md"
     >
       {/* ── CARD HEADER ── */}
       <div className="flex items-start justify-between h-[56px]">
@@ -67,8 +67,8 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
         {/* Priority Badge */}
         <div
           className={`box-border flex flex-row items-center px-[12px] py-[4px] rounded-full border shrink-0 ${isHigh
-              ? 'bg-[#FEF2F2] border-[#FEE2E2] text-[#DC2626]'
-              : 'bg-[#FFFBEB] border-[#FEF3C7] text-[#D97706]'
+            ? 'bg-[#FEF2F2] border-[#FEE2E2] text-[#DC2626]'
+            : 'bg-[#FFFBEB] border-[#FEF3C7] text-[#D97706]'
             }`}
         >
           <span className="font-['Plus_Jakarta_Sans'] font-normal text-[12px] leading-[16px]">
@@ -78,7 +78,7 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
       </div>
 
       {/* ── DATA GRID ── */}
-      <div className="grid grid-cols-3 gap-y-[29px] gap-x-[10px] mt-[38px]">
+      <div className="grid grid-cols-3 gap-y-[16px] gap-x-[10px] mt-[20px]">
         {/* AGENT NAME */}
         <div className="flex flex-col gap-[3px]">
           <span className="font-['Plus_Jakarta_Sans'] font-medium text-[12px] leading-[16px] tracking-[0.6px] uppercase text-[rgba(61,73,73,0.6)]">
@@ -86,10 +86,10 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
           </span>
           <div className="flex flex-row items-center gap-[6px] pr-2">
             {finalAgentImg ? (
-              <img 
-                src={finalAgentImg} 
-                alt="Agent" 
-                className="w-[20px] h-[20px] rounded-full object-cover shrink-0" 
+              <img
+                src={finalAgentImg}
+                alt="Agent"
+                className="w-[20px] h-[20px] rounded-full object-cover shrink-0"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.agentName)}&background=F3F4F6&color=164573`;
                 }}
@@ -145,7 +145,7 @@ export default function FarmlandRequestCard({ item, onClick }: Props) {
       {/* ── CTA BUTTON ── */}
       <button
         onClick={() => onClick?.(item.id)}
-        className="w-full flex flex-row justify-center items-center py-[10px] px-[24px] gap-[7.99px] bg-[#2780C4] rounded-[32px] transition-colors hover:bg-[#1f669d] mt-[30px]"
+        className="w-full flex flex-row justify-center items-center py-[10px] px-[24px] gap-[7.99px] bg-[#2780C4] rounded-[32px] transition-colors hover:bg-[#1f669d] mt-[16px]"
         style={{ height: '44px', boxShadow: '0px 10px 15px -3px rgba(9, 20, 38, 0.2), 0px 4px 6px -4px rgba(9, 20, 38, 0.2)' }}
       >
         <span className="font-['Plus_Jakarta_Sans'] font-bold text-[14px] leading-[20px] text-center text-[#FFFFFF]">

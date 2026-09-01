@@ -1,8 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import PaymentEngine from "@/features/ccs/components/satellite-map/PaymentEngine";
 
 export default function FarmlandRequestPayment() {
   const navigate = useNavigate();
+  const context = useOutletContext<{ isExpanded?: boolean }>();
+  const isSidebarExpanded = context?.isExpanded ?? false;
 
   return (
     <div className="relative h-full overflow-hidden">
@@ -10,6 +12,7 @@ export default function FarmlandRequestPayment() {
         <PaymentEngine 
           onBack={() => navigate(-1)}
           onSendRequest={() => navigate('/farmland-request')}
+          isSidebarExpanded={isSidebarExpanded}
         />
       </div>
     </div>

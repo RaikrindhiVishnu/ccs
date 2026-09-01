@@ -57,7 +57,7 @@ export function useSatelliteLayer({
           maxzoom: 22,
           paint: {
             'raster-opacity': 0,
-            'raster-opacity-transition': { duration: 600, delay: 0 }
+            'raster-opacity-transition': { duration: 800, delay: 0 }
           },
         },
         getFirstLabelLayerId(map)

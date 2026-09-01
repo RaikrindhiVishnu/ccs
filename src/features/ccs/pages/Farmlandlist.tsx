@@ -269,7 +269,7 @@ export default function FarmlandList() {
   const pagedData = filteredData.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
-    <>
+    <div className="relative flex flex-col h-full overflow-hidden">
       <FiltersModal
         isOpen={filtersOpen}
         onClose={() => setFiltersOpen(false)}
@@ -277,14 +277,9 @@ export default function FarmlandList() {
         onApply={handleFiltersChange}
       />
 
-      <div
-        className="
-          h-full overflow-y-auto
-          px-4 py-4
-          lg:px-6 lg:py-6
-        "
-      >
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 md:gap-0">
+      {/* ── HEADER (Fixed Top) ── */}
+      <div className="shrink-0 px-4 pt-2 lg:px-6 lg:pt-3 mb-2">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-0">
           <div className="flex items-center gap-[10px]">
             <div className="flex shrink-0 h-[38px] w-[38px] rounded-[10px] items-center justify-center">
               <img src={farmlandListIcon} alt="Farmlands List" className="h-[20px] w-[20px] object-contain" />
@@ -332,7 +327,7 @@ export default function FarmlandList() {
         </div>
 
         {activeFilterEntries.length > 0 && (
-          <div className="flex flex-wrap gap-[12px] mb-6">
+          <div className="flex flex-wrap gap-[12px] mt-3">
             {activeFilterEntries.map((filter) => (
               <div
                 key={filter.key}
@@ -347,7 +342,10 @@ export default function FarmlandList() {
             ))}
           </div>
         )}
+      </div>
 
+      {/* ── MIDDLE (Scrollable) ── */}
+      <div className="flex-1 overflow-y-auto px-4 pb-4 lg:px-6 lg:pb-6">
         <div className="flex flex-col gap-3 xl:gap-4">
           {isLoading ? (
             Array.from({ length: 4 }).map((_, i) => (
@@ -377,67 +375,67 @@ export default function FarmlandList() {
             </div>
           )}
         </div>
-
-        {/* ── PAGINATION ── */}
-        {!isLoading && filteredData.length > 0 && totalPages > 1 && (
-          <div className="flex items-center justify-between mt-6 px-1">
-            {/* Left: page info */}
-            <span className="text-[13px] font-medium text-[#7F8397] font-['Plus_Jakarta_Sans'] whitespace-nowrap">
-              Page {currentPage} of {totalPages}
-            </span>
-
-            {/* Center: page buttons */}
-            <div className="flex items-center gap-[6px]">
-              <button
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="flex items-center justify-center h-[36px] w-[36px] rounded-[10px] bg-[#FFFFFF] shadow-[0px_2px_8px_rgba(0,0,0,0.06)] border border-[#E5E7EB] disabled:opacity-40 hover:bg-[#F3F4F6] transition-colors"
-              >
-                <ChevronLeft className="w-[16px] h-[16px] text-[#374151]" strokeWidth={2} />
-              </button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
-                .reduce<(number | '...')[]>((acc, p, idx, arr) => {
-                  if (idx > 0 && (p as number) - (arr[idx - 1] as number) > 1) acc.push('...');
-                  acc.push(p);
-                  return acc;
-                }, [])
-                .map((p, idx) =>
-                  p === '...' ? (
-                    <span key={`ellipsis-${idx}`} className="px-1 text-[#9CA3AF] text-[13px] select-none">…</span>
-                  ) : (
-                    <button
-                      key={p}
-                      onClick={() => setCurrentPage(p as number)}
-                      className={`flex items-center justify-center h-[36px] min-w-[36px] px-2 rounded-[10px] text-[13px] font-semibold font-['Plus_Jakarta_Sans'] transition-colors border ${
-                        currentPage === p
-                          ? 'bg-[#2780C4] text-white border-[#2780C4] shadow-[0px_2px_8px_rgba(39,128,196,0.3)]'
-                          : 'bg-[#FFFFFF] text-[#374151] border-[#E5E7EB] shadow-[0px_2px_8px_rgba(0,0,0,0.06)] hover:bg-[#F3F4F6]'
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  )
-                )
-              }
-
-              <button
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-                className="flex items-center justify-center h-[36px] w-[36px] rounded-[10px] bg-[#FFFFFF] shadow-[0px_2px_8px_rgba(0,0,0,0.06)] border border-[#E5E7EB] disabled:opacity-40 hover:bg-[#F3F4F6] transition-colors"
-              >
-                <ChevronRight className="w-[16px] h-[16px] text-[#374151]" strokeWidth={2} />
-              </button>
-            </div>
-
-            {/* Right: items per page label */}
-            <span className="text-[13px] font-medium text-[#7F8397] font-['Plus_Jakarta_Sans'] whitespace-nowrap">
-              {PAGE_SIZE} per page
-            </span>
-          </div>
-        )}
       </div>
-    </>
+
+      {/* ── PAGINATION (Fixed Bottom) ── */}
+      {!isLoading && filteredData.length > 0 && totalPages > 1 && (
+        <div className="shrink-0 flex items-center justify-between px-4 py-1.5 lg:px-6 bg-[#F2F2F2]">
+          {/* Left: page info */}
+          <span className="text-[13px] font-medium text-[#7F8397] font-['Plus_Jakarta_Sans'] whitespace-nowrap">
+            Page {currentPage} of {totalPages}
+          </span>
+
+          {/* Center: page buttons */}
+          <div className="flex items-center gap-[6px]">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="flex items-center justify-center h-[36px] w-[36px] rounded-[10px] bg-[#FFFFFF] shadow-[0px_2px_8px_rgba(0,0,0,0.06)] border border-[#E5E7EB] disabled:opacity-40 hover:bg-[#F3F4F6] transition-colors"
+            >
+              <ChevronLeft className="w-[16px] h-[16px] text-[#374151]" strokeWidth={2} />
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+              .reduce<(number | '...')[]>((acc, p, idx, arr) => {
+                if (idx > 0 && (p as number) - (arr[idx - 1] as number) > 1) acc.push('...');
+                acc.push(p);
+                return acc;
+              }, [])
+              .map((p, idx) =>
+                p === '...' ? (
+                  <span key={`ellipsis-${idx}`} className="px-1 text-[#9CA3AF] text-[13px] select-none">…</span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => setCurrentPage(p as number)}
+                    className={`flex items-center justify-center h-[36px] min-w-[36px] px-2 rounded-[10px] text-[13px] font-semibold font-['Plus_Jakarta_Sans'] transition-colors border ${
+                      currentPage === p
+                        ? 'bg-[#2780C4] text-white border-[#2780C4] shadow-[0px_2px_8px_rgba(39,128,196,0.3)]'
+                        : 'bg-[#FFFFFF] text-[#374151] border-[#E5E7EB] shadow-[0px_2px_8px_rgba(0,0,0,0.06)] hover:bg-[#F3F4F6]'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                )
+              )
+            }
+
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="flex items-center justify-center h-[36px] w-[36px] rounded-[10px] bg-[#FFFFFF] shadow-[0px_2px_8px_rgba(0,0,0,0.06)] border border-[#E5E7EB] disabled:opacity-40 hover:bg-[#F3F4F6] transition-colors"
+            >
+              <ChevronRight className="w-[16px] h-[16px] text-[#374151]" strokeWidth={2} />
+            </button>
+          </div>
+
+          {/* Right: items per page label */}
+          <span className="text-[13px] font-medium text-[#7F8397] font-['Plus_Jakarta_Sans'] whitespace-nowrap">
+            {PAGE_SIZE} per page
+          </span>
+        </div>
+      )}
+    </div>
   );
 }
